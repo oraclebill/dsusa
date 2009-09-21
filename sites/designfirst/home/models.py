@@ -52,7 +52,7 @@ class DealerAccount(Account):
                                 
     default_measure_units = models.CharField(max_length=3, choices=DIMENSION_UNIT_CHOICES)
     credit_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    price_sheet = models.ForeignKey(PriceSchedule,null=True)
+    price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
     
     def __unicode__(self):
         return self.company_name
