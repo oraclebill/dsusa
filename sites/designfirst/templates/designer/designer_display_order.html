@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load designer_tags %}
+{% block title %}
+DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.id}} ] 
+{% endblock %}
+{% block extrastyle %} 
+	<script type="text/javascript">
+		$(document).ready(function(){
+		    $("#package-form").dialog({
+				title: 'Attach Design Package',
+				modal: true,
+				autoOpen: false,
+				buttons: {
+					'Upload Files': function() {
+						$("form").submit()
+					},
+					'Cancel': function() {
+						$(this).dialog('close');
+					}
+				}				
+			});		
+			$('#order-action-upload').click( function() {
+				$('#package-form').dialog('open');
+			})
+		});
+
+	</script>
+{% endblock %}
+
+{% block content %}
+	
+	<!-- Order Information -->
+	<div class="box">
+		<h2>Manage</h2>
+		<div class="grid_4 suffix_1 ">
+			<h5>&nbsp;</h5>
+			<div>
+				<input type="submit" id="order-action-upload" name="order-action" value="Update"> [ {{ order.designer_package }}] <br>
+				<input type="submit" name="order-action" value="Request Clarification"><br>
+				<form id="complete-form" action="{% url designer.views.designer_display_order order.id %}" method="POST">
+					<input type="submit" name="complete-order-action" value="Complete Order">
+			    </form>
+				<div id="package-form">
+					<form id="attach-form" action="{% url designer.views.designer_attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
+					{{ package_form }}
+				</form>
+				</div>
+			</div>
+		</div>
+		<div class="grid_9 prefix_2 omega">
+			<h5>&nbsp;</h5>
+			<div>
+				<table>
+					<tr><th>Order ID</th><td>{{ order.id }}</td>
+						<th>Color Views</th><td>{{ order.color_views }}</td></tr>
+					<tr><th>Project</th><td>{{ order.project_name }}</td>
+						<th>Elevations</th><td>{{ order.elevations }}</td></tr>
+					<tr><th>Date Submitted</th><td>{{ order.submitted }}</td>
+						<th>Quote / Cabinet List</th><td>{{ order.quote_cabinet_list }}</td></tr>
+				</table>				
+			</div>
+		</div>
+		
+		<div class="clear"></div>
+
+	</div>
+	
+	<!-- end first row -->
+	<div class="clear"></div>
+		
+	<!-- begin 2-column -->
+	<!-- col 1 - cabinetry stuff (mandatory info, generally) -->
+	<div class="grid_6">
+		
+		<!-- cabinetry line / model info -->
+		<div class="box">
+			<h2>Cabinetry</h2>
+			<div>
+				<table>
+					{% row_if order.cabinet_manufacturer %}	
+					{% row_if order.cabinet_door_style %}	
+					{% row_if order.cabinet_wood %}	
+					{% row_if order.cabinet_stain %}	
+					{% row_if order.cabinet_finish %}	
+					{% row_if order.cabinet_finish_options N/A %}	
+					{% row_if order.cabinetry_notes "N/A" %}	
+				</table>
+			</div>
+		</div>
+		
+		<!-- Cabinetry box dimensions -->
+		<div class="box">
+			<h2>Cabinet Box Dimensions</h2>
+			<div>
+				{% if order.stacked_staggered or order.wall_cabinet_height or order.vanity_cabinet_height or order.vanity_cabinet_depth  %}
+				<table>
+					{% row_if order.stacked_staggered %}
+					{% row_if order.wall_cabinet_height %}
+					{% row_if order.vanity_cabinet_height %}
+					{% row_if order.vanity_cabinet_depth  %}
+				</table>
+				{% else %}
+				<p>NOT SPECIFIED</p>
+				{% endif %}
+			</div>
+		</div>
+		
+		<!-- Cabinetry box dimensions -->
+		<div class="box">
+			<h2>Mouldings</h2>
+			<div>
+				{% if order.ceiling_height or order.crown_mouldings or order.skirt_mouldings or order.soffits  %}
+					<table>
+						{% row_if order.ceiling_height %}
+						{% row_if order.crown_mouldings %}
+						{% row_if order.skirt_mouldings %}
+					</table>
+					
+					{% if order.soffits %}
+					<table>
+						<legend>Soffits</legend>
+						{% row_if order.soffit_height N/A %}
+						{% row_if order.soffit_width  N/A %}
+						{% row_if order.soffit_depth  N/A %}
+					</table>
+					{% endif %}
+						
+				{% else %}
+				
+					<p>NOT SPECIFIED</p>
+				
+				{% endif %}
+			</div>
+		</div>
+		<!-- end Cabinetry box dimensions -->
+		
+		<!-- options -->
+		<div class="box">
+			<h2>Design Options / Features</h2>
+			<div>
+				<table border="0" cellspacing="5" cellpadding="5">
+					{% for field in options %}
+						{% row_if order:field %}						
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+		<!-- end options -->
+		
+		<!-- design notes  -->
+		<div class="box">
+			<h2>Client Notes</h2>
+			<div>
+				<p>{{ order.client_notes }}</p>
+			</div>
+		</div>
+		<div class="box">
+			<h2>Designer Notes</h2>
+			<div>
+				<p>{{ order.designer_notes }}</p>
+			</div>
+		</div>
+		<!-- end design options -->
+
+	</div>
+		
+	<div class="grid_10">
+		
+		<div class="box">
+			<h2>Floorplan Diagrams</h2>
+			<div>
+				<object width="320" height="240" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
+					<param name="src" value="{{ order.client_diagram.url }}">
+					<param name="controller" value="true">
+					<param name="autoplay" value="true">
+					<embed src="{{ order.client_diagram.url }}"
+						width="580" height="710"
+						controller="true" autoplay="true"
+						scale="tofit" cache="true"
+						pluginspage="http://www.apple.com/quicktime/download/"
+					>
+				</object>
+			</div>
+		</div>
+		
+	</div>
+	
+	<!-- end second row -->
+	<div class="clear"/>
+	
+	<!-- third row - appliances -->
+	<div class="grid_16">
+		
+		<div class="box">
+			<h2>Appliances</h2>
+			<div>
+				
+			</div>
+		</div>
+		
+	</div>
+	
+	<!-- fourth row - diagrams provided, diagrams to provide -->
+	<div class="grid_16">
+		
+		<div class="box">
+			<h2>Client Diagrams</h2>
+			<div>
+				
+			</div>
+		</div>
+		
+		
+	</div>
+	
+	<!-- fifth row - buttons -->
+	<div class="grid_16">
+		
+	</div>
+	
+{% endblock %}
+

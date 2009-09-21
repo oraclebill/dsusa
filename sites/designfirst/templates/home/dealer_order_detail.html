@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}
+DesignFirst - Design Order 
+{% endblock %}
+ljkdsfalsdkfj
+{% block extrastyle %} 
+<style type="text/css" media="screen">
+	span.areastatus {
+		float: right;
+		font-style: italic;
+		font-size: 0.8em;
+	}
+	span.invalid {
+		color: red;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+	
+	<div class="grid_8   prefix_1">
+		
+		<!-- Design Request Data Entry Area -->
+		<div id="order-entry" class="box">
+			<h2>Design Request Info</h2>
+			<div class="block">
+				
+				<div id="accordion">
+					
+					{% for subform in formlist %}
+					<h3 class="toggler atStart"><span>{{ subform.name }}</span>{% ifequal subform.visited 'visited' %}*{% endifequal %}
+							<span class="areastatus ">{{ subform.validity }}</span> </h3>
+					<div class="element atStart">
+						<form action="#" method="POST" accept-charset="utf-8">
+							<fieldset>
+								<input type="hidden" name="subform" value="{{ subform.id }}">
+								{{ subform.as_p }}
+								<input type="submit" name="submit_{{subform.id}}" value="update">
+							</fieldset>
+						</form>
+					</div>
+					{% endfor %}
+	
+				</div>
+			</div>
+
+		</div>
+	
+	</div>
+
+	<div class="grid_6  suffix_1 ">
+		
+    	<div id="order_info" class="box">
+    		<h2>Order </h2> 
+    		<table>
+    			<tbody>
+					<tr><th>ID</th><td colspan=2>{{ order.id }}</td></tr>
+    				<tr><th>Created</th><td colspan=2>{{ order.created }}</td></tr>
+    				<tr><th>Status</th><td colspan=2>{{ order.get_status_display }} [{{ order.visited_status|stringformat:"04X" }}]</td></tr>
+    				<tr><th>Description</th><td colspan=2>{{ order.description }}</td></tr>
+    				<tr><th>&nbsp;</th><td colspan=2></td></tr>
+    				<tr><th>Design Cost</th><td colspan=2>{{ order.cost }} Point(s)</td></tr>
+    			</tbody>
+    		</table>
+    	</div>
+    	
+    	<div id="account_info" class="box ">
+    		<h2>Account </h2>
+    		<table>
+    			<tbody>
+    				<tr><th>ID</th><td>{{ order.client_account.company_name }}</td></tr>
+    				<tr><th>Status</th><td>Active</td></tr>
+    				<tr><th>Available Design Credits</th><td>{{order.client_account.dealeraccount.credit_balance}}</td></tr>
+    			</tbody>
+    		</table>
+    	</div>
+    	
+        <!-- appliances -->
+	    <div id="appliance_option_form" class="box">
+			<h2>Appliances</h2>
+			<form method="POST" action="">
+			    {{ formset.management_form }}
+			    {% for form in formset.forms %}
+				<fieldset>
+			        {{ form }}
+				</fieldset>
+			    {% endfor %}
+	            <input type="submit" name="submit" value="add" />
+			</form>		
+	    </div>
+
+    	<!-- diagrams -->
+	    <div id="template-display" class="box">
+	        <h2>diagrams</h2>
+			<p>Download your personalized floorplan template here
+    			<a target="_blank" href=" {% url home.views.generate_floorplan_template order.id %}">
+    			   <img src="{{MEDIA_URL}}/images/disk.png"></a>
+			</p>
+			<p>
+			   Currently Attached File: [<span class="">{{order.client_diagram}}</span>]
+			   Source: <span>{{order.}}</span>
+			   <form action="." method="POST" enctype="multipart/form-data">
+			      <fieldset>
+  					 <input type="hidden" name="subform" value="{{ file_upload.id }}">
+			         {{ file_upload }}
+  					 <input type="submit" name="submit_{{subform.id}}" value="update">
+			      </fieldset>
+			   </form>
+			</p>
+        </div>
+
+    	
+	</div>
+	
+	<div class="grid_16">
+		<form action="{% url home.views.dealer_dashboard %}" method="get" accept-charset="utf-8">
+			<p><input type="submit" value=" &larr; Back to Dashboard"></p>
+		</form>
+		<form action="{% url home.views.dealer_submit_order order.id %}" method="get" accept-charset="utf-8">
+			<p><input type="submit" value="Submit Design Request &rarr;"></p>
+		</form>
+	</div>
+		
+{% endblock %}
+

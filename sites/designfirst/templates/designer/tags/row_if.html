@@ -1,0 +1,5 @@
+{% ifequal type 'bool' %}
+	<tr><th>{{name}}</th></tr>
+{% else %}
+	<tr><th>{{name}}</th><td>{{value}}</td></tr>
+{% endifequal %}

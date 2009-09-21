@@ -1,0 +1,57 @@
+#!/usr/bin/python 
+
+import sys
+import subprocess
+import os.path as path
+
+(root, dir) = path.split(path.dirname(path.abspath(__file__)))
+project = path.basename(root)
+if len(sys.argv) > 1:
+  site = sys.argv[1]
+else:
+  site = None
+
+if not 'bin' == dir:  
+  print 'Error: script directory "%s" instead of "bin"' % dir
+  exit(-1)
+if not path.exists(path.join(root,'var')):
+  print 'Error: no "var" directory found as child of "%s"' % root
+  exit(-1)
+
+if path.exists(path.join(root,'website')):
+  site_path=path.join(root,'website', 'manage.py')
+  socket=path.join(root,'var','website-fcgi.sock')
+  pidfile=path.join(root,'var','website-fcgi.pid')
+  errlog=path.join(root,'var', 'website-log.err')
+elif path.exists(path.join(root,'sites')) and len(sys.argv) > 1:
+  if not path.exists(path.join(root,'sites',site,'manage.py')):
+    print 'Error: site not found: %s' % path.join(root,'sites',site,'manage.py')
+    exit(-1)
+  site_path=path.join(root,'sites', sys.argv[1], 'manage.py')
+  socket=path.join(root,'var','%s-fcgi.sock' % sys.argv[1])
+  pidfile=path.join(root,'var','%s-fcgi.pid' % sys.argv[1])
+  errlog=path.join(root,'var', '%s-log.err' % sys.argv[1])
+else:
+  print 'Error: no sites found. or passed on comand lne'
+  exit(-1)
+
+print 'testing server'
+if path.exists(pidfile):
+   raise Error, "server running at %s" % pidfile
+
+# two possibilities for app locations
+if site_path:
+  # we're in a single site domain
+  params=[ site_path,
+	   'runfcgi', 
+	   'method=prefork',
+	   'socket=%s' % socket,
+	   'pidfile=%s' % pidfile,
+	   'errlog=%s' % errlog,
+	   'maxchildren=4']
+  print 'running %s' % params
+  subprocess.call(params)
+  print 'running chmod'
+  subprocess.call(['chmod', '666', socket])
+else:
+  print 'Error finding file %s' % site_path

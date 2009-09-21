@@ -1,0 +1,31 @@
+# new options
+LOCAL_HOST = 'beta.designserviceusa.com'
+LOCAL_ROOT = '/var/www/com_designserviceusa_beta/sites/designfirst'
+LOCAL_MEDIA_HOST = 'beta.designserviceusa.com'
+LOCAL_MEDIA_ROOT = '%s/static' % LOCAL_ROOT
+
+# override options
+LOCAL_DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 
+                                            #     and 'sqlite3' or 'oracle'.
+LOCAL_DATABASE_NAME   = 'com_designserviceusa_beta'    # Or path to database file if using sqlite3.
+LOCAL_DATABASE_USER   = 'dsusa_oper'                  # Not used with sqlite3.
+LOCAL_DATABASE_PASSWORD = 'master01'                # Not used with sqlite3.
+LOCAL_DATABASE_HOST = ''                    # Set to empty string for localhost. Not used with sqlite3.
+LOCAL_DATABASE_PORT = ''                    # Set to empty string for default. Not used with sqlite3.
+
+# email settings
+EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 25
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'system@designserviceusa.com' 
+EMAIL_HOST_PASSWORD = '5R6844'
+EMAIL_USE_TLS = True 
+
+# system mail parameters
+MAIL_SYSTEM_REPLYTO_ADDRESS = 'system@designserviceusa.com'
+MAIL_SYSTEM_NOTIFY_ADDRESS = 'system@designserviceusa.com'
+
+# demo settings (stuff to replace with real code later..)
+DEMO_MAIL_DESIGNER_ADDRESS = 'designer-notify@designserviceusa.com'
+#DEMO_MAIL_DEALER_ADDRESS = 'dealer-notify@designserviceusa.com'
+

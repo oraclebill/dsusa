@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}
+DesignFirst Designer Home
+{% endblock %}
+
+{% block content %}
+
+
+<!-- left column -->
+<div id="orders" class="grid_7 prefix_1 suffix_1">
+
+  	<!-- pending (unassigned) orders - click to assign -->
+	<div id="pending_order_table">
+	   <table summary="order history and status">
+	   <thead>
+	     <tr><th class="table-head" colspan="5">Unassigned (New) Orders</th></tr>
+	     <tr>
+	       <th>order id</th>
+	       <th>submission date</th>
+	       <th>status</th>
+	       <th>description</th>
+	       <th></th>
+	     </tr>
+	   </thead>
+	   <tbody>
+	     {% for order in pending %}
+	     <tr class="{% cycle 'even' 'odd' %}">
+	       <td> <a href="{% url designer.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
+		   <td> {{ order.submitted|date }} </td>
+		   <td> {{ order.description }} </td> 
+		   <td> <form action="{% url designer.views.designer_assign_order order.id %}" method="POST">
+		   		<input type="submit" value="Assign Designer &rarr;"></form></td>
+	     </tr>
+	     {% endfor %}
+	   </tbody>
+	  </table>
+	</div>
+
+
+  	<!-- in-progress (working) orders - click to view status -->
+	<div id="working_order_table">
+	   <table summary="order history and status">
+	   <thead>
+	     <tr><th class="table-head" colspan="5">Assigned (Working) Orders</th></tr>
+	     <tr>
+	       <th>order id</th>
+	       <th>submission date</th>
+	       <th>assigned designer</th>
+	       <th>assignment timer</th>
+	     </tr>
+	   </thead>
+	   <tbody>
+	     {% for order in working %}
+	     <tr class="{% cycle 'even' 'odd' %}">
+	       <td> <a href="{% url designer.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
+		   <td> {{ order.submitted|date }} </td>
+		   <td> {{ order.designer_account.email }} </td> 
+		   <td> {{ order.assignment|timesince }} </td> 
+	     </tr>
+	     {% endfor %}
+	   </tbody>
+	  </table>
+	</div>
+
+
+  	<!-- completed (delivered) orders - click to view statistics -->
+	<div id="completed_order_table">
+	   <table summary="order history">
+	   <thead>
+	     <tr><th class="table-head" colspan="5">Recently Completed Orders</th></tr>
+	     <tr>
+	       <th>order id</th>
+	       <th>completion date</th>
+	       <th>processing time</th>
+	       <th>client rating</th>
+	     </tr>
+	   </thead>
+	   <tbody>
+	     {% for order in completed %}
+	     <tr class="{% cycle 'even' 'odd' %}">
+	       <td> <a href="{% url designer.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
+		   <td> {{ order.completed|date }} </td>
+		   <td> {{ order.completed|timesince:order.submitted }} </td> 
+		   <td> {{ order.client_review_rating }} </td> 
+	     </tr>
+	     {% endfor %}
+	   </tbody>
+	  </table>
+	</div>
+
+</div>
+
+<!-- right column -->
+<div class="grid_5 prefix_1 suffix_1">
+	
+	<div class="box">
+	    <h2>Order Statistics (simulated)</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					{% for desc in stats.headers %}
+					<th> {{desc}} </th>	
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			    <tr>
+			        <th>New</th>
+					{% for stat in stats.arrived %}
+			        <td>{{ stat }}</td>
+			        {% endfor %}
+			    </tr>
+			    <tr>
+				    <th>Completed</th>
+					{% for stat in stats.completed %}
+			        <td>{{ stat }}</td>						
+					{% endfor %}
+			    </tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+{% endblock %}

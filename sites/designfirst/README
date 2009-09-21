@@ -1,0 +1,7 @@
+Project Setup
+
+Bootstrap
+	- copy local_settings.py.TEMPLATE to local_settings.py and edit to suite environment
+ 	- create database and load sample data fixtures
+	- run tests to validate install
+

@@ -1,0 +1,83 @@
+10) customer reviews homepage
+	the customer opens a browser and types 'designfirst.com' into the address bar. 
+	a marketing page describes the service and provides the opportunity to log in
+	or register.
+	
+20) customer logs in 
+	customer types their username and password into the login form and submits it. 
+	the system displays an error message if credentials are invalid, or forwards
+	user to the customer home page if they are valid.
+	
+30) customer registers
+	customer selects a username and password and enters other info 
+	necessary for order processing. System will validate username and
+	redirect user to home page on successful completion.
+	
+40) customer reviews orders
+	customer is presented with a list of orders. they can select any order to 
+	view its details.
+	
+50) customer reviews purchases
+	customer is presented with a purchase history. customer can select 
+	any transaction to review its details.
+
+60) customer reviews credit balance
+	we maintain a credit bank for each account. customer can view a transaction 
+	list and select transactions to review details.
+
+70) customer reviews diagrams
+	customer is  presented with a list of diagrams received from the 
+	service. customer can click on any one to review details or download.
+	
+80) customer buys credits
+	customer is able to buy credits that can be used to purchase design
+	services. purchasing packages of credits is more economical than 
+	purchasing single designs.
+	
+90) customer buys subscription
+	customer is able to buy a subscription with <large number> of designs
+	in a given period. (really, same as buying credits, but they expire...)
+	((hence subscription credits should be cheaper than regular credits))
+	
+100) customer creates order
+	customer creates a new order to collect the design parameters. orders 
+	are complete when they have all required data items, and payment has been 
+	completed.
+	
+110) customer adds cabinet info to order
+	customer specifies details of cabinetry to be placed in design. cabinetry
+	details consist of approx 15 groups of parameters. these groups
+	may be presented (and marked 'complete') separately.
+	
+120) customer revises cabinet/appliance info
+	customer may return to any incomplete or unsubmitted order to 
+	revise parameters.
+
+130) customer adds appliance info to order
+	customer adds descriptions of appliances to order.
+	
+140) customer adds floorplan info to order
+	customer creates a floorplan document with detailed measurements and 
+	attaches it to the order.
+
+150 customer adds payment information to order	
+	orders are not submittable without payment. 
+	
+160) customer submits order
+	customer approves order for processing
+
+170) customer reviews order status
+180) customer sends design back for revision
+190) customer notifies company of problem with design order
+200) customer cancels design order
+
+210) admin reviews orders
+220) admin reviews sales
+230) admin reviews customers
+240) admin credits customer account
+250) admin cancels order
+260) admin reviews order status with OW
+
+270) designer retrieves job
+280) designer submits completed job
+

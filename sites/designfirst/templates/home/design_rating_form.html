@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<xdiv xclass="grid_5 prefix_1 suffix_8 alpha">
+	<div class="box">
+		<h2>Rating Form</h2>
+		<form action="{% url home.views.dealer_accept_order order.id %}" method="POST">
+			<fieldset>
+				<legend>Design Rating</legend>
+		    	{{ form.as_p }}
+			</fieldset>
+			<input type="submit" name="submit" value="Submit">
+		</form>
+	</div>
+</xdiv>
+{% endblock %}
