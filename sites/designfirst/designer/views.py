@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
 from django.template import RequestContext
@@ -109,15 +109,11 @@ def get_designer_context(request, orderid=None):
         account = profile.account.designeraccount
         if orderid:
             try:
-                #order = account.assigned_orders.get(pk=orderid)
-                order = user.serviced_orders.get(pk=orderid)
-            except Exception as ex: 
-                #raise PermissionDenied("You don't have access to this order - it is not assignedd to you")
-                print ex
-                raise Exception("Access to order %d denied to user %d" % (order.id, user.id))
+                order = DesignOrder.objects.get(pk=orderid)
+            except ObjectDoesNotExist as ex: 
+                raise ImproperlyConfigured("Access to order %s denied to user %s" % (orderid, user))
     else:
-        #raise PermissionDenied("You're not allowed here - anonymous users go home!")
-        raise Exception("You're not allowed here - anonymous users go home!")
+        raise PermissionDenied()
     
     return (user, account, profile, order)
     
@@ -129,6 +125,11 @@ def designer_display_order(request, orderid):
     """    
     # validate access
     user, account, profile, order = get_designer_context(request,orderid)
+    # disable control if not yet assigned
+    if not hasattr(order.designer,'id') :
+        disabled='disabled=disabled'
+    else:
+        disabled=''
     
     # setup forms
     if request.method== 'GET':
@@ -156,6 +157,7 @@ def designer_display_order(request, orderid):
                         'order':order, 
                         'options':order.display_as_optional,
                         'package_form':package_form, 
+                        'disabled':disabled,
                     }, 
                     context_instance=RequestContext(request) )
     

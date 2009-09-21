@@ -115,7 +115,7 @@ class DesignOrder(models.Model):
     description     = models.TextField(null=True, blank=True, verbose_name='Description')
     status          = models.CharField(max_length=3, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
     cost            = models.PositiveSmallIntegerField(default=1, verbose_name='Design Price')
-    designer = models.ForeignKey(User, blank=True, null=True, related_name='serviced_orders')
+    designer        = models.ForeignKey(User, blank=True, null=True, related_name='serviced_orders')
     
     # format options
     color_views     = models.BooleanField(blank=True, verbose_name='Color Views')
@@ -224,6 +224,7 @@ class DesignOrder(models.Model):
 
     submitted = models.DateTimeField(null=True,blank=True)
     assigned = models.DateTimeField(null=True,blank=True)
+    projected = models.DateTimeField(null=True,blank=True)
     completed = models.DateTimeField(null=True,blank=True)
     closed = models.DateTimeField(null=True,blank=True)
 
