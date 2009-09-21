@@ -7,7 +7,6 @@ except:
   pass
 
 
-DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
