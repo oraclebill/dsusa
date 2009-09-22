@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load "i18n" %}
+{% load i18n %}
 
 {% block title %}
 {% trans "DesignFirst Designer Portal - Upload Design Attachments" %}
@@ -9,7 +9,7 @@
 
 
 <!-- center column -->
-<div id="center" class="grid_6 prefix_5 suffix_5">
+<div id="center" class="prefix_4 grid_8 suffix_4">
 
   	<!-- pending (unassigned) orders - click to assign -->
 	<div class="box">
@@ -37,11 +37,16 @@
 				</tbody>
 			</table>
 		</div>
+	</div>
+	
+	<div class="box">
+		<h2>{% trans "Upload Design Attachments" %}</h2>
 		<div>
-			<form action="." method="POST" enctype="multipart/form-data">
-				{{ form }}
-				<input type="submit" name="Upload" value="Upload File">
-				<input type="cancel" name="Cancel" value="Cancel">
+			<form action="{% url designer.views.designer_attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
+				<table>
+					{{ form }}
+				</table>
+				<input type="submit" name="Upload" value="{% trans 'Upload File' %}">
 			</form>
 		</div>
 	</div>

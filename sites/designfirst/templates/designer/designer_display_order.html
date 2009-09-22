@@ -4,29 +4,6 @@
 {% block title %}
 DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.id}} ] 
 {% endblock %}
-{% block extrastyle %} 
-	<script type="text/javascript">
-		$(document).ready(function(){
-		    $("#package-form").dialog({
-				title: 'Attach Design Package',
-				modal: true,
-				autoOpen: false,
-				buttons: {
-					'Upload Files': function() {
-						$("form").submit()
-					},
-					'Cancel': function() {
-						$(this).dialog('close');
-					}
-				}				
-			});		
-			$('#order-action-upload').click( function() {
-				$('#package-form').dialog('open');
-			})
-		});
-
-	</script>
-{% endblock %}
 
 {% block content %}
 	
@@ -67,16 +44,14 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 			<div class="box">
 				<h5>{% trans "Control" %}</h5>
 				<div>
-					<form id="clarify-form" action="{% url designer.views.designer_display_order order.id %}" method="POST">
-						<input type="submit" {{disabled}} id="order-action-clarify" name="order-action" value='{% trans "Request Clarification" %}'><br>
+					<form method="GET"  id="clarify-form"  action="{% url designer.views.designer_clarify_order order.id %}">
+						<input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
-                    <form id="attach-form" action="{% url designer.views.designer_attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
-						{% if not disabled %}
-                    	{{ package_form }}
-						{% endif %}
+                    <form method="GET"  id="attach-form"   action="{% url designer.views.designer_attach_design_to_order order.id %}">
+						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
                     </form>
-					<form id="display-form" action="{% url designer.views.designer_display_order order.id %}" method="POST">
-						<input type="submit" {{disabled}} name="complete-order-action" value='{% trans "Complete Order" %}'>
+					<form method="POST" id="complete-form" action="{% url designer.views.designer_display_order order.id %}">
+						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
 				    </form>
 				</div>
 			</div>

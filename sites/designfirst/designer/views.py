@@ -175,7 +175,6 @@ def designer_display_order(request, orderid):
                 'designer/designer_display_order.html', { 
                     'order':order, 
                     'options':order.display_as_optional,
-                    'package_form':package_form, 
                     'disabled':disabled,
                 }, 
                 context_instance=RequestContext(request) )
@@ -225,6 +224,8 @@ def designer_assign_order(request, orderid ):
             log.warning('designer_assign_order: unexpected state - invalid form' )
     else:
         log.error('invalid HTTP method in designer_assign_order: %s' % request.method )
+        raise Exception, "Invalid request type %s" % request.method
+
     return render_to_response('designer/designer_assign_order.html', locals(),                
                 context_instance=RequestContext(request) )        
 
@@ -233,32 +234,23 @@ def designer_clarify_order(request,orderid):
     
 def designer_attach_design_to_order(request,orderid):
     
-    order = DesignOrder.objects.get(pk=orderid)
-        
+    # get/validate selected order is unassinged (new)
+    user, account, profile, order = get_designer_context(request,orderid)
+    # 
     if request.method == 'GET':
-        package_form = PackageForm(instance=order) 
+        form = PackageForm(instance=order) 
     elif request.method == 'POST':
-        package_form = PackageForm(request.POST,request.FILES,instance=order)
-        if package_form.is_valid():
-            package_form.save()
-        else:
-            print "-------------------  ERR "
+        form = PackageForm(request.POST,request.FILES,instance=order)
+        if form.is_valid():
+            form.save()
     else:
+        log.error('Invalid HTTP method in designer_attach_design_to_order: %s' % request.method )
         raise Exception, "Invalid request type %s" % request.method
     
     # render template
-    return render_to_response( 
-                    'designer/designer_display_order.html', 
-                    { 
-                        'order':order, 
-                        'options':order.display_as_optional,
-                        'package_form':package_form, 
-                    }, 
-                    context_instance=RequestContext(request) )
-    
-        
-    pass
-        
+    return render_to_response('designer/designer_attach_design.html', locals(),
+                context_instance=RequestContext(request) )
+            
 def designer_submit_order(request, orderid):
     pass
 
