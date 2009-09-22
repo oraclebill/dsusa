@@ -337,12 +337,15 @@ class DesignOrder(models.Model):
         
     def designer_complete(self, designer, notes=None):
 
-        if not self.designer == designer:
+        if not self.designer == designer or designer.is_staff:
             raise IllegalState, 'Designer assigned to order (%s) is different than designer completing order (%s)' \
                 % (self.designer, designer)
             
         if not self.status == 'ASG':
             raise IllegalState, 'Order must be in "Assigned" state - current status is "%s"' % self.get_status_display()
+
+        if not self.orderattachment_set.filter(org__exact=designer.get_profile().account):
+            raise IllegalState, 'Order must have at least one attachment from designer''s organization to complete.' 
 
         self.status = 'CMP'
         self.completed = datetime.now()
@@ -366,7 +369,7 @@ class OrderAttachment(models.Model):
     document_id = models.CharField(_('Document ID'),max_length=24, blank=True) 
     document = models.FileField(_('File'), upload_to='designer/%Y/%m/%d',)
     order = models.ForeignKey(DesignOrder, null=True, blank=True)
-    source = models.SmallIntegerField(_('Upload Source'), choices=SOURCE_CHOICES)
+    source = models.SmallIntegerField(_('Source Organization Type'), choices=SOURCE_CHOICES) # todo: delete - redundant with 'org.ttype'
     doctype = models.SmallIntegerField(_('Document Type'), choices=TYPE_CHOICES)
     method = models.SmallIntegerField(_('Uploaded Using'), choices=METHOD_CHOICES )
     user = models.ForeignKey(User, null=True, blank=True)

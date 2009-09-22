@@ -32,11 +32,11 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 				<h5>{% trans "Status" %}</h5>
 				<div>
 					<table>
-						<tr><th>{% trans "Status" %}</th><td>{{ order.status }}</td></tr>
+						<tr><th>{% trans "Status" %}</th><td>{{ order.get_status_display }}</td></tr>
 						<tr><th>{% trans "Assigned To" %}</th><td>{{ order.designer }}</td></tr>
-						<tr><th>{% trans "Date Submitted" %}</th><td>{{ order.submitted }}</td></tr>
-						<tr><th>{% trans "Projected Completion" %}</th><td>{{ order.projected }}</td></tr>
-						<tr><th>{% trans "Last Updated" %}</th><td>{{ order.modified }}</td></tr>
+						<tr><th>{% trans "Date Submitted" %}</th><td>{{ order.submitted|date }}</td></tr>
+						<tr><th>{% trans "Projected Completion" %}</th><td>{{ order.projected|date }}</td></tr>
+						<tr><th>{% trans "Last Updated" %}</th><td>{{ order.modified|date }}</td></tr>
 					</table>				
 				</div>
 			</div>
@@ -47,14 +47,21 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 				<h5>{% trans "Control" %}</h5>
 				<div>
 					<form method="GET"  id="clarify-form"  action="{% url designer.views.designer_clarify_order order.id %}">
-						<input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
+						{# <input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br> #}
+						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
                     <form method="GET"  id="attach-form"   action="{% url designer.views.designer_attach_design_to_order order.id %}">
 						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
                     </form>
-					<form method="POST" id="complete-form" action="{% url designer.views.designer_display_order order.id %}">
+					{% if not order.orderattachment_set.count %}
+					<form method="POST" id="complete-form" action="{% url designer.views.designer_complete_order order.id %}">
 						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
 				    </form>
+					{% else %}
+					<form method="POST" id="complete-form" action="{% url designer.views.designer_complete_order order.id %}">
+						<input type="submit" disabled="disabled" name="complete-order-action" value='{% trans "Complete Order" %}'>
+				    </form>
+					{% endif %}
 				</div>
 			</div>
 		</div>

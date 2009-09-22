@@ -133,7 +133,7 @@ def designer_display_order(request, orderid):
     # validate access
     user, account, profile, order = get_designer_context(request,orderid)
     # disable control if not yet assigned
-    if not hasattr(order.designer,'id') :
+    if not order.status == 'ASG':
         disabled='disabled=disabled'
     else:
         disabled=''
@@ -249,7 +249,8 @@ def designer_attach_design_to_order(request,orderid):
             doc.method = 0
             doc.user = user
             doc.org = account
-            doc.save()            
+            doc.save()        
+            return HttpResponseRedirect(reverse(designer_display_order))    
     else:
         log.error('Invalid HTTP method in designer_attach_design_to_order: %s' % request.method )
         raise Exception, "Invalid request type %s" % request.method
@@ -262,4 +263,10 @@ def designer_submit_order(request, orderid):
     pass
 
 def designer_complete_order(request, orderid):
-    pass
+    # get/validate selected order is unassinged (new)
+    user, account, profile, order = get_designer_context(request,orderid)
+    try:
+        order.designer_complete(user)
+        return HttpResponseRedirect(reverse(designer_dashboard))
+    except:
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
