@@ -237,12 +237,19 @@ def designer_attach_design_to_order(request,orderid):
     # get/validate selected order is unassinged (new)
     user, account, profile, order = get_designer_context(request,orderid)
     # 
+    attachments = order.orderattachment_set.filter(source__exact=1)
     if request.method == 'GET':
-        form = PackageForm(instance=order) 
+        form = PackageForm() 
     elif request.method == 'POST':
-        form = PackageForm(request.POST,request.FILES,instance=order)
+        form = PackageForm(request.POST,request.FILES)
         if form.is_valid():
-            form.save()
+            doc = form.save(commit=False)
+            doc.order = order
+            doc.source = 1
+            doc.method = 0
+            doc.user = user
+            doc.org = account
+            doc.save()            
     else:
         log.error('Invalid HTTP method in designer_attach_design_to_order: %s' % request.method )
         raise Exception, "Invalid request type %s" % request.method

@@ -36,17 +36,21 @@
 		    	<div class="grid_3 omega">
 			  		<em ><a href="{% url do-logout %}"> click here to logout</a></em>
 		        </div>
+				<div class="grid_16"
+					{% block menu %}
+					{% endblock %}
+				</div>
 			    <div class="clear"></div>
 			</div>
 			<!-- end status line -->
 
-				{% if user.get_profile.has_menu %}
-				<!-- begin user menu block -->
-				<div id="menu" class="menu">
-					MENU PLACEHOLDER
-				</div>
-				<!-- end menu block -->
-				{% endif %}
+				{# {% if user.get_profile.has_menu %} #}
+				{# <!-- begin user menu block --> #}
+				{# <div id="menu" class="menu"> #}
+				{# 	MENU PLACEHOLDER #}
+				{# </div> #}
+				{# <!-- end menu block --> #}
+				{# {% endif %} #}
 				
 			<!-- end authenticated header content -->
 			{% endif %}

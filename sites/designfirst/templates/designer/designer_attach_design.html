@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "designer/designer_base.html" %}
 {% load i18n %}
 
 {% block title %}
@@ -9,7 +9,7 @@
 
 
 <!-- center column -->
-<div id="center" class="prefix_4 grid_8 suffix_4">
+<div id="center" class="prefix_3 grid_10 suffix_3">
 
   	<!-- pending (unassigned) orders - click to assign -->
 	<div class="box">
@@ -17,7 +17,7 @@
 		<div>
 			<table border="0" cellspacing="5" cellpadding="5">
 				<thead>
-					<tr><th>Name</th>
+					<tr><th>ID</th>
 						<th>Type</th>
 						<th>Date Attached</th>
 						<th>Attached By</th>
@@ -27,11 +27,11 @@
 				<tbody>
 					{% for attachment in attachments %}
 					<tr>
-						<td>{{ attachment.name }}</td>
-						<td>{{ attachment.type }}</td>
-						<td>{{ attachment.date }}</td>
-						<td>{{ attachment.owner }}</td>
-						<td>{{ attachment.descripion }}</td>
+						<td>{{ attachment.id }}</td>
+						<td>{{ attachment.get_doctype_display }}</td>
+						<td>{{ attachment.timestamp|date }}</td>
+						<td>{{ attachment.user }}</td>
+						<td>{{ attachment.document }}</td>
 					</tr>						
 					{% endfor %}
 				</tbody>

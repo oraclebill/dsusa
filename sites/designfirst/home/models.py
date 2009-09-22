@@ -4,6 +4,7 @@ from datetime import datetime
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
 
 from designfirst.product.models  import PriceSchedule
 
@@ -356,6 +357,23 @@ class DesignOrder(models.Model):
 
 
 
+class OrderAttachment(models.Model):
+    TYPE_CHOICES = enumerate([ '20/20 KIT File', 'PDF - Color Views', 'PDF - Elevations', 'Other' ])
+    SOURCE_CHOICES = enumerate([ 'Client', 'Design Org', 'Admin', 'Other' ])
+    METHOD_CHOICES = enumerate([ 'Web', 'Fax', 'Email', 'Admin', 'Other' ])
+    
+    # TODO: make pk?, fax document id, or uuid if not fax
+    document_id = models.CharField(_('Document ID'),max_length=24, blank=True) 
+    document = models.FileField(_('File'), upload_to='designer/%Y/%m/%d',)
+    order = models.ForeignKey(DesignOrder, null=True, blank=True)
+    source = models.SmallIntegerField(_('Upload Source'), choices=SOURCE_CHOICES)
+    doctype = models.SmallIntegerField(_('Document Type'), choices=TYPE_CHOICES)
+    method = models.SmallIntegerField(_('Uploaded Using'), choices=METHOD_CHOICES )
+    user = models.ForeignKey(User, null=True, blank=True)
+    org = models.ForeignKey(Account, null=True, blank=True)
+    timestamp = models.DateTimeField(_('Upload Timestamp'), auto_now=True)
+    
+    
 class OrderAppliance(models.Model):
     
     APPLIANCE_CHOICES = (
@@ -391,21 +409,6 @@ class OrderAppliance(models.Model):
         
     def __unicode__(self):
         return "%s: [%s x %s x %s]" % (self.appliance_type, self.height, self.width, self.depth)
-
-
-class OrderDiagram(models.Model):
-    order = models.ForeignKey(DesignOrder, editable=False)
-    document_id = models.CharField(max_length=24) # speculation: efax correlation id?
-    recieved_from = models.CharField(max_length=3, choices=(("EFX", "eFax"), ("UPL","Upload"), ("MAN","Manual")))
-    created = models.DateTimeField(auto_now=True)
-    filename = models.FileField(upload_to='.')
-
-    class Meta:
-        unique_together = (("order", "document_id"),)
-            
-    def __unicode__(self):
-        return "diagram '%s' for order %s" % (self.document_id, self.order.id) 
-
 
 class OrderNotes(models.Model):
     order = models.ForeignKey(DesignOrder)

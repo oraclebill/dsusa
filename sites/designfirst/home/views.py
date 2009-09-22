@@ -15,8 +15,8 @@ from django.contrib.auth.models import User
 
 from home import ACCOUNT_ID, ORDER_ID
 from home.models import DealerAccount, DesignOrder, Transaction, OrderAppliance, \
-    OrderDiagram   
-#from home.forms import DesignOrderForm, DesignOrderDiagramForm
+    OrderAttachment   
+#from home.forms import DesignOrderForm, DesignOrderAttachmentForm
 from home.forms import DesignOrderAcceptanceForm
 from home import designorderforms as dof
 
