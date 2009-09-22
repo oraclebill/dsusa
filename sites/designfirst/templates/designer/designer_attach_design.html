@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load "i18n" %}
+
+{% block title %}
+{% trans "DesignFirst Designer Portal - Upload Design Attachments" %}
+{% endblock %}
+
+{% block content %}
+
+
+<!-- center column -->
+<div id="center" class="grid_6 prefix_5 suffix_5">
+
+  	<!-- pending (unassigned) orders - click to assign -->
+	<div class="box">
+		<h2>{% trans "Design Attachments" %}</h2>
+		<div>
+			<table border="0" cellspacing="5" cellpadding="5">
+				<thead>
+					<tr><th>Name</th>
+						<th>Type</th>
+						<th>Date Attached</th>
+						<th>Attached By</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for attachment in attachments %}
+					<tr>
+						<td>{{ attachment.name }}</td>
+						<td>{{ attachment.type }}</td>
+						<td>{{ attachment.date }}</td>
+						<td>{{ attachment.owner }}</td>
+						<td>{{ attachment.descripion }}</td>
+					</tr>						
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<form action="." method="POST" enctype="multipart/form-data">
+				{{ form }}
+				<input type="submit" name="Upload" value="Upload File">
+				<input type="cancel" name="Cancel" value="Cancel">
+			</form>
+		</div>
+	</div>
+
+{% endblock %}

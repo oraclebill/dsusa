@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+{% trans "DesignFirst Designer Portal - Upload Design Attachments" %}
+{% endblock %}
+
+{% block content %}
+
+
+<!-- center column -->
+<div id="center" class="grid_6 prefix_5 suffix_5">
+
+  	<!-- pending (unassigned) orders - click to assign -->
+	<div class="box">
+		<h2>Assign Designer</h2>
+		<div>
+			<form action="{% url designer.views.designer_assign_order order.id %}" method="POST">
+				<table>
+					{{ form }}
+				</table>
+				<input type="submit" name="Cancel" value="Cancel"><input type="submit" name="Upload" value="Assign Designer">
+			</form>
+		</div>
+	</div>
+
+{% endblock %}

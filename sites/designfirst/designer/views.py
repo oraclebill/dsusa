@@ -1,5 +1,4 @@
 # Create your views here.
-
 from datetime import datetime 
 
 from django.db.models import Q
@@ -18,6 +17,32 @@ from home import ACCOUNT_ID
 from home.models import DesignOrder
 from designer.models import DesignerAccount
 from designer.forms import DesignPackageUploadForm as PackageForm
+from designer.forms import AssignDesignerForm
+
+import logging
+log = logging.getLogger('designer.views')
+
+
+def get_designer_context(request, orderid=None):
+    user = request.user
+    account = None
+    profile = None
+    order = None
+    if user.is_authenticated():
+        profile = user.get_profile()
+        account = profile.account.designeraccount
+        if orderid:
+            try:
+                order = DesignOrder.objects.get(pk=orderid)
+            except ObjectDoesNotExist as ex: 
+                log.error( "failed to find the orderid %d" % orderid )
+                raise ImproperlyConfigured("Access to order %s denied to user %s" % (orderid, user))
+    else:
+        log.error( "unathenticated user in get_designer_context" )
+        raise PermissionDenied()
+    
+    return (user, account, profile, order)
+
 
 def designer_login(request):
     """
@@ -67,7 +92,7 @@ def designer_dashboard(request):
     
     Display a list of orders related to this designer, combined with a list of unclaimed orders.
     """
-    account = request.user.get_profile().account.designeraccount
+    user,account,profile,product = get_designer_context(request)
     
     pending = DesignOrder.objects.filter( Q(designer__isnull=True) | 
         Q(designer=account), Q(submitted__isnull=False), Q(status='SUB')  )
@@ -98,25 +123,7 @@ def designer_manage_designers(request):
 def designer_manage_designer(request):
     pass
         
-        
-def get_designer_context(request, orderid=None):
-    user = request.user
-    account = None
-    profile = None
-    order = None
-    if user.is_authenticated():
-        profile = user.get_profile()
-        account = profile.account.designeraccount
-        if orderid:
-            try:
-                order = DesignOrder.objects.get(pk=orderid)
-            except ObjectDoesNotExist as ex: 
-                raise ImproperlyConfigured("Access to order %s denied to user %s" % (orderid, user))
-    else:
-        raise PermissionDenied()
-    
-    return (user, account, profile, order)
-    
+            
 def designer_display_order(request, orderid):
     """
     Display a read-only view of the design request order, intended for designers.
@@ -131,6 +138,7 @@ def designer_display_order(request, orderid):
     else:
         disabled=''
     
+    errors = None
     # setup forms
     if request.method== 'GET':
         package_form = PackageForm(instance=order) 
@@ -141,58 +149,84 @@ def designer_display_order(request, orderid):
             if package_form.is_valid():
                 package_form.save()
         else:
-            # determin action type
+            # determine action type
             if 'complete-order-action' in request.POST:
                 if order.designer_package:
                     order.designer_complete(user)
                     return HttpResponseRedirect(reverse('designer.views.designer_dashboard'))
                 else:
-                    raise Exception, "Cannot complete design order without attached design package"
-            else:
+                    log.warning( "Attempt to complete order without attached design(s)" )
+                    errors = "Cannot complete design order without attached design package"
+            elif 'clarify-order-action' in request.POST:
                 # TODO: clarification request
+                raise Exception, "Clarify Unimplemented!"
+            elif 'attach-order-action' in request.POST:
+                # TODO: attachment request
+                raise Exception, "Attach Unimplemented!"
+            else:
+                log.error( "unknown form action: %s" % request.POST )
                 raise Exception, "Unknown or unsupported action!"
+    else:
+        log.error( "Illegal HTTP Operation %s" % request.method )
+        raise Exception, "Illegal HTTP Operation %s" % request.method
             
     # render template
-    return render_to_response( 'designer/designer_display_order.html', { 
-                        'order':order, 
-                        'options':order.display_as_optional,
-                        'package_form':package_form, 
-                        'disabled':disabled,
-                    }, 
-                    context_instance=RequestContext(request) )
+    return render_to_response( 
+                'designer/designer_display_order.html', { 
+                    'order':order, 
+                    'options':order.display_as_optional,
+                    'package_form':package_form, 
+                    'disabled':disabled,
+                }, 
+                context_instance=RequestContext(request) )
     
-
 def designer_claim_order(request, orderid):
     """
     Claim an order for the current (logged in) designer.
-
-    FIXME: for prototype, claim delegates to assign.
-        - 
     """
 
     # get authenticated user (designer)
-    user = request.user
-    if user.is_authenticated():
-        profile = user.get_profile()
-        account = profile.account.designeraccount
-    else:
-        raise PermissionDenied("You're not allowed here - anonymous users go home!")
+    user, account, profile, order = get_designer_context(request,orderid)
 
-    return designer_assign_order( request, user, orderid)
-
-def designer_assign_order(request, designer, orderid, notes=None):
-    """
-    Assign an order to a designer.
-    """    
-    # get/validate selected order is unassinged (new)
-    order = DesignOrder.objects.get( pk = orderid )
-    if not order.is_assigned():
-        order.assign_designer( designer )
+    if order and not order.is_assigned():
+        order.assign_designer( user )
     else:
-        raise Exception, 'Order %s is already assigned to %s - cannot reassign' % (orderid, designer)
+        log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, user) )
+        raise Exception, 'Order %s is already assigned to %s - cannot reassign' % (orderid, user)
             
     return HttpResponseRedirect(reverse('designer.views.designer_dashboard'))
-    
+
+def designer_assign_order(request, orderid ):
+    """
+    Create an order assignment by presenting a list of available (only?) designers for selection
+    """    
+    # get/validate selected order is unassinged (new)
+    user, account, profile, order = get_designer_context(request,orderid)
+    # make sure user has right to assign orders
+    if not user.is_staff:
+        log.info('designer_assign_order: assign order permission denied for user %s' % user )
+        raise PermissionDenied
+    # make sure order is assignable 
+    if order.is_assigned():
+        log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, designer) )
+        raise PermissionDenied
+
+    # display designers eligible for assignment
+    # TODO: filter out assigned designers...
+    if request.method == 'GET':
+        form = AssignDesignerForm(instance=order)
+    elif request.method == 'POST':
+        form = AssignDesignerForm(request.POST, instance=order)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.assign_designer(instance.designer) # designer was assigned by form..            
+            return HttpResponseRedirect(reverse('designer.views.designer_dashboard'))
+        else:
+            log.warning('designer_assign_order: unexpected state - invalid form' )
+    else:
+        log.error('invalid HTTP method in designer_assign_order: %s' % request.method )
+    return render_to_response('designer/designer_assign_order.html', locals(),                
+                context_instance=RequestContext(request) )        
 
 def designer_clarify_order(request,orderid):
     pass

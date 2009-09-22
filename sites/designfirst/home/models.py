@@ -326,8 +326,8 @@ class DesignOrder(models.Model):
         
     def assign_designer(self, designer, allow_reassign=False):
         
-        if self.designer and not allow_reassign:
-            raise IllegalState('Cannot reassign order - current designer %d' % self.designer)
+        if self.designer and designer and not designer.id == self.designer.id and not allow_reassign:
+            raise IllegalState('Cannot reassign order - current designer %s' % self.designer)
         self.status = 'ASG'
         self.designer = designer
         self.assigned = datetime.now()

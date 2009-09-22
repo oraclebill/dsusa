@@ -70,6 +70,11 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 					<form id="clarify-form" action="{% url designer.views.designer_display_order order.id %}" method="POST">
 						<input type="submit" {{disabled}} id="order-action-clarify" name="order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
+                    <form id="attach-form" action="{% url designer.views.designer_attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
+						{% if not disabled %}
+                    	{{ package_form }}
+						{% endif %}
+                    </form>
 					<form id="display-form" action="{% url designer.views.designer_display_order order.id %}" method="POST">
 						<input type="submit" {{disabled}} name="complete-order-action" value='{% trans "Complete Order" %}'>
 				    </form>
