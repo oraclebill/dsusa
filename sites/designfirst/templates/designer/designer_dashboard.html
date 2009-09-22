@@ -65,8 +65,8 @@
 	     <tr class="{% cycle 'even' 'odd' %}">
 	       <td> <a href="{% url designer.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
 		   <td> {{ order.designer }} </td> 
-		   <td> {{ order.submitted }} </td>
-		   <td> {{ order.assigned }} </td> 
+		   <td> {{ order.submitted|date }} </td>
+		   <td> {{ order.assigned|date }} ({{ order.assigned|timesince }}) </td> 
 	     </tr>
 	     {% endfor %}
 	   </tbody>
