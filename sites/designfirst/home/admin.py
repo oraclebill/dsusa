@@ -5,7 +5,7 @@ class ApplianceInline(admin.TabularInline):
     model = OrderAppliance
 
 class AttachmentInline(admin.StackedInline):
-    model = OrderDiagram
+    model = OrderAttachment
     
 class DesignOrderAdmin(admin.ModelAdmin):
     date_hierarchy = 'submitted'
@@ -100,7 +100,7 @@ class DesignOrderAdmin(admin.ModelAdmin):
 
 admin.site.register(DesignOrder, DesignOrderAdmin)
 admin.site.register(OrderAppliance)
-admin.site.register(OrderDiagram)
+admin.site.register(OrderAttachment)
 admin.site.register(OrderNotes)
 admin.site.register(DealerAccount)
 

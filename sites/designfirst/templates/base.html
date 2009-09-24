@@ -36,17 +36,21 @@
 		    	<div class="grid_3 omega">
 			  		<em ><a href="{% url do-logout %}"> click here to logout</a></em>
 		        </div>
+				<div class="grid_16"
+					{% block menu %}
+					{% endblock %}
+				</div>
 			    <div class="clear"></div>
 			</div>
 			<!-- end status line -->
 
-				{% if user.get_profile.has_menu %}
-				<!-- begin user menu block -->
-				<div id="menu" class="menu">
-					MENU PLACEHOLDER
-				</div>
-				<!-- end menu block -->
-				{% endif %}
+				{# {% if user.get_profile.has_menu %} #}
+				{# <!-- begin user menu block --> #}
+				{# <div id="menu" class="menu"> #}
+				{# 	MENU PLACEHOLDER #}
+				{# </div> #}
+				{# <!-- end menu block --> #}
+				{# {% endif %} #}
 				
 			<!-- end authenticated header content -->
 			{% endif %}
@@ -62,7 +66,7 @@
       <div class="clear"></div>
 
       <div id="footer" class="grid_16">
-		{% block footer %} <address>&copy; 2009 DesignFirst Incorporated</address>{% endblock %}
+		{% block footer %} <address>&copy; 2009 Design Service USA LLC</address>{% endblock %}
       </div>
 
     </div>

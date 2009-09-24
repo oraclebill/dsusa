@@ -1,63 +1,68 @@
-{% extends "base.html" %}
+{% extends "designer/designer_base.html" %}
+{% load i18n %}
+
 {% load designer_tags %}
+
 {% block title %}
 DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.id}} ] 
-{% endblock %}
-{% block extrastyle %} 
-	<script type="text/javascript">
-		$(document).ready(function(){
-		    $("#package-form").dialog({
-				title: 'Attach Design Package',
-				modal: true,
-				autoOpen: false,
-				buttons: {
-					'Upload Files': function() {
-						$("form").submit()
-					},
-					'Cancel': function() {
-						$(this).dialog('close');
-					}
-				}				
-			});		
-			$('#order-action-upload').click( function() {
-				$('#package-form').dialog('open');
-			})
-		});
-
-	</script>
 {% endblock %}
 
 {% block content %}
 	
 	<!-- Order Information -->
 	<div class="box">
-		<h2>Manage</h2>
-		<div class="grid_4 suffix_1 ">
-			<h5>&nbsp;</h5>
-			<div>
-				<input type="submit" id="order-action-upload" name="order-action" value="Update"> [ {{ order.designer_package }}] <br>
-				<input type="submit" name="order-action" value="Request Clarification"><br>
-				<form id="complete-form" action="{% url designer.views.designer_display_order order.id %}" method="POST">
-					<input type="submit" name="complete-order-action" value="Complete Order">
-			    </form>
-				<div id="package-form">
-					<form id="attach-form" action="{% url designer.views.designer_attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
-					{{ package_form }}
-				</form>
+		<h2>Order</h2>
+		<div class="grid_5  alpha">
+			<div class="box">
+				<h5>{% trans "Information" %}</h5>
+				<div>
+					<table>
+						<tr><th>{% trans "Order ID" %}</th><td>{{ order.id }}</td></tr>
+						<tr><th>{% trans "Project" %}</th><td>{{ order.project_name }}</td></tr>
+						<tr><th>{% trans "Color Views" %}</th><td>{{ order.color_views }}</td></tr>
+						<tr><th>{% trans "Elevations" %}</th><td>{{ order.elevations }}</td></tr>
+						<tr><th>{% trans "Quote / Cabinet List" %}</th><td>{{ order.quote_cabinet_list }}</td></tr>
+					</table>				
 				</div>
 			</div>
 		</div>
-		<div class="grid_9 prefix_2 omega">
-			<h5>&nbsp;</h5>
-			<div>
-				<table>
-					<tr><th>Order ID</th><td>{{ order.id }}</td>
-						<th>Color Views</th><td>{{ order.color_views }}</td></tr>
-					<tr><th>Project</th><td>{{ order.project_name }}</td>
-						<th>Elevations</th><td>{{ order.elevations }}</td></tr>
-					<tr><th>Date Submitted</th><td>{{ order.submitted }}</td>
-						<th>Quote / Cabinet List</th><td>{{ order.quote_cabinet_list }}</td></tr>
-				</table>				
+		
+		<div class="grid_5  ">
+			<div class="box">
+				<h5>{% trans "Status" %}</h5>
+				<div>
+					<table>
+						<tr><th>{% trans "Status" %}</th><td>{{ order.get_status_display }}</td></tr>
+						<tr><th>{% trans "Assigned To" %}</th><td>{{ order.designer }}</td></tr>
+						<tr><th>{% trans "Date Submitted" %}</th><td>{{ order.submitted|date }}</td></tr>
+						<tr><th>{% trans "Projected Completion" %}</th><td>{{ order.projected|date }}</td></tr>
+						<tr><th>{% trans "Last Updated" %}</th><td>{{ order.modified|date }}</td></tr>
+					</table>				
+				</div>
+			</div>
+		</div>
+
+		<div class="grid_5  omega">
+			<div class="box">
+				<h5>{% trans "Control" %}</h5>
+				<div>
+					<form method="GET"  id="clarify-form"  action="{% url designer.views.designer_clarify_order order.id %}">
+						{# <input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br> #}
+						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
+				    </form>
+                    <form method="GET"  id="attach-form"   action="{% url designer.views.designer_attach_design_to_order order.id %}">
+						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
+                    </form>
+					{% if  order.orderattachment_set.count %}
+					<form method="POST" id="complete-form" action="{% url designer.views.designer_complete_order order.id %}">
+						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
+				    </form>
+					{% else %}
+					<form method="POST" id="complete-form" action="{% url designer.views.designer_complete_order order.id %}">
+						<input type="submit" disabled="disabled" name="complete-order-action" value='{% trans "Complete Order" %}'>
+				    </form>
+					{% endif %}
+				</div>
 			</div>
 		</div>
 		
@@ -74,7 +79,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		
 		<!-- cabinetry line / model info -->
 		<div class="box">
-			<h2>Cabinetry</h2>
+			<h2>{% trans "Cabinetry" %}</h2>
 			<div>
 				<table>
 					{% row_if order.cabinet_manufacturer %}	
@@ -90,7 +95,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		
 		<!-- Cabinetry box dimensions -->
 		<div class="box">
-			<h2>Cabinet Box Dimensions</h2>
+			<h2>{% trans "Cabinet Box Dimensions" %}</h2>
 			<div>
 				{% if order.stacked_staggered or order.wall_cabinet_height or order.vanity_cabinet_height or order.vanity_cabinet_depth  %}
 				<table>
@@ -107,7 +112,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		
 		<!-- Cabinetry box dimensions -->
 		<div class="box">
-			<h2>Mouldings</h2>
+			<h2>{% trans "Mouldings" %}</h2>
 			<div>
 				{% if order.ceiling_height or order.crown_mouldings or order.skirt_mouldings or order.soffits  %}
 					<table>
@@ -136,7 +141,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		
 		<!-- options -->
 		<div class="box">
-			<h2>Design Options / Features</h2>
+			<h2>{% trans "Design Options / Features" %}</h2>
 			<div>
 				<table border="0" cellspacing="5" cellpadding="5">
 					{% for field in options %}
@@ -149,13 +154,13 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		
 		<!-- design notes  -->
 		<div class="box">
-			<h2>Client Notes</h2>
+			<h2>{% trans "Client Notes" %}</h2>
 			<div>
 				<p>{{ order.client_notes }}</p>
 			</div>
 		</div>
 		<div class="box">
-			<h2>Designer Notes</h2>
+			<h2>{% trans "Designer Notes" %}</h2>
 			<div>
 				<p>{{ order.designer_notes }}</p>
 			</div>
@@ -167,7 +172,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 	<div class="grid_10">
 		
 		<div class="box">
-			<h2>Floorplan Diagrams</h2>
+			<h2>{% trans "Floorplan Diagrams" %}</h2>
 			<div>
 				<object width="320" height="240" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
 					<param name="src" value="{{ order.client_diagram.url }}">
@@ -192,7 +197,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 	<div class="grid_16">
 		
 		<div class="box">
-			<h2>Appliances</h2>
+			<h2>{% trans "Appliances" %}</h2>
 			<div>
 				
 			</div>
@@ -204,7 +209,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 	<div class="grid_16">
 		
 		<div class="box">
-			<h2>Client Diagrams</h2>
+			<h2>{% trans "Client Diagrams" %}</h2>
 			<div>
 				
 			</div>

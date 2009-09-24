@@ -33,9 +33,9 @@ class DesignOrderAppliancesForm(forms.ModelForm):
         model = OrderAppliance
         exclude = [ 'order' ]
 
-class DesignOrderDiagramForm(forms.ModelForm):
+class DesignOrderAttachmentForm(forms.ModelForm):
     class Meta: 
-        model = OrderDiagram
+        model = OrderAttachment
         exclude = [ 'order' ]
 
 class DesignOrderAcceptanceForm(forms.ModelForm):

@@ -4,6 +4,7 @@ from datetime import datetime
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
 
 from designfirst.product.models  import PriceSchedule
 
@@ -52,7 +53,7 @@ class DealerAccount(Account):
                                 
     default_measure_units = models.CharField(max_length=3, choices=DIMENSION_UNIT_CHOICES)
     credit_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    price_sheet = models.ForeignKey(PriceSchedule,null=True)
+    price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
     
     def __unicode__(self):
         return self.company_name
@@ -115,7 +116,7 @@ class DesignOrder(models.Model):
     description     = models.TextField(null=True, blank=True, verbose_name='Description')
     status          = models.CharField(max_length=3, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
     cost            = models.PositiveSmallIntegerField(default=1, verbose_name='Design Price')
-    designer = models.ForeignKey(User, blank=True, null=True, related_name='serviced_orders')
+    designer        = models.ForeignKey(User, blank=True, null=True, related_name='serviced_orders')
     
     # format options
     color_views     = models.BooleanField(blank=True, verbose_name='Color Views')
@@ -225,6 +226,7 @@ class DesignOrder(models.Model):
     desired = models.DateTimeField('Desired Completion', null=True, blank=True)
     submitted = models.DateTimeField(null=True, blank=True)
     assigned = models.DateTimeField(null=True, blank=True)
+    projected = models.DateTimeField(null=True, blank=True)
     completed = models.DateTimeField(null=True, blank=True)
     closed = models.DateTimeField(null=True, blank=True)
 
@@ -326,8 +328,8 @@ class DesignOrder(models.Model):
         
     def assign_designer(self, designer, allow_reassign=False):
         
-        if self.designer and not allow_reassign:
-            raise IllegalState('Cannot reassign order - current designer %d' % self.designer)
+        if self.designer and designer and not designer.id == self.designer.id and not allow_reassign:
+            raise IllegalState('Cannot reassign order - current designer %s' % self.designer)
         self.status = 'ASG'
         self.designer = designer
         self.assigned = datetime.now()
@@ -336,12 +338,15 @@ class DesignOrder(models.Model):
         
     def designer_complete(self, designer, notes=None):
 
-        if not self.designer == designer:
+        if not self.designer == designer or designer.is_staff:
             raise IllegalState, 'Designer assigned to order (%s) is different than designer completing order (%s)' \
                 % (self.designer, designer)
             
         if not self.status == 'ASG':
             raise IllegalState, 'Order must be in "Assigned" state - current status is "%s"' % self.get_status_display()
+
+        if not self.orderattachment_set.filter(org__exact=designer.get_profile().account):
+            raise IllegalState, 'Order must have at least one attachment from designer''s organization to complete.' 
 
         self.status = 'CMP'
         self.completed = datetime.now()
@@ -356,6 +361,23 @@ class DesignOrder(models.Model):
 
 
 
+class OrderAttachment(models.Model):
+    TYPE_CHOICES = enumerate([ '20/20 KIT File', 'PDF - Color Views', 'PDF - Elevations', 'Other' ])
+    SOURCE_CHOICES = enumerate([ 'Client', 'Design Org', 'Admin', 'Other' ])
+    METHOD_CHOICES = enumerate([ 'Web', 'Fax', 'Email', 'Admin', 'Other' ])
+    
+    # TODO: make pk?, fax document id, or uuid if not fax
+    document_id = models.CharField(_('Document ID'),max_length=24, blank=True) 
+    document = models.FileField(_('File'), upload_to='files/attachments/%Y/%m/%d',)
+    order = models.ForeignKey(DesignOrder, null=True, blank=True)
+    source = models.SmallIntegerField(_('Source Organization Type'), choices=SOURCE_CHOICES) # todo: delete - redundant with 'org.ttype'
+    doctype = models.SmallIntegerField(_('Document Type'), choices=TYPE_CHOICES)
+    method = models.SmallIntegerField(_('Uploaded Using'), choices=METHOD_CHOICES )
+    user = models.ForeignKey(User, null=True, blank=True)
+    org = models.ForeignKey(Account, null=True, blank=True)
+    timestamp = models.DateTimeField(_('Upload Timestamp'), auto_now=True)
+    
+    
 class OrderAppliance(models.Model):
     
     APPLIANCE_CHOICES = (
@@ -391,21 +413,6 @@ class OrderAppliance(models.Model):
         
     def __unicode__(self):
         return "%s: [%s x %s x %s]" % (self.appliance_type, self.height, self.width, self.depth)
-
-
-class OrderDiagram(models.Model):
-    order = models.ForeignKey(DesignOrder, editable=False)
-    document_id = models.CharField(max_length=24) # speculation: efax correlation id?
-    recieved_from = models.CharField(max_length=3, choices=(("EFX", "eFax"), ("UPL","Upload"), ("MAN","Manual")))
-    created = models.DateTimeField(auto_now=True)
-    filename = models.FileField(upload_to='.')
-
-    class Meta:
-        unique_together = (("order", "document_id"),)
-            
-    def __unicode__(self):
-        return "diagram '%s' for order %s" % (self.document_id, self.order.id) 
-
 
 class OrderNotes(models.Model):
     order = models.ForeignKey(DesignOrder)

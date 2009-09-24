@@ -1,6 +1,7 @@
 import logging as log
 from datetime import datetime, timedelta
 
+from django.utils import simplejson
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -15,12 +16,11 @@ from django.contrib.auth.models import User
 
 from home import ACCOUNT_ID, ORDER_ID
 from home.models import DealerAccount, DesignOrder, Transaction, OrderAppliance, \
-    OrderDiagram   
-#from home.forms import DesignOrderForm, DesignOrderDiagramForm
-from forms import DesignOrderAcceptanceForm, NewDesignOrderForm 
+    OrderAttachment   
 from home import designorderforms as dof
+from forms import DesignOrderAcceptanceForm, NewDesignOrderForm
 from product.models import Product
-from django.utils import simplejson
+
 
 
 

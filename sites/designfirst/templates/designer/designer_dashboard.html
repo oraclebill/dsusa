@@ -1,36 +1,50 @@
-{% extends "base.html" %}
+{% extends "designer/designer_base.html" %}
+{% load i18n %}
 
 {% block title %}
-DesignFirst Designer Home
+{% trans "DesignFirst Designer Home" %}
 {% endblock %}
 
 {% block content %}
 
 
 <!-- left column -->
-<div id="orders" class="grid_9  ">
+<div id="orders" class="grid_10  ">
 
   	<!-- pending (unassigned) orders - click to assign -->
 	<div id="pending_order_table">
-	   <table summary="order history and status">
+	   <table summary="{% trans 'order history and status' %}">
 	   <thead>
-	     <tr><th class="table-head" colspan="5">Unassigned (New) Orders</th></tr>
+	     <tr><th class="table-head" colspan="6">New Orders</th></tr>
 	     <tr>
-	       <th>order id</th>
-	       <th>submission date</th>
-	       <th>status</th>
-	       <th>description</th>
+	       <th>{% trans "order id" %}</th>
+	       <th>{% trans "submission date" %}</th>
+	       <th>{% trans "status" %}</th>
+	       <th>{% trans "description" %}</th>
+	       <th>{% trans "actions" %}</th>
 	       <th></th>
 	     </tr>
 	   </thead>
 	   <tbody>
 	     {% for order in pending %}
 	     <tr class="{% cycle 'even' 'odd' %}">
-	       <td> <a href="{% url designer.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
+	       <td> {{ order.id }}</a> </td> 
 		   <td> {{ order.submitted|date }} </td>
+		   <td> {{ order.get_status_display }} </td> 
 		   <td> {{ order.description }} </td> 
-		   <td> <form action="{% url designer.views.designer_claim_order order.id %}" method="POST">
-		   		<input type="submit" value="Claim Order &rarr;"></form></td>
+		   <td> 
+				{% if user.is_staff %}
+				<form action="{% url designer.views.designer_assign_order order.id %}" method="GET">
+		   			<input type="submit" value="{% trans 'Assign Order &rarr;' %}">
+				</form>
+				<form action="{% url designer.views.designer_display_order order.id %}" method="GET">
+		   			<input type="submit" value="{% trans 'View Order &rarr;' %}">
+				</form>
+				{% else %}
+				<form action="{% url designer.views.designer_claim_order order.id %}" method="POST">
+		   			<input type="submit" value='{% trans "Claim Order &rarr;" %}'></form>
+				{% endif %}
+			</td>
 	     </tr>
 	     {% endfor %}
 	   </tbody>
@@ -40,14 +54,15 @@ DesignFirst Designer Home
 
   	<!-- in-progress (working) orders - click to view status -->
 	<div id="assigned_order_table">
-	   <table summary="order history and status">
+	   <table summary="{% trans 'order history and status' %}">
 	   <thead>
-	     <tr><th class="table-head" colspan="5">Assigned (Working) Orders</th></tr>
+	     <tr><th class="table-head" colspan="5">{% trans "Assigned Orders" %}</th></tr>
 	     <tr>
-	       <th>order id</th>
-	       <th>assigned designer</th>
-	       <th>submitted on</th>
-	       <th>assigned on</th>
+	       <th>{% trans "order id" %}</th>
+	       <th>{% trans "assigned designer" %}</th>
+	       <th>{% trans "submitted on" %}</th>
+	       <th>{% trans "assigned on" %}</th>
+	       <th>{% trans "actions" %}</th>
 	     </tr>
 	   </thead>
 	   <tbody>
@@ -55,8 +70,13 @@ DesignFirst Designer Home
 	     <tr class="{% cycle 'even' 'odd' %}">
 	       <td> <a href="{% url designer.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
 		   <td> {{ order.designer }} </td> 
-		   <td> {{ order.submitted }} </td>
-		   <td> {{ order.assigned }} </td> 
+		   <td> {{ order.submitted|date }} </td>
+		   <td> {{ order.assigned|date }} ({{ order.assigned|timesince }}) </td> 
+		   <td>				
+				<form action="{% url designer.views.designer_display_order order.id %}" method="GET">
+		   			<input type="submit" value="{% trans 'View Order &rarr;' %}">
+				</form>
+			</td>
 	     </tr>
 	     {% endfor %}
 	   </tbody>
@@ -66,23 +86,27 @@ DesignFirst Designer Home
 
   	<!-- completed (delivered) orders - click to view statistics -->
 	<div id="completed_order_table">
-	   <table summary="order history">
+	   <table summary="{% trans 'order history' %}">
 	   <thead>
-	     <tr><th class="table-head" colspan="5">Recently Completed Orders</th></tr>
+	     <tr><th class="table-head" colspan="6">{% trans "Recently Completed Orders" %}</th></tr>
 	     <tr>
-	       <th>order id</th>
-	       <th>completion date</th>
-	       <th>processing time</th>
-	       <th>client rating</th>
+	       <th>{% trans "order id" %}</th>
+	       <th>{% trans "designer" %}</th>
+	       <th>{% trans "completion date" %}</th>
+	       <th>{% trans "designer time" %}</th>
+	       <th>{% trans "processing time" %}</th>
+	       <th>{% trans "client rating" %}</th>
 	     </tr>
 	   </thead>
 	   <tbody>
 	     {% for order in completed %}
 	     <tr class="{% cycle 'even' 'odd' %}">
-	       <td> <a href="{% url designer.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
+	       <td> {{ order.id }} </td> 
+		   <td> {{ order.designer }} </td>
 		   <td> {{ order.completed|date }} </td>
-		   <td> {{ order.completed|timesince:order.submitted }} </td> 
-		   <td> {{ order.client_review_rating }} </td> 
+		   <td> {{ order.assigned|timeuntil:order.submitted }} </td> 
+		   <td> {{ order.completed|timeuntil:order.submitted }} </td> 
+		   <td> {{ order.client_review_rating|default:"N/A" }} </td> 
 	     </tr>
 	     {% endfor %}
 	   </tbody>
@@ -92,10 +116,10 @@ DesignFirst Designer Home
 </div>
 
 <!-- right column -->
-<div class="grid_5 prefix_1 ">
+<div class="grid_5  omega ">
 	
 	<div class="box">
-	    <h2>Order Statistics (simulated)</h2>
+	    <h2>{% trans "Order Statistics (simulated)" %}</h2>
 		<table>
 			<thead>
 				<tr>
@@ -107,13 +131,13 @@ DesignFirst Designer Home
 			</thead>
 			<tbody>
 			    <tr>
-			        <th>New</th>
+			        <th>{% trans "New" %}</th>
 					{% for stat in stats.arrived %}
 			        <td>{{ stat }}</td>
 			        {% endfor %}
 			    </tr>
 			    <tr>
-				    <th>Completed</th>
+				    <th>{% trans "Completed" %}</th>
 					{% for stat in stats.completed %}
 			        <td>{{ stat }}</td>						
 					{% endfor %}
