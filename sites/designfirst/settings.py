@@ -1,30 +1,32 @@
 # Django settings for designfirst project.
-import os.path
+import os, sys
 
-try:
-  from local_settings import *
-except:
-  pass
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+
+#Realtive path helper
+def rel(*x):
+    return os.path.abspath(os.path.join(THIS_DIR, *x))
+
+sys.path.insert(0, rel('..', '..', 'lib'))#Adding lib to system path
 
 
+
+
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Bill Jones', 'bill@averline.com'),
-    ('DSUSA System Admin', 'admin@designserviceusa.com'),
-    ('DSUSA System', 'system@designserviceusa.com'),
+    # ('Your Name', 'your_email@domain.com'),
 )
-
-# INTERNAL_IPS = ('127.0.0.1', '173.72.20.106')
-
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = LOCAL_DATABASE_ENGINE  or 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = LOCAL_DATABASE_NAME or 'designfirst.db'         # Or path to database file if using sqlite3.
-DATABASE_USER = LOCAL_DATABASE_USER or ''             # Not used with sqlite3.
-DATABASE_PASSWORD = LOCAL_DATABASE_PASSWORD or ''         # Not used with sqlite3.
-DATABASE_HOST = LOCAL_DATABASE_HOST or ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = LOCAL_DATABASE_PORT or ''             # Set to empty string for default. Not used with sqlite3.
+
+DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_NAME = rel('designfirst.db')             # Or path to database file if using sqlite3.
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -45,20 +47,22 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = LOCAL_MEDIA_ROOT or ''
+MEDIA_ROOT = rel('..', '..', 'static')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "http://localhost:8888/" # ""http://%s" % LOCAL_MEDIA_HOST 
+MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '%s/admin/' % MEDIA_URL
+ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'd#e-f*3^321$mm_lk0%*t*k!&bo*up*)($g!cv9=7n@1ko!0p7'
+
+
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -75,12 +79,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media"
 )
 
+
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    LOCAL_ROOT + '/templates',
+    rel('templates'),
 )
+
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -124,6 +127,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 AUTH_PROFILE_MODULE = "home.UserProfile"
 
+
 # PAYPAL_TEST             = True      # Testing mode on
 # PAYPAL_WPP_USER         = "seller_1252615556_biz_api1.averline.com"     # Get from PayPal
 # PAYPAL_WPP_PASSWORD     = "1252615561"
@@ -143,3 +147,18 @@ else:
     PAYPAL_WPP_SIGNATURE    = ""
     PAYPAL_RECEIVER_EMAIL   = ""
 
+
+
+# system mail parameters
+MAIL_SYSTEM_REPLYTO_ADDRESS = 'system@designserviceusa.com'
+MAIL_SYSTEM_NOTIFY_ADDRESS = 'system@designserviceusa.com'
+
+# demo settings (stuff to replace with real code later..)
+DEMO_MAIL_DESIGNER_ADDRESS = 'designer-notify@designserviceusa.com'
+#DEMO_MAIL_DEALER_ADDRESS = 'dealer-notify@designserviceusa.com'
+
+
+try:
+    from settings_local import *
+except ImportError:
+    pass

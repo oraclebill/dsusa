@@ -1,0 +1,14 @@
+#Production settings
+#Use:
+# cp settings_local.py settings_local.py.production
+
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
+
+
+ADMINS = (
+    ('Bill Jones', 'bill@averline.com'),
+    ('DSUSA System Admin', 'admin@designserviceusa.com'),
+    ('DSUSA System', 'system@designserviceusa.com'),
+)
+MANAGERS = ADMINS
