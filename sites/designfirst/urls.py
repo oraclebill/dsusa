@@ -23,3 +23,10 @@ urlpatterns = patterns('',
     (r'^60b9f188a8a27ce69fcba9ee63b74b4e2fad2b3d/', include('paypal.standard.ipn.urls')),
 
 )
+
+
+from django.conf import settings
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^(?P<path>(css|js|images)/.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    )
