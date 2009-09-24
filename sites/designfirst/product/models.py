@@ -54,6 +54,9 @@ class Product(models.Model):
     def __unicode__(self):
         return self.name
     
+    def customer_price(self, customer):
+        return get_customer_price(customer, self)
+    
         
 class PriceSchedule(models.Model):
     """

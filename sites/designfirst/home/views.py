@@ -1,5 +1,5 @@
 import logging as log
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import PermissionDenied
@@ -17,8 +17,10 @@ from home import ACCOUNT_ID, ORDER_ID
 from home.models import DealerAccount, DesignOrder, Transaction, OrderAppliance, \
     OrderDiagram   
 #from home.forms import DesignOrderForm, DesignOrderDiagramForm
-from home.forms import DesignOrderAcceptanceForm
+from forms import DesignOrderAcceptanceForm, NewDesignOrderForm 
 from home import designorderforms as dof
+from product.models import Product
+from django.utils import simplejson
 
 
 
@@ -142,23 +144,28 @@ def dealer_dashboard(request):
 def create_order(request, *args):
     """
     Create a new order.
-    
-    TODO - add a confirmation page
     """
+    account = request.user.get_profile().account.dealeraccount              
+    if request.method == 'POST':
+        form = NewDesignOrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.client_account = account
+            order.save()
+            
+            request.session[ORDER_ID] = order.id#TODO: vitaliy: for what is this? 
+            
+            return HttpResponseRedirect( reverse( "home.views.edit_order_detail", args=[order.id] ) )
+    else:
+        desired = (datetime.now() + timedelta(days=2))
+        form = NewDesignOrderForm(initial={'desired': desired, 'cost':None})
     
-    user = request.user
-    if user is None or not user.is_authenticated():
-        return HttpResponseRedirect('/')
-
-    account_id = request.user.get_profile().account.dealeraccount.id
-        
-    order = DesignOrder(client_account_id=account_id)
-    order.status = "DLR"
-    order.save()
-    
-    request.session[ORDER_ID] = order.id
-    
-    return HttpResponseRedirect( reverse( "home.views.edit_order_detail", args=[order.id] ) )
+    #Prices is used to get price from product when user switches product in from
+    prices = dict([(p.id, float(p.customer_price(account))) 
+                   for p in Product.objects.all()])
+    prices = simplejson.dumps(prices)
+    return render_to_response('home/create_order.html', locals(),                                
+                              context_instance=RequestContext(request) ) 
 
 
 

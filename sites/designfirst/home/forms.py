@@ -1,7 +1,23 @@
 from django import forms
 from home.models import *
+from product.models import Product
 import designorderforms
 # from designorderforms import *
+
+
+class NewDesignOrderForm(forms.ModelForm):
+    class Meta: 
+        model = DesignOrder
+        fields = ['project_name', 'desired', 'cost', 'client_notes']
+    
+    design_product = forms.ModelChoiceField(queryset=Product.objects.all())
+    
+    def __init__(self, *args, **kwargs):
+        #changing order of the fields
+        self.base_fields.keyOrder = ['project_name', 'design_product', 'desired', 'cost', 'client_notes']
+        self.base_fields['client_notes'].label = 'Notes'
+        super(NewDesignOrderForm, self).__init__(*args, **kwargs)
+    
 
 class DesignOrderForm(forms.ModelForm):
     class Meta: 

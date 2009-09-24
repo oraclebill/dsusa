@@ -222,12 +222,13 @@ class DesignOrder(models.Model):
     visited_status  = models.IntegerField(default=0, editable=False)
     valid_status    = models.IntegerField(default=0, editable=False)
 
-    submitted = models.DateTimeField(null=True,blank=True)
-    assigned = models.DateTimeField(null=True,blank=True)
-    completed = models.DateTimeField(null=True,blank=True)
-    closed = models.DateTimeField(null=True,blank=True)
+    desired = models.DateTimeField('Desired Completion', null=True, blank=True)
+    submitted = models.DateTimeField(null=True, blank=True)
+    assigned = models.DateTimeField(null=True, blank=True)
+    completed = models.DateTimeField(null=True, blank=True)
+    closed = models.DateTimeField(null=True, blank=True)
 
-    tracking_notes = models.TextField(null=True,blank=True)
+    tracking_notes = models.TextField(null=True, blank=True)
     
     # fields considered 'optional'  #TODO this is primarily a display thing.. move it
     display_as_optional = [ 
