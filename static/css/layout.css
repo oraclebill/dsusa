@@ -528,3 +528,7 @@ input.search.button {
 #order_table {
     min-height: 300px;
 }
+
+table.form {
+	width: 500px;
+}
