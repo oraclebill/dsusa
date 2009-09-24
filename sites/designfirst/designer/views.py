@@ -250,7 +250,7 @@ def designer_attach_design_to_order(request,orderid):
             doc.user = user
             doc.org = account
             doc.save()        
-            return HttpResponseRedirect(reverse(designer_display_order))    
+            return HttpResponseRedirect(reverse(designer_display_order, args=[orderid]))    
     else:
         log.error('Invalid HTTP method in designer_attach_design_to_order: %s' % request.method )
         raise Exception, "Invalid request type %s" % request.method

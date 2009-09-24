@@ -53,7 +53,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
                     <form method="GET"  id="attach-form"   action="{% url designer.views.designer_attach_design_to_order order.id %}">
 						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
                     </form>
-					{% if not order.orderattachment_set.count %}
+					{% if  order.orderattachment_set.count %}
 					<form method="POST" id="complete-form" action="{% url designer.views.designer_complete_order order.id %}">
 						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
 				    </form>

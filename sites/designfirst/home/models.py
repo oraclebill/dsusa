@@ -367,7 +367,7 @@ class OrderAttachment(models.Model):
     
     # TODO: make pk?, fax document id, or uuid if not fax
     document_id = models.CharField(_('Document ID'),max_length=24, blank=True) 
-    document = models.FileField(_('File'), upload_to='designer/%Y/%m/%d',)
+    document = models.FileField(_('File'), upload_to='files/attachments/%Y/%m/%d',)
     order = models.ForeignKey(DesignOrder, null=True, blank=True)
     source = models.SmallIntegerField(_('Source Organization Type'), choices=SOURCE_CHOICES) # todo: delete - redundant with 'org.ttype'
     doctype = models.SmallIntegerField(_('Document Type'), choices=TYPE_CHOICES)
