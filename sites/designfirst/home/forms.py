@@ -2,12 +2,13 @@ from django import forms
 from home.models import *
 from product.models import Product
 import designorderforms
+from wizard.models import WorkingOrder
 # from designorderforms import *
 
 
 class NewDesignOrderForm(forms.ModelForm):
     class Meta: 
-        model = DesignOrder
+        model = WorkingOrder
         fields = ['project_name', 'desired', 'cost', 'client_notes']
     
     design_product = forms.ModelChoiceField(queryset=Product.objects.all())

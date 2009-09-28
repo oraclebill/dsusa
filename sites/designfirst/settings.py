@@ -103,6 +103,7 @@ INSTALLED_APPS = (
     'designfirst.home',
     'designfirst.designer',
     'designfirst.product',
+    'designfirst.wizard',
     'debug_toolbar',
     'paypal.standard.ipn',
     'paypal.standard', 

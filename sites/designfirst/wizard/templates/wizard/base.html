@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{wizard.order}} | {{wizard.step_title}}{% endblock %}
+
+
+
+{% block content %}
+
+<div id="wizard_steps" class="grid_16">
+{% block wizard-steps%}
+	{% for step in wizard.get_tabs %}
+		<div{% if step.selected %} class="selected"{% endif %}>
+			<a href="{{ step.url }}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}.png"></a>
+			<br>
+			{{step.title}}
+		</div>
+	{% endfor %}
+{% endblock %}
+</div>
+<div class="clear"></div>
+
+
+
+<form method="POST">
+
+<div id="wizard_content" class="grid_11">
+<fieldset>
+	<legend>{{wizard.step_title}}</legend>
+	{% block wizard-content %}
+	{% endblock %}
+</fieldset>
+</div>
+
+
+<div id="wizard_summary"  class="gird_5">
+<fieldset>
+	<legend>Order summary</legend>
+	{% block wizard-summary%}
+	Project Name: <strong>{{wizard.order}}</strong>
+	
+	<div style="height: 300px; overflow: auto;"">
+	{% for section, values in wizard.get_summary %}
+		<fieldset>
+			<legend>{{section}}</legend>
+		{% for name, value in values %}
+			{{name}}: {{value}}<br>
+		{% endfor %}
+		</fieldset>
+	{% endfor %}
+	</div>	
+	{% endblock %}
+</fieldset>
+</div>
+
+<div class="clear"></div>
+
+<div class="grid_13" style="text-align: center;">
+<input type="submit" value="Save/Next">
+</div>
+
+<div class="clear"></div>
+
+</form>
+
+
+
+{% endblock %}
