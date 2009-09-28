@@ -107,6 +107,7 @@ INSTALLED_APPS = (
     'paypal.standard.ipn',
     'paypal.standard', 
     'paypal.pro', 
+    'validation',
 )
 
 DEBUG_TOOLBAR_PANELS = (
