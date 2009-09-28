@@ -155,7 +155,7 @@ def create_order(request, *args):
             
             request.session[ORDER_ID] = order.id#TODO: vitaliy: for what is this? 
             
-            return HttpResponseRedirect( reverse( "home.views.edit_order_detail", args=[order.id] ) )
+            return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
     else:
         desired = (datetime.now() + timedelta(days=2))
         form = NewDesignOrderForm(initial={'desired': desired, 'cost':None})

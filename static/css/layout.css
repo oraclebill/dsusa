@@ -532,3 +532,15 @@ input.search.button {
 table.form {
 	width: 500px;
 }
+
+
+/* Wizard ------------------------- */
+
+#wizard_steps div {
+	float: left; 
+	margin-left: 5px;
+	width: 70px;
+}
+#wizard_steps .selected {
+	font-weight: bold;
+}

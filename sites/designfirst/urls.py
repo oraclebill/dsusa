@@ -17,6 +17,9 @@ urlpatterns = patterns('',
     (r'', include("home.urls")),    
     (r'^designer/', include("designer.urls")),
     (r'^products/', include("product.urls")),
+    
+    url(r'^wizard/(\d+)/$', 'wizard.views.wizard', name='order-wizard'),
+    url(r'^wizard/(\d+)/(.*?)/$', 'wizard.views.wizard', name='order-wizard-step'),    
 
     (r'^admin/', include(admin.site.urls)),
 
