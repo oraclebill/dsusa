@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 
 
 from home import ACCOUNT_ID, ORDER_ID
-from home.models import DealerAccount, DesignOrder, Transaction, OrderAppliance, \
+from home.models import DealerOrganization, DesignOrder, Transaction, OrderAppliance, \
     OrderAttachment   
 from home import designorderforms as dof
 from forms import DesignOrderAcceptanceForm, NewDesignOrderForm
@@ -128,7 +128,7 @@ def dealer_dashboard(request):
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/')
     
-    account = request.user.get_profile().account.dealeraccount
+    account = request.user.get_profile().account.dealerorganization
     
     orders = account.created_orders.all()
     transactions = account.transaction_set.all()
@@ -145,7 +145,7 @@ def create_order(request, *args):
     """
     Create a new order.
     """
-    account = request.user.get_profile().account.dealeraccount              
+    account = request.user.get_profile().account.dealerorganization              
     if request.method == 'POST':
         form = NewDesignOrderForm(request.POST)
         if form.is_valid():
@@ -205,7 +205,7 @@ def edit_order_detail(request, order_id):
         return HttpResponseRedirect('/')
  
     profile = user.get_profile()
-    account = profile.account.dealeraccount
+    account = profile.account.dealerorganization
     order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
 
     if order.submitted is not None:
@@ -308,7 +308,7 @@ def dealer_submit_order(request, orderid):
     popup_error = None
     order = get_current_order(request, orderid)
     if order.is_submittable():
-        account = request.user.get_profile().account.dealeraccount
+        account = request.user.get_profile().account.dealerorganization
         if account.credit_balance >= order.cost:
             ## TODO: transactions
             now = datetime.utcnow()

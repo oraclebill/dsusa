@@ -14,7 +14,7 @@ def product_list(request):
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/') ## FIXME with decorators..
     
-    account         = request.user.get_profile().account.dealeraccount
+    account         = request.user.get_profile().account.dealerorganization
     pricelist       = [ (product, get_customer_price(account,product)) 
                         for product in Product.objects.filter(purchaseable=True) ]
         
@@ -26,7 +26,7 @@ def product_detail(request, prodid):
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/') ## FIXME
     
-    account         = request.user.get_profile().account.dealeraccount
+    account         = request.user.get_profile().account.dealerorganization
     product         = Product.objects.get(pk=prodid)
     price_retail    = get_customer_price(account, product)
         
@@ -41,7 +41,7 @@ def product_purchase(request, prodid, qty=1):
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/')        ## FIXME
     
-    account = request.user.get_profile().account.dealeraccount
+    account = request.user.get_profile().account.dealerorganization
         
     # get product and price information
     product         = Product.objects.get(pk=prodid)

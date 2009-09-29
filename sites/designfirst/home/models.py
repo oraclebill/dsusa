@@ -16,7 +16,7 @@ class IllegalState(Exception):
 DIMENSION_UNIT_CHOICES = (('IN', "inches"), ('CM', "centimeters"), ('O', "other"))
 
 
-class Account(models.Model):
+class Organization(models.Model):
     """
     An abstract base class for all account objects.
     
@@ -39,10 +39,10 @@ class Account(models.Model):
     company_email = models.EmailField()
     
     def __unicode__(self):
-        return self.company_email
+        return self.company_name
     
     
-class DealerAccount(Account):
+class DealerOrganization(Organization):
     """
     An individual or enterprise that purchases services from DesignFirst.
     
@@ -55,9 +55,6 @@ class DealerAccount(Account):
     credit_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
     
-    def __unicode__(self):
-        return self.company_name
-
 
 class UserProfile(models.Model):
     """
@@ -68,7 +65,7 @@ class UserProfile(models.Model):
     """
     user = models.ForeignKey(User, unique=True)
     usertype = models.CharField(max_length=10, choices=[('designer', 'Designer'), ('dealer','Dealer'),], default='dealer')
-    account = models.ForeignKey(Account)
+    account = models.ForeignKey(Organization)
     
     def __unicode__(self):
         return '%s @ %s' % (self.user, self.account) 
@@ -109,7 +106,7 @@ class DesignOrder(models.Model):
     REVIEW_RATING_CHOICES = [x for x in enumerate(
         ['unacceptably bad', 'barely acceptable', 'fair', 'good', 'very good', 'excellent', 'astonishingly superior'])]
 
-    client_account  = models.ForeignKey(Account, related_name='created_orders',verbose_name='Customer Account')
+    client_account  = models.ForeignKey(Organization, related_name='created_orders',verbose_name='Customer Organization')
 #TODO: add client contact info for user who entered order
 #    client_contact  = models.ForeignKey(User, related_name='created_orders',verbose_name='Client Contact', null=True, blank=True)
     project_name    = models.CharField(max_length=25, verbose_name='Project')
@@ -374,7 +371,7 @@ class OrderAttachment(models.Model):
     doctype = models.SmallIntegerField(_('Document Type'), choices=TYPE_CHOICES)
     method = models.SmallIntegerField(_('Uploaded Using'), choices=METHOD_CHOICES )
     user = models.ForeignKey(User, null=True, blank=True)
-    org = models.ForeignKey(Account, null=True, blank=True)
+    org = models.ForeignKey(Organization, null=True, blank=True)
     timestamp = models.DateTimeField(_('Upload Timestamp'), auto_now=True)
     
     
@@ -421,7 +418,7 @@ class OrderNotes(models.Model):
     
     
 class Transaction(models.Model): # TODO --> invoice becomes transaction
-    account = models.ForeignKey(DealerAccount)
+    account = models.ForeignKey(DealerOrganization)
     debit_or_credit = models.CharField(max_length=1, choices=(('D', 'Debit'), ('C', 'Credit')))
     trans_type = models.CharField(max_length=1, choices=(('C', 'Credits'), ('D', 'Dollars')))
     amount = models.DecimalField(max_digits=10, decimal_places=2)

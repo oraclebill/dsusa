@@ -15,7 +15,7 @@ from django.shortcuts import render_to_response
 
 from home import ACCOUNT_ID
 from home.models import DesignOrder
-from designer.models import DesignerAccount
+from designer.models import DesignOrganization
 from designer.forms import DesignPackageUploadForm as PackageForm
 from designer.forms import AssignDesignerForm
 
@@ -30,7 +30,7 @@ def get_designer_context(request, orderid=None):
     order = None
     if user.is_authenticated():
         profile = user.get_profile()
-        account = profile.account.designeraccount
+        account = profile.account.designerorganization
         if orderid:
             try:
                 order = DesignOrder.objects.get(pk=orderid)
