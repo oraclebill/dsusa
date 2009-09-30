@@ -52,7 +52,7 @@ class Product(models.Model):
         ordering = ('sort_order',)
 
     def __unicode__(self):
-        return self.name
+        return self.verbose_name
     
     def customer_price(self, customer):
         return get_customer_price(customer, self)

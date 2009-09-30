@@ -165,7 +165,7 @@
   "pk": 52, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "add_designeraccount", 
+   "codename": "add_designerorganization", 
    "name": "Can add designer account", 
    "content_type": 18
   }
@@ -174,7 +174,7 @@
   "pk": 53, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "change_designeraccount", 
+   "codename": "change_designerorganization", 
    "name": "Can change designer account", 
    "content_type": 18
   }
@@ -183,7 +183,7 @@
   "pk": 54, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "delete_designeraccount", 
+   "codename": "delete_designerorganization", 
    "name": "Can delete designer account", 
    "content_type": 18
   }
@@ -201,7 +201,7 @@
   "pk": 28, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "add_dealeraccount", 
+   "codename": "add_dealerorganization", 
    "name": "Can add dealer account", 
    "content_type": 10
   }
@@ -282,7 +282,7 @@
   "pk": 29, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "change_dealeraccount", 
+   "codename": "change_dealerorganization", 
    "name": "Can change dealer account", 
    "content_type": 10
   }
@@ -363,7 +363,7 @@
   "pk": 30, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "delete_dealeraccount", 
+   "codename": "delete_dealerorganization", 
    "name": "Can delete dealer account", 
    "content_type": 10
   }
@@ -597,7 +597,7 @@
   "pk": 10, 
   "model": "contenttypes.contenttype", 
   "fields": {
-   "model": "dealeraccount", 
+   "model": "dealerorganization", 
    "name": "dealer account", 
    "app_label": "home"
   }
@@ -615,7 +615,7 @@
   "pk": 18, 
   "model": "contenttypes.contenttype", 
   "fields": {
-   "model": "designeraccount", 
+   "model": "designerorganization", 
    "name": "designer account", 
    "app_label": "designer"
   }
@@ -983,7 +983,7 @@
  }, 
  {
   "pk": 1, 
-  "model": "home.dealeraccount", 
+  "model": "home.dealerorganization", 
   "fields": {
    "credit_balance": "0", 
    "default_measure_units": "IN"
@@ -991,7 +991,7 @@
  }, 
  {
   "pk": 2, 
-  "model": "home.dealeraccount", 
+  "model": "home.dealerorganization", 
   "fields": {
    "credit_balance": "0", 
    "default_measure_units": "IN"
@@ -1035,7 +1035,7 @@
  }, 
  {
   "pk": 3, 
-  "model": "designer.designeraccount", 
+  "model": "designer.designerorganization", 
   "fields": {
    "is_manager": false
   }

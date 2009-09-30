@@ -1,18 +1,15 @@
 from django.utils.translation import ugettext as _
 from django.db import models
-from home.models import Account, DesignOrder
+from home.models import Organization, DesignOrder
 
 # Create your models here.
 
-class DesignerAccount(Account):
+class DesignOrganization(Organization):
     """
     A profile object for users that participate as designers.     
     """
     is_manager = models.BooleanField(_('Admin Status?'), default=False)
     # order_history = models.ManyToManyField(DesignOrder, through='DesignerOrderHistory')
-    
-    def __unicode__(self):
-        return 'Designer: %s' % self.id
     
 # class Designer(models.Model):
 #     """

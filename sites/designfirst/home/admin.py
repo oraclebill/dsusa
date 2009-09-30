@@ -102,7 +102,7 @@ admin.site.register(DesignOrder, DesignOrderAdmin)
 admin.site.register(OrderAppliance)
 admin.site.register(OrderAttachment)
 admin.site.register(OrderNotes)
-admin.site.register(DealerAccount)
+admin.site.register(DealerOrganization)
 
 admin.site.register(Transaction)
 admin.site.register(UserProfile)
