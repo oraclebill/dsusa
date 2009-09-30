@@ -70,6 +70,14 @@ class WorkingOrder(models.Model):
     build_corner_wall = models.BooleanField()
     corner_wall = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, null=True, blank=True)
     
+    #Interiors page
+    lazy_susan = models.BooleanField()
+    slide_out_trays = models.BooleanField()
+    waste_bin = models.BooleanField()
+    wine_rack = models.BooleanField()
+    plate_rack = models.BooleanField()
+    apliance_garage = models.BooleanField()
+    
     #Miscellaneous page
     corables = models.BooleanField()
     brackets = models.BooleanField()

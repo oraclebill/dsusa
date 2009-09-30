@@ -8,7 +8,7 @@ from forms import *
 class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'dimensions', 
-             'corner_cabinet', 'miscellaneous', 'attachments']
+             'corner_cabinet', 'interiors', 'miscellaneous', 'attachments']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
@@ -34,6 +34,9 @@ class Wizard(WizardBase):
     
     def step_corner_cabinet(self, request):
         return self.handle_form(request, CornerCabinetForm)
+    
+    def step_interiors(self, request):
+        return self.handle_form(request, InteriorsForm)
     
     def step_miscellaneous(self, request):
         return self.handle_form(request, MiscellaneousForm)
@@ -89,6 +92,14 @@ class Wizard(WizardBase):
                 'corder_base',
                 'build_corner_wall',
                 'corner_wall',
+            ]),
+            ('Interiors', [
+                'lazy_susan',
+                'slide_out_trays',
+                'waste_bin',
+                'wine_rack',
+                'plate_rack',
+                'apliance_garage'
             ]),
             ('Miscellaneous', [
                 'corables',

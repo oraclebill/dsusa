@@ -104,6 +104,19 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
     ]
 
 
+class InteriorsForm(forms.ModelForm, FieldsetForm):
+    class Meta:
+        model = WorkingOrder
+        fields = [
+            'lazy_susan',
+            'slide_out_trays',
+            'waste_bin',
+            'wine_rack',
+            'plate_rack',
+            'apliance_garage'
+        ]
+
+
 class MiscellaneousForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
