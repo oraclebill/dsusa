@@ -11,8 +11,10 @@ from django.core.urlresolvers import reverse
 
 class WizardBase(object):
     
-    def __call__(self, request, id, step):
+    def __call__(self, request, id, step, complete):
         self.order = get_object_or_404(WorkingOrder, id=id)
+        if complete:
+            return self.complete(request)
         if step is None:
             step = self.steps[0]
         self.step = step
@@ -64,6 +66,9 @@ class WizardBase(object):
     
     def next_step(self):
         next = self.steps.index(self.step) + 1
+        if next >= len(self.steps):
+            return HttpResponseRedirect(reverse(
+                        'order-wizard-complete', args=[self.order.id]))
         return self.go_to_step(self.steps[next])
     
     
