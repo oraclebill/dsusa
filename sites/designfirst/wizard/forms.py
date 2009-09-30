@@ -1,5 +1,5 @@
 from django import forms
-from models import WorkingOrder
+from models import WorkingOrder,  Attachment
 from utils.forms import FieldsetForm
 
 
@@ -116,3 +116,9 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
             'range_hood',
             'posts',
         ]
+
+
+class AttachmentForm(forms.ModelForm):
+    class Meta:
+        model = Attachment
+        exclude = ('order',)

@@ -1,0 +1,31 @@
+{% extends "wizard/base.html" %}
+
+{% block wizard-content %}
+
+<table>
+<tr>
+	<th>Name</th>
+	<th>Type</th>
+	<th>Date</th>
+	<th>Source</th>
+	<th>Validated</th>
+</tr>
+{% for attach in attachments %}
+<tr>
+	<td>{{attach}}</td>
+	<td>{{attach.get_type_display}}</td>
+	<td>{{attach.timestamp|date}}</td>
+	<td>Web</td>
+	<td>N/A</td>
+</tr>
+{% endfor %}
+</table>
+
+<fieldset>
+	<legend>Upload File</legend>
+	<table>{{form}}</table>
+	<input type="submit" name="upload_file" value="Upload">
+</fieldset>
+
+
+{% endblock %}

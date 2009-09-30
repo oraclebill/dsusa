@@ -1,3 +1,4 @@
+import os
 from django.db import models
 
 class WorkingOrder(models.Model):
@@ -82,5 +83,16 @@ class WorkingOrder(models.Model):
         return self.project_name
     
     
+class Attachment(models.Model):
+    FLOORPLAN, PHOTO, OTHER = range(1,4)
+    TYPE_CHOICES = (
+            (FLOORPLAN, 'Floorplan Sketch'),
+            (PHOTO, 'Photograph'),
+            (OTHER, 'Other'),)
+    order = models.ForeignKey(WorkingOrder, related_name='attachments')
+    type = models.PositiveSmallIntegerField(choices=TYPE_CHOICES)
+    file = models.FileField(upload_to='data/wizard/attachments/%Y/%m')
+    timestamp = models.DateTimeField(auto_now_add=True)
     
-            
+    def __unicode__(self):
+        return os.path.basename(self.file.path)

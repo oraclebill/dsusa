@@ -5,13 +5,10 @@ from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from forms import *
 
 
-
-
-
 class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'dimensions', 
-             'corner_cabinet', 'miscellaneous']
+             'corner_cabinet', 'miscellaneous', 'attachments']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
@@ -40,6 +37,23 @@ class Wizard(WizardBase):
     
     def step_miscellaneous(self, request):
         return self.handle_form(request, MiscellaneousForm)
+    
+    def step_attachments(self, request):
+        if request.method == 'POST':
+            if 'save_next' in request.POST:
+                return self.next_step()
+            form = AttachmentForm(request.POST, request.FILES)
+            if form.is_valid():
+                obj = form.save(commit=False)
+                obj.order = self.order
+                obj.save()
+        else:
+            form = AttachmentForm()
+        attachments = Attachment.objects.filter(order=self.order)
+        return {'form': form, 'attachments': attachments}
+    
+    def complete(self, request):
+        return HttpResponse("Wizard is complete")
     
     def get_summary(self):
         summary_fields = [
@@ -91,8 +105,8 @@ class Wizard(WizardBase):
 
 
 
-def wizard(request, id, step=None):
-    return Wizard()(request, id, step)
+def wizard(request, id, step=None, complete=False):
+    return Wizard()(request, id, step, complete)
 
 
 

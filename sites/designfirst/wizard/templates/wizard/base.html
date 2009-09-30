@@ -25,7 +25,7 @@
 
 
 
-<form method="POST">
+<form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
 
 <div id="wizard_content" class="grid_11">
 <fieldset>
@@ -59,7 +59,7 @@
 <div class="clear"></div>
 
 <div class="grid_13" style="text-align: center;">
-<input type="submit" value="Save/Next">
+<input type="submit" name="save_next" value="Save/Next">
 </div>
 
 <div class="clear"></div>
