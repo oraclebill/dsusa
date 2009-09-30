@@ -5,8 +5,8 @@ from django.utils.translation import ugettext as _
 
 class Manufacturer(models.Model):
     name = models.CharField(_("Manufacturer Name"), primary_key=True, max_length=30)
-    small_logo = models.ImageField(_("Small Logo"), upload_to='logos', blank=True)
-    large_logo = models.ImageField(_("Logo"), upload_to='images/logos', blank=True, null=True)
+    small_logo = models.ImageField(_("Small Logo"), upload_to='data/logos', blank=True)
+    large_logo = models.ImageField(_("Logo"), upload_to='data/logos', blank=True, null=True)
     
     def __unicode__(self):
         return self.name
@@ -28,8 +28,8 @@ class DoorStyle(models.Model):
     name = models.CharField(_("Door Style"), primary_key=True, max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
-    thumbnail = models.ImageField(_("Small Image"), upload_to='images/oors', blank=True, null=True)
-    image = models.ImageField(_("Large Image"), upload_to='images/doors', blank=True, null=True)
+    thumbnail = models.ImageField(_("Small Image"), upload_to='data/doors', blank=True, null=True)
+    image = models.ImageField(_("Large Image"), upload_to='data/doors', blank=True, null=True)
     
     def __unicode__(self):
         return self.name
@@ -38,7 +38,7 @@ class WoodOption(models.Model):
     name = models.CharField(_("Wood"), primary_key=True, max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
-    image = models.ImageField(_("Sample"), upload_to='images/woods', blank=True, null=True)
+    image = models.ImageField(_("Sample"), upload_to='data/woods', blank=True, null=True)
     
     def __unicode__(self):
         return self.name
@@ -47,7 +47,7 @@ class FinishOption(models.Model):
     name = models.CharField(_("Finish Option"), primary_key=True, max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
-    image = models.ImageField(_("Sample"), upload_to='images/finishes', blank=True, null=True)
+    image = models.ImageField(_("Sample"), upload_to='data/finishes', blank=True, null=True)
     
     def __unicode__(self):
         return self.name
@@ -63,7 +63,7 @@ class GeneralOption(models.Model):
     description = models.TextField(_("Description"), max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
-    image = models.ImageField(_("Sample"), upload_to='images/finishes', null=True)
+    image = models.ImageField(_("Sample"), upload_to='data/options', null=True)
     
     def __unicode__(self):
         return self.name
