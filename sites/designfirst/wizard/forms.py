@@ -10,6 +10,8 @@ class MockForm(forms.ModelForm):
         ]
 
 
+
+
 class ManufacturerFrom(forms.ModelForm):
     class Meta:
         model = WorkingOrder
@@ -17,10 +19,14 @@ class ManufacturerFrom(forms.ModelForm):
             'cabinet_manufacturer',
             'cabinet_door_style',
             'cabinet_wood',
-            'cabinet_stain',
             'cabinet_finish',
             'cabinetry_notes'
         ]
+    
+    class Media:
+        css = {'all': ('css/jquery.autocomplete.css',)}
+        js = ('js/jquery.autocomplete.js', )
+
 
 
 class HardwareFrom(forms.ModelForm):

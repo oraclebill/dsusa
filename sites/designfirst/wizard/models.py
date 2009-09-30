@@ -18,14 +18,11 @@ class WorkingOrder(models.Model):
         verbose_name='Door Style')
     cabinet_wood = models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Wood')
-    cabinet_stain = models.CharField(max_length=150, blank=True, null=True, 
-        verbose_name='Stain')
     cabinet_finish = models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Other Finish')
     cabinet_finish_options =  models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Special Options')
-    cabinetry_notes =  models.CharField(max_length=150, blank=True, null=True, 
-        verbose_name='Notes')
+    cabinetry_notes =  models.TextField('Notes', null=True, blank=True)
     
     
     #Hardware page

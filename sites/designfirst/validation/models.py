@@ -11,6 +11,12 @@ class Manufacturer(models.Model):
     def __unicode__(self):
         return self.name
     
+    def json_dict(self):
+        return {
+            'name': self.name,
+            'small_logo': self.small_logo and self.small_logo.url or None,
+        }
+    
 class ProductLine(models.Model):
     name = models.CharField(_("Product Line"), primary_key=True, max_length=30)
     manufacturer = models.ForeignKey(Manufacturer)

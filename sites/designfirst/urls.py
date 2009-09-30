@@ -16,10 +16,8 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'', include("home.urls")),    
     (r'^designer/', include("designer.urls")),
-    (r'^products/', include("product.urls")),
-    
-    url(r'^wizard/(\d+)/$', 'wizard.views.wizard', name='order-wizard'),
-    url(r'^wizard/(\d+)/(.*?)/$', 'wizard.views.wizard', name='order-wizard-step'),    
+    (r'^products/', include("product.urls")),    
+    (r'^wizard/', include("wizard.urls")),
 
     (r'^admin/', include(admin.site.urls)),
 

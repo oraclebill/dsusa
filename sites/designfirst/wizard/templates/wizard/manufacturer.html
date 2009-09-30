@@ -1,0 +1,88 @@
+{% extends "wizard/base.html" %}
+
+{% block extra-head %}
+{{block.super}}
+<style>
+#manufact_icons img {
+	margin: 10px;
+	float: left;
+	cursor: pointer;
+}
+</style>
+<script>
+
+$(function(){
+	var MANUFACTURERS = {{manufacturers_json|safe}};
+
+	function item_name(item) {
+		return item.name;
+	}
+
+
+	function clean_manuf_related() {
+		$('#id_cabinet_door_style').val('');
+    	$('#id_cabinet_wood').val('');
+    	$('#id_cabinet_finish').val('');
+	}
+
+    function update_manufacturer(newval) {
+        var $man = $("#id_cabinet_manufacturer");
+        if (newval != $man.val())
+        	clean_manuf_related()
+        $man.val(newval); 
+    }
+
+	//Manufacturere icon click handler
+    $('#manufact_icons img').click(function() {
+    	update_manufacturer(this.alt);
+    })
+
+	//Manufacturere autocompleter
+	$("#id_cabinet_manufacturer").autocomplete(MANUFACTURERS, {
+		formatItem: function (item) {
+			return item.name;
+		}
+	}).result(function(event, item){
+		clean_manuf_related();
+    })
+
+	//Door style autocompleter
+	$("#id_cabinet_door_style").autocomplete('{% url ajax-door-style %}', {
+		extraParams: {
+			manufacturer: function() { return $("#id_cabinet_manufacturer").val(); }
+		}
+	})
+
+	//Door wood autocompleter
+	$("#id_cabinet_wood").autocomplete('{% url ajax-wood %}', {
+		extraParams: {
+			manufacturer: function() { return $("#id_cabinet_manufacturer").val(); }
+		}
+	})
+
+	//Finish autocompleter
+	$("#id_cabinet_finish").autocomplete('{% url ajax-finish %}', {
+		extraParams: {
+			manufacturer: function() { return $("#id_cabinet_manufacturer").val(); }
+		}
+	})
+})
+
+
+</script>
+{% endblock extra-head %}
+
+
+{% block wizard-content %}
+
+<div style="width: 60%; float: left;">
+<table>{{form}}</table>
+</div>
+
+<div style="width: 35%; float: left;" id="manufact_icons">
+	{% for item in manufacturers %}
+		<img src="{{item.small_logo.url}}" alt="{{item.name}}">
+	{% endfor %}
+</div>
+
+{% endblock %}

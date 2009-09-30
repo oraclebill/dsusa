@@ -1,4 +1,7 @@
+from django.utils import simplejson
+from django.http import HttpResponse
 from base import WizardBase
+from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from forms import *
 
 
@@ -11,7 +14,11 @@ class Wizard(WizardBase):
              'corner_cabinet']
     
     def step_manufacturer(self, request):
-        return self.handle_form(request, ManufacturerFrom)
+        manufacturers = list(Manufacturer.objects.all())
+        manufacturers_json = simplejson.dumps([m.json_dict() for m in manufacturers])
+        return self.handle_form(request, ManufacturerFrom
+                                , {'manufacturers': manufacturers,
+                                   'manufacturers_json':manufacturers_json})
     
     
     def step_hardware(self, request):
@@ -36,7 +43,6 @@ class Wizard(WizardBase):
                 'cabinet_manufacturer',
                 'cabinet_door_style',
                 'cabinet_wood',
-                'cabinet_stain',
                 'cabinet_finish',
             ]),
             ('Hardware', [
@@ -56,3 +62,21 @@ class Wizard(WizardBase):
 
 def wizard(request, id, step=None):
     return Wizard()(request, id, step)
+
+
+
+def _manufacturer_related(request, model):
+    "Retrun JSON response of objects that matches manufacturer"
+    manufacturer = request.GET.get('manufacturer', '')
+    items = model.objects.filter(manufacturer__name=manufacturer)
+    items = [i.name for i in items]
+    return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in items]))
+
+def ajax_door_style(request):
+    return _manufacturer_related(request, DoorStyle)
+
+def ajax_wood(request):
+    return _manufacturer_related(request, WoodOption)
+
+def ajax_finish(request):
+    return _manufacturer_related(request, FinishOption)
