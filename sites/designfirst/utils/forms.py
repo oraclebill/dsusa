@@ -3,6 +3,7 @@ from django import forms
 
 class FieldsetForm(object):
     "Base class for forms that have fieldsets"
+    fieldsets = None
     
     def get_fieldsets(self):
         return FieldsetList(self, self.fieldsets)
@@ -11,7 +12,7 @@ class FieldsetForm(object):
 class FieldsetList(object):
     def __init__(self, form, fieldsets):
         self.form = form
-        self.fieldsets = fieldsets
+        self.fieldsets = fieldsets or [(None, form.base_fields.keys())]
     
     def __iter__(self):
         for name, fields in self.fieldsets:
