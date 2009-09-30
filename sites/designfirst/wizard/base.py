@@ -81,10 +81,13 @@ class WizardBase(object):
             values = []
             for field in list:
                 item_name = WorkingOrder._meta.get_field(field).verbose_name
+                item_name = capfirst(item_name)
                 if hasattr(self.order, 'get_%s_display' % field):
                     item_value = getattr(self.order, 'get_%s_display' % field)()
                 else:
                     item_value = getattr(self.order, field)
-                values.append((item_name,item_value))
-            result.append((name, values))
+                if item_value not in ('', None):
+                    values.append((item_name,item_value))
+            if len(values) > 0:
+                result.append((name, values))
         return result
