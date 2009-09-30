@@ -113,7 +113,8 @@ def wizard(request, id, step=None, complete=False):
 def _manufacturer_related(request, model):
     "Retrun 'autocomplete' response of objects that matches manufacturer"
     manufacturer = request.GET.get('manufacturer', '')
-    items = model.objects.filter(manufacturer__name=manufacturer)
+    q = request.GET['q']
+    items = model.objects.filter(manufacturer__name=manufacturer, name__icontains=q)
     items = [i.name for i in items]
     return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in items]))
 
