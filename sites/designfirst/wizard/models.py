@@ -37,10 +37,26 @@ class WorkingOrder(models.Model):
     drawer_handle_type = models.PositiveSmallIntegerField(choices=HANDLE_TYPES, null=True, blank=True)
     drawer_handle_model = models.CharField(max_length=255, null=True, blank=True)
     
+    #Moulding page
+    celiling_height = models.CharField(max_length=255, null=True, blank=True)
+    crown_moulding_type = models.CharField(max_length=255, null=True, blank=True)
+    skirt_moulding_type = models.CharField(max_length=255, null=True, blank=True)
+    soft_width = models.IntegerField('Width', null=True, blank=True)
+    soft_height = models.IntegerField('Height', null=True, blank=True)
+    soft_depth = models.IntegerField('Depth', null=True, blank=True)
     
     
-    
-    
+    #Dimension page
+    S_NORMAL, S_STACKED, S_STAGGERED = range(1,4)
+    STYLE_CHOICES = (
+            (S_NORMAL, 'Normal'),
+            (S_STACKED, 'Stacked'),
+            (S_STAGGERED, 'Staggered'))
+    dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, null=True, blank=True)
+    standard_sizes = models.BooleanField('Standard sizes')   
+    wall_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
+    vanity_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
+    depth = models.PositiveIntegerField(null=True, blank=True)
     
     
     

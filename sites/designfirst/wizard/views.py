@@ -26,11 +26,11 @@ class Wizard(WizardBase):
     
     
     def step_moulding(self, request):
-        return self.handle_form(request, MockForm)
+        return self.handle_form(request, MouldingFrom)
     
     
     def step_dimensions(self, request):
-        return self.handle_form(request, MockForm)
+        return self.handle_form(request, DimensionsForm)
     step_dimensions.title = 'Corner boxes'
     
     
@@ -51,8 +51,20 @@ class Wizard(WizardBase):
                 'drawer_handle_type',
                 'drawer_handle_model',
             ]),
-            ('Manufacturer', [
-                
+            ('Moulding', [
+                'celiling_height',
+                'crown_moulding_type',
+                'skirt_moulding_type',
+                'soft_width',
+                'soft_height',
+                'soft_depth',
+            ]),
+            ('Dimensions', [
+                'dimension_style',
+                'standard_sizes',
+                'wall_cabinet_height',
+                'vanity_cabinet_height',
+                'depth'
             ]),
         ]
         return self._get_summary(summary_fields)
