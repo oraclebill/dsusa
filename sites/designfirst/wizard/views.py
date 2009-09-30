@@ -30,7 +30,8 @@ class Wizard(WizardBase):
     
     
     def step_dimensions(self, request):
-        return self.handle_form(request, DimensionsForm)
+        standart_sizes = simplejson.dumps(WorkingOrder.STANDARD_SIZES)
+        return self.handle_form(request, DimensionsForm, {'standard_sizes':standart_sizes})
     step_dimensions.title = 'Corner boxes'
     
     
