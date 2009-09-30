@@ -58,8 +58,24 @@ class WorkingOrder(models.Model):
     vanity_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
     depth = models.PositiveIntegerField(null=True, blank=True)
     
+    #Corder cabinet page
+    BC_LEFT_OPENING, BC_OTHER_OPT = range(1,3)
+    BUILD_CORNER_CHOICES = (
+            (BC_LEFT_OPENING, 'Left Opening'),
+            (BC_OTHER_OPT, 'Some other option'))
+    build_corner_base = models.BooleanField()
+    corder_base = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, null=True, blank=True)
+    build_corner_wall = models.BooleanField()
+    corner_wall = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, null=True, blank=True)
     
-    
+    #Miscellaneous page
+    corables = models.BooleanField()
+    brackets = models.BooleanField()
+    valance = models.BooleanField()
+    leas_feet = models.BooleanField('Leas/Feet')
+    glass_doors = models.BooleanField()
+    range_hood = models.BooleanField()
+    posts = models.BooleanField()
     
     def __unicode__(self):
         return self.project_name

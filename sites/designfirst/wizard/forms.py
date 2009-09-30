@@ -87,3 +87,32 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
         ('Style', ['dimension_style']),
         ('Sizes', ['standard_sizes', 'wall_cabinet_height', 'vanity_cabinet_height', 'depth']),
     ]
+
+
+class CornerCabinetForm(forms.ModelForm, FieldsetForm):
+    class Meta:
+        model = WorkingOrder
+        fields = [
+            'build_corner_base',
+            'corder_base',
+            'build_corner_wall',
+            'corner_wall',
+        ]
+    fieldsets = [
+        (None, ['build_corner_base', 'corder_base']),
+        (None, ['build_corner_wall', 'corner_wall']),
+    ]
+
+
+class MiscellaneousForm(forms.ModelForm, FieldsetForm):
+    class Meta:
+        model = WorkingOrder
+        fields = [
+            'corables',
+            'brackets',
+            'valance',
+            'leas_feet',
+            'glass_doors',
+            'range_hood',
+            'posts',
+        ]

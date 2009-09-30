@@ -11,7 +11,7 @@ from forms import *
 class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'dimensions', 
-             'corner_cabinet']
+             'corner_cabinet', 'miscellaneous']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
@@ -35,7 +35,10 @@ class Wizard(WizardBase):
     
     
     def step_corner_cabinet(self, request):
-        return self.handle_form(request, MockForm)
+        return self.handle_form(request, CornerCabinetForm)
+    
+    def step_miscellaneous(self, request):
+        return self.handle_form(request, MiscellaneousForm)
     
     def get_summary(self):
         summary_fields = [
@@ -66,6 +69,21 @@ class Wizard(WizardBase):
                 'vanity_cabinet_height',
                 'depth'
             ]),
+            ('Corner cabinet', [
+                'build_corner_base',
+                'corder_base',
+                'build_corner_wall',
+                'corner_wall',
+            ]),
+            ('Miscellaneous', [
+                'corables',
+                'brackets',
+                'valance',
+                'leas_feet',
+                'glass_doors',
+                'range_hood',
+                'posts',
+            ]),
         ]
         return self._get_summary(summary_fields)
         
@@ -78,7 +96,7 @@ def wizard(request, id, step=None):
 
 
 def _manufacturer_related(request, model):
-    "Retrun JSON response of objects that matches manufacturer"
+    "Retrun 'autocomplete' response of objects that matches manufacturer"
     manufacturer = request.GET.get('manufacturer', '')
     items = model.objects.filter(manufacturer__name=manufacturer)
     items = [i.name for i in items]
