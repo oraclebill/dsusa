@@ -165,8 +165,8 @@
   "pk": 52, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "add_designerorganization", 
-   "name": "Can add designer account", 
+   "codename": "add_designorganization", 
+   "name": "Can add designer organization", 
    "content_type": 18
   }
  }, 
@@ -174,8 +174,8 @@
   "pk": 53, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "change_designerorganization", 
-   "name": "Can change designer account", 
+   "codename": "change_designorganization", 
+   "name": "Can change designer organization", 
    "content_type": 18
   }
  }, 
@@ -183,8 +183,8 @@
   "pk": 54, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "delete_designerorganization", 
-   "name": "Can delete designer account", 
+   "codename": "delete_designorganization", 
+   "name": "Can delete designer organization", 
    "content_type": 18
   }
  }, 
@@ -192,8 +192,8 @@
   "pk": 25, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "add_account", 
-   "name": "Can add account", 
+   "codename": "add_organization", 
+   "name": "Can add organization", 
    "content_type": 9
   }
  }, 
@@ -201,8 +201,8 @@
   "pk": 28, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "add_dealerorganization", 
-   "name": "Can add dealer account", 
+   "codename": "add_designorganization", 
+   "name": "Can add dealer organization", 
    "content_type": 10
   }
  }, 
@@ -273,8 +273,8 @@
   "pk": 26, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "change_account", 
-   "name": "Can change account", 
+   "codename": "change_organization", 
+   "name": "Can change organization", 
    "content_type": 9
   }
  }, 
@@ -282,8 +282,8 @@
   "pk": 29, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "change_dealerorganization", 
-   "name": "Can change dealer account", 
+   "codename": "change_designorganization", 
+   "name": "Can change dealer organization", 
    "content_type": 10
   }
  }, 
@@ -354,8 +354,8 @@
   "pk": 27, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "delete_account", 
-   "name": "Can delete account", 
+   "codename": "delete_organization", 
+   "name": "Can delete organization", 
    "content_type": 9
   }
  }, 
@@ -363,8 +363,8 @@
   "pk": 30, 
   "model": "auth.permission", 
   "fields": {
-   "codename": "delete_dealerorganization", 
-   "name": "Can delete dealer account", 
+   "codename": "delete_designorganization", 
+   "name": "Can delete dealer organization", 
    "content_type": 10
   }
  }, 
@@ -788,7 +788,7 @@
  }, 
  {
   "pk": 1, 
-  "model": "home.account", 
+  "model": "home.organization", 
   "fields": {
    "status": "A", 
    "company_phone": "", 
@@ -799,7 +799,7 @@
  }, 
  {
   "pk": 2, 
-  "model": "home.account", 
+  "model": "home.organization", 
   "fields": {
    "status": "P", 
    "company_phone": "", 
@@ -810,7 +810,7 @@
  }, 
  {
   "pk": 3, 
-  "model": "home.account", 
+  "model": "home.organization", 
   "fields": {
    "status": "A", 
    "company_phone": "", 
@@ -873,7 +873,7 @@
  }, 
  {
   "pk": 3, 
-  "model": "designer.designerorganization", 
+  "model": "designer.designorganization", 
   "fields": {
    "is_manager": false
   }
