@@ -27,15 +27,16 @@ class WorkingOrder(models.Model):
     
     
     #Hardware page
-    HANDLE_PULL, HANDLE_KNOB = range(1,3)
+    HANDLE_NONE, HANDLE_PULL, HANDLE_KNOB = range(3)
     HANDLE_TYPES = (
+            (HANDLE_NONE, 'None / Not Specified'),
             (HANDLE_PULL, 'Pull'),
             (HANDLE_KNOB, 'Knob'))
     
-    door_handle_type = models.PositiveSmallIntegerField(choices=HANDLE_TYPES, null=True, blank=True)
+    door_handle_type = models.PositiveSmallIntegerField(choices=HANDLE_TYPES, default=HANDLE_NONE)
     door_handle_model = models.CharField(max_length=255, null=True, blank=True)
     
-    drawer_handle_type = models.PositiveSmallIntegerField(choices=HANDLE_TYPES, null=True, blank=True)
+    drawer_handle_type = models.PositiveSmallIntegerField(choices=HANDLE_TYPES, default=HANDLE_NONE)
     drawer_handle_model = models.CharField(max_length=255, null=True, blank=True)
     
     #Moulding page
