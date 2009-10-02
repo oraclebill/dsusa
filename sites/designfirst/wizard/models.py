@@ -55,7 +55,7 @@ class WorkingOrder(models.Model):
             (S_STACKED, 'Stacked'),
             (S_STAGGERED, 'Staggered'))
     STANDARD_SIZES = [16, 32, 36]
-    dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, null=True, blank=True)
+    dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, default=S_NORMAL)
     standard_sizes = models.BooleanField('Standard sizes')   
     wall_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
     vanity_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
