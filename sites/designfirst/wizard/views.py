@@ -1,8 +1,9 @@
 from django.utils import simplejson
 from django.http import HttpResponse
-from base import WizardBase
+from base import WizardBase, BTN_SAVENEXT
 from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from forms import *
+
 
 
 
@@ -45,7 +46,7 @@ class Wizard(WizardBase):
     
     def step_appliances(self, request):
         if request.method == 'POST':
-            if 'save_next' in request.POST:
+            if BTN_SAVENEXT in request.POST:
                 return self.next_step()
             form = ApplianceForm(request.POST, request.FILES)
             if form.is_valid():
@@ -60,7 +61,7 @@ class Wizard(WizardBase):
     
     def step_attachments(self, request):
         if request.method == 'POST':
-            if 'save_next' in request.POST:
+            if BTN_SAVENEXT in request.POST:
                 return self.next_step()
             form = AttachmentForm(request.POST, request.FILES)
             if form.is_valid():

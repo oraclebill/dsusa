@@ -9,6 +9,11 @@ from django.template.defaultfilters import capfirst
 from django.core.urlresolvers import reverse
 
 
+BTN_SAVENEXT = '_savenext_'
+BTN_PREVIOUS = '_prev_'
+BTN_SKIP = '_skip_'
+
+
 class WizardBase(object):
     
     def __call__(self, request, id, step, complete):
@@ -19,12 +24,22 @@ class WizardBase(object):
             step = self.steps[0]
         self.step = step
         
+        if BTN_SKIP in request.POST:
+            return self.next_step()
+        if BTN_PREVIOUS in request.POST:
+            return self.previous_step()
+        
         result = self.dispatch(request)
         if isinstance(result, HttpResponse):
             return result
         
         template = 'wizard/%s.html' % self.step
-        context = {'wizard': self}
+        context = {
+            'wizard': self,
+            'BTN_SAVENEXT': BTN_SAVENEXT,
+            'BTN_PREVIOUS': BTN_PREVIOUS,
+            'BTN_SKIP': BTN_SKIP,
+        }
         if isinstance(result, (list, tuple)):
             result, template = result
         context.update(result)
@@ -64,6 +79,12 @@ class WizardBase(object):
                 'slug': step,
             }
     
+    def previous_step(self):
+        previous = self.steps.index(self.step) - 1
+        if previous < 0:
+            previous = 0
+        return self.go_to_step(self.steps[previous])
+    
     def next_step(self):
         next = self.steps.index(self.step) + 1
         if next >= len(self.steps):
@@ -71,6 +92,8 @@ class WizardBase(object):
                         'order-wizard-complete', args=[self.order.id]))
         return self.go_to_step(self.steps[next])
     
+    def is_first_step(self):
+        return self.steps.index(self.step) == 0
     
     def go_to_step(self, step):
         return HttpResponseRedirect(reverse('order-wizard-step', args=[self.order.id, step]))

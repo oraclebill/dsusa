@@ -59,7 +59,9 @@
 <div class="clear"></div>
 
 <div class="grid_13" style="text-align: center;">
-<input type="submit" name="save_next" value="Save/Next">
+<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
+<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
+<input type="submit" name="{{BTN_SKIP}}" value="Skip">
 </div>
 
 <div class="clear"></div>
