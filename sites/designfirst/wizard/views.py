@@ -75,6 +75,9 @@ class Wizard(WizardBase):
                 obj = form.save(commit=False)
                 obj.order = self.order
                 obj.save()
+                if obj.is_pdf():
+                    obj.generate_pdf_previews()
+                
         else:
             form = AttachmentForm()
         attachments = Attachment.objects.filter(order=self.order)

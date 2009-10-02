@@ -1,5 +1,7 @@
 import os
+from django.core.files.base import File as DjangoFile
 from django.db import models
+from utils.pdf import pdf2ppm
 
 class WorkingOrder(models.Model):
     """
@@ -114,7 +116,28 @@ class Attachment(models.Model):
     
     def __unicode__(self):
         return os.path.basename(self.file.path)
+    
+    def is_pdf(self):
+        return self.file.name.lower().endswith('.pdf')
+    
+    def generate_pdf_previews(self):
+        pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
+    
+    def _pdf_callback(self, filename, page, size):
+        preview = AttachPreview(page=page, attachment=self)
+        file = DjangoFile(open(filename, 'rb'))
+        preview.file.save(file.name, file)
+        preview.save()
 
+class AttachPreview(models.Model):
+    "Stores PDF pages converted to images"
+    attachment = models.ForeignKey(Attachment, related_name='previews')
+    page = models.PositiveIntegerField()
+    file = models.ImageField(upload_to='data/wizard/attachments/%Y/%m/preview')
+    
+    class Meta:
+        ordering = ['page']
+    
 
 class Appliance(models.Model):
     TYPES = ['Refrigerator', 'Microwave','Double sink','Cooktop','Oven']

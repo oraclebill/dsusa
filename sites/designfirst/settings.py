@@ -160,6 +160,9 @@ DEMO_MAIL_DESIGNER_ADDRESS = 'designer-notify@designserviceusa.com'
 #DEMO_MAIL_DEALER_ADDRESS = 'dealer-notify@designserviceusa.com'
 
 
+#This is used for pdf2ppm output
+PPM_TMP_ROOT = '/tmp/designfirst/'
+
 try:
     from settings_local import *
 except ImportError:
