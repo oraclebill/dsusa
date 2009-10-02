@@ -1,3 +1,4 @@
+import os
 from django import forms
 from models import WorkingOrder,  Attachment, Appliance
 from utils.forms import FieldsetForm
@@ -149,6 +150,15 @@ class AttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment
         exclude = ('order',)
+    
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+        if file is not None:
+            file_name = file.name.lower()
+            name, ext = os.path.splitext(file_name)
+            if ext not in ('.jpg', '.jpeg', '.png', '.gif', '.pdf'):
+                raise forms.ValidationError('"%s" is not allowed file type' % ext)
+        return file
 
 
 class ApplianceForm(forms.ModelForm):
