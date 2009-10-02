@@ -104,9 +104,9 @@ class Wizard(WizardBase):
                 'celiling_height',
                 'crown_moulding_type',
                 'skirt_moulding_type',
-                'soft_width',
-                'soft_height',
-                'soft_depth',
+                'soffit_width',
+                'soffit_height',
+                'soffit_depth',
             ]),
             ('Dimensions', [
                 'dimension_style',
