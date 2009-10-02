@@ -62,14 +62,23 @@ class WorkingOrder(models.Model):
     depth = models.PositiveIntegerField(null=True, blank=True)
     
     #Corder cabinet page
-    BC_LEFT_OPENING, BC_OTHER_OPT = range(1,3)
+    CORNER_NONE, CORNER_RIGHT, CORNER_LEFT = range(3)
     BUILD_CORNER_CHOICES = (
-            (BC_LEFT_OPENING, 'Left Opening'),
-            (BC_OTHER_OPT, 'Some other option'))
-    build_corner_base = models.BooleanField()
-    corder_base = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, null=True, blank=True)
-    build_corner_wall = models.BooleanField()
-    corner_wall = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, null=True, blank=True)
+            (CORNER_NONE, 'None'),
+            (CORNER_RIGHT, 'Left Opening'),
+            (CORNER_LEFT, 'Right Opening'))
+    
+    SHELF, LAZY_SUSAN = range(1,3)
+    SHELVING_CHOICES = (
+            (SHELF, 'Shelf'),
+            (LAZY_SUSAN, 'Lazy Susan'))
+    diagonal_corner_base = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, default=CORNER_NONE)
+    diagonal_corner_base_shelv = models.PositiveSmallIntegerField(choices=SHELVING_CHOICES, default=SHELF)
+    diagonal_corner_wall = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, default=CORNER_NONE)
+    diagonal_corner_wall_shelv = models.PositiveSmallIntegerField(choices=SHELVING_CHOICES, default=SHELF)
+    degree90_corner_base = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, default=CORNER_NONE)
+    degree90_corner_base_shelv = models.PositiveSmallIntegerField(choices=SHELVING_CHOICES, default=SHELF)
+    degree90_corner_wall = models.PositiveSmallIntegerField(choices=BUILD_CORNER_CHOICES, default=CORNER_NONE)
     
     #Interiors page
     lazy_susan = models.BooleanField()

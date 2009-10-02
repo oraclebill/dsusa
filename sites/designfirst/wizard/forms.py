@@ -93,15 +93,29 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fields = [
-            'build_corner_base',
-            'corder_base',
-            'build_corner_wall',
-            'corner_wall',
+            'diagonal_corner_base',
+            'diagonal_corner_base_shelv',
+            'diagonal_corner_wall',
+            'diagonal_corner_wall_shelv',
+            'degree90_corner_base',
+            'degree90_corner_base_shelv',
+            'degree90_corner_wall',
         ]
     fieldsets = [
-        (None, ['build_corner_base', 'corder_base']),
-        (None, ['build_corner_wall', 'corner_wall']),
+        ('Diagonal corner wall', ['diagonal_corner_wall', 'diagonal_corner_wall_shelv']),
+        ('Diagonal corner base', ['diagonal_corner_base', 'diagonal_corner_base_shelv']),
+        ('90 Degree corner wall', ['degree90_corner_wall']),
+        ('90 Degree corner base', ['degree90_corner_base', 'degree90_corner_base_shelv']),
     ]
+    def __init__(self, *args, **kwargs):
+        #Labels/Widget customization
+        for name, field in self.base_fields.items():
+            field.widget = forms.RadioSelect(choices=field.choices)
+            if name.endswith('_shelv'):
+                field.label = 'Shelving'
+            else:
+                field.label = ''
+        super(CornerCabinetForm, self).__init__(*args, **kwargs)
 
 
 class InteriorsForm(forms.ModelForm, FieldsetForm):

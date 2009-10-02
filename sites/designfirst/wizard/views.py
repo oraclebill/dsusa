@@ -113,10 +113,10 @@ class Wizard(WizardBase):
                 'depth'
             ]),
             ('Corner cabinet', [
-                'build_corner_base',
-                'corder_base',
-                'build_corner_wall',
-                'corner_wall',
+                'diagonal_corner_base',
+                'diagonal_corner_wall',
+                'degree90_corner_base',
+                'degree90_corner_wall',
             ]),
             ('Interiors', [
                 'lazy_susan',
