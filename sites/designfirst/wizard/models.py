@@ -104,3 +104,17 @@ class Attachment(models.Model):
     
     def __unicode__(self):
         return os.path.basename(self.file.path)
+
+
+class Appliance(models.Model):
+    TYPES = ['Refrigerator', 'Microwave','Double sink','Cooktop','Oven']
+    
+    order = models.ForeignKey(WorkingOrder)
+    type = models.CharField(max_length=100, choices=[(i,i) for i in TYPES])
+    description = models.CharField(max_length=255, null=True, blank=True)
+    width = models.PositiveIntegerField(null=True, blank=True)
+    height = models.PositiveIntegerField(null=True, blank=True)
+    depth = models.PositiveIntegerField(null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.type

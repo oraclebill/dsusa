@@ -5,10 +5,12 @@ from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from forms import *
 
 
+
 class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'dimensions', 
-             'corner_cabinet', 'interiors', 'miscellaneous', 'attachments']
+             'corner_cabinet', 'interiors', 'miscellaneous', 
+             'appliances', 'attachments']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
@@ -40,6 +42,21 @@ class Wizard(WizardBase):
     
     def step_miscellaneous(self, request):
         return self.handle_form(request, MiscellaneousForm)
+    
+    def step_appliances(self, request):
+        if request.method == 'POST':
+            if 'save_next' in request.POST:
+                return self.next_step()
+            form = ApplianceForm(request.POST, request.FILES)
+            if form.is_valid():
+                obj = form.save(commit=False)
+                obj.order = self.order
+                obj.save()
+                form = ApplianceForm()
+        else:
+            form = ApplianceForm()
+        appliances = Appliance.objects.filter(order=self.order)
+        return {'form': form, 'appliances': appliances}
     
     def step_attachments(self, request):
         if request.method == 'POST':

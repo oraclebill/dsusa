@@ -1,0 +1,31 @@
+{% extends "wizard/base.html" %}
+
+{% block wizard-content %}
+
+<table>
+<tr>
+	<th>Type</th>
+	<th>Description</th>
+	<th>Width</th>
+	<th>Height</th>
+	<th>Depth</th>
+</tr>
+{% for item in appliances %}
+<tr>
+	<td>{{item.type}}</td>
+	<td>{{item.description|default:"N/A"}}</td>
+	<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+	<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+	<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+
+<fieldset>
+	<legend>Add Appliance</legend>
+	<table>{{form}}</table>
+	<input type="submit" name="upload_file" value="Add">
+</fieldset>
+
+
+{% endblock %}

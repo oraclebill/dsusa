@@ -1,5 +1,5 @@
 from django import forms
-from models import WorkingOrder,  Attachment
+from models import WorkingOrder,  Attachment, Appliance
 from utils.forms import FieldsetForm
 
 
@@ -134,4 +134,10 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
 class AttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment
+        exclude = ('order',)
+
+
+class ApplianceForm(forms.ModelForm):
+    class Meta:
+        model = Appliance
         exclude = ('order',)
