@@ -32,7 +32,7 @@ class Wizard(WizardBase):
     def step_dimensions(self, request):
         standart_sizes = simplejson.dumps(WorkingOrder.STANDARD_SIZES)
         #when the manufacturer is one of the valid manufacturers, 
-        #default ‘Standard Sizes’ should be ‘checked’ or ‘True’, 
+        #default 'Standard Sizes' should be 'checked' or 'True', 
         #otherwise false. :
         if self.order.wall_cabinet_height is None\
                 and self.order.wall_cabinet_height is None\
