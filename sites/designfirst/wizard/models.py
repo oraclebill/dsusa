@@ -17,12 +17,14 @@ class WorkingOrder(models.Model):
     #Manufacturer page (cabinetry options)
     cabinet_manufacturer = models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Manufacturer')
+    cabinet_product_line = models.CharField(max_length=150, blank=True, null=True, 
+        verbose_name='Product Line')
     cabinet_door_style = models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Door Style')
     cabinet_wood = models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Wood')
     cabinet_finish = models.CharField(max_length=150, blank=True, null=True, 
-        verbose_name='Other Finish')
+        verbose_name='Finish')
     cabinet_finish_options =  models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Special Options')
     cabinetry_notes =  models.TextField('Notes', null=True, blank=True)

@@ -355,6 +355,14 @@ input.search.button {
 	margin-left:2%;
 }
 
+form tbody th,
+form tbody td {
+	border-top:0px;
+	border-bottom:0px;
+}
+form tbody th {
+    vertical-align: top;
+}
 
 /* articles
 ----------------------------------------------- */

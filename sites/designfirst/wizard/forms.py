@@ -19,9 +19,11 @@ class ManufacturerFrom(forms.ModelForm):
         model = WorkingOrder
         fields = [
             'cabinet_manufacturer',
+            'cabinet_product_line',
             'cabinet_door_style',
             'cabinet_wood',
             'cabinet_finish',
+            'cabinet_finish_options',
             'cabinetry_notes'
         ]
     
