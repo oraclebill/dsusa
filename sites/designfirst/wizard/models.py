@@ -1,3 +1,4 @@
+from utils.fields import DimensionField
 import os
 from django.core.files.base import File as DjangoFile
 from django.db import models
@@ -45,9 +46,9 @@ class WorkingOrder(models.Model):
     celiling_height = models.CharField(max_length=255, null=True, blank=True)
     crown_moulding_type = models.CharField(max_length=255, null=True, blank=True)
     skirt_moulding_type = models.CharField(max_length=255, null=True, blank=True)
-    soft_width = models.IntegerField('Width', null=True, blank=True)
-    soft_height = models.IntegerField('Height', null=True, blank=True)
-    soft_depth = models.IntegerField('Depth', null=True, blank=True)
+    soft_width = DimensionField('Width', null=True, blank=True)
+    soft_height = DimensionField('Height', null=True, blank=True)
+    soft_depth = DimensionField('Depth', null=True, blank=True)
     
     
     #Dimension page
@@ -59,9 +60,9 @@ class WorkingOrder(models.Model):
     STANDARD_SIZES = [16, 32, 36]
     dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, default=S_NORMAL)
     standard_sizes = models.BooleanField('Standard sizes')   
-    wall_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
-    vanity_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
-    depth = models.PositiveIntegerField(null=True, blank=True)
+    wall_cabinet_height = DimensionField(null=True, blank=True)
+    vanity_cabinet_height = DimensionField(null=True, blank=True)
+    depth = DimensionField(null=True, blank=True)
     
     #Corder cabinet page
     CORNER_NONE, CORNER_RIGHT, CORNER_LEFT = range(3)
@@ -157,9 +158,9 @@ class Appliance(models.Model):
     order = models.ForeignKey(WorkingOrder)
     type = models.CharField(max_length=100, choices=[(i,i) for i in TYPES])
     description = models.CharField(max_length=255, null=True, blank=True)
-    width = models.PositiveIntegerField(null=True, blank=True)
-    height = models.PositiveIntegerField(null=True, blank=True)
-    depth = models.PositiveIntegerField(null=True, blank=True)
+    width = DimensionField(null=True, blank=True)
+    height = DimensionField(null=True, blank=True)
+    depth = DimensionField(null=True, blank=True)
     
     def __unicode__(self):
         return self.type
