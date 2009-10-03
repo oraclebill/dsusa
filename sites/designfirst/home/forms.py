@@ -11,7 +11,7 @@ class NewDesignOrderForm(forms.ModelForm):
         model = WorkingOrder
         fields = ['project_name', 'desired', 'cost', 'client_notes']
     
-    design_product = forms.ModelChoiceField(queryset=Product.objects.all())
+    design_product = forms.ModelChoiceField(queryset=Product.objects.filter(debitable=True))
     
     def __init__(self, *args, **kwargs):
         #changing order of the fields
