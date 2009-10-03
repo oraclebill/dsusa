@@ -117,6 +117,18 @@ class Attachment(models.Model):
     def __unicode__(self):
         return os.path.basename(self.file.path)
     
+    def previews(self):
+        if self.is_pdf():
+            for f in self.attachpreview_set.all():
+                yield {'url':f.file.url, 'page': f.page}
+        else:
+            yield {'url':self.file.url, 'page': 1}
+    
+    def page_count(self):
+        if self.is_pdf():
+            return self.attachpreview_set.all().count()
+        return 1
+    
     def is_pdf(self):
         return self.file.name.lower().endswith('.pdf')
     
@@ -131,7 +143,7 @@ class Attachment(models.Model):
 
 class AttachPreview(models.Model):
     "Stores PDF pages converted to images"
-    attachment = models.ForeignKey(Attachment, related_name='previews')
+    attachment = models.ForeignKey(Attachment)
     page = models.PositiveIntegerField()
     file = models.ImageField(upload_to='data/wizard/attachments/%Y/%m/preview')
     
