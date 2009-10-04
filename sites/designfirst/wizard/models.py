@@ -48,9 +48,9 @@ class WorkingOrder(models.Model):
     celiling_height = models.CharField(max_length=255, null=True, blank=True)
     crown_moulding_type = models.CharField(max_length=255, null=True, blank=True)
     skirt_moulding_type = models.CharField(max_length=255, null=True, blank=True)
-    soft_width = DimensionField('Width', null=True, blank=True)
-    soft_height = DimensionField('Height', null=True, blank=True)
-    soft_depth = DimensionField('Depth', null=True, blank=True)
+    soffit_width = DimensionField('Width', null=True, blank=True)
+    soffit_height = DimensionField('Height', null=True, blank=True)
+    soffit_depth = DimensionField('Depth', null=True, blank=True)
     
     
     #Dimension page
