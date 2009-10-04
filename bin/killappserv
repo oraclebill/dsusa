@@ -38,7 +38,7 @@ else:
 if not path.exists(pidfile):
    raise Error, "no server running at %s" % pidfile
 
-pid=read(pidfile)
+pid=open(pidfile).read().strip()
 
 subprocess.call(['kill', pid])
 subprocess.call(['rm', pidfile])
