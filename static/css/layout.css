@@ -363,6 +363,9 @@ form tbody td {
 form tbody th {
     vertical-align: top;
 }
+form ul {
+    list-style: none;
+}
 
 /* articles
 ----------------------------------------------- */
