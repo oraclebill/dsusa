@@ -1,29 +1,16 @@
 server {
-        listen 80;
-        server_name static.designserviceusa.com;
-
-        access_log /home/bjones/projects/dsusa/var/log/www.access.log;
-        error_log /home/bjones/projects/dsusa/var/log/www.error.log error;
-
-        location / {
-                root /home/bjones/projects/dsusa/com_designserviceusa/static;
-                index index.html;
-        }
-        error_page   500 502 503 504  /50x.html;
-        location = /50x.html {
-                root   /var/www/nginx-default;
-        }
-}
-
-server {
 	listen 80;
-	server_name stage.designserviceusa.com;
+	server_name www.designserviceusa.com;
 
-	access_log /home/bjones/projects/dsusa/var/log/www.access.log;
-	error_log /home/bjones/projects/dsusa/var/log/www.error.log error;
+        access_log /var/log/nginx/com_designserviceusa_www-access.log;
+        error_log /var/log/nginx/com_designserviceusa_www-error.log error;
+
+	location ~ /(css|images|js)/ {
+		root /var/www/com_designserviceusa_www/static;
+	}
 
 	location / {
-		fastcgi_pass djangositeserv;
+		fastcgi_pass unix:/var/www/com_designserviceusa_www/var/website-fcgi.sock;
 		fastcgi_param PATH_INFO $fastcgi_script_name;
 		fastcgi_param REQUEST_METHOD $request_method;
 		fastcgi_param QUERY_STRING $query_string;
@@ -35,4 +22,9 @@ server {
 		fastcgi_pass_header Authorization;
 		fastcgi_intercept_errors off;
 	}
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+                root   /var/www/nginx-default;
+        }
 }
