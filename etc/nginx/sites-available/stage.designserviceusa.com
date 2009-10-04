@@ -1,16 +1,16 @@
 server {
 	listen 80;
-	server_name dev.designserviceusa.com;
+	server_name stage.designserviceusa.com;
 
-	access_log /var/log/nginx/com_designserviceusa_dev-access.log;
-	error_log /var/log/nginx/com_designserviceusa_dev-error.log error;
+        access_log /var/log/nginx/com_designserviceusa_stage-access.log;
+        error_log /var/log/nginx/com_designserviceusa_stage-error.log error;
 
-	location ~ /(css|images|js)/ {
-		root /home/bjones/projects/dsusa/designfirst-static;
+	location ~ /(css|img|js|pic)/ {
+		root /var/www/com_designserviceusa_www/static;
 	}
 
 	location / {
-		fastcgi_pass unix:/home/bjones/projects/dsusa/var/djangoappserv.sock;
+		fastcgi_pass unix:/var/www/com_designserviceusa_www/var/website-fcgi.sock;
 		fastcgi_param PATH_INFO $fastcgi_script_name;
 		fastcgi_param REQUEST_METHOD $request_method;
 		fastcgi_param QUERY_STRING $query_string;
@@ -22,4 +22,9 @@ server {
 		fastcgi_pass_header Authorization;
 		fastcgi_intercept_errors off;
 	}
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+                root   /var/www/nginx-default;
+        }
 }

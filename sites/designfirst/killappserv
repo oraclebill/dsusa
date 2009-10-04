@@ -1,5 +1,0 @@
-pidfile=/home/bjones/projects/dsusa/var/djangoappserv.pid
-pid=`cat $pidfile`
-kill $pid
-rm $pidfile
-

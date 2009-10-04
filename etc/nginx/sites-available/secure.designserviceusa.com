@@ -5,14 +5,14 @@ server {
 	# ssl params
 	keepalive_timeout 70;
 	ssl on;
-	ssl_certificate /home/bjones/projects/dsusa/etc/ssl/secure.designserviceusa.com/cert-combined;
-	ssl_certificate_key /home/bjones/projects/dsusa/etc/ssl/secure.designserviceusa.com/key;
+	ssl_certificate /etc/ssl/certs/ssl-cert-com_designserviceusa_secure.pem;
+	ssl_certificate_key /etc/ssl/private/ssl-cert-com_designserviceusa_secure.key;
 	#ssl_session_cache shared: SSL: 10m;
 	#ssl_session_timeout 10m;
 	# end ssl params
 
         location / {
-                fastcgi_pass djangoappserv;
+                fastcgi_pass unix:/var/www/com_designserviceusa_beta/var/designfirst.sock;
                 fastcgi_param PATH_INFO $fastcgi_script_name;
                 fastcgi_param REQUEST_METHOD $request_method;
                 fastcgi_param QUERY_STRING $query_string;

@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from base import WizardBase, BTN_SAVENEXT
 from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from forms import *
+from utils.views import render_to
+from django.shortcuts import get_object_or_404
 
 
 
@@ -67,6 +69,7 @@ class Wizard(WizardBase):
         return {'form': form, 'appliances': appliances}
     
     def step_attachments(self, request):
+        context = {}
         if request.method == 'POST':
             if BTN_SAVENEXT in request.POST:
                 return self.next_step()
@@ -77,11 +80,13 @@ class Wizard(WizardBase):
                 obj.save()
                 if obj.is_pdf():
                     obj.generate_pdf_previews()
+                context['confirm_attach'] = obj.id
                 
         else:
             form = AttachmentForm()
         attachments = Attachment.objects.filter(order=self.order)
-        return {'form': form, 'attachments': attachments}
+        context.update({'form': form, 'attachments': attachments})
+        return context
     
     def complete(self, request):
         return HttpResponse("Wizard is complete")
@@ -162,6 +167,12 @@ def _manufacturer_related(request, model):
     items = model.objects.filter(manufacturer__name=manufacturer, name__icontains=q)
     items = [i.name for i in items]
     return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in items]))
+
+
+@render_to('wizard/attachment_details.html')
+def ajax_attach_details(request, id):
+    attachment = get_object_or_404(Attachment, id=id)
+    return {'attachment': attachment}
 
 def ajax_door_style(request):
     return _manufacturer_related(request, DoorStyle)

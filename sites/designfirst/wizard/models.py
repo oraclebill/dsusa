@@ -1,3 +1,4 @@
+from utils.fields import DimensionField
 import os
 from django.core.files.base import File as DjangoFile
 from django.db import models
@@ -47,9 +48,9 @@ class WorkingOrder(models.Model):
     celiling_height = models.CharField(max_length=255, null=True, blank=True)
     crown_moulding_type = models.CharField(max_length=255, null=True, blank=True)
     skirt_moulding_type = models.CharField(max_length=255, null=True, blank=True)
-    soffit_width = models.IntegerField('Width', null=True, blank=True)
-    soffit_height = models.IntegerField('Height', null=True, blank=True)
-    soffit_depth = models.IntegerField('Depth', null=True, blank=True)
+    soft_width = DimensionField('Width', null=True, blank=True)
+    soft_height = DimensionField('Height', null=True, blank=True)
+    soft_depth = DimensionField('Depth', null=True, blank=True)
     
     
     #Dimension page
@@ -61,9 +62,9 @@ class WorkingOrder(models.Model):
     STANDARD_SIZES = [16, 32, 36]
     dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, default=S_NORMAL)
     standard_sizes = models.BooleanField('Standard sizes')   
-    wall_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
-    vanity_cabinet_height = models.PositiveIntegerField(null=True, blank=True)
-    depth = models.PositiveIntegerField(null=True, blank=True)
+    wall_cabinet_height = DimensionField(null=True, blank=True)
+    vanity_cabinet_height = DimensionField(null=True, blank=True)
+    depth = DimensionField(null=True, blank=True)
     
     #Corder cabinet page
     CORNER_NONE, CORNER_RIGHT, CORNER_LEFT = range(3)
@@ -119,6 +120,18 @@ class Attachment(models.Model):
     def __unicode__(self):
         return os.path.basename(self.file.path)
     
+    def previews(self):
+        if self.is_pdf():
+            for f in self.attachpreview_set.all():
+                yield {'url':f.file.url, 'page': f.page}
+        else:
+            yield {'url':self.file.url, 'page': 1}
+    
+    def page_count(self):
+        if self.is_pdf():
+            return self.attachpreview_set.all().count()
+        return 1
+    
     def is_pdf(self):
         return self.file.name.lower().endswith('.pdf')
     
@@ -133,7 +146,7 @@ class Attachment(models.Model):
 
 class AttachPreview(models.Model):
     "Stores PDF pages converted to images"
-    attachment = models.ForeignKey(Attachment, related_name='previews')
+    attachment = models.ForeignKey(Attachment)
     page = models.PositiveIntegerField()
     file = models.ImageField(upload_to='data/wizard/attachments/%Y/%m/preview')
     
@@ -147,9 +160,9 @@ class Appliance(models.Model):
     order = models.ForeignKey(WorkingOrder)
     type = models.CharField(max_length=100, choices=[(i,i) for i in TYPES])
     description = models.CharField(max_length=255, null=True, blank=True)
-    width = models.PositiveIntegerField(null=True, blank=True)
-    height = models.PositiveIntegerField(null=True, blank=True)
-    depth = models.PositiveIntegerField(null=True, blank=True)
+    width = DimensionField(null=True, blank=True)
+    height = DimensionField(null=True, blank=True)
+    depth = DimensionField(null=True, blank=True)
     
     def __unicode__(self):
         return self.type
