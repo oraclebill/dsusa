@@ -52,7 +52,7 @@ class DesignOrder(models.Model):
     
     objects = DesignOrderManager()
     
-    id = models.CharField(_('Order ID'), max_length=20, null=True, blank=True,
+    id = models.CharField(_('Order ID'), max_length=20, primary_key=True,
         help_text=_('A unique identifier for this order')) # also slug?
     source = models.CharField(_('Order Source'), max_length=10, null=True, blank=True,
         help_text=_('A code indicating the source of the order. This is an organization such as TCMG'))

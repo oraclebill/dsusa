@@ -101,7 +101,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'designfirst.home',
-    'designfirst.designer',
     'designfirst.product',
     'designfirst.wizard',
     'paypal.standard.ipn',

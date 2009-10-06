@@ -78,7 +78,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'ordermgr',
 )
+
+AUTH_PROFILE_MODEL = 'UserProfile'
 
 try:
     from settings_local import *

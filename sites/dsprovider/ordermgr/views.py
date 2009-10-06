@@ -13,14 +13,10 @@ from django.contrib.auth.models import User
 
 from django.shortcuts import render_to_response
 
-from home import ACCOUNT_ID
-from home.models import DesignOrder
-from designer.models import DesignOrganization
-from designer.forms import DesignPackageUploadForm as PackageForm
-from designer.forms import AssignDesignerForm
+from models import DesignOrder
 
 import logging
-log = logging.getLogger('designer.views')
+log = logging.getLogger('ordermgr.views')
 
 
 def get_designer_context(request, orderid=None):
@@ -153,7 +149,7 @@ def designer_display_order(request, orderid):
             if 'complete-order-action' in request.POST:
                 if order.designer_package:
                     order.designer_complete(user)
-                    return HttpResponseRedirect(reverse('designer.views.designer_dashboard'))
+                    return HttpResponseRedirect(reverse('ordermgr.views.designer_dashboard'))
                 else:
                     log.warning( "Attempt to complete order without attached design(s)" )
                     errors = "Cannot complete design order without attached design package"
@@ -193,7 +189,7 @@ def designer_claim_order(request, orderid):
         log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, user) )
         raise Exception, 'Order %s is already assigned to %s - cannot reassign' % (orderid, user)
             
-    return HttpResponseRedirect(reverse('designer.views.designer_dashboard'))
+    return HttpResponseRedirect(reverse('ordermgr.views.designer_dashboard'))
 
 def designer_assign_order(request, orderid ):
     """
@@ -219,7 +215,7 @@ def designer_assign_order(request, orderid ):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.assign_designer(instance.designer) # designer was assigned by form..            
-            return HttpResponseRedirect(reverse('designer.views.designer_dashboard'))
+            return HttpResponseRedirect(reverse('ordermgr.views.designer_dashboard'))
         else:
             log.warning('designer_assign_order: unexpected state - invalid form' )
     else:

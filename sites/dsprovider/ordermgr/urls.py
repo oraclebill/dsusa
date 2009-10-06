@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('designer', 
+urlpatterns = patterns('ordermgr', 
                         (r'^$', 'views.designer_dashboard'),
                         (r'^order/(\d+)/display$', 'views.designer_display_order'),
                         (r'^order/(\d+)/assign$', 'views.designer_assign_order'),
