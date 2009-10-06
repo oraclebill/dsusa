@@ -1,4 +1,14 @@
 # Django settings for dsprovider project.
+import os, sys
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+
+#Realtive path helper
+def rel(*x):
+    return os.path.abspath(os.path.join(THIS_DIR, *x))
+
+sys.path.insert(0, rel('..', '..', 'lib'))#Adding lib to system path
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -27,7 +37,7 @@ TIME_ZONE = 'America/Chicago'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 1002
+SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -35,17 +45,17 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/media/'
+MEDIA_ROOT = rel('..', '..', 'static')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/media/admin'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '=be$#x8^x)f0j1%954s7j08b)c#g^6qy_!)h1gc*7!9_u5))_*'
@@ -81,7 +91,7 @@ INSTALLED_APPS = (
     'ordermgr',
 )
 
-AUTH_PROFILE_MODEL = 'UserProfile'
+AUTH_PROFILE_MODULE = 'ordermgr.UserProfile'
 
 try:
     from settings_local import *

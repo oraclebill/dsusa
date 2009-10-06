@@ -1,7 +1,7 @@
-{% extends "designer/designer_base.html" %}
+{% extends "designer/base.html" %}
 {% load i18n %}
 
-{% load designer_tags %}
+{% load tags %}
 
 {% block title %}
 DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.id}} ] 
@@ -46,19 +46,19 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 			<div class="box">
 				<h5>{% trans "Control" %}</h5>
 				<div>
-					<form method="GET"  id="clarify-form"  action="{% url ordermgr.views.designer_clarify_order order.id %}">
+					<form method="GET"  id="clarify-form"  action="{% url ordermgr.views.clarify_order order.id %}">
 						{# <input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br> #}
 						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
-                    <form method="GET"  id="attach-form"   action="{% url ordermgr.views.designer_attach_design_to_order order.id %}">
+                    <form method="GET"  id="attach-form"   action="{% url ordermgr.views.attach_design_to_order order.id %}">
 						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
                     </form>
 					{% if  order.orderattachment_set.count %}
-					<form method="POST" id="complete-form" action="{% url ordermgr.views.designer_complete_order order.id %}">
+					<form method="POST" id="complete-form" action="{% url ordermgr.views.complete_order order.id %}">
 						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
 				    </form>
 					{% else %}
-					<form method="POST" id="complete-form" action="{% url ordermgr.views.designer_complete_order order.id %}">
+					<form method="POST" id="complete-form" action="{% url ordermgr.views.complete_order order.id %}">
 						<input type="submit" disabled="disabled" name="complete-order-action" value='{% trans "Complete Order" %}'>
 				    </form>
 					{% endif %}
@@ -162,7 +162,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		<div class="box">
 			<h2>{% trans "Designer Notes" %}</h2>
 			<div>
-				<p>{{ order.designer_notes }}</p>
+				<p>{{ order.notes }}</p>
 			</div>
 		</div>
 		<!-- end design options -->

@@ -1,4 +1,4 @@
-{% extends "designer/designer_base.html" %}
+{% extends "designer/base.html" %}
 {% load i18n %}
 
 {% block title %}
@@ -42,7 +42,7 @@
 	<div class="box">
 		<h2>{% trans "Upload Design Attachments" %}</h2>
 		<div>
-			<form action="{% url ordermgr.views.designer_attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
+			<form action="{% url ordermgr.views.attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
 				<table>
 					{{ form }}
 				</table>

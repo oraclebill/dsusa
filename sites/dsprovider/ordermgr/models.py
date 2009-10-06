@@ -17,6 +17,7 @@ class UserProfile(models.Model):
     """
     A profile for users that of the designer portal.
     """
+    user = models.ForeignKey(User, primary_key=True)
     is_manager = models.BooleanField(_('Special Admin Status?'), default=False)
     
     

@@ -1,4 +1,4 @@
-{% extends "designer/designer_base.html" %}
+{% extends "designer/base.html" %}
 {% load i18n %}
 
 {% block title %}
@@ -15,7 +15,7 @@
 	<div class="box">
 		<h2>Assign Designer</h2>
 		<div>
-			<form action="{% url ordermgr.views.designer_assign_order order.id %}" method="POST">
+			<form action="{% url ordermgr.views.assign_order order.id %}" method="POST">
 				<table>
 					{{ form }}
 				</table>

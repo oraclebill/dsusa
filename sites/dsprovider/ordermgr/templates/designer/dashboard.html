@@ -1,4 +1,4 @@
-{% extends "designer/designer_base.html" %}
+{% extends "designer/base.html" %}
 {% load i18n %}
 
 {% block title %}
@@ -34,14 +34,14 @@
 		   <td> {{ order.description }} </td> 
 		   <td> 
 				{% if user.is_staff %}
-				<form action="{% url ordermgr.views.designer_assign_order order.id %}" method="GET">
+				<form action="{% url ordermgr.views.assign_order order.id %}" method="GET">
 		   			<input type="submit" value="{% trans 'Assign Order &rarr;' %}">
 				</form>
-				<form action="{% url ordermgr.views.designer_display_order order.id %}" method="GET">
+				<form action="{% url ordermgr.views.display_order order.id %}" method="GET">
 		   			<input type="submit" value="{% trans 'View Order &rarr;' %}">
 				</form>
 				{% else %}
-				<form action="{% url ordermgr.views.designer_claim_order order.id %}" method="POST">
+				<form action="{% url ordermgr.views.claim_order order.id %}" method="POST">
 		   			<input type="submit" value='{% trans "Claim Order &rarr;" %}'></form>
 				{% endif %}
 			</td>
@@ -68,12 +68,12 @@
 	   <tbody>
 	     {% for order in working %}
 	     <tr class="{% cycle 'even' 'odd' %}">
-	       <td> <a href="{% url ordermgr.views.designer_display_order order.id %}">{{ order.id }}</a> </td> 
+	       <td> <a href="{% url ordermgr.views.display_order order.id %}">{{ order.id }}</a> </td> 
 		   <td> {{ order.designer }} </td> 
 		   <td> {{ order.submitted|date }} </td>
 		   <td> {{ order.assigned|date }} ({{ order.assigned|timesince }}) </td> 
 		   <td>				
-				<form action="{% url ordermgr.views.designer_display_order order.id %}" method="GET">
+				<form action="{% url ordermgr.views.display_order order.id %}" method="GET">
 		   			<input type="submit" value="{% trans 'View Order &rarr;' %}">
 				</form>
 			</td>
