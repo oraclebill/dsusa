@@ -1,8 +1,16 @@
-from utils.fields import DimensionField
 import os
+import logging
+
+from utils.fields import DimensionField
 from django.core.files.base import File as DjangoFile
 from django.db import models
 from utils.pdf import pdf2ppm
+
+import settings
+PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
+PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
+
+log = logging.getLogger('wizard.models')
 
 class WorkingOrder(models.Model):
     """
@@ -136,7 +144,12 @@ class Attachment(models.Model):
         return self.file.name.lower().endswith('.pdf')
     
     def generate_pdf_previews(self):
-        pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
+        try:
+            pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
+        except OSError:
+            log.error('OSError: pdf generation failed for %s' % self.file.path)
+            self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
+
     
     def _pdf_callback(self, filename, page, size):
         preview = AttachPreview(page=page, attachment=self)

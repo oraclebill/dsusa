@@ -104,11 +104,14 @@ INSTALLED_APPS = (
     'designfirst.designer',
     'designfirst.product',
     'designfirst.wizard',
-    'debug_toolbar',
     'paypal.standard.ipn',
     'paypal.standard', 
     'paypal.pro', 
     'validation',
+    # django-registration
+    'registration',
+    # if debug.. 
+    'debug_toolbar',
 )
 
 DEBUG_TOOLBAR_PANELS = (
@@ -129,12 +132,6 @@ DEBUG_TOOLBAR_CONFIG = {
 
 AUTH_PROFILE_MODULE = "home.UserProfile"
 
-
-# PAYPAL_TEST             = True      # Testing mode on
-# PAYPAL_WPP_USER         = "seller_1252615556_biz_api1.averline.com"     # Get from PayPal
-# PAYPAL_WPP_PASSWORD     = "1252615561"
-# PAYPAL_WPP_SIGNATURE    = "AQU0e5vuZCvSg-XJploSa.sGUDlpAgc.wJ13tW2dLYqGl34E.D940-.6"
-# PAYPAL_RECEIVER_EMAIL   = "seller_1252615556_biz@averline.com"
 
 ##
 PAYPAL_TEST             = True      # Testing mode on
@@ -162,6 +159,8 @@ DEMO_MAIL_DESIGNER_ADDRESS = 'designer-notify@designserviceusa.com'
 
 #This is used for pdf2ppm output
 PPM_TMP_ROOT = '/tmp/designfirst/'
+
+ACCOUNT_ACTIVATION_DAYS=2
 
 try:
     from settings_local import *

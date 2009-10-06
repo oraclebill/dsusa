@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %} Create Profile {% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		<div class=box>
+			<h2>Create User Profile</h2>
+			<div>
+				<form method='POST' action='{% url dealer-complete-profile %}'>
+					<table>
+						{{ form }}
+					</table>
+					<input name='submit' type='submit' value='Add Profile'>
+				</form>
+			</div>
+		</div>
+	</div> 
+
+{% endblock %}

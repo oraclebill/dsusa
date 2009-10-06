@@ -6,7 +6,41 @@ from wizard.models import WorkingOrder
 # from designorderforms import *
 
 
+class DealerProfileForm(forms.ModelForm):
+    company = forms.CharField(max_length=75)
+    address = forms.CharField(max_length=75)
+    city = forms.CharField(max_length=30)
+    state = forms.CharField(max_length=2)
+    zip  = forms.CharField(max_length=10)
+    phone = forms.CharField(max_length=15)
+        
+    class Meta:
+        model = User
+        fields = [ 'first_name', 'last_name', 'email' ]
+        
+    def save(self, **kwargs):
+        profile_user = self.instance
+        super(DealerProfileForm, self).save(**kwargs)
+        profile_org = DealerOrganization(
+                        company_name=self.cleaned_data['company'], 
+                        company_address_1=self.cleaned_data['address'], 
+                        company_city=self.cleaned_data['city'], 
+                        company_state=self.cleaned_data['state'], 
+                        company_zip4=self.cleaned_data['zip'], 
+                        company_phone=self.cleaned_data['phone'], 
+                        company_email=self.instance.email,
+                        default_measure_units=INCH_DIMENSION)
+        profile_org.save()
+        profile = UserProfile(
+                        user=profile_user, 
+                        account=profile_org, 
+                        usertype='dealer'
+                        )
+        profile.save()    
+        return profile_user
+    
 class NewDesignOrderForm(forms.ModelForm):
+    cost = forms.CharField(widget=forms.TextInput(attrs={'readonly':'true'}))
     class Meta: 
         model = WorkingOrder
         fields = ['project_name', 'desired', 'cost', 'client_notes']

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %} Design First Login {% endblock %}
+
+{% block content %}
+<div id="logo_block" class="grid_11">
+  <img src="/static/images/logo_large.png" alt="DesignFirst Logo"/>
+</div>
+<div id="login_panel" class="grid_5">
+         <div class="block" id="login-forms">
+            <form action="/login/" method="post">
+              <fieldset class="login">
+                <legend>Login</legend>
+		{% if login_message %}
+                <p class="error"> {{ login_message }} </p>
+		{% else %}
+                <p class="notice">Login to place an order or review
+                order status.</p>
+		{% endif %}
+                <p>
+                  <label>Username: </label>
+
+                  <input type="text" name="username" />
+                </p>
+                <p>
+                  <label>Password: </label>
+                  <input type="password" name="password" />
+                </p>
+                <input class="login button" type="submit"
+                value="Login" /> or 
+		<a href="/register">Register</a>
+
+
+              </fieldset>
+            </form>
+	  </div> <!-- block -->
+	  </div> <!-- box -->
+
+{% endblock %}

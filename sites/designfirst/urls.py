@@ -5,6 +5,8 @@ from designfirst import home
 from django.contrib import admin
 admin.autodiscover()
 
+import home.forms
+
 urlpatterns = patterns('',
     # Example:
     # (r'^designfirst/', include('designfirst.foo.urls')),
@@ -18,6 +20,9 @@ urlpatterns = patterns('',
     (r'^designer/', include("designer.urls")),
     (r'^products/', include("product.urls")),    
     (r'^wizard/', include("wizard.urls")),
+    
+    # django-registration
+    (r'^accounts/', include('registration.urls')),
 
     (r'^admin/', include(admin.site.urls)),
 

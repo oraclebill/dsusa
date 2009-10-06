@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %} Account Activation Result {% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		{% if account %}
+		<h1>Activation Succeeded</h1>
+		<div class=box>
+			<h2> Account Summary</h2>
+			<div>
+				{{ account }}
+			</div>
+		</div>
+		{% else %}
+		<div class=box>
+			<h2> Account Registration Failed</h2>
+			<div>
+				<p>You have {{ expiration_days }} remaining to complete your registration.</p>
+				<p>Please <a href='mailto:support@designserviceusa.com'>contact support</a> if you have further issues</p>
+			</div>
+		</div>
+		
+		{% endif %}
+	</div> <!-- block -->
+
+{% endblock %}

@@ -13,7 +13,13 @@ class IllegalState(Exception):
 
 # Constants and Validation Data
 
-DIMENSION_UNIT_CHOICES = (('IN', "inches"), ('CM', "centimeters"), ('O', "other"))
+INCH_DIMENSION='IN'
+CENTIMETER_DIMENSION='CM'
+OTHER_DIMENSION='O'
+DIMENSION_UNIT_CHOICES = (
+    (INCH_DIMENSION, _("inches")), 
+    (CENTIMETER_DIMENSION, _("centimeters")), 
+    (OTHER_DIMENSION, _("other")))
 
 
 class Organization(models.Model):
@@ -56,19 +62,29 @@ class DealerOrganization(Organization):
     price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
     
 
+
 class UserProfile(models.Model):
     """
     Site profile associating this user with either a customer account or designer profile.
     
     Customer profile is a linking mechanism. It identifies usertype which will determine which core profile
     object contains that profiles' defining information. 
-    """
+    """    
     user = models.ForeignKey(User, unique=True)
-    usertype = models.CharField(max_length=10, choices=[('designer', 'Designer'), ('dealer','Dealer'),], default='dealer')
     account = models.ForeignKey(Organization)
-    
+    usertype = models.CharField(max_length=10, 
+        choices=[('designer', 'Designer'), ('dealer','Dealer'),], default='dealer') # TODO: usertype is determined by 'account'
+
+    # for profiles module
+    def get_absolute_url(self):
+        return ('profiles_profile_detail', (), { 'username': self.user.username })
+    get_absolute_url = models.permalink(get_absolute_url)
+        
     def __unicode__(self):
-        return '%s @ %s' % (self.user, self.account) 
+        if hasattr(self,'user') and hasattr(self, 'account'):
+            return '%s @ %s' % (self.user, self.account) 
+        else:
+            return '[empty user profile]'
 
 class DesignOrder(models.Model):
     """

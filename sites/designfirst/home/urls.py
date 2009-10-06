@@ -7,7 +7,7 @@ urlpatterns = patterns('home',
     
     (r'^login/$', 'views.do_login'),
     url(r'^logout/$', 'views.do_logout', name='do-logout'),
-    (r'^register/$', 'views.register'),
+    url(r'^dealer/profile/complete$', 'views.create_profile', name='dealer-complete-profile'),
     
     url(r'^dealer/$', 'views.dealer_dashboard', name='dealer-dashboard'),
     

@@ -16,9 +16,9 @@ from django.contrib.auth.models import User
 
 from home import ACCOUNT_ID, ORDER_ID
 from home.models import DealerOrganization, DesignOrder, Transaction, OrderAppliance, \
-    OrderAttachment   
+    OrderAttachment, UserProfile   
 from home import designorderforms as dof
-from forms import DesignOrderAcceptanceForm, NewDesignOrderForm
+from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
 from product.models import Product
 
 
@@ -75,13 +75,12 @@ def do_login(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            profile = user.get_profile()
-            if profile is None:
-                raise Exception("No profile")
+            try:
+                profile = user.get_profile()
+            except UserProfile.DoesNotExist:
+                return HttpResponseRedirect(reverse('dealer-complete-profile') )                
                 
-            usertype = profile.usertype
-            request.session[ACCOUNT_ID] = profile.account.id
-            
+            usertype = profile.usertype            
             return HttpResponseRedirect( '/%s/' % usertype )
         else:
             login_message="User is locked. Please contact support"
@@ -104,18 +103,24 @@ def do_logout(request):
     except:
         pass
     return HttpResponseRedirect(reverse('home.views.home'))
+
+## FIXME: for now all users without profiles are assumed dealers.
+def create_profile(request):
+    user = request.user;
     
-    
-def register(request):
-    """
-    Self serve registration process.
-    
-    TODO - implement
-    """
-    
-    return render_to_response( 'home/registration.html',
-                context_instance=RequestContext(request) )
-    
+    if request.method == 'GET':
+        form = DealerProfileForm(instance=user)
+    else:
+        form = DealerProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            ## FIXME: for now all users without profiles are assumed dealers.
+            return HttpResponseRedirect('/dealer/')
+            
+    return render_to_response( 'profiles/create_profile.html', 
+                locals(), 
+                context_instance=RequestContext(request))
+                
     
 def dealer_dashboard(request):
     """
@@ -152,9 +157,7 @@ def create_order(request, *args):
             order = form.save(commit=False)
             order.client_account = account
             order.save()
-            
-            request.session[ORDER_ID] = order.id#TODO: vitaliy: for what is this? 
-            
+                        
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
     else:
         desired = (datetime.now() + timedelta(days=2))
