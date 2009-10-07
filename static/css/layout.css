@@ -555,3 +555,8 @@ table.form {
 #wizard_steps .selected {
 	font-weight: bold;
 }
+
+
+.row1 td {
+	background-color: lightgray;
+}

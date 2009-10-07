@@ -2,6 +2,7 @@ import os
 import logging
 
 from utils.fields import DimensionField
+from django.contrib.auth.models import User
 from django.core.files.base import File as DjangoFile
 from django.db import models
 from utils.pdf import pdf2ppm
@@ -17,6 +18,17 @@ class WorkingOrder(models.Model):
     This is a temporary object used for storing data 
     when  user goes step to step in wizard
     """
+    #Basic stuff
+    DEALER_EDIT, SUBMITTED, ASSIGNED = range(1,4)
+    STATUS_CHOICES = (
+        (DEALER_EDIT, 'Dealer Editing'),
+        (SUBMITTED, 'Submitted'),
+        (ASSIGNED, 'Assigned'),
+    )
+    owner = models.ForeignKey(User)
+    status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=DEALER_EDIT)
+    
+    
     #New page
     project_name = models.CharField(max_length=150)
     desired = models.DateTimeField('Desired Completion')
@@ -113,6 +125,10 @@ class WorkingOrder(models.Model):
     def __unicode__(self):
         return self.project_name
     
+    def attachement_previews(self):
+        "Return urls of all attachment previews"
+        return [a.first_preview() for a in self.attachments.all()]
+    
     
 class Attachment(models.Model):
     FLOORPLAN, PHOTO, OTHER = range(1,4)
@@ -127,6 +143,11 @@ class Attachment(models.Model):
     
     def __unicode__(self):
         return os.path.basename(self.file.path)
+    
+    def first_preview(self):
+        if self.is_pdf():
+            return self.attachpreview_set.all()[0].file.url
+        return self.file.url
     
     def previews(self):
         if self.is_pdf():
