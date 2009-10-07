@@ -2,12 +2,11 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, Imprope
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
-
-from models import UserProfile
-from models import KitchenDesignRequest as DesignOrder
-from models import STATUS_NEW, STATUS_ASSIGNED, STATUS_COMPLETED
-
+import dsprovider.ordermgr.models as models
+import dsprovider.ordermgr.forms as forms
+from django.forms.models import modelform_factory
 import logging
+
 log = logging.getLogger('ordermgr.views')
 
 
@@ -19,13 +18,13 @@ def get_context(request, orderid=None):
     if user.is_authenticated():
         try:
             profile = user.get_profile()
-        except UserProfile.DoesNotExist:
-            profile = UserProfile(user=user)
+        except models.UserProfile.DoesNotExist:
+            profile = models.UserProfile(user=user)
             profile.save()
         # account = profile.account.designerorganization
         if orderid:
             try:
-                order = DesignOrder.objects.get(pk=orderid)
+                order = models.KitchenDesignRequest.objects.get(pk=orderid)
             except ObjectDoesNotExist as ex:
                 log.error( "failed to find the orderid %d" % orderid )
                 raise ImproperlyConfigured("Access to order %s denied to user %s" % (orderid, user))
@@ -45,11 +44,11 @@ def dashboard(request):
     """
     user, account, profile, product = get_context(request)
 
-    pending = DesignOrder.objects.filter(status=STATUS_NEW)
+    pending = models.KitchenDesignRequest.objects.filter(status=models.STATUS_NEW)
 
-    working = DesignOrder.objects.filter(status=STATUS_ASSIGNED)
+    working = models.KitchenDesignRequest.objects.filter(status=models.STATUS_ASSIGNED)
 
-    completed = DesignOrder.objects.filter(status=STATUS_COMPLETED)
+    completed = models.KitchenDesignRequest.objects.filter(status=models.STATUS_COMPLETED)
     # except:
     #     orders = []
 
@@ -71,9 +70,11 @@ def dashboard(request):
 def manage_orders(request):
     pass
 
+
 @login_required
 def manage_designers(request):
     pass
+
 
 @login_required
 def manage_designer(request):
@@ -81,7 +82,7 @@ def manage_designer(request):
 
 
 @login_required
-def display_order(request, orderid):
+def display_order(request, orderid, form_class=None):
     """
     Display a read-only view of the design request order, intended for designers.
 
@@ -89,20 +90,21 @@ def display_order(request, orderid):
     """
     # validate access
     user, account, profile, order = get_context(request, orderid)
+    form_class = form_class or modelform_factory(order.__class__)
     # disable control if not yet assigned
-    if not order.status == STATUS_ASSIGNED:
-        disabled='disabled=disabled'
+    if not order.status == models.STATUS_ASSIGNED:
+        disabled='disabled="disabled"'
     else:
         disabled=''
 
     errors = None
     # setup forms
     if request.method== 'GET':
-        package_form = PackageForm(instance=order)
+        package_form = form_class(instance=order)
     elif request.method == 'POST':
         # use presence of FILES to distinguish between design update and 'complete' actions
         if request.FILES:
-            package_form = PackageForm(request.POST,request.FILES,instance=order)
+            package_form = form_class(request.POST,request.FILES,instance=order)
             if package_form.is_valid():
                 package_form.save()
         else:
@@ -131,7 +133,7 @@ def display_order(request, orderid):
     return render_to_response(
                 'designer/display_order.html', {
                     'order':order,
-                    'options':order.display_as_optional,
+                    # 'options':order.display_as_optional,
                     'disabled':disabled,
                 },
                 context_instance=RequestContext(request) )
@@ -146,8 +148,8 @@ def claim_order(request, orderid):
     # get authenticated user (designer)
     user, account, profile, order = get_context(request,orderid)
 
-    if order and not order.is_assigned():
-        order.assign_designer( user )
+    if order and not order.status == models.STATUS_ASSIGNED:
+        order.assign_designer(user)
     else:
         log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, user) )
         raise Exception, 'Order %s is already assigned to %s - cannot reassign' % (orderid, user)
@@ -156,7 +158,7 @@ def claim_order(request, orderid):
 
 
 @login_required
-def assign_order(request, orderid):
+def assign_order(request, orderid, form_class=forms.AssignDesignerForm):
     """
     Create an order assignment by presenting a list of available (only?) designers for selection
     """
@@ -167,16 +169,16 @@ def assign_order(request, orderid):
         log.info('assign_order: assign order permission denied for user %s' % user )
         raise PermissionDenied
     # make sure order is assignable
-    if order.is_assigned():
+    if order.status == models.STATUS_ASSIGNED:
         log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, designer) )
         raise PermissionDenied
 
     # display designers eligible for assignment
     # TODO: filter out assigned designers...
     if request.method == 'GET':
-        form = AssignDesignerForm(instance=order)
+        form = form_class(instance=order)
     elif request.method == 'POST':
-        form = AssignDesignerForm(request.POST, instance=order)
+        form = form_class(request.POST, instance=order)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.assign_designer(instance.designer) # designer was assigned by form..
@@ -192,28 +194,33 @@ def assign_order(request, orderid):
 
 @login_required
 def clarify_order(request,orderid):
-    pass
+    raise NotImplementedError("ordermgr.views.clarify_order is not implemented")
 
 @login_required
-def attach_design_to_order(request,orderid):
+def attach_design_to_order(request,orderid, form_class=None):
 
     # get/validate selected order is unassinged (new)
-    user, account, profile, order = get_context(request,orderid)
+    user, account, profile, order = get_context(request, orderid)
     #
-    attachments = order.orderattachment_set.filter(source__exact=1)
+    form_class = form_class or modelform_factory(
+        models.CompletedDesignFile, exclude=('order', 'delivered')
+    )
+
+    #this should be orderattachment class or something like that
+    attachments = order.attachments.all()
     if request.method == 'GET':
-        form = PackageForm()
+        form = form_class()
     elif request.method == 'POST':
-        form = PackageForm(request.POST,request.FILES)
+        form = form_class(request.POST,request.FILES)
         if form.is_valid():
             doc = form.save(commit=False)
             doc.order = order
-            doc.source = 1
-            doc.method = 0
-            doc.user = user
-            doc.org = account
+            # doc.source = 1
+            # doc.method = 0
+            # doc.user = user
+            # doc.org = account
             doc.save()
-            return redirect(display_order, args=[orderid])
+            return redirect(order)
     else:
         log.error('Invalid HTTP method in attach_design_to_order: %s' % request.method )
         raise Exception, "Invalid request type %s" % request.method

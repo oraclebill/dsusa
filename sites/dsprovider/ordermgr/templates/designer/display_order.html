@@ -1,7 +1,5 @@
 {% extends "designer/base.html" %}
-{% load i18n %}
-
-{% load tags %}
+{% load i18n tags %}
 
 {% block title %}
 DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.id}} ] 
@@ -48,13 +46,14 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 				<div>
 					<form method="GET"  id="clarify-form"  action="{% url ordermgr.views.clarify_order order.id %}">
 						{# <input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br> #}
-						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
+						<input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
                     <form method="GET"  id="attach-form"   action="{% url ordermgr.views.attach_design_to_order order.id %}">
 						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
                     </form>
-					{% if  order.orderattachment_set.count %}
-					<form method="POST" id="complete-form" action="{% url ordermgr.views.complete_order order.id %}">
+					{# if  order.orderattachment_set.count #}
+					{% if  order.attachments.count %}
+					<form method="POST" id="complete-form" action="{% url order_complete order.id %}">
 						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
 				    </form>
 					{% else %}

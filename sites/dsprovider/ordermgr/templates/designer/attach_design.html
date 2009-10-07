@@ -28,8 +28,10 @@
 					{% for attachment in attachments %}
 					<tr>
 						<td>{{ attachment.id }}</td>
-						<td>{{ attachment.get_doctype_display }}</td>
-						<td>{{ attachment.timestamp|date }}</td>
+						<!-- <td>{{ attachment.get_doctype_display }}</td> -->
+						<td>{{ attachment.attachment_type }}</td>
+						<!-- <td>{{ attachment.timestamp|date }}</td> -->
+						<td>{{ attachment.delivered|date }}</td>
 						<td>{{ attachment.user }}</td>
 						<td>{{ attachment.document }}</td>
 					</tr>						

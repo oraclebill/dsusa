@@ -75,10 +75,19 @@ class DesignOrder(models.Model):
 
     objects = DesignOrderManager()
 
-    # @models.permalink
-    # def get_absolute_url(self):
-    #     attrs = dict(queryset=self.objects.all(), object_id=self.id)
-    #     return ('django.views.generic.list_detail.object_detail', [], attrs)
+    @models.permalink
+    def get_absolute_url(self):
+        return ('order_detail', (self.id, ))
+
+    def assign_designer(self, designer):
+        #ugliest thing i've ever seen - storing user by name
+        self.designer = designer.username
+        self.status = STATUS_ASSIGNED
+        self.save()
+
+    def complete(self, user):
+        self.status = STATUS_COMPLETED
+        self.save()
 
 
 class DesignOrderEvent(models.Model):
@@ -103,27 +112,25 @@ class DesignOrderEvent(models.Model):
     #  - note added [by]
     #  - attachment added/removed [by]
 
+
     def __unicode__(self):
         return 'DesignOrderEvent(id=%s,order=%d,user=%s,type=%s,ts=%s)' % (
                     id, order, actor, event_type, timestamp )
-
-    @models.permalink
-    def get_absolute_url(self):
-        attrs = dict( queryset=self.objects.all(), object_id=self.id )
-        return ('django.views.generic.list_detail.object_detail', [], attrs)
-
 
 class CompletedDesignFile(models.Model):
     """
     Associates an order with deliverable design products. Typicall zip files containing
     """
-    order = models.ForeignKey(DesignOrder,
+    order = models.ForeignKey(DesignOrder, related_name='attachments',
         help_text=_('The order this design package was generated for.'))
     delivered = models.DateTimeField(_('Dispatch Timestamp'),
+        default=datetime.now,
         help_text=_('The timestamp of when this package was sent to the customer.'))
     ## TODO: use s3 storage
-    attachment = models.FileField(_('Completed Design File'), upload_to=DESIGN_UPLOAD_LOCATION,
+    attachment = models.FileField(_('Completed Design File'),
+        upload_to=DESIGN_UPLOAD_LOCATION, null=False,
         help_text=_('The attached design file.'))
+
     attachment_type = models.CharField(_('File Type'), max_length='8',
         help_text=_('The type of file attachment - e.g. KIT, PDF or ZIP'))
 
@@ -217,11 +224,3 @@ class KitchenDesignRequest(DesignOrder):
     submitted = models.DateTimeField(null=True, blank=True)
 
     tracking_notes = models.TextField(null=True, blank=True)
-
-    def get_absolute_url(self):
-        return reverse('home.edit_order_detail')
-
-    def __unicode__(self):
-        return "Order #%s for %s [%s] - %s" % (
-            self.id, self.source, self.status, self.description)
-
