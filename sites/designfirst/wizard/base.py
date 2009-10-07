@@ -2,7 +2,8 @@
 Base class for wizard views
 '''
 from django.shortcuts import get_object_or_404, render_to_response
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect,\
+    HttpResponseForbidden
 from django.template.context import RequestContext
 from models import WorkingOrder
 from django.template.defaultfilters import capfirst
@@ -18,6 +19,11 @@ class WizardBase(object):
     
     def __call__(self, request, id, step, complete):
         self.order = get_object_or_404(WorkingOrder, id=id)
+        
+        #Permission check
+        if self.order.owner.id != request.user.id:
+            return HttpResponseForbidden("Not allowed to update this order")
+        
         if complete:
             return self.complete(request)
         if step is None:
@@ -103,19 +109,3 @@ class WizardBase(object):
             return self.method.title
         return capfirst(' '.join(self.step.split('_')))
     
-    def _get_summary(self, summary_fields):
-        result = []
-        for name, list in summary_fields:
-            values = []
-            for field in list:
-                item_name = WorkingOrder._meta.get_field(field).verbose_name
-                item_name = capfirst(item_name)
-                if hasattr(self.order, 'get_%s_display' % field):
-                    item_value = getattr(self.order, 'get_%s_display' % field)()
-                else:
-                    item_value = getattr(self.order, field)
-                if item_value not in ('', None):
-                    values.append((item_name,item_value))
-            if len(values) > 0:
-                result.append((name, values))
-        return result
