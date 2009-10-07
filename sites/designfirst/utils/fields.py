@@ -28,6 +28,7 @@ class DimensionField(models.CharField):
         super(DimensionField, self).__init__(max_length=100, *args, **kwargs)
     
     def formfield(self, **kwargs):
-        defaults = {'max_length': self.max_length}
+        defaults = {'max_length': self.max_length,
+                    'required': not self.blank}
         defaults.update(kwargs)
         return DimensionFormField(**defaults)
