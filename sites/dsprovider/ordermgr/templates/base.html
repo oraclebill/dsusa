@@ -37,7 +37,7 @@
 			  		Welcome {{ user.first_name }} {{ user.last_name }} [{{ user.username }}]
 		        </div>
 		    	<div class="grid_3 omega">
-			  		<em ><a href="{% url do-logout %}"> click here to logout</a></em>
+			  		<em ><a href="{% url auth_logout %}"> click here to logout</a></em>
 		        </div>
 				<div class="grid_16">
 					{% block menu %}
