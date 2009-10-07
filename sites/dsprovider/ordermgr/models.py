@@ -80,8 +80,7 @@ class DesignOrder(models.Model):
         return ('order_detail', (self.id, ))
 
     def assign_designer(self, designer):
-        #ugliest thing i've ever seen - storing user by name
-        self.designer = designer.username
+        self.designer = designer
         self.status = STATUS_ASSIGNED
         self.save()
 

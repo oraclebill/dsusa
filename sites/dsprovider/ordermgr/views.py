@@ -144,17 +144,18 @@ def claim_order(request, orderid):
     """
     Claim an order for the current (logged in) designer.
     """
+    raise NotImplementedError("Designers can't log in site yet.")
 
     # get authenticated user (designer)
-    user, account, profile, order = get_context(request,orderid)
+    # user, account, profile, order = get_context(request,orderid)
 
-    if order and not order.status == models.STATUS_ASSIGNED:
-        order.assign_designer(user)
-    else:
-        log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, user) )
-        raise Exception, 'Order %s is already assigned to %s - cannot reassign' % (orderid, user)
+    # if order and not order.status == models.STATUS_ASSIGNED:
+    #     order.assign_designer(user)
+    # else:
+    #     log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, user) )
+    #     raise Exception, 'Order %s is already assigned to %s - cannot reassign' % (orderid, user)
 
-    return redirect('ordermgr.views.dashboard')
+    # return redirect('ordermgr.views.dashboard')
 
 
 @login_required
