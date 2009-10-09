@@ -5,7 +5,7 @@ from dsprovider.ordermgr.models import DesignOrder
 register = template.Library()
 
 
-@register.inclusion_tag("designer/order_stats.html")
+@register.inclusion_tag("designer/tags/order_stats.html")
 def order_stats():
     today = datetime.today()
     monday = today - timedelta(datetime.weekday(today))
