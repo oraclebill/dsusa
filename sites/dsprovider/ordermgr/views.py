@@ -16,11 +16,7 @@ def get_context(request, orderid=None):
     profile = None
     order = None
     if user.is_authenticated():
-        try:
-            profile = user.get_profile()
-        except models.UserProfile.DoesNotExist:
-            profile = models.UserProfile(user=user)
-            profile.save()
+        profile = user.get_profile()
         # account = profile.account.designerorganization
         if orderid:
             try:
@@ -49,9 +45,6 @@ def dashboard(request):
     working = models.KitchenDesignRequest.objects.filter(status=models.STATUS_ASSIGNED)
 
     completed = models.KitchenDesignRequest.objects.filter(status=models.STATUS_COMPLETED)
-    # except:
-    #     orders = []
-
 
     return render_to_response( 'designer/dashboard.html', {
         'account': account,
@@ -238,3 +231,8 @@ def complete_order(request, orderid):
         return redirect(dashboard)
     except:
         return redirect(request.META['HTTP_REFERER'])
+
+
+@login_required
+def stats(request):
+    pass

@@ -22,6 +22,13 @@ class UserProfile(models.Model):
     is_manager = models.BooleanField(_('Special Admin Status?'), default=False)
 
 
+def create_profile(sender, instance, **kwargs):
+    UserProfile.objects.get_or_create(user=instance)
+
+models.signals.post_save.connect(create_profile, sender=User)
+
+
+
 class DesignOrderManager(models.Manager):
 
     class Meta:
