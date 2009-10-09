@@ -18,36 +18,48 @@ class Manufacturer(models.Model):
         }
     
 class ProductLine(models.Model):
-    name = models.CharField(_("Product Line"), primary_key=True, max_length=30)
+    name = models.CharField(_("Product Line"), max_length=30)
     manufacturer = models.ForeignKey(Manufacturer)
+    
+    class Meta:
+        unique_together = ('name', 'manufacturer')
     
     def __unicode__(self):
         return '%s - %s' % (self.manufacturer, self.name)
 
 class DoorStyle(models.Model):
-    name = models.CharField(_("Door Style"), primary_key=True, max_length=30)
+    name = models.CharField(_("Door Style"), max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
     thumbnail = models.ImageField(_("Small Image"), upload_to='data/doors', blank=True, null=True)
     image = models.ImageField(_("Large Image"), upload_to='data/doors', blank=True, null=True)
     
+    class Meta:
+        unique_together = ('name', 'manufacturer')
+    
     def __unicode__(self):
         return self.name
 
 class WoodOption(models.Model):
-    name = models.CharField(_("Wood"), primary_key=True, max_length=30)
+    name = models.CharField(_("Wood"), max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
     image = models.ImageField(_("Sample"), upload_to='data/woods', blank=True, null=True)
+    
+    class Meta:
+        unique_together = ('name', 'manufacturer')
     
     def __unicode__(self):
         return self.name
 
 class FinishOption(models.Model):
-    name = models.CharField(_("Finish Option"), primary_key=True, max_length=30)
+    name = models.CharField(_("Finish Option"), max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
     image = models.ImageField(_("Sample"), upload_to='data/finishes', blank=True, null=True)
+    
+    class Meta:
+        unique_together = ('name', 'manufacturer')
     
     def __unicode__(self):
         return self.name
@@ -58,12 +70,15 @@ class GeneralOption(models.Model):
     
     
     """
-    name = models.CharField(_("Finish Option"), primary_key=True, max_length=30)
+    name = models.CharField(_("Finish Option"), max_length=30)
     type = models.CharField(_("Option Type"), max_length=10)
     description = models.TextField(_("Description"), max_length=30)
     manufacturer = models.ForeignKey(Manufacturer, blank=True, null=True)
     product_line = models.ForeignKey(ProductLine, blank=True, null=True)
     image = models.ImageField(_("Sample"), upload_to='data/options', null=True)
+    
+    class Meta:
+        unique_together = ('name', 'manufacturer')
     
     def __unicode__(self):
         return self.name
