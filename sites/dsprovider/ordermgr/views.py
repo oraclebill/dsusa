@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ImproperlyConfigured
+from datetime import datetime, timedelta
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
@@ -234,5 +235,37 @@ def complete_order(request, orderid):
 
 
 @login_required
-def stats(request):
-    pass
+def stats(request, queryset=None, field='completed'):
+    """
+    Shows stats for completed orders over a period of time.
+    """
+    qs = queryset or models.DesignOrder.objects.filter(
+                                            status=models.STATUS_COMPLETED)
+
+    form = forms.DateRangeForm(request.GET)
+    if form.is_valid():
+        start_date = form.cleaned_data['start']
+        end_date = form.cleaned_data['end']
+    else:
+        start_date, end_date = None, None
+
+    if not start_date and not end_date:
+        # last  two weeks by default
+        today = datetime.today()
+        start_date = today - timedelta(datetime.weekday(today) + 7)
+        end_date = today
+
+    if start_date:
+        qs = qs.filter(**{'%s__gte' % field: start_date})
+    if end_date:
+        qs = qs.filter(**{'%s__lte' % field: end_date})
+
+    return render_to_response("designer/stats_page.html", {
+        'form': forms.DateRangeForm(initial={
+            'start': start_date,
+            'end': end_date,
+        }),
+        'start_date': start_date,
+        'end_date': end_date,
+        'orders': qs,
+    }, context_instance=RequestContext(request))

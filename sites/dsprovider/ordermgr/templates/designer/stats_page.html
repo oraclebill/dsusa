@@ -1,0 +1,52 @@
+{% extends "designer/base.html" %}
+{% load i18n order_stats %}
+
+{% block title %}
+{% trans "DesignFirst Stats" %}
+{% endblock %}
+
+{% block content %}
+<!-- left column -->
+<div id="orders" class="grid_10  ">
+  	<!-- pending (unassigned) orders - click to assign -->
+	<div id="pending_order_table">
+	   <table summary="{% trans 'order history and status' %}">
+	   <thead>
+	     <tr><th>{% trans "ID" %}</th>
+             <th>{% trans "Submit date" %}</th>
+             <th>{% trans "Tracking code" %}</th>
+             <th>{% trans "Product type" %}</th>
+             <th>{% trans "Cost options" %}</th>
+             <th>{% trans "Total cost" %}</th>
+	     </tr>
+	   </thead>
+	   <tbody>
+	     {% for order in orders %}
+	     <tr class="{% cycle 'even' 'odd' %}">
+	       <td> {{ order.id }}</a> </td> 
+		   <td> {{ order.submitted|date }} </td>
+		   <td> {{ order.source }} </td> 
+		   <td> { product type } </td> 
+		   <td> { cost options } </td> 
+		   <td> { total cost } </td> 
+	     </tr>
+	     {% endfor %}
+	   </tbody>
+	  </table>
+	</div>
+</div>
+
+<!-- right column -->
+<div class="grid_5  omega ">
+	<div class="box">
+	    <h2>{% trans "Period" %}</h2>
+        <form method="get" id="" action=".">
+            <table>
+                {{ form }}
+            </table>
+            <input type="submit" name="" value="{% trans "Go" %}" />
+        </form>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,24 +1,26 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('ordermgr',
-        (r'^$', 'views.dashboard'),
-        url(r'^order/(\d+)/display/$', 'views.display_order',
+urlpatterns = patterns('ordermgr.views',
+        (r'^$', 'dashboard'),
+        url(r'^order/(\d+)/display/$', 'display_order',
             name='order_detail'),
 
-        url(r'^order/(\d+)/assign/$', 'views.assign_order',
+        url(r'^order/(\d+)/assign/$', 'assign_order',
             name='order_assign'),
 
-        url(r'^order/(\d+)/claim/$', 'views.claim_order',
+        url(r'^order/(\d+)/claim/$', 'claim_order',
             name='order_claim'),
 
-        url(r'^order/(\d+)/clarify/$', 'views.clarify_order',
+        url(r'^order/(\d+)/clarify/$', 'clarify_order',
             name='order_clarify'),
 
-        url(r'^order/(\d+)/attach/$', 'views.attach_design_to_order',
+        url(r'^order/(\d+)/attach/$', 'attach_design_to_order',
             name='order_attach'),
 
-        url(r'^order/(\d+)/complete/$', 'views.complete_order',
+        url(r'^order/(\d+)/complete/$', 'complete_order',
             name='order_complete'),
+
+        url(r'^stats/$', 'stats', name="order_stats"),
 )
 
 urlpatterns += patterns('django.contrib.auth',
