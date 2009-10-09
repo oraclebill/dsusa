@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext as _
+from django.contrib.contenttypes import models as ct_models
 from django.contrib.auth.models import User
+import django.dispatch
 from datetime import datetime
 
 
@@ -118,6 +120,45 @@ class DesignOrder(models.Model):
         self.status = STATUS_COMPLETED
         self.completed = datetime.now()
         self.save()
+
+
+def order_notify(sender, instance, created, **kwargs):
+    print created
+    if not created:
+        return
+
+    from django.conf import settings
+    from django.core import mail
+    from django.contrib.sites import models as s_models
+    from django.template import loader
+
+    def make_message(subject_template, body_template, to):
+        context = {
+            'site': s_models.Site.objects.get_current(),
+            'order': instance,
+        }
+
+        # Email subject *must not* contain newlines
+        msg = mail.EmailMessage(
+            subject=''.join(
+                loader.render_to_string(subject_template, context).splitlines(),
+            ),
+            body=loader.render_to_string(body_template, context),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=to,
+        )
+
+        msg.content_subtype = "html"  # Main content is now text/html
+        return msg
+
+    make_message(
+        subject_template='designer/notification/new_order_subject.txt',
+        body_template='designer/notification/new_order_body.html',
+        to=[manager[1] for manager in settings.MANAGERS],
+    ).send()
+    print 'sent'
+
+order_saved.connect(order_notify)
 
 
 class DesignOrderEvent(models.Model):
