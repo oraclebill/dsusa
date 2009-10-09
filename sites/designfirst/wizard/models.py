@@ -27,6 +27,11 @@ class WorkingOrder(models.Model):
     )
     owner = models.ForeignKey(User)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=DEALER_EDIT)
+    #Submit options
+    color_views = models.BooleanField(default=False)
+    elevations = models.BooleanField(default=False)
+    quoted_cabinet_list = models.BooleanField(default=False)
+
     
     
     #New page

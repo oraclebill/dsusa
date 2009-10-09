@@ -27,7 +27,7 @@ function show_details(type, caption) {
 
 
 {% block content %}
-
+<form method="POST">
 <div class="grid_5">
 	<fieldset>
 		<legend>Order information</legend>
@@ -38,18 +38,17 @@ function show_details(type, caption) {
 <div class="grid_5">
 	<fieldset>
 		<legend>Format options</legend>
+		<table>{{form}}</table>
 	</fieldset>
 </div>
 <div class="grid_6">
 	<fieldset>
 		<legend>Order control</legend>
-		<form method="POST">
 			<input type="submit" value="Submit">
-		</form>
+			<a href="{% url print-order order.id %}">Print</a>
 	</fieldset>
 </div>
-
-<div class="clear"></div>
+</form>
 
 <div class="clear"></div>
 

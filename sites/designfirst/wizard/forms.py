@@ -166,6 +166,16 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
         ]
 
 
+class SubmitForm(forms.ModelForm):
+    class Meta:
+        model = WorkingOrder
+        fields = [
+            'color_views',
+            'elevations',
+            'quoted_cabinet_list',
+        ]
+
+
 class AttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment

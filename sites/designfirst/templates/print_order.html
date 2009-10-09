@@ -1,0 +1,54 @@
+<html>
+<head>
+	<title>{{order}}</title>
+</head>
+<body>
+<table>
+<tr>
+	<th style="background-color: lightgray;">Order information</th>
+	<th style="background-color: lightgray;">Design information</th>
+</tr>
+<tr>
+	<td>
+		<table>
+			<tr><td>Order id:</td><td>{{order.id}}</td></tr>
+			<tr><td>Customer id:</td><td>{{order.owner.id}}</td></tr>
+			<tr><td>Project name:</td><td>{{order}}</td></tr>
+			<tr><td>Date submitted:</td><td>{{order.submitted}}</td></tr>
+		</table>
+	</td>
+	<td>
+		<table>
+			<tr><td>Color views:</td><td>{{order.color_views}}</td></tr>
+			<tr><td>Elevations:</td><td>{{order.elevations}}</td></tr>
+			<tr><td>Quoted cabinet list:</td><td>{{order.quoted_cabinet_list}}</td></tr>
+		</table>
+	</td>
+</tr>
+<tr>
+{% for column in summary %}
+	<td style="vertical-align: top;">
+	<table>
+	<tr>
+		<th style="background-color: lightgray;">Section</th>
+		<th style="background-color: lightgray;">Value</th>
+	</tr>
+	{% for section, values in column %}
+		<tr>
+			<th>{{section}}</th>
+			<th></th>
+		</tr>
+		{% for name, value in values %}
+		<tr>
+			<td>{{name}}</td>
+			<td>{{value}}</td>
+		</tr>
+		{% endfor %}
+	{% endfor %}
+	</table>
+	</td>
+{% endfor %}
+</tr>
+</table>
+</body>
+</html>
