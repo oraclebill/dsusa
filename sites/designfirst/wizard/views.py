@@ -1,7 +1,7 @@
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from base import WizardBase, BTN_SAVENEXT
+from base import WizardBase
 from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from utils.views import render_to
 from models import Attachment, Appliance
@@ -60,8 +60,8 @@ class Wizard(WizardBase):
     
     def step_appliances(self, request):
         if request.method == 'POST':
-            if BTN_SAVENEXT in request.POST:
-                return self.next_step()
+            if 'add_appliance' not in request.POST:
+                return self.dispatch_next_step()
             form = ApplianceForm(request.POST, request.FILES)
             if form.is_valid():
                 obj = form.save(commit=False)
@@ -82,8 +82,8 @@ class Wizard(WizardBase):
     def step_attachments(self, request):
         context = {}
         if request.method == 'POST':
-            if BTN_SAVENEXT in request.POST:
-                return self.next_step()
+            if 'upload_file' not in request.POST:
+                return self.dispatch_next_step()
             form = AttachmentForm(request.POST, request.FILES)
             if form.is_valid():
                 obj = form.save(commit=False)

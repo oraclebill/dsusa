@@ -11,14 +11,17 @@ from django.core.urlresolvers import reverse
 
 
 BTN_SAVENEXT = '_savenext_'
-BTN_PREVIOUS = '_prev_'
-BTN_SKIP = '_skip_'
+
+NEXT_STEP_VAR = 'next_step_'
+GO_NEXT = '_next_'
+GO_PREVIOUS = '_prev_'
 
 
 class WizardBase(object):
     
     def __call__(self, request, id, step, complete):
         self.order = get_object_or_404(WorkingOrder, id=id)
+        self.request = request
         
         #Permission check
         if self.order.owner.id != request.user.id:
@@ -30,11 +33,6 @@ class WizardBase(object):
             step = self.steps[0]
         self.step = step
         
-        if BTN_SKIP in request.POST:
-            return self.next_step()
-        if BTN_PREVIOUS in request.POST:
-            return self.previous_step()
-        
         result = self.dispatch(request)
         if isinstance(result, HttpResponse):
             return result
@@ -42,9 +40,7 @@ class WizardBase(object):
         template = 'wizard/%s.html' % self.step
         context = {
             'wizard': self,
-            'BTN_SAVENEXT': BTN_SAVENEXT,
-            'BTN_PREVIOUS': BTN_PREVIOUS,
-            'BTN_SKIP': BTN_SKIP,
+            'BTN_SAVENEXT': BTN_SAVENEXT
         }
         if isinstance(result, (list, tuple)):
             result, template = result
@@ -66,7 +62,7 @@ class WizardBase(object):
             form = FormClass(request.POST, instance=self.order)
             if form.is_valid():
                 form.save()
-                return self.next_step()
+                return self.dispatch_next_step()
         else:
             form = FormClass(instance=self.order)
         context = {'form':form}
@@ -85,18 +81,31 @@ class WizardBase(object):
                 'slug': step,
             }
     
-    def previous_step(self):
-        previous = self.steps.index(self.step) - 1
-        if previous < 0:
-            previous = 0
-        return self.go_to_step(self.steps[previous])
+    def dispatch_next_step(self):
+        assert self.request.method == 'POST', 'dispatch_next_step works only with POST'
+        step = self.request.POST[NEXT_STEP_VAR]
+        assert step is not None
+        if step == GO_NEXT:
+            step = self.next_step()
+        elif step == GO_PREVIOUS:
+            step = self.previous_step()
+        if step is None:
+            return HttpResponseRedirect(reverse(
+                        'order-wizard-complete', args=[self.order.id]))
+        return self.go_to_step(step)
+    
     
     def next_step(self):
         next = self.steps.index(self.step) + 1
         if next >= len(self.steps):
-            return HttpResponseRedirect(reverse(
-                        'order-wizard-complete', args=[self.order.id]))
-        return self.go_to_step(self.steps[next])
+            return None
+        return self.steps[next]
+    
+    def previous_step(self):
+        previous = self.steps.index(self.step) - 1
+        if previous < 0:
+            return None
+        return self.steps[previous]
     
     def is_first_step(self):
         return self.steps.index(self.step) == 0

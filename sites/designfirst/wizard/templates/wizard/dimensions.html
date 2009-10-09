@@ -1,6 +1,7 @@
 {% extends "wizard/base.html" %}
 
 {% block extra-head %}
+{{block.super}}
 <script>
 	var standard_sizes = {{standard_sizes|safe}};
 
@@ -32,6 +33,14 @@
 		replace_widget('id_wall_cabinet_height', 'wall_cabinet_height', standard)
 		replace_widget('id_vanity_cabinet_height', 'vanity_cabinet_height', standard)
 		replace_widget('id_depth', 'depth', standard)
+		
+		//Fixing navigation
+		$('#id_depth').keydown(function(event){
+			if (event.keyCode == KEY_TAB && !event.shiftKey) {
+				wizard_go_to('_next_');
+				return false;
+			}
+		})
 	}
 	
 	$(function(){
