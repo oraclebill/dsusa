@@ -28,11 +28,12 @@ def create_profile(sender, instance, **kwargs):
 models.signals.post_save.connect(create_profile, sender=User)
 
 
-
 class DesignOrderManager(models.Manager):
 
     class Meta:
         model = 'DesignOrder'
+
+order_saved = django.dispatch.Signal(providing_args=("instance", "created"))
 
 
 class DesignOrder(models.Model):
@@ -83,11 +84,30 @@ class DesignOrder(models.Model):
         null=True, blank=True,
         help_text=_('A timestamp of when this order was completed.'))
 
+    final_type = models.ForeignKey(ct_models.ContentType, editable=False)
+
     objects = DesignOrderManager()
+
+    def save(self, *args, **kwargs):
+        self.final_type = \
+                    ct_models.ContentType.objects.get_for_model(type(self))
+        created = not bool(self.pk)
+        super(DesignOrder, self).save(*args, **kwargs)
+        order_saved.send(
+            sender=DesignOrder, instance=self, created=created)
 
     @models.permalink
     def get_absolute_url(self):
         return ('order_detail', (self.id, ))
+
+    def upcast(self):
+        if not hasattr(self, '_upcast'):
+            if isinstance(self, self.final_type.model_class()):
+                self._upcast = self
+            else:
+                self._upcast = self.final_type.get_object_for_this_type(
+                                                                    pk=self.pk)
+        return self._upcast
 
     def assign_designer(self, designer):
         self.designer = designer
