@@ -72,6 +72,9 @@ class DesignOrder(models.Model):
 
     arrived = models.DateTimeField(_('Arrival Timestamp'), default=datetime.now,
         help_text=_('A timestamp of when this order was created.'))
+    completed = models.DateTimeField(_('Completion Timestamp'),
+        null=True, blank=True,
+        help_text=_('A timestamp of when this order was completed.'))
 
     objects = DesignOrderManager()
 
@@ -86,6 +89,7 @@ class DesignOrder(models.Model):
 
     def complete(self, user):
         self.status = STATUS_COMPLETED
+        self.completed = datetime.now()
         self.save()
 
 

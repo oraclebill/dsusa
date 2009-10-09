@@ -1,5 +1,5 @@
 {% extends "designer/base.html" %}
-{% load i18n %}
+{% load i18n order_stats %}
 
 {% block title %}
 {% trans "DesignFirst Designer Home" %}
@@ -119,31 +119,8 @@
 <div class="grid_5  omega ">
 	
 	<div class="box">
-	    <h2>{% trans "Order Statistics (simulated)" %}</h2>
-		<table>
-			<thead>
-				<tr>
-					<th>#</th>
-					{% for desc in stats.headers %}
-					<th> {{desc}} </th>	
-					{% endfor %}
-				</tr>
-			</thead>
-			<tbody>
-			    <tr>
-			        <th>{% trans "New" %}</th>
-					{% for stat in stats.arrived %}
-			        <td>{{ stat }}</td>
-			        {% endfor %}
-			    </tr>
-			    <tr>
-				    <th>{% trans "Completed" %}</th>
-					{% for stat in stats.completed %}
-			        <td>{{ stat }}</td>						
-					{% endfor %}
-			    </tr>
-			</tbody>
-		</table>
+	    <h2>{% trans "Order Statistics" %}</h2>
+        {% order_stats %}
 	</div>
 </div>
 

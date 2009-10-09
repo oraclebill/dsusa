@@ -52,17 +52,12 @@ def dashboard(request):
     # except:
     #     orders = []
 
-    stats = { 'headers': ['Today', 'This Week', 'This Month'],
-              'arrived': [3, 25, 84],
-              'completed': [4, 22, 80],
-            }
 
     return render_to_response( 'designer/dashboard.html', {
         'account': account,
         'pending': pending,
         'working': working,
         'completed': completed,
-        'stats': stats,
     }, context_instance=RequestContext(request) )
 
 
