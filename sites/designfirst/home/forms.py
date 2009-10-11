@@ -39,6 +39,22 @@ class DealerProfileForm(forms.ModelForm):
         profile.save()    
         return profile_user
     
+class DesignOrderForm(forms.ModelForm):
+    class Meta: 
+        model = DesignOrder
+        fields = ( 'customer', 'received', 'project_name', 'design_type', 
+                'color_views', 'elevations', 'price_report', 'addl_notification_method',
+                'desired', 'document_reference_id', 'source', 'entered_by', )
+    
+    def __init__(self, *args, **kwargs):
+        # if initialized, make some fields readonly and disabled...
+        i = kwargs['initial']
+        for f in ('customer', 'source', 'entered_by'):
+            if f in i:               
+                self.base_fields[f].widget.attrs['readonly'] = True
+                self.base_fields[f].widget.attrs['disabled'] = True
+        super(DesignOrderForm, self).__init__(*args, **kwargs)   
+
 class NewDesignOrderForm(forms.ModelForm):
     cost = forms.CharField(widget=forms.TextInput(attrs={'readonly':'true'}))
     class Meta: 
@@ -51,17 +67,7 @@ class NewDesignOrderForm(forms.ModelForm):
         #changing order of the fields
         self.base_fields.keyOrder = ['project_name', 'design_product', 'desired', 'cost', 'client_notes']
         self.base_fields['client_notes'].label = 'Notes'
-        super(NewDesignOrderForm, self).__init__(*args, **kwargs)
-    
-
-class DesignOrderForm(forms.ModelForm):
-    class Meta: 
-        model = DesignOrder
-        exclude = [ 'id', 'client_account', 'visited_status', 'valid_status', 'designer',
-            'designer_package', 'designer_package_notes', 'designer_notes', 'modified', 
-            'modified_by', 'created', 'submitted', 'assigned', 'completed', 'closed', 
-            'tracking_notes' ]
-        
+        super(NewDesignOrderForm, self).__init__(*args, **kwargs)   
 
 class DesignOrderAppliancesForm(forms.ModelForm):
     class Meta: 
