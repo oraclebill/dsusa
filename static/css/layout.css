@@ -347,6 +347,11 @@ form p.error {
     font-weight:bold;
     color:#900;
 }
+form .errorlist {
+    font-weight:bold;
+    color:#900;
+}
+
 input.search.text {
 	width:66%;
 }
