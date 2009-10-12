@@ -25,24 +25,17 @@ ljkdsfalsdkfj
 		<div id="order-entry" class="box">
 			<h2>Design Request Info</h2>
 			<div class="block">
-				
-				<div id="accordion">
 					
-					{% for subform in formlist %}
-					<h3 class="toggler atStart"><span>{{ subform.name }}</span>{% ifequal subform.visited 'visited' %}*{% endifequal %}
-							<span class="areastatus ">{{ subform.validity }}</span> </h3>
-					<div class="element atStart">
-						<form action="#" method="POST" accept-charset="utf-8">
-							<fieldset>
-								<input type="hidden" name="subform" value="{{ subform.id }}">
-								{{ subform.as_p }}
-								<input type="submit" name="submit_{{subform.id}}" value="update">
-							</fieldset>
-						</form>
-					</div>
-					{% endfor %}
-	
+				<h3 class="toggler atStart"><span>{{ form }}</span></h3>
+				<div class="element atStart">
+					<form action="#" method="POST" accept-charset="utf-8">
+						<fieldset>
+							{{ form }}
+							<input type="submit" name="submit" value="update">
+						</fieldset>
+					</form>
 				</div>
+	
 			</div>
 
 		</div>

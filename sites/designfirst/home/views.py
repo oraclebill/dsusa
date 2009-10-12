@@ -17,11 +17,8 @@ from django.contrib.auth.models import User
 from home import ACCOUNT_ID, ORDER_ID
 from home.models import DealerOrganization, DesignOrder, Transaction, OrderAppliance, \
     OrderAttachment, UserProfile   
-from home import designorderforms as dof
-from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
+from forms import DesignReviewForm, NewDesignOrderForm, CreateOrderForm, EditOrderForm, DealerProfileForm
 from product.models import Product
-
-
 
 
 ##
@@ -150,19 +147,23 @@ def create_order(request, *args):
     """
     Create a new order.
     """
+    form_class=CreateOrderForm
     account = request.user.get_profile().account.dealerorganization              
     if request.method == 'POST':
-        form = NewDesignOrderForm(request.POST)
+        form = form_class(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
-            order.client_account = account#TODO: there is actually no client_account in working order
-            order.owner = request.user
+            order.customer = account #TODO: there is actually no client_account in working order 
+            order.entered_by = request.user.username
             order.save()
                         
-            return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
+#            return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
+            return HttpResponseRedirect(reverse(edit_order_detail, args=[order.id]))
     else:
-        desired = (datetime.now() + timedelta(days=2))
-        form = NewDesignOrderForm(initial={'desired': desired, 'cost':None})
+        received = datetime.now()
+        desired  = (datetime.now() + timedelta(days=2))
+        form = form_class(initial=dict(received=received, desired=desired, cost=None, 
+            customer=account.id, entered_by=request.user.username))
     
     #Prices is used to get price from product when user switches product in from
     prices = dict([(p.id, float(p.customer_price(account))) 
@@ -171,37 +172,10 @@ def create_order(request, *args):
     return render_to_response('home/create_order.html', locals(),                                
                               context_instance=RequestContext(request) ) 
 
-
-
-ORDER_SUBFORMS = [ dof.OrderInfo, dof.Cabinetry, dof.Hardware, dof.Mouldings, dof.CabinetBoxes, 
-                    dof.CornerCabinetOptions, dof.IslandAndPeninsula, dof.OtherConsiderations,
-                    dof.SpaceManagement, dof.Miscellaneous, dof.FloorPlanDiagram ]
-#                    dof.SpaceManagement, dof.Miscellaneous, dof.Appliances  ]
-
 def edit_order_detail(request, order_id):
     """
-    Editable detailed design order display. 
+    Simple view to edit order display. 
 
-    This view
-        - validates login
-        - gets the current working order from session / db
-        - constructs as set of subforms based on current order.    
-
-    We attempt to give the template some flexibility with respect to how to manage
-    data entry by decomposing the field set of the design order into a number of subforms.
-
-    Based on the form_id in post request we update the 'visited_status' of the order 
-    to note the corresponding field group has been visited. 
-
-    We pass the following to the template:
-     - request context (of course)
-     - order: the current DesignOrder object
-     - formlist: a list of form objects for the field groups that comprise a DesignOrder
-         Each field group (form) has some additional properties just for enhancing 
-         display processing:
-            - status: ('valid'|'invalid') based on form.is_valid
-            - visited: ('visited'|'') based on bitset check in order.visited_status
-            - current: True if it was the form posted on last request, false otherwise
     """    
 
     user = request.user
@@ -212,85 +186,24 @@ def edit_order_detail(request, order_id):
     account = profile.account.dealerorganization
     order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
 
-    if order.submitted is not None:
-        raise Exception("Invalid Operation - can't edit submitted order")
-
-    posted_id = None
-    subforms = []
-    
-    ApplianceFormSet = modelformset_factory(OrderAppliance, extra=1) 
-    
-    appliance_forms = None
-    
-    file_upload = [None]
-    
-    def add_subform(form, selected_id=None):
-        form.validity = form.is_valid() and 'valid' or 'invalid'
-        form.visited = ((1<<form.id) & order.visited_status) and 'visited' or ''
-        form.current = (form.id == selected_id) 
-        
-        if form.id != dof.FloorPlanDiagram.id:
-            subforms.append( form )
-        else:
-            file_upload[0] = form
-                    
-
-    # if this is a get initialize order subforms for display
-    if request.method == 'GET':
-        
-        appliance_forms = ApplianceFormSet(queryset=order.orderappliance_set.all())
-
-        for form in ORDER_SUBFORMS:
-            subform = form(instance=order)
-            add_subform( subform )
-        
-    # if this is an update, determine which subform to apply and validate
-    elif request.method == 'POST': 
-
-        try:
-            posted_id = request.POST['subform']
-        except:
-            posted_id = '-1'
-            
-        posted_id = int( posted_id )
-        posted_subform = None        
-        
-        for form_class in ORDER_SUBFORMS:
-            if form_class.id == posted_id:
-                form = form_class(request.POST, request.FILES, instance=order)
-                posted_subform = form
-                order.visited_status |= 1<<form.id
-            else:
-                form = form_class(instance=order)              
-        
-            log.debug("in loop(a), form.(name/id) = %s/%s" % (form.name, form.id) )
-
-            add_subform( form, posted_id )
-            
-                    
-        if not posted_subform: 
-            # posted form was not in list,
-            # so it's  appliance formset             
-                
-            appliance_forms = ApplianceFormSet(request.POST, queryset=order.orderappliance_set.all())
-            if appliance_forms and appliance_forms.is_valid():            
-                instances = appliance_forms.save(commit=False)
-                for instance in instances:  
-                    instance.order_id = order.id                
-                    instance.save()                    
-    	else:
-            appliance_forms = ApplianceFormSet(queryset=order.orderappliance_set.all())
-            if posted_subform.is_valid():
-                if request.FILES:
-                    order.client_diagram_source = 'UPL'  
-                posted_subform.save()     
-
-    # otherwise choke
+    form_class = EditOrderForm
+    if request.method == 'POST':
+        form = form_class(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
     else:
-        raise "unsupported http method"
+        form = form_class(instance=order)
+    
+    return render_to_response("home/dealer_order_detail.html", 
+                dict(order=order,form=form), 
+                context_instance=RequestContext(request))
 
+
+def add_appliance(request, orderid):
+
+        
     return render_to_response( "home/dealer_order_detail.html", 
-        dict( order=order, formlist=subforms, formset=appliance_forms, file_upload=file_upload[0]  ),
+        dict( order=order, form=form, formset=appliance_forms, file_upload=file_upload[0]  ),
         context_instance=RequestContext(request) )
     
         
@@ -350,9 +263,9 @@ def dealer_review_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
     if request.method == "GET":
-        form = DesignOrderAcceptanceForm(instance=order)
+        form = DesignReviewForm(instance=order)
     elif request.method == "POST":
-        form = DesignOrderAcceptanceForm(request.POST,instance=order)
+        form = DesignReviewForm(request.POST,instance=order)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
@@ -365,9 +278,9 @@ def dealer_review_order(request, orderid):
 def dealer_accept_order(request, orderid):
     order = get_current_order(request, orderid)
     if request.method == "GET":
-        form = DesignOrderAcceptanceForm(instance=order)
+        form = DesignReviewForm(instance=order)
     elif request.method == "POST":
-        form = DesignOrderAcceptanceForm(request.POST,instance=order)
+        form = DesignReviewForm(request.POST,instance=order)
         if form.is_valid():
             order.status = 'ACC'
             order.closed = datetime.now()
@@ -383,9 +296,9 @@ def dealer_reject_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
     if request.method == "GET":
-        form = DesignOrderAcceptanceForm(instance=order)
+        form = DesignReviewForm(instance=order)
     elif request.method == "POST":
-        form = DesignOrderAcceptanceForm(request.POST,instance=order)
+        form = DesignReviewForm(request.POST,instance=order)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
@@ -397,9 +310,7 @@ def dealer_reject_order(request, orderid):
     
 def generate_floorplan_template(request, orderid):
     """
-    Generate a floorplan template, customized to the current user (dealer) and order.
-    
-    
+    Generate a floorplan template, customized to the current user (dealer) and order.        
     """    
     return _generate_floorplan_template(get_current_order(request, orderid))
     

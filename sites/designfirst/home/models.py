@@ -1,10 +1,12 @@
 import settings
+
+
 from datetime import datetime
 
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from designfirst.product.models  import PriceSchedule
 
@@ -26,26 +28,28 @@ class Organization(models.Model):
     """
     An abstract base class for all account objects.
     
-    
     """
-    # class Meta:
-    #     abstract = True
-        
-    ACCOUNT_STATUSES = ( ('P', 'Pending'), ('A', 'Active'), 
-                         ('S', 'Suspended'), ('C','Cancelled'), ('O', 'Archived' ))
-    status  = models.CharField(max_length=3, default="ACT", choices=ACCOUNT_STATUSES)
-    company_name = models.CharField(max_length=50)
-    company_address_1 = models.CharField(max_length=40, blank=True, null=True)
-    company_address_2 = models.CharField(max_length=40, blank=True, null=True)
-    company_city = models.CharField(max_length=10, blank=True, null=True)
-    company_state = models.CharField(max_length=2, blank=True, null=True)
-    company_zip4 = models.CharField(max_length=10, blank=True, null=True)
-    company_phone = models.CharField(max_length=20, blank=True)
-    company_fax = models.CharField(max_length=20, blank=True)
-    company_email = models.EmailField()
-    
+    PENDING, ACTIVE, SUSPENDED, CANCELLED = ('P','A', 'S', 'C')    
+    STATUS_CHOICES = ( (PENDING, _('Pending')), (ACTIVE, _('Active')),
+                         (SUSPENDED, _('Suspended')), (CANCELLED, _('Cancelled')), )
+                         
+#     id = models.CharField(_('Organization'), primary_key=True, max_length=20,  )
+    status  = models.CharField(_('Account Status'), max_length=3, default=PENDING, choices=STATUS_CHOICES)
+    name = models.CharField(_('Legal Name'), max_length=50)
+    address_1 = models.CharField(_('Address Line 1'), max_length=40, blank=True, null=True)
+    address_2 = models.CharField(_('Address Line 2'), max_length=40, blank=True, null=True)
+    city = models.CharField(_('City'), max_length=10, blank=True, null=True)
+    state = models.CharField(_('State'), max_length=2, blank=True, null=True)
+    zip4 = models.CharField(_('Postal Code'), max_length=10, blank=True, null=True)
+    phone = models.CharField(_('Business Phone'), max_length=20, blank=True)
+    fax = models.CharField(_('Business Fax'), max_length=20, blank=True)
+    email = models.EmailField(_('Business Email'), )
+
+    class Meta:
+        abstract = True
+                    
     def __unicode__(self):
-        return self.company_name
+        return self.name
     
     
 class DealerOrganization(Organization):
@@ -56,11 +60,14 @@ class DealerOrganization(Organization):
     are registered they are given the ability to create and modify new orders, and to 
     review the status of any orders that they have created. 
     """
-                                
-    default_measure_units = models.CharField(max_length=3, choices=DIMENSION_UNIT_CHOICES)
-    credit_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
+    primary_contact = models.ForeignKey(User, verbose_name=_('Primary Contact'))                                
+    account_rep     = models.CharField(_('Account Rep'), max_length=20,blank=True)
+    num_locations   = models.SmallIntegerField(_('Number of Locations'))
+    credit_balance  = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    price_sheet     = models.ForeignKey(PriceSchedule,blank=True,null=True)
     
+#     def save(self):
+#         super(DealerOrganization, self).save()
 
 
 class UserProfile(models.Model):
@@ -71,7 +78,7 @@ class UserProfile(models.Model):
     object contains that profiles' defining information. 
     """    
     user = models.ForeignKey(User, unique=True)
-    account = models.ForeignKey(Organization)
+    account = models.ForeignKey(DealerOrganization)
     usertype = models.CharField(max_length=10, 
         choices=[('designer', 'Designer'), ('dealer','Dealer'),], default='dealer') # TODO: usertype is determined by 'account'
 
@@ -86,55 +93,81 @@ class UserProfile(models.Model):
         else:
             return '[empty user profile]'
 
+    
 class DesignOrder(models.Model):
     """
     A collection of product selections and associated metadata, created by a 
     Customer with the intent of purchase
     
-    TODO: make get_absolute_url work..
     """
     
-    PAYMENT_CHOICES = (
-        ('AUTO', 'Automatic Submission'), 
-        ('APPR', 'Require Approval')
-    )
-    
-    DELIVERY_OPTIONS = (
-        (1,'Color Design Views'), 
-        (2,'Elevations'), 
-        (3,'Quote Cabinet List'), 
-    )
+    ## 
+    ## Constants
+    ##
     
     STATUS_CHOICES = (
-        ("DLR", "Dealer Editing" ),
-       # ("SR", "Dealer Submission Ready" ), # logical state... is_valid & ! submitted
+        ("DLR", "Working" ),
         ("SUB", "Submitted" ),
-        ("ASG", "Assigned" ),
-       # ("WK", "Working" ),
-        ("RCL", "Requires Clarification" ),
-       # ("RR", "Designer Review Ready" ),
-        ("CMP", "Designer Completed" ),
-        ("ACC", "Dealer Accepted" ),
-        ("REJ", "Dealer Rejected" ),
-        ("WTH", "Dealer Withdrawn" ),
+        ("CMP", "Complete" ),
     )
     
-    REVIEW_RATING_CHOICES = [x for x in enumerate(
-        ['unacceptably bad', 'barely acceptable', 'fair', 'good', 'very good', 'excellent', 'astonishingly superior'])]
-
-    client_account  = models.ForeignKey(Organization, related_name='created_orders',verbose_name='Customer Organization')
-#TODO: add client contact info for user who entered order
-#    client_contact  = models.ForeignKey(User, related_name='created_orders',verbose_name='Client Contact', null=True, blank=True)
-    project_name    = models.CharField(max_length=25, verbose_name='Project')
-    description     = models.TextField(null=True, blank=True, verbose_name='Description')
-    status          = models.CharField(max_length=3, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
-    cost            = models.PositiveSmallIntegerField(default=1, verbose_name='Design Price')
-    designer        = models.ForeignKey(User, blank=True, null=True, related_name='serviced_orders')
+    KITCHEN, BATH, CLOSET, DEN, OTHER = range(0,5)
+    DESIGN_TYPE_CHOICES = (
+        ( KITCHEN, _('Kitchen')),
+        ( BATH, _('Bath')),
+        ( CLOSET, _('Closet')),
+        ( DEN, _('Den')),
+        ( OTHER, _('Other')),
+    )
     
-    # format options
-    color_views     = models.BooleanField(blank=True, verbose_name='Color Views')
-    elevations      = models.BooleanField(blank=True, verbose_name='Elevations')
-    quote_cabinet_list = models.BooleanField(blank=True, verbose_name='Quoted Cabinet List')
+    SMS, PHONE, FAX, IM, TWITTER_DM = range(0,5)
+    NOTIFICATION_CHOICES = (
+        ( SMS, _('SMS')),
+        ( PHONE, _('Phone')),
+        ( FAX, _('Fax')),
+        ( IM, _('IM')),
+        ( TWITTER_DM, _('Twitter DM')),
+    )
+        
+    ##
+    ## Fields
+    ##
+    
+    # core order management fields
+    customer        = models.ForeignKey(Organization, related_name='created_orders', verbose_name=_('Customer'))
+    project_name    = models.CharField(_('Project Name'), max_length=25)  # TODO: slugify?
+    design_type     = models.SmallIntegerField(_('Project Type'), max_length=10, choices=DESIGN_TYPE_CHOICES) 
+    color_views     = models.BooleanField(_('Perspective Views?'), default=False)
+    elevations      = models.BooleanField(_('Floorplan Elevations?'))
+    price_report    = models.BooleanField(_('Cabinet Price Report'))
+    source          = models.CharField(_('Order Source'), max_length=10, default='web') # or fax, or other
+    entered_by      = models.CharField(_('Entered By'), max_length=25) # username or 'none' 
+    received        = models.DateTimeField(_('Received On'), default=datetime.now,
+        help_text=_('The date/time this order was recieved from the customer. For fax orders this is the time the fax was recieved.'))
+    desired         = models.DateField(_('Desired On'), null=True, blank=True, 
+        help_text=_('You can enter a desired delivery date for your design here. When your order is processed we will take this info consideration when your estimated delivery time is determined. To ensure accelerated delivery you can select the "Rush Delivery". Rush designs submitted before 1pm EST can be completed by 8am the next day.'))
+    addl_notification_method = models.CharField(_('Additional Notification Method'), max_length=10, blank=True, 
+        choices=NOTIFICATION_CHOICES, 
+        help_text=_('In addition to the standard email notfication, you can select an additional method if your profiles contains matching contact information for one of these mechanisms.')) 
+    document_reference_id = models.CharField(_('Document Reference'), max_length=30, blank=True, 
+        help_text=_('The reference or document number for a source document, e.g. a faxage document id for transcoded fax orders.'))
+    submitter_notes = models.TextField(_('Notes'), null=True, blank=True)
+    
+    # tracking information - system managed
+    status          = models.CharField(_('Status'), max_length=3, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
+    last_modified   = models.DateTimeField(auto_now=True, null=True, blank=True)
+    last_modified_by = models.CharField(max_length=35, blank=True)
+
+    submitted = models.DateTimeField(null=True, blank=True)
+    assigned = models.DateTimeField(null=True, blank=True)
+    projected = models.DateTimeField(null=True, blank=True)
+    completed = models.DateTimeField(null=True, blank=True)
+    closed = models.DateTimeField(null=True, blank=True)
+
+
+    ###
+    ###  BEGIN DESIGN OPTIONS
+    ###
 
     # cabinetry options
     cabinet_manufacturer = models.CharField(max_length=20, blank=True, null=True, 
@@ -208,43 +241,6 @@ class DesignOrder(models.Model):
     range_hood = models.BooleanField(default=False)
     posts = models.BooleanField(default=False)
     
-    # notes
-    miscellaneous_notes = models.TextField(blank=True, null=True)
-    
-    # diagrams
-    client_diagram = models.FileField(upload_to='inbound',null=True, blank=True)
-#TODO: add
-#    client_diagram_recieved = models.DateTimeField(null=True,blank=True)
-    client_diagram_source = models.CharField(max_length=3,null=True, blank=True, 
-        choices=(('UPL', 'Upload'), ('FAX', 'Fax')), default='UPL')
-    client_diagram_notes = models.TextField(null=True, blank=True)
-    designer_package = models.FileField(upload_to='outbound',null=True, blank=True)
-    designer_package_notes = models.TextField(null=True, blank=True)
-    
-    # post delivery ratings
-    client_review_rating = models.SmallIntegerField(null=True, blank=True, 
-        choices=REVIEW_RATING_CHOICES, verbose_name='Rating')
-    client_review_notes = models.TextField(null=True, blank=True, verbose_name='Review Notes')
-    client_notes = models.TextField(null=True,blank=True)
-    designer_notes = models.TextField(null=True,blank=True)
-    
-    # tracking information - system managed
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    modified_by = models.CharField(max_length=35, null=True, blank=True)
-
-    visited_status  = models.IntegerField(default=0, editable=False)
-    valid_status    = models.IntegerField(default=0, editable=False)
-
-    desired = models.DateTimeField('Desired Completion', null=True, blank=True)
-    submitted = models.DateTimeField(null=True, blank=True)
-    assigned = models.DateTimeField(null=True, blank=True)
-    projected = models.DateTimeField(null=True, blank=True)
-    completed = models.DateTimeField(null=True, blank=True)
-    closed = models.DateTimeField(null=True, blank=True)
-
-    tracking_notes = models.TextField(null=True, blank=True)
-    
     # fields considered 'optional'  #TODO this is primarily a display thing.. move it
     display_as_optional = [ 
         corner_cabinet_base_bc, corner_cabinet_base_bc_direction, corner_cabinet_wall_bc,
@@ -313,7 +309,7 @@ class DesignOrder(models.Model):
         # TODO: remove hardcoded (demo) email addresses
         from django.core.mail import send_mail
         send_mail( 
-            'New order submitted by %s on %s' % (self.client_account,self.submitted),
+            'New order submitted by %s on %s' % (self.entered_by,self.submitted),
             """\
             \n\n\n
             The following order has been submitted for design creation:
@@ -370,7 +366,7 @@ class DesignOrder(models.Model):
         return reverse('home.edit_order_detail')
                 
     def __unicode__(self):
-        return "Order #%s for %s [%s] - %s" % (self.id, self.client_account.company_name, self.status, self.description)
+        return "Order #%s [%s] (%s)" % (self.id, self.project_name, self.status)
 
 
 
