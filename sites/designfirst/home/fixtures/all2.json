@@ -983,7 +983,7 @@
  }, 
  {
   "pk": 1, 
-  "model": "home.dealerorganization", 
+  "model": "home", 
   "fields": {
    "credit_balance": "0", 
    "default_measure_units": "IN"
@@ -991,7 +991,7 @@
  }, 
  {
   "pk": 2, 
-  "model": "home.dealerorganization", 
+  "model": "home", 
   "fields": {
    "credit_balance": "0", 
    "default_measure_units": "IN"

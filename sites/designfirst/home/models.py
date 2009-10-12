@@ -31,7 +31,7 @@ class Organization(models.Model):
     """
     PENDING, ACTIVE, SUSPENDED, CANCELLED = ('P','A', 'S', 'C')    
     STATUS_CHOICES = ( (PENDING, _('Pending')), (ACTIVE, _('Active')),
-                         (SUSPENDED, _('Suspended')), (CANCELLED, _('Cancelled')), )
+                       (SUSPENDED, _('Suspended')), (CANCELLED, _('Cancelled')), )
                          
 #     id = models.CharField(_('Organization'), primary_key=True, max_length=20,  )
     status  = models.CharField(_('Account Status'), max_length=3, default=PENDING, choices=STATUS_CHOICES)
@@ -62,7 +62,7 @@ class DealerOrganization(Organization):
     """
     primary_contact = models.ForeignKey(User, verbose_name=_('Primary Contact'))                                
     account_rep     = models.CharField(_('Account Rep'), max_length=20,blank=True)
-    num_locations   = models.SmallIntegerField(_('Number of Locations'))
+    num_locations   = models.SmallIntegerField(_('Number of Locations'), default=1)
     credit_balance  = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     price_sheet     = models.ForeignKey(PriceSchedule,blank=True,null=True)
     
@@ -134,7 +134,7 @@ class DesignOrder(models.Model):
     ##
     
     # core order management fields
-    customer        = models.ForeignKey(Organization, related_name='created_orders', verbose_name=_('Customer'))
+    customer        = models.ForeignKey(DealerOrganization, related_name='created_orders', verbose_name=_('Customer'))
     project_name    = models.CharField(_('Project Name'), max_length=25)  # TODO: slugify?
     design_type     = models.SmallIntegerField(_('Project Type'), max_length=10, choices=DESIGN_TYPE_CHOICES) 
     color_views     = models.BooleanField(_('Perspective Views?'), default=False)
@@ -371,8 +371,16 @@ class DesignOrder(models.Model):
 
 
 class OrderAttachment(models.Model):
-    TYPE_CHOICES = enumerate([ '20/20 KIT File', 'PDF - Color Views', 'PDF - Elevations', 'Other' ])
-    SOURCE_CHOICES = enumerate([ 'Client', 'Design Org', 'Admin', 'Other' ])
+    KIT, PDF_PERSPECTIVE, PDF_ELEVATION, OTHER_TYPE = range(0,4)
+    TYPE_CHOICES = ((KIT, _('20/20 KIT File')), 
+                    (PDF_PERSPECTIVE, _('PDF - Color Views')), 
+                    (PDF_ELEVATION, _('PDF - Elevations')), 
+                    (OTHER_TYPE, _('Other')) )
+    CLIENT, DSORG, ADMIN, OTHER_SOURCE = range(0,4)
+    SOURCE_CHOICES = ((CLIENT, _('Client')), 
+                      (DSORG, _('Design Org')), 
+                      (ADMIN, _('Admin')), 
+                      (OTHER_SOURCE, _('Other')))
     METHOD_CHOICES = enumerate([ 'Web', 'Fax', 'Email', 'Admin', 'Other' ])
     
     # TODO: make pk?, fax document id, or uuid if not fax
@@ -383,7 +391,7 @@ class OrderAttachment(models.Model):
     doctype = models.SmallIntegerField(_('Document Type'), choices=TYPE_CHOICES)
     method = models.SmallIntegerField(_('Uploaded Using'), choices=METHOD_CHOICES )
     user = models.ForeignKey(User, null=True, blank=True)
-    org = models.ForeignKey(Organization, null=True, blank=True)
+    org = models.ForeignKey(DealerOrganization, null=True, blank=True)
     timestamp = models.DateTimeField(_('Upload Timestamp'), auto_now=True)
     
     

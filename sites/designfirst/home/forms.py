@@ -22,6 +22,7 @@ class DealerProfileForm(forms.ModelForm):
         profile_user = self.instance
         super(DealerProfileForm, self).save(**kwargs)
         profile_org = DealerOrganization(
+                        primary_contact=profile_user,
                         name=self.cleaned_data['company'], 
                         address_1=self.cleaned_data['address'], 
                         city=self.cleaned_data['city'], 

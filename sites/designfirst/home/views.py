@@ -130,7 +130,7 @@ def dealer_dashboard(request):
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/')
     
-    account = request.user.get_profile().account.dealerorganization
+    account = request.user.get_profile().account
     
     orders = account.created_orders.all()
     transactions = account.transaction_set.all()
@@ -148,7 +148,7 @@ def create_order(request, *args):
     Create a new order.
     """
     form_class=CreateOrderForm
-    account = request.user.get_profile().account.dealerorganization              
+    account = request.user.get_profile().account              
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
@@ -183,7 +183,7 @@ def edit_order_detail(request, order_id):
         return HttpResponseRedirect('/')
  
     profile = user.get_profile()
-    account = profile.account.dealerorganization
+    account = profile.account
     order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
 
     form_class = EditOrderForm
@@ -225,7 +225,7 @@ def dealer_submit_order(request, orderid):
     popup_error = None
     order = get_current_order(request, orderid)
     if order.is_submittable():
-        account = request.user.get_profile().account.dealerorganization
+        account = request.user.get_profile().account
         if account.credit_balance >= order.cost:
             ## TODO: transactions
             now = datetime.utcnow()
