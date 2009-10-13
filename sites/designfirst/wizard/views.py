@@ -2,6 +2,7 @@ from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect,\
     HttpResponseForbidden
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 from base import WizardBase
 from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from utils.views import render_to
@@ -39,6 +40,14 @@ class Wizard(WizardBase):
     
     def step_dimensions(self, request):
         standart_sizes = simplejson.dumps(WorkingOrder.STANDARD_SIZES)
+        images = {
+            WorkingOrder.S_STACKED: 'S_STACKED.png',
+            WorkingOrder.S_STG_HWC: 'S_STG_HWC.png',
+            WorkingOrder.S_STG_DHWC: 'S_STG_DHWC.png',
+            WorkingOrder.S_STG_HBC: 'S_STG_HBC.png',
+            WorkingOrder.S_STG_DBC: 'S_STG_DBC.png',
+        }
+        images_base = settings.MEDIA_URL + 'images/stacking_staggering/'
         #when the manufacturer is one of the valid manufacturers, 
         #default 'Standard Sizes' should be 'checked' or 'True', 
         #otherwise false. :
@@ -46,7 +55,12 @@ class Wizard(WizardBase):
                 and self.order.wall_cabinet_height is None\
                 and self.order.wall_cabinet_height is None:
             self.order.standard_sizes = is_existing_manufacturer(self.order)
-        return self.handle_form(request, DimensionsForm, {'standard_sizes':standart_sizes})
+        context = {
+            'standard_sizes': standart_sizes,
+            'stack_images': simplejson.dumps(images),
+            'stack_images_base': images_base,
+        }
+        return self.handle_form(request, DimensionsForm, context)
     step_dimensions.title = 'Corner boxes'
     
     

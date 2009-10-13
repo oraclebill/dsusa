@@ -94,7 +94,8 @@ class SoffitsForm(forms.ModelForm):
 
 class DimensionsForm(forms.ModelForm, FieldsetForm):
     dimension_style =  forms.ChoiceField(choices=WorkingOrder.STYLE_CHOICES, 
-                             widget=forms.RadioSelect, label='')
+                             widget=forms.RadioSelect(attrs={'class': 'dimension_style'}), 
+                             label='')
     class Meta:
         model = WorkingOrder
         fields = [
@@ -105,7 +106,7 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
             'depth'
         ]
     fieldsets = [
-        ('Style', ['dimension_style']),
+        ('Stacking and Staggering Options', ['dimension_style']),
         ('Sizes', ['standard_sizes', 'wall_cabinet_height', 'vanity_cabinet_height', 'depth']),
     ]
 

@@ -3,6 +3,9 @@
 {% block extra-head %}
 {{block.super}}
 <script>
+
+ 
+    var stack_images = {{stack_images|safe}};
 	var standard_sizes = {{standard_sizes|safe}};
 
 	function input_html(id, name, value) {
@@ -41,6 +44,21 @@
 				return false;
 			}
 		})
+		
+		//Stack/Staggering images
+		var img_html = '<img id="stack_sgage" src="/media/images/wizard/dimensions.png" style="float: right; width: 300px; height: 200px;">'
+		$(img_html).insertAfter('fieldset fieldset:first legend')
+		
+		function switch_image() {
+			var val = $('input.dimension_style[checked]').val();
+			var image = '{{stack_images_base}}' + stack_images[val];
+			$('#stack_sgage').attr('src', image);
+		}
+
+		$('input.dimension_style').change(function(){
+			switch_image();
+		})
+		switch_image();
 	}
 	
 	$(function(){

@@ -79,13 +79,16 @@ class WorkingOrder(models.Model):
     
     
     #Dimension page
-    S_NORMAL, S_STACKED, S_STAGGERED = range(1,4)
+    S_STACKED, S_STG_HWC, S_STG_DHWC, S_STG_HBC, S_STG_DBC = range(1,6)
     STYLE_CHOICES = (
-            (S_NORMAL, 'Normal'),
-            (S_STACKED, 'Stacked'),
-            (S_STAGGERED, 'Staggered'))
+        (S_STACKED, 'Stacked Wall Cabinets'),
+        (S_STG_HWC, 'Staggered Height Wall Cabinets'),
+        (S_STG_DHWC, 'Staggered Depth and Height Wall Cabinets'),
+        (S_STG_HBC, 'Staggered Height Base Cabinets'),
+        (S_STG_DBC, 'Staggered Depth Base Cabinets'))
+
     STANDARD_SIZES = [16, 32, 36]
-    dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, default=S_NORMAL)
+    dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, default=S_STACKED)
     standard_sizes = models.BooleanField('Standard sizes')   
     wall_cabinet_height = DimensionField(null=True, blank=True)
     vanity_cabinet_height = DimensionField(null=True, blank=True)
