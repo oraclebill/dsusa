@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block menu %}
+<div id="menu" class="menu">
+	<ul class="nav main">
+		<li><a href="{% url dsadmin-dashboard %}">{% trans 'Dashboard' %}</a></li>
+		<li><a href="#">{% trans 'Orders' %}</a>
+            <ul>
+        		<li><a href="{% url process-fax-order %}">{% trans 'Log Fax Order' %}</a></li>
+            </ul>
+		</li>
+		<li><a href="/dsadmin/customers/">{% trans 'Customers' %}</a>
+            <ul>
+        		<li><a href="{% url verify-new-customer %}">{% trans 'Verify New Account' %}</a></li>
+            </ul>
+		</li>
+	</ul>
+</div>
+{% endblock %}

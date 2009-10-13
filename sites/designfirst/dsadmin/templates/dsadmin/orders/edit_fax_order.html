@@ -1,0 +1,23 @@
+{% extends "dsadmin/base.html" %}
+
+{% block title %} {% endblock %}
+
+
+{% block extra-head %}
+	{{form.media}}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="box">
+
+    <form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="form">
+        {{form}}
+        <input type="submit" name="log_order"       value="Save Design Details">        
+        <input type="submit" name="add_diagram"     value="Add Floorplan Diagram">
+    </form>
+
+</div>
+
+{% endblock %}

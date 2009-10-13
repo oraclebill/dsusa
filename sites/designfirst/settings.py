@@ -100,16 +100,19 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    
+    'paypal.standard.ipn',
+    'paypal.standard', 
+    'paypal.pro', 
+    'registration',    # django-registration
+
     'designfirst.home',
     'designfirst.designer',
     'designfirst.product',
     'designfirst.wizard',
-    'paypal.standard.ipn',
-    'paypal.standard', 
-    'paypal.pro', 
     'validation',
-    # django-registration
-    'registration',
+    'dsadmin',
+
     # if debug.. 
     'debug_toolbar',
 )

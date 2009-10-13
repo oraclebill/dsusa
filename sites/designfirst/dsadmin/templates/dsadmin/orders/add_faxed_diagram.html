@@ -1,0 +1,51 @@
+{% extends "dsadmin/base.html" %}
+
+{% block title %} {% endblock %}
+
+
+{% block extra-head %}
+	{{form.media}}
+{% endblock %}
+
+
+{% block content %}
+<div id="add_diagram" class="grid_10 prefix_3 ">
+
+    <div class="box">
+        <h2>Order Attachments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Type</td>
+                    <td>Name</td>
+                    <td>Added On</td>
+                    <td>Added By</td>
+                    <td>Added Via</td>
+                </tr>
+            </thead>
+                <tbody>
+                {% for file in files %}
+                <tr>
+                    <td>{{ file.id }}</td>
+                    <td>{{ file.type}}</td>
+                    <td>{{ file.name }}</td>
+                    <td>{{ file.created }}</td>
+                    <td>{{ file.source }}</td>
+                    <td>{{ file.source }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="box">    
+        <form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="form">
+            {{form}}    
+            <input type="submit" name="upload_design"   value="Upload Design">
+            <input type="submit" name="add_design_info" value="Add Design Details">        
+        </form>    
+    </div>
+</div>
+
+{% endblock %}

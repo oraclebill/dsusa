@@ -2,6 +2,7 @@ import settings
 
 
 from datetime import datetime
+from functools import partial
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -15,6 +16,8 @@ class IllegalState(Exception):
 
 # Constants and Validation Data
 
+ORDER_UPLOAD_ROOT = 'order_data/'
+
 INCH_DIMENSION='IN'
 CENTIMETER_DIMENSION='CM'
 OTHER_DIMENSION='O'
@@ -22,6 +25,12 @@ DIMENSION_UNIT_CHOICES = (
     (INCH_DIMENSION, _("inches")), 
     (CENTIMETER_DIMENSION, _("centimeters")), 
     (OTHER_DIMENSION, _("other")))
+
+
+def user_uploads(instance, filename):
+    id = getattr(instance, 'id', None)
+    assert id, 'Order must be saved prior to file attachment!'
+    return os.path.join(ORDER_UPLOAD_ROOT, id, instance.__class__.__name__, filename)
 
 
 class Organization(models.Model):
@@ -81,6 +90,7 @@ class UserProfile(models.Model):
     account = models.ForeignKey(DealerOrganization)
     usertype = models.CharField(max_length=10, 
         choices=[('designer', 'Designer'), ('dealer','Dealer'),], default='dealer') # TODO: usertype is determined by 'account'
+    
 
     # for profiles module
     def get_absolute_url(self):
@@ -369,6 +379,17 @@ class DesignOrder(models.Model):
         return "Order #%s [%s] (%s)" % (self.id, self.project_name, self.status)
 
 
+    
+class FloorplanImage(models.Model):
+    WEB, FAX, OTHER = range(0,3)
+    SOURCE_CHOICES = ((WEB, u('Web')), (FAX, u('Fax')), (OTHER, u('Other/Unknown')))
+    order       = models.ForeignKey(DesignOrder)
+    document    = models.ImageField(_('File'), upload_to=user_uploads)
+    document_id = models.CharField(_('Document ID'),max_length=24, blank=True) 
+    source      = models.SmallIntegerField(_('Uploaded From'), choices=SOURCE_CHOICES, default=FAX )
+    upload_ts   = models.models.DateTimeField(_('Uploaded On'), auto_now=True)
+    user        = models.CharField(verbose_name=_('Uploaded By'), max_length=20, null=True, blank=True)
+        
 
 class OrderAttachment(models.Model):
     KIT, PDF_PERSPECTIVE, PDF_ELEVATION, OTHER_TYPE = range(0,4)

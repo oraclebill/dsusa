@@ -1,0 +1,26 @@
+{% extends "dsadmin/base.html" %}
+
+{% block title %} {% endblock %}
+
+
+{% block extra-head %}
+	{{form.media}}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="grid_10 prefix_3">
+    <div class="box">
+        <h2>New Order Information</h2>
+        <form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="form">
+            <table>
+            {{form}}
+            </table>            
+            <input type="submit" name="create_order" value="Create Order">        
+        </form>
+    
+    </div>
+</div>
+
+{% endblock %}
