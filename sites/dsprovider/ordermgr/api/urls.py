@@ -1,17 +1,19 @@
 from django.conf.urls.defaults import *
 from piston.resource import Resource
-from piston.authentication import NoAuthentication
-from piston.doc import documentation_view
-from ordermgr.api.handlers import OrderHandler
+from piston import authentication as auth
+from piston import doc
+from ordermgr.api import handlers
 
-#TODO: authentication
-orders = Resource(handler=OrderHandler,
-                     authentication=NoAuthentication())
+authentication = auth.HttpBasicAuthentication()
+
+orders = Resource(handler=handlers.OrderHandler,
+                     authentication=authentication)
+
+kitchens = Resource(handler=handlers.KitchenRequestHandler,
+                     authentication=authentication)
 
 urlpatterns = patterns('',
     url(r'^order/$', orders, name="orders"),
-    url(r'^kitchen/$', orders, name="kitchens"),
-
-    # automated documentation
-    url(r'^$', documentation_view),
+    url(r'^kitchen/$', kitchens, name="kitchens"),
+    url(r'^$', doc.documentation_view),
 )
