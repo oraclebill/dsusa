@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('ordermgr.views',
-        (r'^$', 'dashboard'),
+        url(r'^$', 'dashboard', name='dashboard'),
         url(r'^order/(\d+)/display/$', 'display_order',
             name='order_detail'),
 
