@@ -21,6 +21,7 @@ urlpatterns = patterns('ordermgr.views',
             name='order_complete'),
 
         url(r'^stats/$', 'stats', name="order_stats"),
+        url(r'^api/', include('ordermgr.api.urls')),
 )
 
 urlpatterns += patterns('django.contrib.auth',

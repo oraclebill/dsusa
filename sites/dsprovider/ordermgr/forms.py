@@ -15,3 +15,9 @@ class AssignDesignerForm(forms.ModelForm):
 class DateRangeForm(forms.Form):
     start = forms.DateField(widget=widgets.JQueryDatepicker, required=False)
     end = forms.DateField(widget=widgets.JQueryDatepicker, required=False)
+
+
+class KitchenOrderForm(forms.ModelForm):
+
+    class Meta:
+        model = models.KitchenDesignRequest
