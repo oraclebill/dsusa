@@ -20,8 +20,10 @@ class UserProfile(models.Model):
     """
     A profile for users that of the designer portal.
     """
-    user = models.ForeignKey(User, primary_key=True)
+    user = models.ForeignKey(User, primary_key=True, related_name='order_profile')
     is_manager = models.BooleanField(_('Special Admin Status?'), default=False)
+    is_notified = models.BooleanField(_('Receive order notifications'),
+                                      default=True)
 
 
 def create_profile(sender, instance, **kwargs):
@@ -93,7 +95,7 @@ class DesignOrder(models.Model):
     def save(self, *args, **kwargs):
         self.final_type = \
                     ct_models.ContentType.objects.get_for_model(type(self))
-        created = not bool(self.pk)
+        created = not bool(DesignOrder.objects.filter(pk=self.pk).extra(select={'a': 1}))
         super(DesignOrder, self).save(*args, **kwargs)
         order_saved.send(
             sender=DesignOrder, instance=self, created=created)
@@ -123,7 +125,6 @@ class DesignOrder(models.Model):
 
 
 def order_notify(sender, instance, created, **kwargs):
-    print created
     if not created:
         return
 
@@ -154,9 +155,8 @@ def order_notify(sender, instance, created, **kwargs):
     make_message(
         subject_template='designer/notification/new_order_subject.txt',
         body_template='designer/notification/new_order_body.html',
-        to=[manager[1] for manager in settings.MANAGERS],
+        to=User.objects.filter(order_profile__is_notified=True).values_list('email', flat=True),
     ).send()
-    print 'sent'
 
 order_saved.connect(order_notify)
 
