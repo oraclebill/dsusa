@@ -19,7 +19,7 @@ class DesignOrderAdmin(admin.ModelAdmin):
     ]    
     fieldsets = (
         ( None, {
-            'fields': ( 'project_name', 'description' )
+            'fields': ( 'project_name', 'description', 'client_account' )
             }),
         ( 'Design Options', {
             'classes' : [],
