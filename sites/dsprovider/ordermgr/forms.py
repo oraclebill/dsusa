@@ -21,3 +21,4 @@ class KitchenOrderForm(forms.ModelForm):
 
     class Meta:
         model = models.KitchenDesignRequest
+        exclude = ('arrived', 'status')

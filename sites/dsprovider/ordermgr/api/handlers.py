@@ -13,12 +13,14 @@ class OrderHandler(BaseHandler):
     """
     model = DesignOrder
     fields = ('id', 'source', 'source_id', 'arrived')
+    allowed_methods = ('GET', )
 
 
 class KitchenRequestHandler(BaseHandler):
     model = KitchenDesignRequest
+    allowed_methods = ('GET', 'POST')
 
     @validate(KitchenOrderForm, 'POST')
     def create(self, request):
-        return super(OrderHandler, self).save(self, request)
+        return super(KitchenRequestHandler, self).create(request)
 
