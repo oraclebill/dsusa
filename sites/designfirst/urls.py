@@ -19,7 +19,8 @@ urlpatterns = patterns('',
     (r'', include("home.urls")),    
     (r'^products/', include("product.urls")),    
     (r'^wizard/', include("wizard.urls")),
-    
+    (r'^registration/', include("registration.urls")),
+
     # django-registration
     (r'^accounts/', include('registration.urls')),
 
