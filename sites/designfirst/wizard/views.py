@@ -9,6 +9,7 @@ from utils.views import render_to
 from models import Attachment, Appliance
 from forms import *
 from summary import order_summary, STEPS_SUMMARY, SUBMIT_SUMMARY
+from django.template.loader import render_to_string
 
 
 
@@ -32,7 +33,27 @@ class Wizard(WizardBase):
     
     
     def step_moulding(self, request):
-        return self.handle_form(request, MouldingForm)
+        if request.method == 'POST': # Ajax submit of new moulding
+            if 'add_moulding' in request.POST:
+                form = MouldingForm(request.POST)
+                if form.is_valid():
+                    obj = form.save(commit=False)
+                    obj.order = self.order
+                    obj.save()
+            elif 'delete' in request.POST:
+                obj = get_object_or_404(self.order.mouldings.all(), 
+                                  pk=int(request.POST['delete']))
+                obj.delete()
+            elif 'order' in request.POST:
+                sort_order = map(int, [i for i in request.POST['order'].split(',') if len(i) > 0])
+                Moulding.reorder(self.order, int(request.POST['type']), sort_order)
+            else:
+                return self.dispatch_next_step()
+            items = Moulding.groups(self.order)
+            return HttpResponse(render_to_string(
+                        'wizard/moulding_items.html', {'items':items}))
+        form = MouldingForm()
+        return {'form': form, 'items': Moulding.groups(self.order)}
     
     def step_soffits(self, request):
         return self.handle_form(request, SoffitsForm)

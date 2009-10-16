@@ -16,9 +16,6 @@ STEPS_SUMMARY = [
         'drawer_handle_model',
     ]),
     ('Moulding', [
-        'celiling_height',
-        'crown_moulding_type',
-        'skirt_moulding_type',
     ]),
     ('Soffits', [
         'soffit_width',
@@ -65,9 +62,6 @@ SUBMIT_SUMMARY = [
         'cabinet_finish',
     ]),
     ('Moulding', [
-        'celiling_height',
-        'crown_moulding_type',
-        'skirt_moulding_type',
     ]),
     ('Dimensions', [
         'dimension_style',

@@ -1,6 +1,6 @@
 import os
 from django import forms
-from models import WorkingOrder,  Attachment, Appliance
+from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
 
 
@@ -56,14 +56,11 @@ class HardwareForm(forms.ModelForm, FieldsetForm):
 
 
 
-class MouldingForm(forms.ModelForm, FieldsetForm):
+
+class MouldingForm(forms.ModelForm):
     class Meta:
-        model = WorkingOrder
-        fields = [
-            'celiling_height',
-            'crown_moulding_type',
-            'skirt_moulding_type',
-        ]
+        model = Moulding
+        fields = ['type', 'name']
     
 
     
@@ -71,9 +68,7 @@ def _soffit_clean(field):
     "if mouldings are selected then soffits are required"
     def wrapper(form):
         value = form.cleaned_data.get(field)
-        if form.instance.celiling_height not in ('', None)\
-                or form.instance.crown_moulding_type not in ('', None)\
-                or form.instance.skirt_moulding_type not in ('', None):
+        if form.instance.mouldings.all().count() > 0:
             if value in ('', None):
                 raise forms.ValidationError('This field is required')
         return value

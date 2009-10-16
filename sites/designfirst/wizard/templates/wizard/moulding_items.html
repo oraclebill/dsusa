@@ -1,0 +1,30 @@
+<script>
+$(function(){
+	$('table.mouldings_table').tableDnD({
+		onDragClass: "row1",
+		onDrop: function(table, row) {
+			var orderStr = "";
+			var type = $(table).attr('id').replace('mtype_', '');
+			var rows = table.tBodies[0].rows;
+			for (var i=0; i<rows.length; i++)
+				orderStr += rows[i].id+","
+			$('#mouldings_data').load('./', {'order': orderStr, 'type': type})
+		}
+	});
+})
+</script>
+
+{% for name, mouldings in items.items %}
+<strong>{{name}}</strong>
+<table class="mouldings_table" id="mtype_{{mouldings.0.type}}">
+<tbody>
+	{% for mld in mouldings %}
+	<tr id="{{mld.id}}">
+		<td>{{mld.num}}</td>
+		<td>{{mld.name}}</td>
+		<td style="width: 200px;"><a href="#" rel="{{mld.id}}" class="dellink">X</a></td>
+	</tr>
+	{% endfor %}
+</tbody>
+</table>
+{% endfor %}
