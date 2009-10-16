@@ -1,4 +1,8 @@
 *.pyc
-sites/designfirst/settings_local.py
+settings_local.py
 *.db
+.ropeproject
+*_flymake.py
 var/*
+.\#*
+static/outbound/
