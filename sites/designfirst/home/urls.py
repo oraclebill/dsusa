@@ -18,7 +18,9 @@ urlpatterns = patterns('home',
     (r'^dealer/order/(\d+)/submit/$', 'views.dealer_submit_order'),
     (r'^dealer/order/(\d+)/review/$', 'views.dealer_review_order'),
     (r'^dealer/order/(\d+)/accept/$', 'views.dealer_accept_order'),
-    (r'^dealer/order/(\d+)/reject/$', 'views.dealer_reject_order'),                       
+    (r'^dealer/order/(\d+)/reject/$', 'views.dealer_reject_order'),
+
+    (r'^api/', include('home.api.urls')),
 )
 
 

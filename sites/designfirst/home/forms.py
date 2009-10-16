@@ -82,3 +82,8 @@ class DesignOrderRejectionForm(forms.ModelForm):
     class Meta: 
         model = DesignOrder
         fields = [ 'client_review_notes' ]
+
+class DesignPackageForm(forms.Form):
+    order = forms.ModelChoiceField(queryset=DesignOrder.objects.all())
+    upload = forms.FileField()
+    notes = forms.CharField(required=False)
