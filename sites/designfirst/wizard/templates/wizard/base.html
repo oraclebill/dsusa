@@ -1,10 +1,16 @@
 {% extends "base.html" %}
+{% load ajax_form_utils %}
+
 
 {% block title %}{{wizard.order}} | {{wizard.step_title}}{% endblock %}
 
 
+
+
 {% block extra-head %}
 	{{form.media}}
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
 <script>
 
 var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
@@ -15,7 +21,15 @@ function wizard_go_to(step) {
 	$('form#wizard_form').submit();
 }
 
+{% block ajax-validation %}
 $(function(){
+	//Ajax validation:
+	$('form').validation({% render_ajax_fields form %});
+})
+{% endblock %}
+
+$(function(){
+	//Tabs navigation:	
 	$('#wizard_content :input:visible:first').keydown(function(event){
 		if (event.keyCode == KEY_TAB && event.shiftKey) {
 			if (!IS_FIRST_STEP)
@@ -89,9 +103,11 @@ $(function(){
 <div class="clear"></div>
 
 <div class="grid_13" style="text-align: center;">
-<!-- <input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}> -->
+<!--
+<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 <input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
-<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+<input type="submit" name="{{BTN_SKIP}}" value="Skip">
+-->
 </div>
 
 <div class="clear"></div>

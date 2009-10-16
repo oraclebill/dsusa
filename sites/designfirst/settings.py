@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'registration',
     # if debug.. 
     'debug_toolbar',
+    'ajax_forms',
 )
 
 DEBUG_TOOLBAR_PANELS = (

@@ -1,5 +1,7 @@
 {% extends "wizard/base.html" %}
 
+{% block ajax-validation %}{% endblock %}
+
 {% block extra-head %}
 {{block.super}}
 <link href="{{MEDIA_URL}}facebox/facebox.css" rel="stylesheet" type="text/css" media="screen" />
