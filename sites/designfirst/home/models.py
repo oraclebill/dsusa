@@ -491,5 +491,52 @@ def package_notify(sender, instance, **kwargs):
         to=(instance.client_account.company_email, )
     ).send()
 
-
 package_uploaded.connect(package_notify)
+
+
+order_fields = ['description',
+    'color_views', 'elevations', 'quote_cabinet_list', 'cabinet_manufacturer',
+    'cabinet_door_style', 'cabinet_wood', 'cabinet_stain', 'cabinet_finish',
+    'cabinet_finish_options', 'cabinetry_notes', 'include_hardware', 'door_hardware',
+    'drawer_hardware', 'ceiling_height', 'crown_mouldings', 'skirt_mouldings',
+    'soffits', 'soffit_height', 'soffit_width', 'soffit_depth', 'stacked_staggered',
+    'wall_cabinet_height', 'vanity_cabinet_height', 'vanity_cabinet_depth',
+    'corner_cabinet_base_bc', 'corner_cabinet_base_bc_direction', 'corner_cabinet_wall_bc',
+    'corner_cabinet_wall_bc_direction', 'island_peninsula_option', 'countertop_option',
+    'backsplash', 'toekick', 'lazy_susan', 'slide_out_trays', 'waste_bin', 'wine_rack',
+    'plate_rack', 'appliance_garage', 'corbels_brackets', 'valance', 'legs_feet',
+    'glass_doors', 'range_hood', 'posts',
+]
+
+def send_order_to_provider(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    import pycurl
+
+    pf = [
+        ('source', str(instance.client_account.company_name)),
+        ('source_id', str(instance.pk)),
+    ] + [
+        (field, str(getattr(instance, field)))
+        for field in order_fields if getattr(instance, field)
+    ]
+
+    c = pycurl.Curl()
+    c.setopt(c.URL, settings.POST_ORDER_URL)
+    c.setopt(c.HTTPPOST, pf)
+    c.setopt(c.USERPWD, settings.POST_ORDER_AUTH)
+    c.setopt(pycurl.VERBOSE, 1)
+    c.perform()
+    c.close()
+
+models.signals.post_save.connect(send_order_to_provider, sender=DesignOrder)
+
+
+
+
+
+
+
+
+
