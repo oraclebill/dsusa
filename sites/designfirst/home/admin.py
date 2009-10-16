@@ -19,7 +19,7 @@ class DesignOrderAdmin(admin.ModelAdmin):
     ]    
     fieldsets = (
         ( None, {
-            'fields': ( 'project_name', 'description' )
+            'fields': ( 'project_name', 'description', 'client_account' )
             }),
         ( 'Design Options', {
             'classes' : [],
@@ -89,6 +89,9 @@ class DesignOrderAdmin(admin.ModelAdmin):
             'classes' : [],
             'description' : None,
             'fields' : ( 'client_review_rating', 'client_review_notes' )
+            }),
+        (' Package', {
+            'fields': ('designer_package', 'completed'),
             }),
         # ( 'Tracking', {
         #     'classes' : [],
