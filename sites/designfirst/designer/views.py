@@ -34,7 +34,7 @@ def get_designer_context(request, orderid=None):
         if orderid:
             try:
                 order = DesignOrder.objects.get(pk=orderid)
-            except ObjectDoesNotExist as ex: 
+            except ObjectDoesNotExist, ex: 
                 log.error( "failed to find the orderid %d" % orderid )
                 raise ImproperlyConfigured("Access to order %s denied to user %s" % (orderid, user))
     else:
