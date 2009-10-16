@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes import models as ct_models
@@ -295,3 +296,23 @@ class KitchenDesignRequest(DesignOrder):
     submitted = models.DateTimeField(null=True, blank=True)
 
     tracking_notes = models.TextField(null=True, blank=True)
+
+
+
+def send_package_to_client(sender, instance, **kwargs):
+    import pycurl
+
+    pf = [
+        ('order', instance.source_id),
+        ('upload', (pycurl.FORM_FILE, instance.attachment.path)),
+        ('notes', ''), # no model here has notes field
+    ]
+
+    c = pycurl.Curl()
+    c.setopt(c.URL, settings.POST_PACKAGE_URL)
+    c.setopt(c.HTTPPOST, pf)
+    c.setopt(c.USERPWD, settings.POST_PACKAGE_AUTH)
+    c.perform()
+    c.close()
+
+models.signals.post_save.connect(send_package_to_client, sender=CompletedDesignFile)
