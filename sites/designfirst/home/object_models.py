@@ -14,11 +14,11 @@ class Appliance(object):
         self.option_names = options
 
 class Appliance(object):
-    def __init__(self, appliance_type):        
+    def __init__(self, appliance_type):
         options = {}
         self.width, self.height, self.depth = (None,None,None)
 
 class Microwave(Appliance):
     def __init__(self):
         super("microwave", { "free standing"
-                           
+

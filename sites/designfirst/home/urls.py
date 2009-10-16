@@ -2,16 +2,16 @@ from django.conf.urls.defaults import *
 
 import paypal
 
-urlpatterns = patterns('home', 
+urlpatterns = patterns('home',
     (r'^$', 'views.home'),
-    
+
     (r'^login/$', 'views.do_login'),
     url(r'^logout/$', 'views.do_logout', name='do-logout'),
     url(r'^dealer/profile/complete$', 'views.create_profile', name='dealer-complete-profile'),
-    
+
     url(r'^dealer/$', 'views.dealer_dashboard', name='dealer-dashboard'),
-    
-    # (r'^dealer/order/$', 'views.dealer_dashboard'),                       
+
+    # (r'^dealer/order/$', 'views.dealer_dashboard'),
     (r'^dealer/order/new/$', 'views.create_order'),
     (r'^dealer/order/(\d+)/edit/$', 'views.edit_order_detail'),
     (r'^dealer/order/(\d+)/template/$', 'views.generate_floorplan_template'),
