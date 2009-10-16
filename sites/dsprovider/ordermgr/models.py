@@ -299,7 +299,10 @@ class KitchenDesignRequest(DesignOrder):
 
 
 
-def send_package_to_client(sender, instance, **kwargs):
+def send_package_to_client(sender, instance, created, **kwargs):
+    if not created:
+        return
+
     import pycurl
 
     pf = [
