@@ -5,6 +5,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+import django.dispatch
 
 from designfirst.product.models  import PriceSchedule
 
@@ -85,6 +86,8 @@ class UserProfile(models.Model):
             return '%s @ %s' % (self.user, self.account) 
         else:
             return '[empty user profile]'
+
+package_uploaded = django.dispatch.Signal(providing_args=("instance", ))
 
 class DesignOrder(models.Model):
     """
@@ -365,7 +368,15 @@ class DesignOrder(models.Model):
         self.completed = datetime.now()
         self.designer_notes = notes
         self.save()
-                
+
+    def add_package(self, upload, notes):
+        self.designer_package = upload
+        self.designer_notes = notes
+        self.completed = datetime.now()
+        self.status = 'CMP'
+        package_uploaded.send(sender=DesignOrder, instance=self)
+        self.save()
+
     def get_absolute_url(self):
         return reverse('home.edit_order_detail')
                 
@@ -443,6 +454,42 @@ class Transaction(models.Model): # TODO --> invoice becomes transaction
 
 
 
+
+
 #
 # signals handling
 #
+
+def package_notify(sender, instance, **kwargs):
+    from django.conf import settings
+    from django.core import mail
+    from django.contrib.sites import models as s_models
+    from django.template import loader
+
+    def make_message(subject_template, body_template, to):
+        context = {
+            'site': s_models.Site.objects.get_current(),
+            'order': instance,
+        }
+
+        # Email subject *must not* contain newlines
+        msg = mail.EmailMessage(
+            subject=''.join(
+                loader.render_to_string(subject_template, context).splitlines(),
+            ),
+            body=loader.render_to_string(body_template, context),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=to,
+        )
+
+        msg.content_subtype = "html"  # Main content is now text/html
+        return msg
+
+    make_message(
+        subject_template='home/notification/package_subject.txt',
+        body_template='home/notification/package_body.html',
+        to=(instance.client_account.company_email, )
+    ).send()
+
+
+package_uploaded.connect(package_notify)
