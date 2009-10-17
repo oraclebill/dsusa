@@ -1,3 +1,5 @@
+import logging
+
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes import models as ct_models
@@ -5,6 +7,8 @@ from django.contrib.auth.models import User
 import django.dispatch
 from datetime import datetime
 
+
+log = logging.getLogger('dsprovider.models')
 
 DESIGN_UPLOAD_LOCATION = 'design-uploads/'  ## TODO: add strftime
 
@@ -152,12 +156,15 @@ def order_notify(sender, instance, created, **kwargs):
         msg.content_subtype = "html"  # Main content is now text/html
         return msg
 
-    make_message(
-        subject_template='designer/notification/new_order_subject.txt',
-        body_template='designer/notification/new_order_body.html',
-        to=User.objects.filter(order_profile__is_notified=True).values_list('email', flat=True),
-    ).send()
-
+	try:
+	    make_message(
+	        subject_template='designer/notification/new_order_subject.txt',
+	        body_template='designer/notification/new_order_body.html',
+	        to=User.objects.filter(order_profile__is_notified=True).values_list('email', flat=True),
+	    ).send()
+	except Exception, e: 
+		log.error('Error sending mail: %s' % e)
+		
 order_saved.connect(order_notify)
 
 
