@@ -245,14 +245,33 @@ class KitchenDesignRequest(DesignOrder):
         verbose_name='Notes')
 
     # door and drawer hardware
-    include_hardware    = models.BooleanField(blank=True, verbose_name='Include Hardware Details?')
-    door_hardware       = models.CharField(max_length=20, blank=True, null=True, verbose_name='Doors')
-    drawer_hardware     = models.CharField(max_length=20, blank=True, null=True, verbose_name='Drawers')
+    HW_NONE, HW_ANY, HW_HANDLE, HW_KNOB = ('NONE','ANY', 'BAR', 'KNOB')
+    HW_TYPE_OPTIONS= ( (HW_NONE, _('None')), ( HW_ANY, _('Any')), ( HW_HANDLE, _('Bar Handle')), ( HW_KNOB,  _('Knob Handle')) )
+    door_hardware_type      = models.CharField(_('Door Handle Type'), max_length='5', choices=HW_TYPE_OPTIONS, default=HW_ANY)
+    door_hardware_model     = models.CharField(_('Door Handle Model'), max_length=20, blank=True, null=True)
+    drawer_hardware_type    = models.CharField(_('Drawer Handle Type'), max_length='5', choices=HW_TYPE_OPTIONS, default=HW_ANY)
+    drawer_hardware_model   = models.CharField(_('Drawer Handle Model'), max_length=20, blank=True, null=True)
 
     # mouldings
     ceiling_height = models.CharField(max_length=6, blank=True, null=True)
-    crown_mouldings = models.CharField(max_length=20, blank=True, null=True)
-    skirt_mouldings = models.CharField(max_length=20, blank=True, null=True)
+    top_moulding_1 = models.CharField(_('Top Moulding #1'), max_length=20, blank=True, null=True,
+        help_text=_('Moulding along top edge of a wall cabinet - closest to ceiling'))
+    top_moulding_2 = models.CharField(_('Top Moulding #2'), max_length=20, blank=True, null=True,
+        help_text=_('Top of wall cabinet moulding below moulding #1'))
+    top_moulding_3 = models.CharField(_('Top Moulding #3'), max_length=20, blank=True, null=True,
+        help_text=_('Top of wall cabinet moulding below moulding #2'))
+        
+    bottom_moulding_1 = models.CharField(_('Bottom Moulding #1'), max_length=20, blank=True, null=True,
+        help_text=_('Bottom of wall cabinet moulding along bottom edge of cabinet - closest to floor'))
+    bottom_moulding_2 = models.CharField(_('Bottom Moulding #2'), max_length=20, blank=True, null=True,
+        help_text=_('Bottom of wall cabinet moulding above moulding #1'))
+    bottom_moulding_3 = models.CharField(_('Bottom Moulding #3'), max_length=20, blank=True, null=True,
+        help_text=_('Bottom of wall cabinet moulding above moulding #2'))
+                
+    # base_moulding_1 = models.CharField(_('Base Moulding #1'), max_length=20, blank=True, null=True,
+    #     help_text=_('Base cabinet moulding closest to floor.'))
+
+    # soffits
     soffits = models.BooleanField(blank=True)
     soffit_height = models.IntegerField(blank=True, null=True) # for now, number of 1/8 inches..
     soffit_width  = models.IntegerField(blank=True, null=True) # for now, number of 1/8 inches..
@@ -268,16 +287,23 @@ class KitchenDesignRequest(DesignOrder):
         choices=(('21', '21"'), ('18', '18"'), ('16', '16"')))
 
     # corner cabinet options
-    corner_cabinet_base_bc = models.BooleanField()
-    corner_cabinet_base_bc_direction = models.CharField(max_length=1, blank=True, null=True,
-        choices=(('L','Left'), ('R', 'Right')))
-    corner_cabinet_wall_bc = models.BooleanField()
-    corner_cabinet_wall_bc_direction = models.CharField(max_length=1, blank=True, null=True,
-        choices=(('L','Left'), ('R', 'Right')))
+    CC_ANY, CC_SQUARE, CC_DIAGONAL = ('ANY', 'SQUARE', 'DIAG')
+    CORNER_CABINET_OPTIONS = ( (CC_ANY, _('Any')), (CC_SQUARE, _('Square')), (CC_DIAGONAL, _('Diagonal')) )
+    CC_LEFT, CC_RIGHT = ('LEFT', 'RIGHT')
+    CORNER_CABINET_OPENING_OPTIONS = ( (CC_ANY, _('Any')), (CC_LEFT, _('Left')), (CC_RIGHT, _('Right')) )   
+    CC_FLAT, CC_LAZY = ('FLAT', 'LAZY')
+    CORNER_CABINET_SHELVING_OPTIONS = ( (CC_ANY, _('Any')), (CC_FLAT, _('Shelf')), (CC_LAZY, _('Lazy Suzan')) )
+    
+    base_corner_cabinet = models.CharField(_('Base Corner Cabinets'), max_length=5, choices=CORNER_CABINET_OPTIONS, default=CC_ANY)
+    base_corner_cabinet_opening = models.CharField(_('Base Corner Cabinets Opening'), max_length=5, choices=CORNER_CABINET_OPENING_OPTIONS, default=CC_ANY)
+    base_corner_cabinet_shelving = models.CharField(_('Base Corner Cabinets Shelving'), max_length=15, choices=CORNER_CABINET_SHELVING_OPTIONS, default=CC_ANY)
+    wall_corner_cabinet = models.CharField(_('Wall Corner Cabinets'), max_length=5, choices=CORNER_CABINET_OPTIONS, default=CC_ANY)
+    wall_corner_cabinet_opening = models.CharField(_('Wall Corner Cabinets Opening'), max_length=5, choices=CORNER_CABINET_OPENING_OPTIONS, default=CC_ANY)
+    wall_corner_cabinet_shelving = models.CharField(_('Wall Corner Cabinets Shelving'), max_length=15, choices=CORNER_CABINET_SHELVING_OPTIONS, default=CC_ANY)
 
     # TODO: island / peninsula
-    island_peninsula_option = models.CharField( max_length=1, blank=True, null=True,
-        choices=(('S','Single Height'), ('R', 'Raised Eating Bar')))
+    island_peninsula_option = models.CharField( max_length=1, default='N',
+        choices=(('N', 'None'), ('S','Single Height'), ('R', 'Raised Eating Bar')))
 
     # other considerations
     countertop_option = models.CharField( max_length = 20, blank=True, null=True )
@@ -299,11 +325,3 @@ class KitchenDesignRequest(DesignOrder):
     glass_doors = models.BooleanField(default=False)
     range_hood = models.BooleanField(default=False)
     posts = models.BooleanField(default=False)
-
-    # notes
-    miscellaneous_notes = models.TextField(blank=True, null=True)
-
-    desired = models.DateTimeField('Desired Completion', null=True, blank=True)
-    submitted = models.DateTimeField(null=True, blank=True)
-
-    tracking_notes = models.TextField(null=True, blank=True)

@@ -112,30 +112,43 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		<div class="box">
 			<h2>{% trans "Mouldings" %}</h2>
 			<div>
-				{% if order.ceiling_height or order.crown_mouldings or order.skirt_mouldings or order.soffits  %}
-					<table>
-						{% row_if order.ceiling_height %}
-						{% row_if order.crown_mouldings %}
-						{% row_if order.skirt_mouldings %}
-					</table>
+				<table>
+					{% row_if order.ceiling_height %}
 					
-					{% if order.soffits %}
-					<table>
-						<legend>Soffits</legend>
-						{% row_if order.soffit_height N/A %}
-						{% row_if order.soffit_width  N/A %}
-						{% row_if order.soffit_depth  N/A %}
-					</table>
-					{% endif %}
-						
-				{% else %}
+					{% row_if order.top_moulding_1 %}
+					{% row_if order.top_moulding_2 %}
+					{% row_if order.top_moulding_3 %}
+					{% row_if order.bottom_moulding_1 %}
+					{% row_if order.bottom_moulding_2 %}
+					{% row_if order.bottom_moulding_3 %}
+				</table>
 				
-					<p>NOT SPECIFIED</p>
-				
+				{% if order.soffits %}
+				<table>
+					<legend>Soffits</legend>
+					{% row_if order.soffit_height N/A %}
+					{% row_if order.soffit_width  N/A %}
+					{% row_if order.soffit_depth  N/A %}
+				</table>
 				{% endif %}
+						
 			</div>
 		</div>
 		<!-- end Cabinetry box dimensions -->
+
+		<!-- Hardware -->
+		<div class="box">
+			<h2>{% trans "Hardware" %}</h2>
+			<div>
+				<table>
+					{% row_if order.door_hardware_type %}
+					{% row_if order.door_hardware_model %}
+					{% row_if order.drawer_hardware_type %}
+					{% row_if order.drawer_hardware_model %}
+				</table>
+			</div>
+		</div>
+		<!-- end Hardware -->
 		
 		<!-- options -->
 		<div class="box">
@@ -150,21 +163,6 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		</div>
 		<!-- end options -->
 		
-		<!-- design notes  -->
-		<div class="box">
-			<h2>{% trans "Client Notes" %}</h2>
-			<div>
-				<p>{{ order.client_notes }}</p>
-			</div>
-		</div>
-		<div class="box">
-			<h2>{% trans "Designer Notes" %}</h2>
-			<div>
-				<p>{{ order.notes }}</p>
-			</div>
-		</div>
-		<!-- end design options -->
-
 	</div>
 		
 	<div class="grid_10">

@@ -69,6 +69,36 @@ def manage_designers(request):
 def manage_designer(request):
     pass
 
+OPTIONAL_FIELD_NAMES = [ 
+     'soffits',
+     'soffit_height',
+     'soffit_width',
+     'soffit_depth',
+     'stacked_staggered',
+     'wall_cabinet_height',
+     'vanity_cabinet_height',
+     'vanity_cabinet_depth',
+     'base_corner_cabinet',
+     'base_corner_cabinet_opening',
+     'base_corner_cabinet_shelving',
+     'wall_corner_cabinet',
+     'wall_corner_cabinet_opening',
+     'wall_corner_cabinet_shelving',
+     'island_peninsula_option',
+     'countertop_option',
+     'backsplash',
+     'toekick',
+     'lazy_susan',
+     'slide_out_trays',
+     'waste_bin',
+     'wine_rack',
+     'plate_rack',
+     'appliance_garage',
+     'corbels_brackets',
+     'valance',
+     'legs_feet',
+     'glass_doors',
+     'range_hood' ]
 
 @login_required
 def display_order(request, orderid, form_class=None):
@@ -118,11 +148,14 @@ def display_order(request, orderid, form_class=None):
         log.error( "Illegal HTTP Operation %s" % request.method )
         raise Exception, "Illegal HTTP Operation %s" % request.method
 
+    
+    optional_fields = [order._meta.get_field(f) for f in OPTIONAL_FIELD_NAMES ]
+    
     # render template
     return render_to_response(
                 'designer/display_order.html', {
                     'order':order,
-                    # 'options':order.display_as_optional,
+                    'options': optional_fields,
                     'disabled':disabled,
                 },
                 context_instance=RequestContext(request) )
