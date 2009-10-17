@@ -171,19 +171,9 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 	<div class="grid_10">
 		
 		<div class="box">
-			<h2>{% trans "Floorplan Diagrams" %}</h2>
+			<h2>{% trans "Client Floorplan Sketch" %}</h2>
 			<div>
-				<object width="320" height="240" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-					<param name="src" value="{{ order.client_diagram.url }}">
-					<param name="controller" value="true">
-					<param name="autoplay" value="true">
-					<embed src="{{ order.client_diagram.url }}"
-						width="580" height="710"
-						controller="true" autoplay="true"
-						scale="tofit" cache="true"
-						pluginspage="http://www.apple.com/quicktime/download/"
-					>
-				</object>
+				<img src="{{ order.user_sketch.url }}" width="600">
 			</div>
 		</div>
 		

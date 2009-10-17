@@ -10,7 +10,8 @@ from datetime import datetime
 
 log = logging.getLogger('dsprovider.models')
 
-DESIGN_UPLOAD_LOCATION = 'design-uploads/'  ## TODO: add strftime
+DESIGN_UPLOAD_LOCATION = 'design-packages/'  ## TODO: add order id
+ATTACHMENTS_LOCATION = 'order-attachments/'  ## TODO: add order id
 
 # delivery option choices
 DO_COLORVIEWS, DO_ELEVATIONS, DO_CABINETQUOTE = range(3)
@@ -88,9 +89,15 @@ class DesignOrder(models.Model):
 
     arrived = models.DateTimeField(_('Arrival Timestamp'), default=datetime.now,
         help_text=_('A timestamp of when this order was created.'))
+
     completed = models.DateTimeField(_('Completion Timestamp'),
         null=True, blank=True,
         help_text=_('A timestamp of when this order was completed.'))
+
+    color_views = models.BooleanField(_('Color Views'), blank=True)
+    elevations = models.BooleanField(_('Elevations'), blank=True)
+    quote_cabinet_list = models.BooleanField(_('Quoted Cabinet List'), default=True)
+    rush = models.BooleanField(_('Same Day?'), default=False)
 
     final_type = models.ForeignKey(ct_models.ContentType, editable=False)
 
@@ -156,15 +163,15 @@ def order_notify(sender, instance, created, **kwargs):
         msg.content_subtype = "html"  # Main content is now text/html
         return msg
 
-	try:
-	    make_message(
-	        subject_template='designer/notification/new_order_subject.txt',
-	        body_template='designer/notification/new_order_body.html',
-	        to=User.objects.filter(order_profile__is_notified=True).values_list('email', flat=True),
-	    ).send()
-	except Exception, e: 
-		log.error('Error sending mail: %s' % e)
-		
+    try:
+        make_message(
+            subject_template='designer/notification/new_order_subject.txt',
+            body_template='designer/notification/new_order_body.html',
+            to=User.objects.filter(order_profile__is_notified=True).values_list('email', flat=True),
+        ).send()
+    except Exception, e: 
+        log.error('Error sending mail: %s' % e)
+        
 order_saved.connect(order_notify)
 
 
@@ -190,7 +197,6 @@ class DesignOrderEvent(models.Model):
     #  - note added [by]
     #  - attachment added/removed [by]
 
-
     def __unicode__(self):
         return 'DesignOrderEvent(id=%s,order=%d,user=%s,type=%s,ts=%s)' % (
                     id, order, actor, event_type, timestamp )
@@ -214,14 +220,13 @@ class DesignPackage(models.Model):
 
     def get_absolute_url(self):
         return attachment and attachment.url or 'Unbound DesignPackage object'
-
+    
 class KitchenDesignRequest(DesignOrder):
     ### for now, a convenient way to isolate order info from order tracking info..
     ### also, tbd BathDesignRequst, ClosetDesignRequest
     # format options
-    color_views     = models.BooleanField(blank=True, verbose_name='Color Views')
-    elevations      = models.BooleanField(blank=True, verbose_name='Elevations')
-    quote_cabinet_list = models.BooleanField(blank=True, verbose_name='Quoted Cabinet List')
+
+    user_sketch = models.ImageField(upload_to=ATTACHMENTS_LOCATION)
 
     # cabinetry options
     cabinet_manufacturer = models.CharField(max_length=20, blank=True, null=True,
