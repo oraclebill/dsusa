@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ImproperlyConfigured
 from datetime import datetime, timedelta
 from django.template import RequestContext
@@ -6,10 +8,8 @@ from django.contrib.auth.decorators import login_required
 import dsprovider.ordermgr.models as models
 import dsprovider.ordermgr.forms as forms
 from django.forms.models import modelform_factory
-import logging
 
 log = logging.getLogger('ordermgr.views')
-
 
 def get_context(request, orderid=None):
     user = request.user

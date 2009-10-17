@@ -33,17 +33,12 @@
 		   <td> {{ order.get_status_display }} </td> 
 		   <td> {{ order.description }} </td> 
 		   <td> 
-				{% if user.is_staff %}
 				<form action="{% url ordermgr.views.assign_order order.id %}" method="GET">
 		   			<input type="submit" value="{% trans 'Assign Order &rarr;' %}">
 				</form>
 				<form action="{% url ordermgr.views.display_order order.id %}" method="GET">
 		   			<input type="submit" value="{% trans 'View Order &rarr;' %}">
 				</form>
-				{% else %}
-				<form action="{% url ordermgr.views.claim_order order.id %}" method="POST">
-		   			<input type="submit" value='{% trans "Claim Order &rarr;" %}'></form>
-				{% endif %}
 			</td>
 	     </tr>
 	     {% endfor %}
