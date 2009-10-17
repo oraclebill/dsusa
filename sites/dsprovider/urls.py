@@ -8,6 +8,12 @@ urlpatterns = patterns('',
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
 )
+urlpatterns += patterns('django.contrib.auth',
+        url(r'^accounts/login/$', 'views.login', {
+                'template_name': 'login.html',
+        }, name='auth_login'),
+        url(r'^accounts/logout/$', 'views.logout', name='auth_logout'),
+)
 
 if settings.DEBUG:
     urlpatterns += patterns('',
