@@ -154,10 +154,6 @@ def assign_order(request, orderid, form_class=forms.AssignDesignerForm):
     """
     # get/validate selected order is unassinged (new)
     user, account, profile, order = get_context(request,orderid)
-    # make sure user has right to assign orders
-    if not user.is_staff:
-        log.info('assign_order: assign order permission denied for user %s' % user )
-        raise PermissionDenied
     # make sure order is assignable
     if order.status == models.STATUS_ASSIGNED:
         log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, designer) )
