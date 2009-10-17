@@ -195,7 +195,7 @@ class DesignOrderEvent(models.Model):
         return 'DesignOrderEvent(id=%s,order=%d,user=%s,type=%s,ts=%s)' % (
                     id, order, actor, event_type, timestamp )
 
-class CompletedDesignFile(models.Model):
+class DesignPackage(models.Model):
     """
     Associates an order with deliverable design products. Typicall zip files containing
     """
@@ -213,7 +213,7 @@ class CompletedDesignFile(models.Model):
         help_text=_('The type of file attachment - e.g. KIT, PDF or ZIP'))
 
     def get_absolute_url(self):
-        return attachment and attachment.url or 'Unbound CompletedDesignFile object'
+        return attachment and attachment.url or 'Unbound DesignPackage object'
 
 class KitchenDesignRequest(DesignOrder):
     ### for now, a convenient way to isolate order info from order tracking info..

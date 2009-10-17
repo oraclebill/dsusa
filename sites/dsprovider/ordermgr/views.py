@@ -189,7 +189,7 @@ def attach_design_to_order(request,orderid, form_class=None):
     user, account, profile, order = get_context(request, orderid)
     #
     form_class = form_class or modelform_factory(
-        models.CompletedDesignFile, exclude=('order', 'delivered')
+        models.DesignPackage, exclude=('order', 'delivered')
     )
 
     #this should be orderattachment class or something like that

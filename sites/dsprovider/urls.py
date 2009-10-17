@@ -12,7 +12,9 @@ urlpatterns += patterns('django.contrib.auth',
         url(r'^accounts/login/$', 'views.login', {
                 'template_name': 'login.html',
         }, name='auth_login'),
-        url(r'^accounts/logout/$', 'views.logout', name='auth_logout'),
+        url(r'^accounts/logout/$', 'views.logout', {
+        		'template_name': 'login.html',
+		}, name='auth_logout'),
 )
 
 if settings.DEBUG:
