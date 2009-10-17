@@ -5,8 +5,8 @@ urlpatterns = patterns('ordermgr.views',
         url(r'^order/([\w-]+)/display/$', 'display_order',
             name='order_detail'),
 
-        url(r'^order/([\w-]+)/assign/$', 'assign_order',
-            name='assign_order'),
+        url(r'^order/([\w-]+)/assign/$', 'assign_designer_to_order',
+            name='assign_designer_to_order'),
 
         url(r'^order/([\w-]+)/claim/$', 'claim_order',
             name='order_claim'),
@@ -20,6 +20,6 @@ urlpatterns = patterns('ordermgr.views',
         url(r'^order/([\w-]+)/complete/$', 'complete_order',
             name='order_complete'),
 
-        url(r'^stats/$', 'stats', name="order_stats"),
+        url(r'^stats/$', 'stats', name="order_log"),
 )
 

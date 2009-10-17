@@ -45,8 +45,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 				<h5>{% trans "Control" %}</h5>
 				<div>
 					<form method="GET"  id="clarify-form"  action="{% url ordermgr.views.clarify_order order.id %}">
-						{# <input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br> #}
-						<input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
+						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
                     <form method="GET"  id="attach-form"   action="{% url ordermgr.views.attach_design_to_order order.id %}">
 						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
@@ -175,6 +174,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 			<div>
 				<img src="{{ order.user_sketch.url }}" width="600">
 			</div>
+			<p style="text-align:center;"><a href="#">(click to enlarge)</a></p>
 		</div>
 		
 	</div>

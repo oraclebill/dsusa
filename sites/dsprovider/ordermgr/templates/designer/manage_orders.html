@@ -29,7 +29,7 @@ DesignFirst Designer Home
 	       <td> <a href="{% url ordermgr.views.display_order order.id %}">{{ order.id }}</a> </td> 
 		   <td> {{ order.submitted|date }} </td>
 		   <td> {{ order.description }} </td> 
-		   <td> <form action="{% url ordermgr.views.assign_order order.id %}" method="POST">
+		   <td> <form action="{% url ordermgr.views.assign_designer_to_order order.id %}" method="POST">
 		   		<input type="submit" value="Assign Designer &rarr;"></form></td>
 	     </tr>
 	     {% endfor %}

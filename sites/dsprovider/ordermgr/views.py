@@ -148,7 +148,7 @@ def claim_order(request, orderid):
 
 
 @login_required
-def assign_order(request, orderid, form_class=forms.AssignDesignerForm):
+def assign_designer_to_order(request, orderid, form_class=forms.AssignDesignerForm):
     """
     Create an order assignment by presenting a list of available (only?) designers for selection
     """
@@ -170,9 +170,9 @@ def assign_order(request, orderid, form_class=forms.AssignDesignerForm):
             instance.assign_designer(instance.designer) # designer was assigned by form..
             return redirect('ordermgr.views.dashboard')
         else:
-            log.warning('assign_order: unexpected state - invalid form' )
+            log.warning('assign_designer_to_order: unexpected state - invalid form' )
     else:
-        log.error('invalid HTTP method in assign_order: %s' % request.method )
+        log.error('invalid HTTP method in assign_designer_to_order: %s' % request.method )
         raise Exception, "Invalid request type %s" % request.method
 
     return render_to_response('designer/assign_order.html', locals(),

@@ -33,7 +33,7 @@
 		   <td> {{ order.get_status_display }} </td> 
 		   <td> {{ order.description }} </td> 
 		   <td> 
-				<form action="{% url ordermgr.views.assign_order order.id %}" method="GET">
+				<form action="{% url ordermgr.views.assign_designer_to_order order.id %}" method="GET">
 		   			<input type="submit" value="{% trans 'Assign Order &rarr;' %}">
 				</form>
 				<form action="{% url ordermgr.views.display_order order.id %}" method="GET">
@@ -117,7 +117,7 @@
 	    <h2>{% trans "Order Statistics" %}</h2>
         {% order_stats %}
 	</div>
-    <a href="{% url order_stats %}">{% trans "Full statistics" %}</a>
+    {# <a href="{% url order_log %}">{% trans "Full statistics" %}</a> #}
 
 </div>
 
