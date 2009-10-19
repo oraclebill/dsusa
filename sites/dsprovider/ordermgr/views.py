@@ -2,6 +2,7 @@
 import logging
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ImproperlyConfigured
+from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
@@ -224,46 +225,89 @@ def assign_designer_to_order(request, orderid, form_class=forms.AssignDesignerFo
 def clarify_order(request,orderid):
     raise NotImplementedError("ordermgr.views.clarify_order is not implemented")
 
+
+@login_required
+def send_completed_order(request, orderid, form_class=None):
+    # get/validate selected order is unassinged (new)
+    user, account, profile, order = get_context(request, orderid)
+    form_class = form_class or modelform_factory(
+        models.DesignPackage, fields=('notes',)
+    )
+    if request.method == 'POST':
+        try:
+            package = models.DesignPackage.objects.get(order=order)            
+            form = form_class(request.POST, instance=package)
+            if form.is_valid():
+                package = form.save(commit=False)
+                package.order=order
+                package.save()            
+            
+                if package.kitfile and package.price_report:
+                    if order.color_views: 
+                        if package.views_archive:
+                            order.complete(user)
+                            return redirect(dashboard)                           
+                    else:
+                        order.complete(user)
+                        return redirect(dashboard)                           
+        except:
+            pass
+    return redirect(reverse('complete_order_page', args=[orderid])) 
+
+
 @login_required
 def attach_design_to_order(request, orderid, form_class=None):
 
     # get/validate selected order is unassinged (new)
     user, account, profile, order = get_context(request, orderid)
     #
-    form_class = form_class or modelform_factory(
-        models.DesignPackage, exclude=('order', 'delivered')
-    )
-
-    #this should be orderattachment class or something like that
-    package = models.DesignPackage.objects.filter(order=order)
-    if package:
-        package = package[0]
-    else:
+    # form_class = form_class or modelform_factory(
+    #     models.DesignPackage, exclude=('order', 'delivered')
+    # )
+    form_class = forms.DesignFileForm
+    
+    errors = []
+    try:
+        package = models.DesignPackage.objects.get(order=order)            
+    except:
         package = None
-    if request.method == 'GET':
-        form = form_class(instance=package)
-    elif request.method == 'POST':
+    form = form_class()
+    if request.method == 'POST':
         if 'complete-order-action' in request.POST:
-            form = form_class(request.POST,request.FILES,instance=package)
-            if not (package.kitfile and package.price_report):
-                form.errors['kit_file'] += ['All design orders require KIT file and PDF price report.']  
-            elif order.color_views and not package.views_archive:
-                form_errors += ['This design order requires elevations and perspectives ZIP file.']  
-            else:
-                order.complete(user)
-                return redirect(dashboard)               
-        else:
-            form = form_class(request.POST,request.FILES)
+            vform_class = modelform_factory(
+                models.DesignPackage, fields=('notes',)
+            )
+            vform = vform_class(request.POST, instance=package)
+            if vform.is_valid():
+                package = vform.save(commit=False)
+                package.order=order
+                package.save()            
             
-        if form.is_valid():
-            doc = form.save(commit=False)
-            doc.order = order
-            # doc.source = 1
-            # doc.method = 0
-            # doc.user = user
-            # doc.org = account
-            doc.save()
-            # return redirect(order)
+                if package.kitfile and package.price_report:
+                    if order.color_views: 
+                        if package.views_archive:
+                            order.complete(user)
+                            return redirect(dashboard)                           
+                        else:
+                            errors = 'Order requires Views Package (ZIP)'
+                    else:
+                        order.complete(user)
+                        return redirect(dashboard)                     
+                else:
+                    errors = 'Order requires KIT file and Price Report'      
+        if 'upload-file-action' in request.POST:
+            form = form_class(request.POST, request.FILES)
+            if form.is_valid():
+                ftype = form.cleaned_data['ftype']
+                if not package:
+                    package = models.DesignPackage(order=order)
+                if ftype == forms.PRICE_REPORT:
+                    package.price_report = form.cleaned_data['file']
+                elif ftype == forms.KITFILE:
+                    package.kitfile = form.cleaned_data['file']
+                elif ftype == forms.VIEWS_ZIP:
+                    package.views_archive = form.cleaned_data['file']
+                package.save()
     # render template
     return render_to_response('designer/attach_design.html', locals(),
                 context_instance=RequestContext(request) )

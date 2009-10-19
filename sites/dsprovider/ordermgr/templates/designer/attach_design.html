@@ -15,7 +15,7 @@
 		<h2>{% trans "Completed Order Info" %}</h2>
 		<div>
 			<h5>&nbsp;</h5>
-			<form action="{% url complete_order order.id %}" method="POST">			
+			<form action="{% url complete_order_page order.id %}" method="POST">			
 				<h5>Order Info</h5>
 				<table>
 					<tbody>
@@ -25,9 +25,13 @@
 					</tbody>
 				</table>
 				<h5>Design Notes</h5>
-				<p>
-					<textarea name="notes" cols=40 rows=8>{{ package.notes }}</textarea>
-				</p>
+				<table>
+					<tr>
+						<th><th>
+						<td>
+							<textarea name="notes" cols=60 rows=4>{{ package.notes }}</textarea>
+						</td>
+				</table>
 				<h5>Files</h5>			
 				<table border="0" cellspacing="5" cellpadding="5">
 					<tbody>
@@ -39,16 +43,21 @@
 				<input type="submit" name="complete-order-action" value="{% trans 'Send Completed Design' %}">
 			</form>
 		</div>
-	</div>
+		{% if errors %}
+			<div class="errors">
+				{{ errors }}
+			</div>
+		{% endif %}
+	</div>	
 	
 	<div class="box">
 		<h2>{% trans "Upload Design Attachments" %}</h2>
 		<div>
-			<form action="{% url complete_order order.id %}" method="POST" enctype="multipart/form-data">
+			<form action="{% url complete_order_page order.id %}" method="POST" enctype="multipart/form-data">
 				<table>
 					{{ form }}
 				</table>
-				<input type="submit" name="upload-action" value="{% trans 'Upload Files' %}">
+				<input type="submit" name="upload-file-action" value="{% trans 'Upload Files' %}">
 			</form>
 		</div>
 	</div>

@@ -68,7 +68,7 @@
 		   <td> {{ order.arrived|date }} </td>
 		   <td> {{ order.assigned|date }} ({{ order.assigned|timesince }}) </td> 
 		   <td>				
-                <form method="GET" action="{% url complete_order order.id %}">
+                <form method="GET" action="{% url complete_order_page order.id %}">
 					<input type="submit" {{ complete_disabled }} name="complete-order-action" value='{% trans "Complete &rarr;" %}'>
                 </form>
 				<form action="{% url order_detail order.id %}" method="GET">

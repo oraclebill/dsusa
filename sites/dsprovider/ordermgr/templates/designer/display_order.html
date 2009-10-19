@@ -52,7 +52,7 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 					<form method="GET"  id="clarify-form"  action="{% url order_clarify order.id %}">
 						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
-                    <form method="GET"  id="complete-form"   action="{% url complete_order order.id %}">
+                    <form method="GET"  id="complete-form"   action="{% url complete_order_page order.id %}">
 						<input type="submit" {{ complete_disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
                     </form>
 				</div>

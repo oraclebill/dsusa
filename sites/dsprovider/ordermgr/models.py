@@ -30,9 +30,7 @@ class UserProfile(models.Model):
     """
     user = models.ForeignKey(User, primary_key=True, related_name='order_profile')
     is_manager = models.BooleanField(_('Special Admin Status?'), default=False)
-    is_notified = models.BooleanField(_('Receive order notifications'),
-                                      default=True)
-
+    is_notified = models.BooleanField(_('Receive order notifications'), default=True)
 
 def create_profile(sender, instance, **kwargs):
     UserProfile.objects.get_or_create(user=instance)
@@ -136,6 +134,10 @@ class DesignOrder(models.Model):
         self.status = STATUS_COMPLETED
         self.completed = datetime.now()
         self.save()
+        
+    def __unicode__(self):
+        return self.id
+        
 
 
 def order_notify(sender, instance, created, **kwargs):
@@ -233,7 +235,7 @@ class KitchenDesignRequest(DesignOrder):
     ### for now, a convenient way to isolate order info from order tracking info..
     ### also, tbd BathDesignRequst, ClosetDesignRequest
     # format options
-
+    
     user_sketch = models.ImageField(upload_to=ATTACHMENTS_LOCATION)
 
     # cabinetry options

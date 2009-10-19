@@ -1,0 +1,33 @@
+DONE - add 'rush' attribute to DesignOrder 
+DONE - add diagram to model
+DONE - remove quicktime requirement to view order image
+DONE (disabled) - remove/hide clarification request button
+DONE - update menu in dsprovider -show log as link to stats
+DONE - add base and wall angle cabinet options
+DONE - change terminology for mouldings
+DONE - split hardware options [type, style]
+DONE - slide-out tray option missing
+DONE - remove notes and tracking fields from kitchenrequest
+- new complete order screens
+  - upload design attachment --> complete order
+- generate order acknowledgements (explicit/implicit)
+- add profile for design users (with notification preferences)
+- re-fail bad email setup
+- remove login template from ordermgr
+- enable 'click to enlarge' for displayed user sketch
+? rename designorder to designrequest??
+? normalize user_sketch / client_diagram terms
+
+complete design order
+	- determine type of design order
+	- upload kit 
+	- upload pricelist
+	- if full
+		- upload views
+	
+design request
+	option group
+		option
+			type
+			name
+			value
