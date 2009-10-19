@@ -227,36 +227,7 @@ def clarify_order(request,orderid):
 
 
 @login_required
-def send_completed_order(request, orderid, form_class=None):
-    # get/validate selected order is unassinged (new)
-    user, account, profile, order = get_context(request, orderid)
-    form_class = form_class or modelform_factory(
-        models.DesignPackage, fields=('notes',)
-    )
-    if request.method == 'POST':
-        try:
-            package = models.DesignPackage.objects.get(order=order)            
-            form = form_class(request.POST, instance=package)
-            if form.is_valid():
-                package = form.save(commit=False)
-                package.order=order
-                package.save()            
-            
-                if package.kitfile and package.price_report:
-                    if order.color_views: 
-                        if package.views_archive:
-                            order.complete(user)
-                            return redirect(dashboard)                           
-                    else:
-                        order.complete(user)
-                        return redirect(dashboard)                           
-        except:
-            pass
-    return redirect(reverse('complete_order_page', args=[orderid])) 
-
-
-@login_required
-def attach_design_to_order(request, orderid, form_class=None):
+def complete_order(request, orderid, form_class=None):
 
     # get/validate selected order is unassinged (new)
     user, account, profile, order = get_context(request, orderid)
