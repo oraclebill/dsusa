@@ -9,46 +9,46 @@
 
 
 <!-- center column -->
-<div id="center" class="prefix_3 grid_10 suffix_3">
+<div id="center" class="prefix_3 grid_8 suffix_3">
 
-  	<!-- pending (unassigned) orders - click to assign -->
-	<div class="box">
-		<h2>{% trans "Design Attachments" %}</h2>
+	<div class="box">		
+		<h2>{% trans "Completed Order Info" %}</h2>
 		<div>
-			<table border="0" cellspacing="5" cellpadding="5">
-				<thead>
-					<tr><th>ID</th>
-						<th>Type</th>
-						<th>Date Attached</th>
-						<th>Attached By</th>
-						<th>Description</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for attachment in attachments %}
-					<tr>
-						<td>{{ attachment.id }}</td>
-						<!-- <td>{{ attachment.get_doctype_display }}</td> -->
-						<td>{{ attachment.attachment_type }}</td>
-						<!-- <td>{{ attachment.timestamp|date }}</td> -->
-						<td>{{ attachment.delivered|date }}</td>
-						<td>{{ attachment.user }}</td>
-						<td>{{ attachment.document }}</td>
-					</tr>						
-					{% endfor %}
-				</tbody>
-			</table>
+			<h5>&nbsp;</h5>
+			<form action="{% url complete_order order.id %}" method="POST">			
+				<h5>Order Info</h5>
+				<table>
+					<tbody>
+						<tr><th>Request ID</th><td>{{ order.id }}</td></tr>
+						<tr><th>Tracking Code</th><td>{{ order.tracking_code }}</td></tr>
+						<tr><th>Project Name</th><td>{{ order.description }}</td></tr>
+					</tbody>
+				</table>
+				<h5>Design Notes</h5>
+				<p>
+					<textarea name="notes" cols=40 rows=8>{{ package.notes }}</textarea>
+				</p>
+				<h5>Files</h5>			
+				<table border="0" cellspacing="5" cellpadding="5">
+					<tbody>
+					<tr><th>20/20 KIT File</th><td>{{ package.kitfile }}</td></tr>
+					<tr><th>Cabinet Price Report</th><td>{{ package.price_report }}</td></tr>
+					<tr><th>PDF Views ZIP</th><td>{{ package.views_archive }}</td></tr>
+					</tbody>
+				</table>
+				<input type="submit" name="complete-order-action" value="{% trans 'Send Completed Design' %}">
+			</form>
 		</div>
 	</div>
 	
 	<div class="box">
 		<h2>{% trans "Upload Design Attachments" %}</h2>
 		<div>
-			<form action="{% url ordermgr.views.attach_design_to_order order.id %}" method="POST" enctype="multipart/form-data">
+			<form action="{% url complete_order order.id %}" method="POST" enctype="multipart/form-data">
 				<table>
 					{{ form }}
 				</table>
-				<input type="submit" name="Upload" value="{% trans 'Upload File' %}">
+				<input type="submit" name="upload-action" value="{% trans 'Upload Files' %}">
 			</form>
 		</div>
 	</div>

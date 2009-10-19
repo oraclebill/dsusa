@@ -1,4 +1,5 @@
 import logging
+import os
 
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -20,6 +21,8 @@ DO_COLORVIEWS, DO_ELEVATIONS, DO_CABINETQUOTE = range(3)
 STATUS_NEW, STATUS_ASSIGNED, STATUS_COMPLETED, STATUS_ACCEPTED, \
     STATUS_REJECTED, STATUS_NEW_CLARIFY, STATUS_ASSIGNED_CLARIFY = range(7)
 
+def design_upload_dir(instance, filename):
+    return os.path.join(DESIGN_UPLOAD_LOCATION, str(instance.order.id), filename )
 
 class UserProfile(models.Model):
     """
@@ -207,19 +210,24 @@ class DesignPackage(models.Model):
     """
     order = models.ForeignKey(DesignOrder, related_name='attachments',
         help_text=_('The order this design package was generated for.'))
+    ## TODO: use s3 storage
+    kitfile = models.FileField(_('20/20 Design File'),
+        upload_to=design_upload_dir, 
+        help_text=_('A 20/20 .KIT File containing the completed design.'))
+    price_report = models.FileField(_('20/20 Cabinet Price Report (PDF)'),
+        upload_to=design_upload_dir, 
+        help_text=_('A 20/20 20/20 Cabinet Price Report (PDF).'))
+    views_archive = models.FileField(_('ZIP with printable PDF perspectives and elevations.'),
+        upload_to=design_upload_dir, null=True, blank=True,
+        help_text=_('ZIP with printable PDF perspectives and elevations.'))
+    notes =  models.TextField(_('Notes'), blank=True)
     delivered = models.DateTimeField(_('Dispatch Timestamp'),
         default=datetime.now,
         help_text=_('The timestamp of when this package was sent to the customer.'))
-    ## TODO: use s3 storage
-    attachment = models.FileField(_('Completed Design File'),
-        upload_to=DESIGN_UPLOAD_LOCATION, null=False,
-        help_text=_('The attached design file.'))
-
-    attachment_type = models.CharField(_('File Type'), max_length='8',
-        help_text=_('The type of file attachment - e.g. KIT, PDF or ZIP'))
-
-    def get_absolute_url(self):
-        return attachment and attachment.url or 'Unbound DesignPackage object'
+        
+        
+    # def get_absolute_url(self):
+    #     return attachment and attachment.url or 'Unbound DesignPackage object'
     
 class KitchenDesignRequest(DesignOrder):
     ### for now, a convenient way to isolate order info from order tracking info..

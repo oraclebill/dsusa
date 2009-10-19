@@ -15,10 +15,7 @@ urlpatterns = patterns('ordermgr.views',
             name='order_clarify'),
 
         url(r'^order/([\w-]+)/attach/$', 'attach_design_to_order',
-            name='order_attach'),
-
-        url(r'^order/([\w-]+)/complete/$', 'complete_order',
-            name='order_complete'),
+            name='complete_order'),
 
         url(r'^stats/$', 'stats', name="order_log"),
 )

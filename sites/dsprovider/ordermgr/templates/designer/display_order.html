@@ -44,22 +44,17 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 			<div class="box">
 				<h5>{% trans "Control" %}</h5>
 				<div>
-					<form method="GET"  id="clarify-form"  action="{% url ordermgr.views.clarify_order order.id %}">
+					<form action="{% url assign_designer_to_order order.id %}" method="GET">
+			   			<input type="submit" {{assign_disabled}}
+					 		value="{% trans 'Assign Designer &rarr;' %}">
+					</form>
+										
+					<form method="GET"  id="clarify-form"  action="{% url order_clarify order.id %}">
 						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
-                    <form method="GET"  id="attach-form"   action="{% url ordermgr.views.attach_design_to_order order.id %}">
-						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
+                    <form method="GET"  id="complete-form"   action="{% url complete_order order.id %}">
+						<input type="submit" {{ complete_disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
                     </form>
-					{# if  order.orderattachment_set.count #}
-					{% if  order.attachments.count %}
-					<form method="POST" id="complete-form" action="{% url order_complete order.id %}">
-						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
-				    </form>
-					{% else %}
-					<form method="POST" id="complete-form" action="{% url ordermgr.views.complete_order order.id %}">
-						<input type="submit" disabled="disabled" name="complete-order-action" value='{% trans "Complete Order" %}'>
-				    </form>
-					{% endif %}
 				</div>
 			</div>
 		</div>

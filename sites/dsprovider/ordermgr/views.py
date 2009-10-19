@@ -1,3 +1,4 @@
+##
 import logging
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ImproperlyConfigured
@@ -110,11 +111,18 @@ def display_order(request, orderid, form_class=None):
     # validate access
     user, account, profile, order = get_context(request, orderid)
     form_class = form_class or modelform_factory(order.__class__)
-    # disable control if not yet assigned
-    if not order.status == models.STATUS_ASSIGNED:
-        disabled='disabled="disabled"'
+    
+    # disable assignment for non-new orders
+    if not order.status == models.STATUS_NEW:
+        assign_disabled='disabled="disabled"'
     else:
-        disabled=''
+        assign_disabled=''
+        
+    # disable completion for non-assigned orders
+    if not order.status == models.STATUS_ASSIGNED:
+        complete_disabled='disabled="disabled"'
+    else:
+        complete_disabled=''
 
     errors = None
     # setup forms
@@ -156,7 +164,8 @@ def display_order(request, orderid, form_class=None):
                 'designer/display_order.html', {
                     'order':order,
                     'options': optional_fields,
-                    'disabled':disabled,
+                    'assign_disabled':assign_disabled,
+                    'complete_disabled':complete_disabled,
                 },
                 context_instance=RequestContext(request) )
 
@@ -216,7 +225,7 @@ def clarify_order(request,orderid):
     raise NotImplementedError("ordermgr.views.clarify_order is not implemented")
 
 @login_required
-def attach_design_to_order(request,orderid, form_class=None):
+def attach_design_to_order(request, orderid, form_class=None):
 
     # get/validate selected order is unassinged (new)
     user, account, profile, order = get_context(request, orderid)
@@ -226,11 +235,26 @@ def attach_design_to_order(request,orderid, form_class=None):
     )
 
     #this should be orderattachment class or something like that
-    attachments = order.attachments.all()
+    package = models.DesignPackage.objects.filter(order=order)
+    if package:
+        package = package[0]
+    else:
+        package = None
     if request.method == 'GET':
-        form = form_class()
+        form = form_class(instance=package)
     elif request.method == 'POST':
-        form = form_class(request.POST,request.FILES)
+        if 'complete-order-action' in request.POST:
+            form = form_class(request.POST,request.FILES,instance=package)
+            if not (package.kitfile and package.price_report):
+                form.errors['kit_file'] += ['All design orders require KIT file and PDF price report.']  
+            elif order.color_views and not package.views_archive:
+                form_errors += ['This design order requires elevations and perspectives ZIP file.']  
+            else:
+                order.complete(user)
+                return redirect(dashboard)               
+        else:
+            form = form_class(request.POST,request.FILES)
+            
         if form.is_valid():
             doc = form.save(commit=False)
             doc.order = order
@@ -239,11 +263,7 @@ def attach_design_to_order(request,orderid, form_class=None):
             # doc.user = user
             # doc.org = account
             doc.save()
-            return redirect(order)
-    else:
-        log.error('Invalid HTTP method in attach_design_to_order: %s' % request.method )
-        raise Exception, "Invalid request type %s" % request.method
-
+            # return redirect(order)
     # render template
     return render_to_response('designer/attach_design.html', locals(),
                 context_instance=RequestContext(request) )
