@@ -1,0 +1,25 @@
+{% load i18n %}
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					{% for desc in headers %}
+					<th> {{desc}} </th>	
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			    <tr>
+			        <th>{% trans "New" %}</th>
+					{% for stat in arrived %}
+			        <td>{{ stat }}</td>
+			        {% endfor %}
+			    </tr>
+			    <tr>
+				    <th>{% trans "Completed" %}</th>
+					{% for stat in completed %}
+			        <td>{{ stat }}</td>						
+					{% endfor %}
+			    </tr>
+			</tbody>
+		</table>

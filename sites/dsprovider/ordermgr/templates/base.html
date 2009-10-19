@@ -1,0 +1,80 @@
+{% load util %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>{% block title %} Design First {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% media /css/reset.css %}" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{% media /css/text.css %}" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{% media /css/grid.css %}" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{% media /css/layout.css %}" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{% media /css/nav.css %}" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{% media /css/jquery-ui.css %}" media="screen" />
+<!--[if IE 6]><link rel="stylesheet" type="text/css" href="{% media /css/ie6.css %}" media="screen" /><![endif]-->
+<!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{% media /css/ie.css %}" media="screen" /><![endif]-->
+	<script type="text/javascript" src="{% media /js/jquery-1.3.2.min.js %}"></script>
+	<script type="text/javascript" src="{% media /js/jquery-ui.js %}"></script>
+	<script type="text/javascript" src="{% media /js/jquery-fluid16.js %}"></script>
+	{% block extrastyle %}
+		{# saved for b.w. compability, later will be removed #} 
+	{% endblock %}
+	{% block extra-head %} 
+	{% endblock %}
+  </head>
+  <body>
+    <div id="main" class="container_16">
+		<div id="header">
+
+			<!-- begin branding block -->
+			<h1 id="branding">Design Services USA - Dealers Design Service</h1>
+			<!-- end branding block -->
+
+			{% if user.is_authenticated %}
+			<!-- begin authenticated header content -->
+			<!-- begin status line -->
+			<div id="status" class="box">
+		    	<div class="grid_13 ">
+			  		Welcome {{ user.first_name }} {{ user.last_name }} [{{ user.username }}]
+		        </div>
+		    	<div class="grid_3 omega">
+			  		<em ><a href="{% url auth_logout %}"> click here to logout</a></em>
+		        </div>
+				<div class="grid_16">
+					{% block menu %}
+					{% endblock %}
+				</div>
+			    <div class="clear"></div>
+			</div>
+			<!-- end status line -->
+
+				{# {% if user.get_profile.has_menu %} #}
+				{# <!-- begin user menu block --> #}
+				{# <div id="menu" class="menu"> #}
+				{# 	MENU PLACEHOLDER #}
+				{# </div> #}
+				{# <!-- end menu block --> #}
+				{# {% endif %} #}
+				
+			<!-- end authenticated header content -->
+			{% endif %}
+		</div>		
+        <div class="clear"></div>
+
+      <div id="content">
+		<!-- begin main content block -->
+		{% block content %} {% endblock %}
+		<!-- end main content block -->
+      </div>
+
+      <div class="clear"></div>
+
+      <div id="footer" class="grid_16">
+		{% block footer %} <address>&copy; 2009 Design Service USA LLC</address>{% endblock %}
+      </div>
+
+    </div>
+
+	<!-- begin tail javascript -->
+	<!-- end tail javascript -->
+  </body>
+</html>

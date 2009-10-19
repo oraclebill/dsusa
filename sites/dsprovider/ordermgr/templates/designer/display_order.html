@@ -1,7 +1,5 @@
-{% extends "designer/designer_base.html" %}
-{% load i18n %}
-
-{% load designer_tags %}
+{% extends "designer/base.html" %}
+{% load i18n tags %}
 
 {% block title %}
 DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.id}} ] 
@@ -46,22 +44,17 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 			<div class="box">
 				<h5>{% trans "Control" %}</h5>
 				<div>
-					<form method="GET"  id="clarify-form"  action="{% url designer.views.designer_clarify_order order.id %}">
-						{# <input type="submit" {{ disabled }} name="clarify-order-action" value='{% trans "Request Clarification" %}'><br> #}
+					<form action="{% url assign_designer_to_order order.id %}" method="GET">
+			   			<input type="submit" {{assign_disabled}}
+					 		value="{% trans 'Assign Designer &rarr;' %}">
+					</form>
+										
+					<form method="GET"  id="clarify-form"  action="{% url order_clarify order.id %}">
 						<input type="submit" disabled name="clarify-order-action" value='{% trans "Request Clarification" %}'><br>
 				    </form>
-                    <form method="GET"  id="attach-form"   action="{% url designer.views.designer_attach_design_to_order order.id %}">
-						<input type="submit" {{ disabled }} name="attach-order-action" value='{% trans "Upload Design Attachment" %}'><br>
+                    <form method="GET"  id="complete-form"   action="{% url complete_order_page order.id %}">
+						<input type="submit" {{ complete_disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
                     </form>
-					{% if  order.orderattachment_set.count %}
-					<form method="POST" id="complete-form" action="{% url designer.views.designer_complete_order order.id %}">
-						<input type="submit" {{ disabled }} name="complete-order-action" value='{% trans "Complete Order" %}'>
-				    </form>
-					{% else %}
-					<form method="POST" id="complete-form" action="{% url designer.views.designer_complete_order order.id %}">
-						<input type="submit" disabled="disabled" name="complete-order-action" value='{% trans "Complete Order" %}'>
-				    </form>
-					{% endif %}
 				</div>
 			</div>
 		</div>
@@ -114,30 +107,43 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		<div class="box">
 			<h2>{% trans "Mouldings" %}</h2>
 			<div>
-				{% if order.ceiling_height or order.crown_mouldings or order.skirt_mouldings or order.soffits  %}
-					<table>
-						{% row_if order.ceiling_height %}
-						{% row_if order.crown_mouldings %}
-						{% row_if order.skirt_mouldings %}
-					</table>
+				<table>
+					{% row_if order.ceiling_height %}
 					
-					{% if order.soffits %}
-					<table>
-						<legend>Soffits</legend>
-						{% row_if order.soffit_height N/A %}
-						{% row_if order.soffit_width  N/A %}
-						{% row_if order.soffit_depth  N/A %}
-					</table>
-					{% endif %}
-						
-				{% else %}
+					{% row_if order.top_moulding_1 %}
+					{% row_if order.top_moulding_2 %}
+					{% row_if order.top_moulding_3 %}
+					{% row_if order.bottom_moulding_1 %}
+					{% row_if order.bottom_moulding_2 %}
+					{% row_if order.bottom_moulding_3 %}
+				</table>
 				
-					<p>NOT SPECIFIED</p>
-				
+				{% if order.soffits %}
+				<table>
+					<legend>Soffits</legend>
+					{% row_if order.soffit_height N/A %}
+					{% row_if order.soffit_width  N/A %}
+					{% row_if order.soffit_depth  N/A %}
+				</table>
 				{% endif %}
+						
 			</div>
 		</div>
 		<!-- end Cabinetry box dimensions -->
+
+		<!-- Hardware -->
+		<div class="box">
+			<h2>{% trans "Hardware" %}</h2>
+			<div>
+				<table>
+					{% row_if order.door_hardware_type %}
+					{% row_if order.door_hardware_model %}
+					{% row_if order.drawer_hardware_type %}
+					{% row_if order.drawer_hardware_model %}
+				</table>
+			</div>
+		</div>
+		<!-- end Hardware -->
 		
 		<!-- options -->
 		<div class="box">
@@ -152,40 +158,16 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 		</div>
 		<!-- end options -->
 		
-		<!-- design notes  -->
-		<div class="box">
-			<h2>{% trans "Client Notes" %}</h2>
-			<div>
-				<p>{{ order.client_notes }}</p>
-			</div>
-		</div>
-		<div class="box">
-			<h2>{% trans "Designer Notes" %}</h2>
-			<div>
-				<p>{{ order.designer_notes }}</p>
-			</div>
-		</div>
-		<!-- end design options -->
-
 	</div>
 		
 	<div class="grid_10">
 		
 		<div class="box">
-			<h2>{% trans "Floorplan Diagrams" %}</h2>
+			<h2>{% trans "Client Floorplan Sketch" %}</h2>
 			<div>
-				<object width="320" height="240" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-					<param name="src" value="{{ order.client_diagram.url }}">
-					<param name="controller" value="true">
-					<param name="autoplay" value="true">
-					<embed src="{{ order.client_diagram.url }}"
-						width="580" height="710"
-						controller="true" autoplay="true"
-						scale="tofit" cache="true"
-						pluginspage="http://www.apple.com/quicktime/download/"
-					>
-				</object>
+				<img src="{{ order.user_sketch.url }}" width="600">
 			</div>
+			<p style="text-align:center;"><a href="#">(click to enlarge)</a></p>
 		</div>
 		
 	</div>

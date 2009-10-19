@@ -1,0 +1,7 @@
+{% load i18n %}
+<h1>{% trans "Hi"%}</h1>
+<p>{% trans "New order has been created for you:" %}
+    <a href="http://{{ site.domain }}{{ order.get_absolute_url }}">{{ order }}</a>
+</p>
+
+<p>{% trans "Have fun" %}</p>

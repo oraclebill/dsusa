@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid_8 prefix_4 suffix_4">
+	<div class="box">	
+		<h2>login</h2>
+		{% if form.errors %}
+		<p>Your username and password didn't match. Please try again.</p>
+		{% endif %}
+
+		<form method="post" action="{% url auth_login %}">
+			
+		<table>
+			<tr>
+			    <td><label for="id_username">Username</label></td>
+			    <td><input id="id_username" type="text" name="username" maxlength="30" /></td>
+			</tr>
+			<tr>
+			    <td><label for="id_password">Password</label></td>
+			    <td><input type="password" name="password" id="id_password" /></td>
+			</tr>
+		</table>
+
+		<input type="submit" value="login" />
+		<input type="hidden" name="next" value="{% url ordermgr.views.dashboard %}" />
+		
+		</form>
+		
+	</div>
+</div>
+{% endblock %}
