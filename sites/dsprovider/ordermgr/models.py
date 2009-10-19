@@ -11,6 +11,10 @@ from datetime import datetime
 
 log = logging.getLogger('dsprovider.models')
 
+COST_BASE = 30
+COST_RUSH = 20
+COST_VIEWS = 10
+
 DESIGN_UPLOAD_LOCATION = 'design-packages/'  ## TODO: add order id
 ATTACHMENTS_LOCATION = 'order-attachments/'  ## TODO: add order id
 
@@ -95,15 +99,41 @@ class DesignOrder(models.Model):
         null=True, blank=True,
         help_text=_('A timestamp of when this order was completed.'))
 
-    color_views = models.BooleanField(_('Color Views'), blank=True)
-    elevations = models.BooleanField(_('Elevations'), blank=True)
-    quote_cabinet_list = models.BooleanField(_('Quoted Cabinet List'), default=True)
-    rush = models.BooleanField(_('Same Day?'), default=False)
+    kit_file = models.BooleanField(_('Include Kit File'), default=True)
+    color_views = models.BooleanField(_('Include Color Views'), blank=True)
+    elevations = models.BooleanField(_('Include Elevations'), blank=True)
+    quote_cabinet_list = models.BooleanField(_('Include Quoted Cabinet List'), default=True)
+    rush = models.BooleanField(_('Same Day Service?'), default=False)
 
     final_type = models.ForeignKey(ct_models.ContentType, editable=False)
 
     objects = DesignOrderManager()
 
+    @property
+    def cost(self):        
+        "The cost of this order"
+        cost = COST_BASE
+        if self.color_views or self.elevations:
+            cost += COST_VIEWS
+        if self.rush:
+            cost += COST_RUSH
+        return cost        
+    
+    @property
+    def options(self):
+        ops = []
+        if self.kit_file:
+            ops.append(_('KIT'))
+        if self.quote_cabinet_list:
+            ops.append(_('QUOTE'))
+        if self.elevations:
+            ops.append(_('ELEVATIONS'))
+        if self.color_views:
+            ops.append(_('PERSPECTIVES'))
+        if self.rush:
+            ops.append(_('RUSH!'))
+        return ','.join(ops)
+            
     def save(self, *args, **kwargs):
         self.final_type = \
                     ct_models.ContentType.objects.get_for_model(type(self))

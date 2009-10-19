@@ -1,9 +1,10 @@
 ##
 import logging
+from datetime import datetime, timedelta
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import reverse
-from datetime import datetime, timedelta
+from django.db.models import Sum
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
@@ -323,12 +324,13 @@ def stats(request, queryset=None, field='completed'):
         qs = qs.filter(**{'%s__gte' % field: start_date})
     if end_date:
         qs = qs.filter(**{'%s__lte' % field: end_date})
-
+    sum = reduce(lambda x,y: x+y, [o.cost for o in qs])
     return render_to_response("designer/stats_page.html", {
         'form': forms.DateRangeForm(initial={
             'start': start_date,
             'end': end_date,
         }),
+        'sum': sum,
         'start_date': start_date,
         'end_date': end_date,
         'orders': qs,
