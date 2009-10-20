@@ -289,17 +289,6 @@ def submit_order(request, orderid):
     pass
 
 @login_required
-def complete_order(request, orderid):
-    # get/validate selected order is unassinged (new)
-    user, account, profile, order = get_context(request,orderid)
-    try:
-        order.complete(user)
-        return redirect(dashboard)
-    except:
-        return redirect(request.META['HTTP_REFERER'])
-
-
-@login_required
 def stats(request, queryset=None, field='completed'):
     """
     Shows stats for completed orders over a period of time.
@@ -324,7 +313,7 @@ def stats(request, queryset=None, field='completed'):
         qs = qs.filter(**{'%s__gte' % field: start_date})
     if end_date:
         qs = qs.filter(**{'%s__lte' % field: end_date})
-    sum = reduce(lambda x,y: x+y, [o.cost for o in qs])
+    sum = reduce(lambda x,y: x+y, [o.cost for o in qs], 0)
     return render_to_response("designer/stats_page.html", {
         'form': forms.DateRangeForm(initial={
             'start': start_date,
