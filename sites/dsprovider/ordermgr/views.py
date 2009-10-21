@@ -316,14 +316,28 @@ def stats(request, queryset=None, field='completed'):
         qs = qs.filter(**{'%s__gte' % field: start_date})
     if end_date:
         qs = qs.filter(**{'%s__lte' % field: end_date})
+<<<<<<< HEAD
     sum = reduce(lambda x,y: x+y, [o.cost for o in qs], 0)
     return render_to_response("designer/stats_page.html", {
+=======
+
+    context = {
+>>>>>>> base orders invoice
         'form': forms.DateRangeForm(initial={
             'start': start_date,
             'end': end_date,
         }),
-        'sum': sum,
+        'sum': sum([o.cost for o in qs]),
         'start_date': start_date,
         'end_date': end_date,
         'orders': qs,
-    }, context_instance=RequestContext(request))
+        'query': request.META['QUERY_STRING'],
+    }
+
+    if extra_context:
+        for key, value in extra_context.items():
+            if callable(value):
+                value = value()
+            context[key] = value
+    return render_to_response(template_name, context,
+                              context_instance=RequestContext(request))
