@@ -58,7 +58,7 @@ $(function(){
 {% block wizard-steps%}
 	{% for step in wizard.get_tabs %}
 		<div{% if step.selected %} class="selected"{% endif %}>
-			<a href="{{ step.url }}" step="{{step.slug}}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}.png"></a>
+			<a href="{{ step.url }}" step="{{step.slug}}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png"></a>
 			<br>
 			{{step.title}}
 		</div>
