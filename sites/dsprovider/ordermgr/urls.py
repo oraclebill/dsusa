@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('ordermgr.views',
@@ -18,5 +19,18 @@ urlpatterns = patterns('ordermgr.views',
             name='complete_order_page'),
 
         url(r'^stats/$', 'stats', name="order_log"),
+        url(r'^invoice/$', 'stats', {
+            'template_name': 'designer/invoice.html',
+            'extra_context': {
+                'invoice_date': datetime.today,
+            },
+        }, name="order_invoice"),
+        url(r'^invoice/print/$', 'stats', {
+            'template_name': 'designer/invoice_print.html',
+            'extra_context': {
+                'invoice_date': datetime.today,
+            },
+        }, name="order_invoice_print"),
+
 )
 
