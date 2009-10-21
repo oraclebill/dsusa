@@ -24,18 +24,28 @@
 	}
 
 	function replace_widget(id, name, standard) {
+		var validation = $('#'+id).data('validation')//Validatoin fix
 		var value = $('#'+id).val()
 		if (standard)
 			html = select_html(id, name, value)
 		else
 			html = input_html(id, name, value)
 		$('#'+id).replaceWith(html)
+		$('#'+id).data('validation', validation)
 	}
 
 	function toggle_fields(standard) {
 		replace_widget('id_wall_cabinet_height', 'wall_cabinet_height', standard)
 		replace_widget('id_vanity_cabinet_height', 'vanity_cabinet_height', standard)
 		replace_widget('id_depth', 'depth', standard)
+	}
+	
+	$(function(){
+		toggle_fields($('#id_standard_sizes').get(0).checked)
+		
+		$('#id_standard_sizes').change(function() {
+			toggle_fields(this.checked)
+		})
 		
 		//Fixing navigation
 		$('#id_depth').keydown(function(event){
@@ -44,7 +54,7 @@
 				return false;
 			}
 		})
-		
+
 		//Stack/Staggering images
 		var img_html = '<img id="stack_sgage" src="/media/images/wizard/dimensions.png" style="float: right; width: 300px; height: 200px;">'
 		$(img_html).insertAfter('fieldset fieldset:first legend')
@@ -59,14 +69,6 @@
 			switch_image();
 		})
 		switch_image();
-	}
-	
-	$(function(){
-		toggle_fields($('#id_standard_sizes').get(0).checked)
-		
-		$('#id_standard_sizes').change(function() {
-			toggle_fields(this.checked)
-		})
 	})
 
 </script>
