@@ -37,7 +37,7 @@ class WizardBase(object):
         if isinstance(result, HttpResponse):
             return result
         
-        template = 'wizard/%s.html' % self.step
+        template = 'wizard/step_%s.html' % self.step
         context = {
             'wizard': self,
             'BTN_SAVENEXT': BTN_SAVENEXT
