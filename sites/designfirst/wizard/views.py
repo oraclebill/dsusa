@@ -62,6 +62,7 @@ class Wizard(WizardBase):
     def step_dimensions(self, request):
         standart_sizes = simplejson.dumps(WorkingOrder.STANDARD_SIZES)
         images = {
+            WorkingOrder.S_NONE: 'S_NONE.png',
             WorkingOrder.S_STACKED: 'S_STACKED.png',
             WorkingOrder.S_STG_HWC: 'S_STG_HWC.png',
             WorkingOrder.S_STG_DHWC: 'S_STG_DHWC.png',
