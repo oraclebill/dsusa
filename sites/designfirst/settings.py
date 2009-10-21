@@ -111,6 +111,7 @@ INSTALLED_APPS = (
     'registration',
     # if debug.. 
     'debug_toolbar',
+    'south',
 )
 
 DEBUG_TOOLBAR_PANELS = (
