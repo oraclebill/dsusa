@@ -18,7 +18,7 @@ class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
-             'appliances', 'attachments']
+             'appliances', 'attachments', 'order_review']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
@@ -140,8 +140,8 @@ class Wizard(WizardBase):
         context.update({'form': form, 'attachments': attachments})
         return context
     
-    def complete(self, request):
-        return _complete_wizard(request, self.order)
+    def step_order_review(self, request):
+        return _order_review(request, self.order)
     
     def get_summary(self):
         return order_summary(self.order, STEPS_SUMMARY)
@@ -152,8 +152,8 @@ class Wizard(WizardBase):
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
-@render_to('submit_order.html')
-def _complete_wizard(request, order):
+@render_to('wizard/order_review.html')
+def _order_review(request, order):
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
         order = form.save(commit=False)
