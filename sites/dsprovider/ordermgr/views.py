@@ -243,8 +243,11 @@ def complete_order(request, orderid, form_class=None):
         package = models.DesignPackage.objects.get(order=order)            
     except:
         package = None
+
     form = form_class()
-    if request.method == 'POST':
+    if request.method == 'GET':
+ 	form = form_class()
+    elif request.method == 'POST':
         if 'complete-order-action' in request.POST:
             vform_class = modelform_factory(
                 models.DesignPackage, fields=('notes',)

@@ -1,6 +1,9 @@
-from django.db import models
+from decimal import Decimal
 
-# Create your models here.
+from django.db import models
+from django.utils.translation import ugettext as _
+
+from home.models import DealerOrganization
 
 #
 # Models
@@ -89,9 +92,67 @@ class PriceScheduleEntry(models.Model):
 
 def get_customer_price(customer, product):
     price = product.base_price
-    if customer and customer.price_sheet:
-        prices = customer.price_sheet.pricesheetentry_set.objects.filter(product=product)
-        if prices:
-            price = prices[0].retail_price
+#     if customer and customer.price_sheet:
+#         prices = customer.price_sheet.pricesheetentry_set.objects.filter(product=product)
+#         if prices:
+#             price = prices[0].retail_price
     return price
     
+
+class Invoice(models.Model):
+#     invoice = Invoice(id='test=1', customer=account, status=Invoice.PENDING)
+#     invoice.description = "Quick Buy web purchase - %s" % product.name
+#     invoice.add_line(
+#         product.name, 
+#         get_customer_price(account, product), 
+#         qty)
+#     invoice.save()  # default status == PENDING
+    PENDING, PAID = ('E', 'A')
+    INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')))
+
+    id          = models.CharField(max_length=50, primary_key=True)
+    customer    = models.ForeignKey(DealerOrganization)
+    status      = models.CharField(max_length=1, choices=INV_STATUS_CHOICES)
+    description = models.TextField(blank=True)
+    
+    @property
+    def total(self):
+        return reduce(
+            lambda x,y: x+y, 
+            [il.line_price for il in self.invoiceline_set.all()], 
+            Decimal() )
+    
+    @property
+    def total_credit(self):
+        return reduce(
+            lambda x,y: x+y, 
+            [il.line_credit for il in self.invoiceline_set.all()], 
+            Decimal() )
+    
+    def add_line(self, description, price, quantity=1):
+        return self.invoiceline_set.create(
+            description=description, 
+            unit_price=price, 
+            quantity=quantity
+        )
+        
+class InvoiceLine(models.Model):
+    invoice     = models.ForeignKey(Invoice)
+    number      = models.IntegerField(null=True, blank=True)
+    description = models.CharField(max_length=80)
+    quantity    = models.IntegerField()
+    unit_price  = models.DecimalField(max_digits=10, decimal_places=2)
+    _unit_credit  = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    
+    @property
+    def unit_credit(self):
+        return self._unit_credit or self.unit_price
+
+    @property
+    def line_price(self):
+        return self.unit_price * self.quantity        
+        
+    @property
+    def line_credit(self):
+        return self.unit_credit * self.quantity        
+        
