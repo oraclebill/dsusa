@@ -1,12 +1,12 @@
 import settings
 from datetime import datetime
 
-from django.db import models
+from django.db import models, transaction
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-from designfirst.product.models  import PriceSchedule
+# from designfirst.product.models  import PriceSchedule
 
 class IllegalState(Exception):
     pass
@@ -59,7 +59,7 @@ class DealerOrganization(Organization):
                                 
     default_measure_units = models.CharField(max_length=3, choices=DIMENSION_UNIT_CHOICES)
     credit_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
+#     price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
     
 
 
@@ -433,13 +433,42 @@ class OrderNotes(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     
     
+DEBIT, CREDIT = ( 'D', 'C')
+DC_CHOICES=((DEBIT, _('Debit')), (CREDIT,_('Credit')))
+
+ACCT_CREDIT, CASH = ('A', 'S')
+TRANS_TYPE_CHOICES = ((ACCT_CREDIT, _('Account Credit')), (CASH, _('Cash')))
+        
 class Transaction(models.Model): # TODO --> invoice becomes transaction
+    trace_id = models.CharField(max_length=50)
     account = models.ForeignKey(DealerOrganization)
-    debit_or_credit = models.CharField(max_length=1, choices=(('D', 'Debit'), ('C', 'Credit')))
-    trans_type = models.CharField(max_length=1, choices=(('C', 'Credits'), ('D', 'Dollars')))
+    debit_or_credit = models.CharField(max_length=1, choices=DC_CHOICES)
+    trans_type = models.CharField(max_length=1, choices=TRANS_TYPE_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=32)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+@transaction.commit_on_success
+def register_purchase(trace, cust_account, price, credit):
+    if not Transaction.objects.filter(trace_id__exact=trace):
+        tx1 = Transaction(
+            trace_id=trace,
+            account=cust_account,
+            debit_or_credit=CREDIT, # TODO: verify correct use of CREDIT
+            trans_type=CASH,
+            amount=price,   # TODO: price schedule lookup,
+            description='Web purchase of %s for %s' % ('',price))
+        tx2 = Transaction(
+            trace_id=trace,
+            account=cust_account,
+            debit_or_credit=CREDIT, # TODO: verify correct use of CREDIT
+            trans_type=ACCT_CREDIT,
+            amount=credit,
+            description='Account credit of %s for %s' % ('', credit))
+        tx1.save()
+        tx2.save()
+    else:
+        print "Duplicate transaction %s ignored" % trace
 
 
 
