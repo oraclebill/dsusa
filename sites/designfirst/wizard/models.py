@@ -1,8 +1,11 @@
+from django.db.transaction import commit_on_success
 import os
 import logging
 
 from utils.fields import DimensionField
+from django.contrib.auth.models import User
 from django.core.files.base import File as DjangoFile
+from django.utils.datastructures import SortedDict
 from django.db import models
 from utils.pdf import pdf2ppm
 
@@ -17,6 +20,22 @@ class WorkingOrder(models.Model):
     This is a temporary object used for storing data 
     when  user goes step to step in wizard
     """
+    #Basic stuff
+    DEALER_EDIT, SUBMITTED, ASSIGNED = range(1,4)
+    STATUS_CHOICES = (
+        (DEALER_EDIT, 'Dealer Editing'),
+        (SUBMITTED, 'Submitted'),
+        (ASSIGNED, 'Assigned'),
+    )
+    owner = models.ForeignKey(User)
+    status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=DEALER_EDIT)
+    #Submit options
+    color_views = models.BooleanField(default=False)
+    elevations = models.BooleanField(default=False)
+    quoted_cabinet_list = models.BooleanField(default=False)
+
+    
+    
     #New page
     project_name = models.CharField(max_length=150)
     desired = models.DateTimeField('Desired Completion')
@@ -52,23 +71,23 @@ class WorkingOrder(models.Model):
     drawer_handle_type = models.PositiveSmallIntegerField(choices=HANDLE_TYPES, default=HANDLE_NONE)
     drawer_handle_model = models.CharField(max_length=255, null=True, blank=True)
     
-    #Moulding page
-    celiling_height = models.CharField(max_length=255, null=True, blank=True)
-    crown_moulding_type = models.CharField(max_length=255, null=True, blank=True)
-    skirt_moulding_type = models.CharField(max_length=255, null=True, blank=True)
+    #Soffits page
     soffit_width = DimensionField('Width', null=True, blank=True)
     soffit_height = DimensionField('Height', null=True, blank=True)
     soffit_depth = DimensionField('Depth', null=True, blank=True)
     
     
     #Dimension page
-    S_NORMAL, S_STACKED, S_STAGGERED = range(1,4)
+    S_STACKED, S_STG_HWC, S_STG_DHWC, S_STG_HBC, S_STG_DBC = range(1,6)
     STYLE_CHOICES = (
-            (S_NORMAL, 'Normal'),
-            (S_STACKED, 'Stacked'),
-            (S_STAGGERED, 'Staggered'))
+        (S_STACKED, 'Stacked Wall Cabinets'),
+        (S_STG_HWC, 'Staggered Height Wall Cabinets'),
+        (S_STG_DHWC, 'Staggered Depth and Height Wall Cabinets'),
+        (S_STG_HBC, 'Staggered Height Base Cabinets'),
+        (S_STG_DBC, 'Staggered Depth Base Cabinets'))
+
     STANDARD_SIZES = [16, 32, 36]
-    dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, default=S_NORMAL)
+    dimension_style = models.PositiveSmallIntegerField(choices=STYLE_CHOICES, default=S_STACKED)
     standard_sizes = models.BooleanField('Standard sizes')   
     wall_cabinet_height = DimensionField(null=True, blank=True)
     vanity_cabinet_height = DimensionField(null=True, blank=True)
@@ -113,6 +132,10 @@ class WorkingOrder(models.Model):
     def __unicode__(self):
         return self.project_name
     
+    def attachement_previews(self):
+        "Return urls of all attachment previews"
+        return [a.first_preview() for a in self.attachments.all()]
+    
     
 class Attachment(models.Model):
     FLOORPLAN, PHOTO, OTHER = range(1,4)
@@ -127,6 +150,11 @@ class Attachment(models.Model):
     
     def __unicode__(self):
         return os.path.basename(self.file.path)
+    
+    def first_preview(self):
+        if self.is_pdf():
+            return self.attachpreview_set.all()[0].file.url
+        return self.file.url
     
     def previews(self):
         if self.is_pdf():
@@ -156,6 +184,68 @@ class Attachment(models.Model):
         file = DjangoFile(open(filename, 'rb'))
         preview.file.save(file.name, file)
         preview.save()
+
+
+class Moulding(models.Model):
+    TOP, BASE, BOTTOM = range(1,4)
+    TYPE_CHOICES = (
+        (TOP, 'Top'),
+        (BASE, 'Base'),
+        (BOTTOM, 'Bottom'),
+    )
+    order = models.ForeignKey(WorkingOrder, related_name='mouldings')
+    num = models.PositiveIntegerField()
+    type = models.PositiveSmallIntegerField(choices=TYPE_CHOICES)
+    name = models.CharField(max_length=255)
+    
+    class Meta:
+        ordering = ['type', 'num']
+    
+    def __unicode__(self):
+        return '#%d %s %s' % (self.num, self.get_type_display(), self.name)
+    
+    def save(self, *args, **kwargs):
+        if self.num is None:
+            self.num = self._next_num()
+        super(Moulding, self).save()
+    
+    def delete(self):
+        order, type = self.order, self.type
+        super(Moulding, self).delete()
+        self.reorder(order, type)
+    
+    def _next_num(self):
+        items = list(Moulding.objects.filter(order=self.order, type=self.type))
+        if len(items) == 0:
+            return 1
+        return items[-1].num + 1
+    
+    @classmethod
+    def groups(cls, order):
+        "Returns mouldings grouped by type"
+        data = SortedDict()
+        items = list(cls.objects.filter(order=order))
+        for t,n in cls.TYPE_CHOICES:
+            type_items = [i for i in items if i.type == t]
+            if len(type_items) > 0:
+                data[n] = type_items 
+        return data
+    
+    @classmethod
+    @commit_on_success
+    def reorder(cls, order, type, new_sort_order=None):
+        if new_sort_order is None:
+            items = cls.objects.filter(order=order, type=type)
+        else:
+            items = [cls.objects.get(order=order, type=type, pk=i) for i in new_sort_order]
+        i = 1
+        for item in items:
+            item.num = i
+            item.save()
+            i += 1
+                
+            
+
 
 class AttachPreview(models.Model):
     "Stores PDF pages converted to images"

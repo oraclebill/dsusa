@@ -155,7 +155,8 @@ def create_order(request, *args):
         form = NewDesignOrderForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
-            order.client_account = account
+            order.client_account = account#TODO: there is actually no client_account in working order
+            order.owner = request.user
             order.save()
                         
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))

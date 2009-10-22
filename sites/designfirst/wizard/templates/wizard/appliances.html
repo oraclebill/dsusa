@@ -1,5 +1,23 @@
 {% extends "wizard/base.html" %}
 
+
+{% block ajax-validation %}{% endblock %}
+
+{% block extra-head %}
+{{block.super}}
+<script type="text/javascript">
+	$(function() {
+		$('a.dellink').click(function(){
+			if (!confirm('Delete this attachment?')) return false;
+		})
+{% if confirm_attach %}
+		$.facebox({ ajax: '{% url ajax-attachment-details confirm_attach %}' })
+{% endif %}
+	})
+</script>
+
+{% endblock %}
+
 {% block wizard-content %}
 
 <table>
@@ -9,14 +27,16 @@
 	<th>Width</th>
 	<th>Height</th>
 	<th>Depth</th>
+	<th> </th>
 </tr>
 {% for item in appliances %}
-<tr>
+<tr class="row{% cycle "1" "2"%}">
 	<td>{{item.type}}</td>
 	<td>{{item.description|default:"N/A"}}</td>
 	<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
 	<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
 	<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+	<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
 </tr>
 {% endfor %}
 </table>
@@ -24,7 +44,7 @@
 <fieldset>
 	<legend>Add Appliance</legend>
 	<table>{{form}}</table>
-	<input type="submit" name="upload_file" value="Add">
+	<input type="submit" name="add_appliance" value="Add">
 </fieldset>
 
 

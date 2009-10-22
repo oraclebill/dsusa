@@ -1,6 +1,6 @@
 import os
 from django import forms
-from models import WorkingOrder,  Attachment, Appliance
+from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
 
 
@@ -14,7 +14,7 @@ class MockForm(forms.ModelForm):
 
 
 
-class ManufacturerFrom(forms.ModelForm):
+class ManufacturerForm(forms.ModelForm):
     class Meta:
         model = WorkingOrder
         fields = [
@@ -38,7 +38,7 @@ def HandleType(**kwargs):
                              widget=forms.RadioSelect, 
                              label='Type', **kwargs)
 
-class HardwareFrom(forms.ModelForm, FieldsetForm):
+class HardwareForm(forms.ModelForm, FieldsetForm):
     door_handle_type = HandleType()
     drawer_handle_type = HandleType()
     class Meta:
@@ -57,26 +57,40 @@ class HardwareFrom(forms.ModelForm, FieldsetForm):
 
 
 
-class MouldingFrom(forms.ModelForm, FieldsetForm):
+class MouldingForm(forms.ModelForm):
+    class Meta:
+        model = Moulding
+        fields = ['type', 'name']
+    
+
+    
+def _soffit_clean(field):
+    "if mouldings are selected then soffits are required"
+    def wrapper(form):
+        value = form.cleaned_data.get(field)
+        if form.instance.mouldings.all().count() > 0:
+            if value in ('', None):
+                raise forms.ValidationError('This field is required')
+        return value
+    return wrapper
+
+class SoffitsForm(forms.ModelForm):
     class Meta:
         model = WorkingOrder
         fields = [
-            'celiling_height',
-            'crown_moulding_type',
-            'skirt_moulding_type',
             'soffit_width',
             'soffit_height',
             'soffit_depth',
         ]
-    fieldsets = [
-        (None, ['celiling_height', 'crown_moulding_type', 'skirt_moulding_type']),
-        ('Soffit', ['soffit_width', 'soffit_height', 'soffit_depth']),
-    ]
+    clean_soffit_width = _soffit_clean('soffit_width')
+    clean_soffit_height = _soffit_clean('soffit_height')
+    clean_soffit_depth = _soffit_clean('soffit_depth')
 
 
 class DimensionsForm(forms.ModelForm, FieldsetForm):
     dimension_style =  forms.ChoiceField(choices=WorkingOrder.STYLE_CHOICES, 
-                             widget=forms.RadioSelect, label='')
+                             widget=forms.RadioSelect(attrs={'class': 'dimension_style'}), 
+                             label='')
     class Meta:
         model = WorkingOrder
         fields = [
@@ -87,7 +101,7 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
             'depth'
         ]
     fieldsets = [
-        ('Style', ['dimension_style']),
+        ('Stacking and Staggering Options', ['dimension_style']),
         ('Sizes', ['standard_sizes', 'wall_cabinet_height', 'vanity_cabinet_height', 'depth']),
     ]
 
@@ -145,6 +159,16 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
             'glass_doors',
             'range_hood',
             'posts',
+        ]
+
+
+class SubmitForm(forms.ModelForm):
+    class Meta:
+        model = WorkingOrder
+        fields = [
+            'color_views',
+            'elevations',
+            'quoted_cabinet_list',
         ]
 
 

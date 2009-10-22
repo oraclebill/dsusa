@@ -1,38 +1,74 @@
 from django.utils import simplejson
-from django.http import HttpResponse
-from base import WizardBase, BTN_SAVENEXT
-from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
-from forms import *
-from utils.views import render_to
+from django.http import HttpResponse, HttpResponseRedirect,\
+    HttpResponseForbidden
 from django.shortcuts import get_object_or_404
+from django.conf import settings
+from base import WizardBase
+from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
+from utils.views import render_to
+from models import Attachment, Appliance
+from forms import *
+from summary import order_summary, STEPS_SUMMARY, SUBMIT_SUMMARY
+from django.template.loader import render_to_string
 
 
 
 
 class Wizard(WizardBase):
     
-    steps = ['manufacturer', 'hardware', 'moulding', 'dimensions', 
+    steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
              'appliances', 'attachments']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
         manufacturers_json = simplejson.dumps([m.json_dict() for m in manufacturers])
-        return self.handle_form(request, ManufacturerFrom
+        return self.handle_form(request, ManufacturerForm
                                 , {'manufacturers': manufacturers,
                                    'manufacturers_json':manufacturers_json})
     
     
     def step_hardware(self, request):
-        return self.handle_form(request, HardwareFrom)
+        return self.handle_form(request, HardwareForm)
     
     
     def step_moulding(self, request):
-        return self.handle_form(request, MouldingFrom)
+        if request.method == 'POST': # Ajax submit of new moulding
+            if 'add_moulding' in request.POST:
+                form = MouldingForm(request.POST)
+                if form.is_valid():
+                    obj = form.save(commit=False)
+                    obj.order = self.order
+                    obj.save()
+            elif 'delete' in request.POST:
+                obj = get_object_or_404(self.order.mouldings.all(), 
+                                  pk=int(request.POST['delete']))
+                obj.delete()
+            elif 'order' in request.POST:
+                sort_order = map(int, [i for i in request.POST['order'].split(',') if len(i) > 0])
+                Moulding.reorder(self.order, int(request.POST['type']), sort_order)
+            else:
+                return self.dispatch_next_step()
+            items = Moulding.groups(self.order)
+            return HttpResponse(render_to_string(
+                        'wizard/moulding_items.html', {'items':items}))
+        form = MouldingForm()
+        return {'form': form, 'items': Moulding.groups(self.order)}
+    
+    def step_soffits(self, request):
+        return self.handle_form(request, SoffitsForm)
     
     
     def step_dimensions(self, request):
         standart_sizes = simplejson.dumps(WorkingOrder.STANDARD_SIZES)
+        images = {
+            WorkingOrder.S_STACKED: 'S_STACKED.png',
+            WorkingOrder.S_STG_HWC: 'S_STG_HWC.png',
+            WorkingOrder.S_STG_DHWC: 'S_STG_DHWC.png',
+            WorkingOrder.S_STG_HBC: 'S_STG_HBC.png',
+            WorkingOrder.S_STG_DBC: 'S_STG_DBC.png',
+        }
+        images_base = settings.MEDIA_URL + 'images/stacking_staggering/'
         #when the manufacturer is one of the valid manufacturers, 
         #default 'Standard Sizes' should be 'checked' or 'True', 
         #otherwise false. :
@@ -40,7 +76,12 @@ class Wizard(WizardBase):
                 and self.order.wall_cabinet_height is None\
                 and self.order.wall_cabinet_height is None:
             self.order.standard_sizes = is_existing_manufacturer(self.order)
-        return self.handle_form(request, DimensionsForm, {'standard_sizes':standart_sizes})
+        context = {
+            'standard_sizes': standart_sizes,
+            'stack_images': simplejson.dumps(images),
+            'stack_images_base': images_base,
+        }
+        return self.handle_form(request, DimensionsForm, context)
     step_dimensions.title = 'Corner boxes'
     
     
@@ -55,8 +96,8 @@ class Wizard(WizardBase):
     
     def step_appliances(self, request):
         if request.method == 'POST':
-            if BTN_SAVENEXT in request.POST:
-                return self.next_step()
+            if 'add_appliance' not in request.POST:
+                return self.dispatch_next_step()
             form = ApplianceForm(request.POST, request.FILES)
             if form.is_valid():
                 obj = form.save(commit=False)
@@ -64,6 +105,12 @@ class Wizard(WizardBase):
                 obj.save()
                 form = ApplianceForm()
         else:
+            if 'delete' in request.GET:
+                appliance = get_object_or_404(Appliance, order=self.order, 
+                                           id=int(request.GET['delete']))
+                appliance.delete()
+                return HttpResponseRedirect('./')
+            form = AttachmentForm()
             form = ApplianceForm()
         appliances = Appliance.objects.filter(order=self.order)
         return {'form': form, 'appliances': appliances}
@@ -71,8 +118,8 @@ class Wizard(WizardBase):
     def step_attachments(self, request):
         context = {}
         if request.method == 'POST':
-            if BTN_SAVENEXT in request.POST:
-                return self.next_step()
+            if 'upload_file' not in request.POST:
+                return self.dispatch_next_step()
             form = AttachmentForm(request.POST, request.FILES)
             if form.is_valid():
                 obj = form.save(commit=False)
@@ -83,68 +130,21 @@ class Wizard(WizardBase):
                 context['confirm_attach'] = obj.id
                 
         else:
+            if 'delete' in request.GET:
+                attach = get_object_or_404(Attachment, order=self.order, 
+                                           id=int(request.GET['delete']))
+                attach.delete()
+                return HttpResponseRedirect('./')
             form = AttachmentForm()
         attachments = Attachment.objects.filter(order=self.order)
         context.update({'form': form, 'attachments': attachments})
         return context
     
     def complete(self, request):
-        return HttpResponse("Wizard is complete")
+        return _complete_wizard(request, self.order)
     
     def get_summary(self):
-        summary_fields = [
-            ('Manufacturer', [
-                'cabinet_manufacturer',
-                'cabinet_door_style',
-                'cabinet_wood',
-                'cabinet_finish',
-            ]),
-            ('Hardware', [
-                'door_handle_type',
-                'door_handle_model',
-                'drawer_handle_type',
-                'drawer_handle_model',
-            ]),
-            ('Moulding', [
-                'celiling_height',
-                'crown_moulding_type',
-                'skirt_moulding_type',
-                'soffit_width',
-                'soffit_height',
-                'soffit_depth',
-            ]),
-            ('Dimensions', [
-                'dimension_style',
-                'standard_sizes',
-                'wall_cabinet_height',
-                'vanity_cabinet_height',
-                'depth'
-            ]),
-            ('Corner cabinet', [
-                'diagonal_corner_base',
-                'diagonal_corner_wall',
-                'degree90_corner_base',
-                'degree90_corner_wall',
-            ]),
-            ('Interiors', [
-                'lazy_susan',
-                'slide_out_trays',
-                'waste_bin',
-                'wine_rack',
-                'plate_rack',
-                'apliance_garage'
-            ]),
-            ('Miscellaneous', [
-                'corables',
-                'brackets',
-                'valance',
-                'leas_feet',
-                'glass_doors',
-                'range_hood',
-                'posts',
-            ]),
-        ]
-        return self._get_summary(summary_fields)
+        return order_summary(self.order, STEPS_SUMMARY)
         
 
 
@@ -152,7 +152,36 @@ class Wizard(WizardBase):
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
+@render_to('submit_order.html')
+def _complete_wizard(request, order):
+    if request.method == 'POST':
+        form = SubmitForm(request.POST, instance=order)
+        order = form.save(commit=False)
+        order.status = WorkingOrder.SUBMITTED
+        order.save()
+        return HttpResponseRedirect('/dealer/')
+    form = SubmitForm(instance=order)
+    summary = order_summary(order, SUBMIT_SUMMARY)
+    exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
+    for title, excl in SUBMIT_SUMMARY:
+        exclude += excl
+    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
+    summary += order_summary(order, [('Options', OPT_FIELDS)])
+    return {'order': order, 'data': dict(summary), 'form':form}
+
+@render_to('print_order.html')
+def print_order(request, id):
+    order = get_object_or_404(WorkingOrder, id=id)
+    if order.owner.id != request.user.id:
+        return HttpResponseForbidden("Not allowed to view this order")
+    summary = order_summary(order, STEPS_SUMMARY)
+    #making two columns display
+    l = len(summary)/2
+    summary = summary[:l], summary[l:]
+    return {'order': order, 'summary': summary}
+
 def is_existing_manufacturer(order):
+    #TODO: move to Manufacturer model
     try:
         Manufacturer.objects.get(name=order.cabinet_manufacturer)
         return True

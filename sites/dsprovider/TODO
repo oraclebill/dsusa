@@ -8,26 +8,15 @@ DONE - change terminology for mouldings
 DONE - split hardware options [type, style]
 DONE - slide-out tray option missing
 DONE - remove notes and tracking fields from kitchenrequest
-- new complete order screens
-  - upload design attachment --> complete order
+DONE - new complete order screens - upload design attachment --> complete order
+DONE - fix stats (order log)
 - generate order acknowledgements (explicit/implicit)
 - add profile for design users (with notification preferences)
 - re-fail bad email setup
 - remove login template from ordermgr
 - enable 'click to enlarge' for displayed user sketch
+- add south
 ? rename designorder to designrequest??
 ? normalize user_sketch / client_diagram terms
 
-complete design order
-	- determine type of design order
-	- upload kit 
-	- upload pricelist
-	- if full
-		- upload views
-	
-design request
-	option group
-		option
-			type
-			name
-			value
+

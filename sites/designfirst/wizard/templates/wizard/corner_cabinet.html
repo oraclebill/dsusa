@@ -1,5 +1,20 @@
 {% extends "wizard/base.html" %}
 
+{% block extra-head %}
+{{block.super}}
+<script>
+$(function(){
+	//Fixed for tab navigation for 1st radiobutton (in last radio-button-group)
+	$('#id_degree90_corner_base_shelv_0').keydown(function(event){
+		if (event.keyCode == KEY_TAB && !event.shiftKey) {
+			wizard_go_to('_next_')
+			return false;
+		}
+	})
+})
+</script>
+{% endblock %}
+
 {% block wizard-content %}
 
 {% include "fieldsets_form.html" %}

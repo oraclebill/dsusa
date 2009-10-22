@@ -291,7 +291,6 @@ def complete_order(request, orderid, form_class=None):
 def submit_order(request, orderid):
     pass
 
-
 @login_required
 def stats(request, queryset=None, field='completed'):
     """

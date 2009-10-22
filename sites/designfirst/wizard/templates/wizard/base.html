@@ -1,10 +1,54 @@
 {% extends "base.html" %}
+{% load ajax_form_utils %}
+
 
 {% block title %}{{wizard.order}} | {{wizard.step_title}}{% endblock %}
 
 
+
+
 {% block extra-head %}
 	{{form.media}}
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
+<script>
+
+var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
+var KEY_TAB = 9;
+
+function wizard_go_to(step) {
+	$('#next_step').val(step)
+	$('form#wizard_form').submit();
+}
+
+{% block ajax-validation %}
+$(function(){
+	//Ajax validation:
+	$('form').validation({% render_ajax_fields form %});
+})
+{% endblock %}
+
+$(function(){
+	//Tabs navigation:	
+	$('#wizard_content :input:visible:first').keydown(function(event){
+		if (event.keyCode == KEY_TAB && event.shiftKey) {
+			if (!IS_FIRST_STEP)
+				wizard_go_to('_prev_')
+			return false;
+		}
+	}).focus()
+	$('#wizard_content :input:visible:last').keydown(function(event){
+		if (event.keyCode == KEY_TAB && !event.shiftKey) {
+			wizard_go_to('_next_')
+			return false;
+		}
+	})
+	$('#wizard_steps a').click(function(){
+		wizard_go_to($(this).attr('step'))
+		return false;
+	})
+})
+</script>
 {% endblock %}
 
 
@@ -14,7 +58,7 @@
 {% block wizard-steps%}
 	{% for step in wizard.get_tabs %}
 		<div{% if step.selected %} class="selected"{% endif %}>
-			<a href="{{ step.url }}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}.png"></a>
+			<a href="{{ step.url }}" step="{{step.slug}}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}.png"></a>
 			<br>
 			{{step.title}}
 		</div>
@@ -25,8 +69,8 @@
 
 
 
-<form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
-
+<form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
+<input type="hidden" name="next_step_" id="next_step" value="_next_">
 <div id="wizard_content" class="grid_11">
 <fieldset>
 	<legend>{{wizard.step_title}}</legend>
@@ -59,9 +103,11 @@
 <div class="clear"></div>
 
 <div class="grid_13" style="text-align: center;">
+<!--
 <input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 <input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
 <input type="submit" name="{{BTN_SKIP}}" value="Skip">
+-->
 </div>
 
 <div class="clear"></div>
