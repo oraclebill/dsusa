@@ -2,37 +2,15 @@
 import logging
 from datetime import datetime, timedelta
 
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ImproperlyConfigured
-from django.core.urlresolvers import reverse
-from django.db.models import Sum
+from django.core.exceptions import PermissionDenied
 from django.template import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 import dsprovider.ordermgr.models as models
 import dsprovider.ordermgr.forms as forms
 from django.forms.models import modelform_factory
 
 log = logging.getLogger('ordermgr.views')
-
-def get_context(request, orderid=None):
-    user = request.user
-    account = None
-    profile = None
-    order = None
-    if user.is_authenticated():
-        profile = user.get_profile()
-        # account = profile.account.designerorganization
-        if orderid:
-            try:
-                order = models.KitchenDesignRequest.objects.get(pk=orderid)
-            except ObjectDoesNotExist as ex:
-                log.error( "failed to find the orderid %d" % orderid )
-                raise ImproperlyConfigured("Access to order %s denied to user %s" % (orderid, user))
-    else:
-        log.error( "unathenticated user in get_context" )
-        raise PermissionDenied()
-
-    return (user, account, profile, order)
 
 
 @login_required
@@ -42,20 +20,17 @@ def dashboard(request):
 
     Display a list of orders related to this designer, combined with a list of unclaimed orders.
     """
-    user, account, profile, product = get_context(request)
-
     pending = models.KitchenDesignRequest.objects.filter(status=models.STATUS_NEW)
 
     working = models.KitchenDesignRequest.objects.filter(status=models.STATUS_ASSIGNED)
 
     completed = models.KitchenDesignRequest.objects.filter(status=models.STATUS_COMPLETED)
 
-    return render_to_response( 'designer/dashboard.html', {
-        'account': account,
+    return render_to_response('designer/dashboard.html', {
         'pending': pending,
         'working': working,
         'completed': completed,
-    }, context_instance=RequestContext(request) )
+    }, context_instance=RequestContext(request))
 
 
 @login_required
@@ -110,8 +85,8 @@ def display_order(request, orderid, form_class=None):
 
     TODO: Printer CSS
     """
-    # validate access
-    user, account, profile, order = get_context(request, orderid)
+    order = get_object_or_404(models.KitchenDesignRequest, pk=orderid)
+
     form_class = form_class or modelform_factory(order.__class__)
     
     # disable assignment for non-new orders
@@ -133,14 +108,14 @@ def display_order(request, orderid, form_class=None):
     elif request.method == 'POST':
         # use presence of FILES to distinguish between design update and 'complete' actions
         if request.FILES:
-            package_form = form_class(request.POST,request.FILES,instance=order)
+            package_form = form_class(request.POST, request.FILES, instance=order)
             if package_form.is_valid():
                 package_form.save()
         else:
             # determine action type
             if 'complete-order-action' in request.POST:
                 if order.package:
-                    order.complete(user)
+                    order.complete(request.user)
                     return redirect('ordermgr.views.dashboard')
                 else:
                     log.warning( "Attempt to complete order without attached design(s)" )
@@ -164,10 +139,10 @@ def display_order(request, orderid, form_class=None):
     # render template
     return render_to_response(
                 'designer/display_order.html', {
-                    'order':order,
+                    'order': order,
                     'options': optional_fields,
-                    'assign_disabled':assign_disabled,
-                    'complete_disabled':complete_disabled,
+                    'assign_disabled': assign_disabled,
+                    'complete_disabled': complete_disabled,
                 },
                 context_instance=RequestContext(request) )
 
@@ -197,10 +172,11 @@ def assign_designer_to_order(request, orderid, form_class=forms.AssignDesignerFo
     Create an order assignment by presenting a list of available (only?) designers for selection
     """
     # get/validate selected order is unassinged (new)
-    user, account, profile, order = get_context(request,orderid)
+    order = get_object_or_404(models.KitchenDesignRequest, pk=orderid)
+
     # make sure order is assignable
     if order.status == models.STATUS_ASSIGNED:
-        log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, designer) )
+        log.error( 'Order %s is already assigned to %s - cannot reassign' % (orderid, order.designer) )
         raise PermissionDenied
 
     # display designers eligible for assignment
@@ -223,7 +199,7 @@ def assign_designer_to_order(request, orderid, form_class=forms.AssignDesignerFo
                 context_instance=RequestContext(request) )
 
 @login_required
-def clarify_order(request,orderid):
+def clarify_order(request, orderid):
     raise NotImplementedError("ordermgr.views.clarify_order is not implemented")
 
 
@@ -231,13 +207,10 @@ def clarify_order(request,orderid):
 def complete_order(request, orderid, form_class=None):
 
     # get/validate selected order is unassinged (new)
-    user, account, profile, order = get_context(request, orderid)
-    #
-    # form_class = form_class or modelform_factory(
-    #     models.DesignPackage, exclude=('order', 'delivered')
-    # )
+    order = get_object_or_404(models.KitchenDesignRequest, pk=orderid)
+
     form_class = forms.DesignFileForm
-    
+
     errors = []
     try:
         package = models.DesignPackage.objects.get(order=order)            
@@ -261,12 +234,12 @@ def complete_order(request, orderid, form_class=None):
                 if package.kitfile and package.price_report:
                     if order.color_views: 
                         if package.views_archive:
-                            order.complete(user)
+                            order.complete(request.user)
                             return redirect(dashboard)                           
                         else:
                             errors = 'Order requires Views Package (ZIP)'
                     else:
-                        order.complete(user)
+                        order.complete(request.user)
                         return redirect(dashboard)                     
                 else:
                     errors = 'Order requires KIT file and Price Report'      
@@ -291,8 +264,10 @@ def complete_order(request, orderid, form_class=None):
 def submit_order(request, orderid):
     pass
 
+
 @login_required
-def stats(request, queryset=None, field='completed'):
+def stats(request, queryset=None, field='completed',
+        template_name='designer/stats_page.html', extra_context=None):
     """
     Shows stats for completed orders over a period of time.
     """
@@ -316,14 +291,23 @@ def stats(request, queryset=None, field='completed'):
         qs = qs.filter(**{'%s__gte' % field: start_date})
     if end_date:
         qs = qs.filter(**{'%s__lte' % field: end_date})
-    sum = reduce(lambda x,y: x+y, [o.cost for o in qs], 0)
-    return render_to_response("designer/stats_page.html", {
+
+    context = {
         'form': forms.DateRangeForm(initial={
             'start': start_date,
             'end': end_date,
         }),
-        'sum': sum,
+        'sum': sum([o.cost for o in qs]),
         'start_date': start_date,
         'end_date': end_date,
         'orders': qs,
-    }, context_instance=RequestContext(request))
+        'query': request.META['QUERY_STRING'],
+    }
+
+    if extra_context:
+        for key, value in extra_context.items():
+            if callable(value):
+                value = value()
+            context[key] = value
+    return render_to_response(template_name, context,
+                              context_instance=RequestContext(request))
