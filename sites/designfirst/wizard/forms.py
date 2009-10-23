@@ -1,3 +1,4 @@
+from django.conf import settings
 import os
 from django import forms
 from models import WorkingOrder,  Attachment, Appliance, Moulding
@@ -106,6 +107,8 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
     ]
 
 
+CORNER_DEF_IMG = settings.MEDIA_URL + 'wizard/none.png'
+
 class CornerCabinetForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
@@ -119,11 +122,24 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
             'degree90_corner_wall',
         ]
     fieldsets = [
-        ('Diagonal corner wall', ['diagonal_corner_wall', 'diagonal_corner_wall_shelv']),
-        ('Diagonal corner base', ['diagonal_corner_base', 'diagonal_corner_base_shelv']),
-        ('90 Degree corner wall', ['degree90_corner_wall']),
-        ('90 Degree corner base', ['degree90_corner_base', 'degree90_corner_base_shelv']),
+        ('Diagonal corner wall', {
+                'fields': ['diagonal_corner_wall', 'diagonal_corner_wall_shelv'], 
+                'image':CORNER_DEF_IMG}),
+        ('Diagonal corner base', {
+                'fields': ['diagonal_corner_base', 'diagonal_corner_base_shelv'], 
+                'image':CORNER_DEF_IMG}),
+        ('90 Degree corner wall', {
+                'fields': ['degree90_corner_wall'], 
+                'image':CORNER_DEF_IMG}),
+        ('90 Degree corner base', {
+                'fields': ['degree90_corner_base', 'degree90_corner_base_shelv'], 
+                'image':CORNER_DEF_IMG}),
     ]
+    field_styles = {
+        'diagonal_corner_wall_shelv': 'right_float_field',
+        'diagonal_corner_base_shelv': 'right_float_field',
+        'degree90_corner_base_shelv': 'right_float_field',
+    }
     def __init__(self, *args, **kwargs):
         #Labels/Widget customization
         for name, field in self.base_fields.items():
