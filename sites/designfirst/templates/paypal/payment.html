@@ -6,15 +6,29 @@ DesignFirst Customer Dashboard
 
 {% block content %}
 
-<form action="" method="post">
-    <table>
-        <tbody>
-            {% if errors %}<tr><td colspan="2" align="center">{{ errors }}</td></tr>{% endif %}
-            <tr><td colspan="2" align="center"><a href="?express">Pay by PayPal</a></td></tr>
-            {{ form.as_table }}
-            <tr><td colspan="2" align="right"><input type="submit" /></td></tr>
-        </tbody>
-    </table>
-</form>
+	<div class="grid_8 alpha">
+		<div id="credit_card" class="block ">
+			<h2>Pay with Credit Card</h2>
+            <form action="" method="post">
+                <table>
+                    <tbody>
+                        {% if errors %}<tr><td colspan="2" align="center">{{ errors }}</td></tr>{% endif %}
+                        {{ form.as_table }}
+                        <tr><td colspan="2" align="right"></td></tr>
+                    </tbody>
+                </table>
+                <p align=right><input type="submit" name="submit" value="Purchase"/></p>
+            </form>
+        </div>
+    </div>
+	<div class="grid_8 omega">
+		<div id="paypal" class="block ">
+			<h2>Pay with Paypal</h2>
+			<p align=center>
+		      <a href="?express"><img src="/images/paypal-ec-button.gif"></a></p>
+        </div>
+        <p align=center>
+    </div>
 
 {% endblock %}
+

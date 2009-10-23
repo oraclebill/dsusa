@@ -5,6 +5,8 @@
 <div id="menu" class="menu">
 	<ul class="nav">
 		<li><a href="/dealer/">{% trans 'Home' %}</a></li>
+		<li><a href="{% url home.views.create_order %}">{% trans 'New Order' %}</a></li>
+		
 	</ul>
 </div>
 {% endblock %}
