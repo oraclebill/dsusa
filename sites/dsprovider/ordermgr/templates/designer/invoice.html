@@ -6,16 +6,18 @@
 {% endblock %}
 
 {% block content %}
+<h1>{% blocktrans with start_date|date as start and end_date|date as end %}Your invoice for period between {{ start }} - {{ end }}{% endblocktrans %}</h1>
 <!-- left column -->
 <div id="orders" class="grid_10  ">
   	<!-- pending (unassigned) orders - click to assign -->
 	<div id="pending_order_table">
 	   <table summary="{% trans 'order history and status' %}">
 	   <thead>
-	     <tr><th>{% trans "ID" %}</th>
-             <th>{% trans "Submit date" %}</th>
-             <th>{% trans "Tracking code" %}</th>
-             <th>{% trans "Delivery Options" %}</th>
+	     <tr><th>{% trans "Design" %}</th>
+             <th>{% trans "Options" %}</th>
+             <th>{% trans "Comp. date" %}</th>
+             <!-- <th>{% trans "Tracking code" %}</th> -->
+             <th>{% trans "Price" %}</th>
              <th>{% trans "Cost" %}</th>
 	     </tr>
 	   </thead>
@@ -23,9 +25,9 @@
 	     {% for order in orders %}
 	     <tr class="{% cycle 'even' 'odd' %}">
 	       <td> {{ order.id }}</a> </td> 
-		   <td> {{ order.arrived|date }} </td>
-		   <td> {{ order.source_id }} </td> 
 		   <td> {{ order.options }} </td> 
+		   <td> {{ order.completed|date }} </td>
+		   <td> {{ order.cost }} </td>
 		   <td> $ {{ order.cost }} </td> 
 	     </tr>
 	     {% endfor %}
@@ -41,17 +43,23 @@
 <!-- right column -->
 <div class="grid_5  omega ">
 	<div class="box">
-	    <h2>{% trans "Period" %}</h2>
-        <form method="get" id="" action=".">
-            <table>
-                {{ form }}
-            </table>
-            <input type="submit" name="" value="{% trans "Go" %}" />
-            {% if orders %}
-                <a href="{% url order_invoice %}?{{ query }}">{% trans 'Generate Invoice' %}</a>
-            {% endif %}
-        </form>
+        <table>
+            <tr>
+                <td>{% trans "Invoice number" %}</td>
+                <td>?</td>
+            </tr>
+            <tr>
+                <td>{% trans "Invoice date" %}</td>
+                <td>{{ invoice_date|date }}</td>
+            </tr>
+            <tr>
+                <td>{% trans "Customer" %}</td>
+                <td>?</td>
+            </tr>
+        </table>
+      <a href="{% url order_invoice_print %}?{{ query }}">{% trans 'Print' %}</a>
 	</div>
 </div>
+
 
 {% endblock %}

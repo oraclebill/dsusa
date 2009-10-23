@@ -111,6 +111,7 @@ INSTALLED_APPS = (
     # if debug.. 
     'debug_toolbar',
     'ajax_forms',
+    'south',
 )
 
 DEBUG_TOOLBAR_PANELS = (
