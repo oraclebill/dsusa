@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Design Service USA FAX COVER</title>
+<style type="text/css">
+<!--
+* { 
+	margin: 0;
+	border: none;
+	padding: 0;
+}
+
+input, textarea {
+	border-style: inset;
+	border-width: 2px;
+	border-color: gray;
+}
+
+html {
+	margin: 0px;
+	border: 1px solid red;
+}
+
+body {
+	margin: 0px;
+	border: 1px solid green;
+	width: 8.5in;
+	padding-left: 2em;
+	padding-right: 2em;
+}
+
+body,td,th {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 10pt;
+}
+
+h1, h2 {
+	padding-top: 1em;
+	padding-bottom: .5em;
+}
+
+table {
+	margin: 3px;
+	padding: 5px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+
+tr {
+	padding: 3px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+
+td {
+	padding-top: .5em;
+	padding-bottom: .5em;
+}
+
+tr > td:first-child {
+	font-weight: bolder;
+}
+
+.column {
+	width: 4in;
+	float: left;
+	padding: 0.25em;
+	margin: 0.5em;
+}
+
+#comment-area {
+	clear: left;
+	vertical-align: top;
+}
+
+#comment-area textarea {
+	width: 80%;
+}
+
+#button-area {
+	clear: left;
+	text-align: right;
+	width: 80%;
+}
+
+#content #barcode-area p {
+	padding-top: 2em;
+	padding-left: 5em;
+}
+-->
+</style>
+</head>
+
+<body>
+<div id="branding">
+<p><img src="/images/logo.jpg" alt="Design Service USA" width="180" height="80"></p>
+</div>
+<div id="content">
+<div id="header">
+<h1>Fax Cover Sheet</h1>
+<p>This coversheet has a barcode unique to your order, so please print and fax the coversheet with your floorplan sketch and any other order related documents. We will send an email to you at {{ account.email }} to confirm that we received your documents as soon as the fax enters our system.</p>
+</div>
+<form action="" method="post">
+<div id="cover-info">
+<table class="column" width="100%" border="1">
+      <tr>
+        <td width="30%" align="left" valign="top">To</td>
+        <td>Order Processing Department</td>
+      </tr>
+      <tr>
+        <td width="30%" align="left" valign="top">Fax #</td>
+        <td>{ account.fax-number }</td>
+      </tr>
+      <tr>
+        <td align="left" valign="top">Re</td>
+        <td><label for="fax-pages">Floorplan Sketch</label></td>
+      </tr>
+      <tr>
+        <td width="30%" align="left" valign="top"><p>Pages</p></td>
+        <td>
+          <input name="fax-pages" type="text" id="fax-pages" tabindex="1" size="4" maxlength="3"> 
+          (including cover page)</td>
+      </tr>
+    </table>
+    <table class="column" width="100%" border="1">
+      <tr>
+        <td width="30%" align="left" valign="top">Order #</td>
+        <td>{ order.id }</td>
+      </tr>
+      <tr>
+        <td width="30%" align="left" valign="top">From</td>
+        <td>{ account.name }</td>
+      </tr>
+      <tr>
+        <td width="30%" align="left" valign="top">Phone</td>
+        <td>{ account.phone }</td>
+      </tr>
+      <tr>
+        <td align="left" valign="top">Date</td>
+        <td>{ today }</td>
+      </tr>
+      <tr>
+        <td width="30%" align="left" valign="top">Email</td>
+        <td>{ account.email }</td>
+      </tr>
+    </table>
+</div>
+    <div id="comment-area">
+      <h2>
+        <label for="comments">Comments</label>
+      </h2>
+      <textarea name="comments" cols="70" rows="9"></textarea>
+  </div>
+  <div id="button-area">
+  	<input type="button" value="Print" onclick="window.print();">
+  	<input type="button" value="Return to Dashboard" onclick="void();">    
+  </div>
+  <div id="barcode-area">
+    <p><img src="/images/barcode1.jpg"></p>
+    <p><img src="/images/barcode2.jpg"></p>
+  </div>
+
+</div>
+</form>
+</body>
+</html>
