@@ -1,0 +1,107 @@
+[
+ {
+  "pk": 1, 
+  "model": "product.product", 
+  "fields": {
+   "is_revision": null, 
+   "name": "Pro Design", 
+   "debitable": true, 
+   "description": "A completed 20/20 KIT file and Cabinet Price Report.", 
+   "purchaseable": true, 
+   "sort_order": 100, 
+   "credit_value": 85, 
+   "base_price": "85"
+  }
+ }, 
+ {
+  "pk": 2, 
+  "model": "product.product", 
+  "fields": {
+   "is_revision": null, 
+   "name": "Presentation Pack", 
+   "debitable": true, 
+   "description": "A presentation ready package containing PDF floorplans, elevations, and color persepective views in addition to 20/20 KIT file and Cabinet Price Report.", 
+   "purchaseable": true, 
+   "sort_order": 120, 
+   "credit_value": 125, 
+   "base_price": "125"
+  }
+ }, 
+ {
+  "pk": 4, 
+  "model": "product.product", 
+  "fields": {
+   "is_revision": true, 
+   "name": "Presentation Pack Revision", 
+   "debitable": true, 
+   "description": "A Presentation Pack Revision gives you the ability to purchase a revision to a previous design for a discounted price. Presentation Pack revisions can not be purchsed individually - they must be purchased with a Presentation Pack.", 
+   "purchaseable": true, 
+   "sort_order": 140, 
+   "credit_value": 80, 
+   "base_price": "80"
+  }
+ }, 
+ {
+  "pk": 7, 
+  "model": "product.product", 
+  "fields": {
+   "is_revision": null, 
+   "name": "Pro Design 6-4-5", 
+   "debitable": false, 
+   "description": "Six Pro Designs for the price of five.", 
+   "purchaseable": true, 
+   "sort_order": 1000, 
+   "credit_value": 510, 
+   "base_price": "425"
+  }
+ }, 
+ {
+  "pk": 8, 
+  "model": "product.product", 
+  "fields": {
+   "is_revision": null, 
+   "name": "Presentation Pack 6-4-5 Special", 
+   "debitable": false, 
+   "description": "Six Presentation Pack Design Packages for the price of five.", 
+   "purchaseable": true, 
+   "sort_order": 1010, 
+   "credit_value": 750, 
+   "base_price": "625"
+  }
+ }, 
+ {
+  "pk": 9, 
+  "model": "product.product", 
+  "fields": {
+   "is_revision": true, 
+   "name": "Presentation Pack Revision 6-4-5 Special", 
+   "debitable": false, 
+   "description": "Six Presentation Pack Design Revisions for the price of five", 
+   "purchaseable": true, 
+   "sort_order": 1020, 
+   "credit_value": 480, 
+   "base_price": "400"
+  }
+ }, 
+ {
+  "pk": "f719255ec14c11de82ce00254bb5eab6", 
+  "model": "product.invoice", 
+  "fields": {
+   "customer": 1, 
+   "status": "E", 
+   "description": "Quick Buy web purchase - Pro Design 6-4-5"
+  }
+ }, 
+ {
+  "pk": 1, 
+  "model": "product.invoiceline", 
+  "fields": {
+   "description": "Pro Design 6-4-5", 
+   "number": null, 
+   "unit_price": "425", 
+   "invoice": "f719255ec14c11de82ce00254bb5eab6", 
+   "_unit_credit": null, 
+   "quantity": 1
+  }
+ }
+]
