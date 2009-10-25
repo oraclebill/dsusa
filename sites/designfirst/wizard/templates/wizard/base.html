@@ -62,8 +62,8 @@ $(function(){
 
 	//Collapse fieldsets:
 	$('fieldset.collapse legend').click(function() {
-		$(this).parent().find('div:first').toggle('fast');
-	}).parent().find('div:first').toggle();
+		$(this).parent().find('div').toggle('fast');
+	})
 })
 </script>
 {% endblock %}

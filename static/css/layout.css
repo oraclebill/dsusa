@@ -577,3 +577,7 @@ fieldset.collapse legend {
 	text-decoration: underline;
 	cursor: pointer;
 } 
+
+fieldset.collapse div {
+	display: none;
+} 
