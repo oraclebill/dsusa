@@ -12,7 +12,8 @@
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
 <script>
-
+var STEP = '{{wizard.step}}'
+var MEDIA_URL = '{{ MEDIA_URL }}'
 var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
 var KEY_TAB = 9;
 
@@ -27,6 +28,17 @@ $(function(){
 	$('form').validation({% render_ajax_fields form %});
 })
 {% endblock %}
+
+function get_fieldset_id(element) {
+	var id = false;
+	$(element).parents().each(function(){
+		if (this.tagName == 'FIELDSET') {
+			id = $(this).attr('id').replace('fields_', '')
+			return false
+		}
+	})
+	return id;
+}
 
 $(function(){
 	//Tabs navigation:	
@@ -46,6 +58,11 @@ $(function(){
 	$('#wizard_steps a').click(function(){
 		wizard_go_to($(this).attr('step'))
 		return false;
+	})
+
+	//Collapse fieldsets:
+	$('fieldset.collapse legend').click(function() {
+		$(this).parent().find('div').toggle('fast');
 	})
 })
 </script>
@@ -71,6 +88,7 @@ $(function(){
 
 <form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
 <input type="hidden" name="next_step_" id="next_step" value="_next_">
+{% block wizard-base-content %}
 <div id="wizard_content" class="grid_11">
 <fieldset>
 	<legend>{{wizard.step_title}}</legend>
@@ -99,6 +117,8 @@ $(function(){
 	{% endblock %}
 </fieldset>
 </div>
+
+{% endblock wizard-base-content %}
 
 <div class="clear"></div>
 
