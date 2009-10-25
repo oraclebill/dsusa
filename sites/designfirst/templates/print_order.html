@@ -3,7 +3,7 @@
 	<title>{{order}}</title>
 </head>
 <body>
-<table>
+<table style="width: 100%;">
 <tr>
 	<th style="background-color: lightgray;">Order information</th>
 	<th style="background-color: lightgray;">Design information</th>
@@ -50,5 +50,35 @@
 {% endfor %}
 </tr>
 </table>
+
+
+<h2>Appliances</h2>
+<table style="width: 50%;">
+	<tr>
+		<th style="background-color: lightgray;">Type</th>
+		<th style="background-color: lightgray;">Description</th>
+		<th style="background-color: lightgray;">Width</th>
+		<th style="background-color: lightgray;">Height</th>
+		<th style="background-color: lightgray;">Depth</th>
+	</tr>
+	{% for item in order.appliance_set.all %}
+	<tr class="row{% cycle "1" "2"%}">
+		<td>{{item.type}}</td>
+		<td>{{item.description|default:"N/A"}}</td>
+		<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+		<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+		<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+	</tr>
+	{% endfor %}
+</table>
+
+<h2>Diagrams</h2>
+		
+<div id="diagrams" class="details">
+{% for url in order.attachement_previews %}
+	<img src="{{url}}" id="diagram"><br>
+{% endfor %}
+<br>
+
 </body>
 </html>
