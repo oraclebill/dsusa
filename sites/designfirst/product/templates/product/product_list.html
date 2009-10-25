@@ -12,14 +12,14 @@ DesignFirst - Purchase Design Credits
 		    <div id="orderform">		        
 				<table>
 					<thead>
-						<tr><th>Name</th><th>Description</th><th>Account Credits</th><th>Price</th><th>Action</th></tr>
+						<tr><th>Name</th><th>Description</th><th>Price</th><th>Account Credits</th><th>Action</th></tr>
 					</thead>
 					<tbody>
 					{% for product,price in pricelist %}
 					<form method="GET" action="{% url product-purchase product.id %}">					
 						<tr>
 							<td>{{ product.name }}</td>
-							<td>{{ product.verbose_name }}</td>
+							<td>{{ product.description }}</td>
 							<td>{{ product.credit_value }}</td>
 							<td>{{ price }}</td>
 							<td><input type="submit" name="amount" value="Buy"></td>
