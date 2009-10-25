@@ -15,9 +15,9 @@ DesignFirst - Purchase Design Credits
 					<thead>
 						<tr>
 						  <th>Name</th>
-						  <th>Description</th>
+						  <th>Price</th>
 						  <th>Account Credits</th>
-						  <th>Price</th><th>Action</th>
+						  <th>Action</th>
 				        </tr>
 					</thead>
 
@@ -26,9 +26,8 @@ DesignFirst - Purchase Design Credits
     					<form method="GET" action="{% url product-purchase product.id %}">					
     						<tr>
     							<td>{{ product.name }}</td>
-    							<td>{{ product.verbose_name }}</td>
-    							<td>{{ product.credit_value }}</td>
     							<td>{{ price }}</td>
+    							<td>{{ product.credit_value }}</td>
     							<td><input type="submit" name="amount" value="Buy"></td>
     						</tr>
     			        </form>

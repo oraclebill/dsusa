@@ -42,20 +42,20 @@ class Product(models.Model):
     
     PRODUCT_TYPES = enumerate(('Base Product', 'Package Product', 'Option Product'))
             
-    name            = models.CharField(max_length=20)
-    verbose_name    = models.CharField(max_length=120)
+    name            = models.CharField(max_length=120)
     description     = models.TextField()    
     sort_order      = models.IntegerField(default=100)
     base_price      = models.DecimalField(max_digits=10, decimal_places=2)
     credit_value    = models.SmallIntegerField() 
     purchaseable    = models.BooleanField(default=True)
     debitable       = models.BooleanField()
+    is_revision     = models.NullBooleanField(null=True)
     
     class Meta:
         ordering = ('sort_order',)
 
     def __unicode__(self):
-        return self.verbose_name
+        return self.name
     
     def customer_price(self, customer):
         return get_customer_price(customer, self)

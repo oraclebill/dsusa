@@ -2,57 +2,38 @@
 -- CREATE TABLE "product_product" (
 --     "id" integer NOT NULL PRIMARY KEY,
 --     "name" varchar(20) NOT NULL,
---     "verbose_name" varchar(120) NOT NULL,
 --     "description" text NOT NULL,
 --     "sort_order" integer NOT NULL,
 --     "base_price" decimal NOT NULL,
 --     "credit_value" smallint NOT NULL,
 --     "purchaseable" bool NOT NULL,
 --     "debitable" bool NOT NULL
+--     "is_revision" bool NOT NULL default 0,
 -- )
 
 --
 -- BASE PRODUCTS
 --
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 1, 'Base', 'Base 20/20 Design File', 'A complete 20/20 .kit file with completed design. For professional designers only.', 
+insert into product_product ( id, name, description, sort_order, base_price, credit_value, purchaseable, debitable )
+       values ( 1, 'Pro Design', 'A professional design in 20/20 KIT file form, with Cabinet Price Report detailing retail cost of all cabinetry.', 
            100, 85, 85, 1, 1 );
 
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 2, 'Full', 'Full PDF Design Layout', 'A package containing PDF floorplans, elevations, and color persepective views. Optionally includes 20/20 .kit file.', 
-           120, 120, 120, 1, 1 );
+insert into product_product ( id, name, description, sort_order, base_price, credit_value, purchaseable, debitable )
+       values ( 2, 'Presentation Pack', 'A presentation ready package containing PDF floorplans, elevations, and color persepective views in addition to 20/20 KIT file and Cabinet Price Report.', 
+           120, 125, 125, 1, 1 );
 
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 3, 'Base Plus', 'Base 20/20 Design plus one free revision', 'A complete 20/20 .kit file with completed design. Includes one revision and the ability to purchase additional revisions. For professional designers.', 
-           140, 140, 140, 1, 1 );
-
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 4, 'Full', 'Full PDF Design Layout', 'A package containing PDF floorplans, elevations, and color persepective views. Includes one revision and the ability to purchase additional revisions. Optionally includes 20/20 .kit file.', 
-           160, 140, 140, 1, 1 );
-
---
--- REVISIONS
---
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 5, 'Base Rev', 'A 20/20 only revision', 'A new 20/20 design produced by incorporating feedback on a previous, revisable design. Optionally includes 20/20 .kit file.', 
-           200, 30, 30, 1, 1 );
-
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 6, 'Full Rev', 'Revision of a Full PDF Design Layout package.', 'A revsison package containing PDF floorplans, elevations, and color persepective views. Includes one revision and the ability to purchase additional revisions. Optionally includes 20/20 .kit file.', 
-           220, 40, 40, 1, 1 );
-           
+insert into product_product ( id, name, description, sort_order, base_price, credit_value, purchaseable, debitable, is_revision )
+       values ( 4, 'Presentation Pack Revision', 'A Presentation Pack Revision gives you the ability to purchase a revision to a previous design for a discounted price. Presentation Pack revisions can not be purchsed individually - they must be purchased with a Presentation Pack.', 
+           140, 80, 80, 1, 1, 1 );           
 -- 
 -- PACKAGES
 --
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 7, 'Base 5-Pack', '5 Base Designs', 'A package containing PDF floorplans, elevations, and color persepective views. Includes one revision and the ability to purchase additional revisions. Optionally includes 20/20 .kit file.', 
-           400, 500, 600, 1, 0 );
+insert into product_product ( id, name, description, sort_order, base_price, credit_value, purchaseable, debitable )
+       values ( 7, 'Pro Design 6-4-5', 'Six Pro Designs for the price of five.', 1000, 425, 510, 1, 0 );
        
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 8, 'Full 5-Pack', '5 Full Designs', 'A package containing PDF floorplans, elevations, and color persepective views. Includes one revision and the ability to purchase additional revisions. Optionally includes 20/20 .kit file.', 
-           420, 600, 700, 1, 0 );
+insert into product_product ( id, name, description, sort_order, base_price, credit_value, purchaseable, debitable )
+       values ( 8, 'Presentation Pack 6-4-5 Special', 'Six Presentation Pack Design Packages for the price of five.', 1010, 625, 750, 1, 0 );
        
-insert into product_product ( id, name, verbose_name, description, sort_order, base_price, credit_value, purchaseable, debitable )
-       values ( 9, 'Full Plus 5-Pack', '5 Full Designs w/5 revisions', 'A package containing PDF floorplans, elevations, and color persepective views. Includes one revision and the ability to purchase additional revisions. Optionally includes 20/20 .kit file.', 
-           440, 700, 800, 1, 0 );
+insert into product_product ( id, name, description, sort_order, base_price, credit_value, purchaseable, debitable, is_revision )
+       values ( 9, 'Presentation Pack Revision 6-4-5 Special', 'Six Presentation Pack Design Revisions for the price of five', 1020, 400, 480, 1, 0, 1 );
        
