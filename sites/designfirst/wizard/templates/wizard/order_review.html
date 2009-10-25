@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "wizard/base.html" %}
 
 {% block title %}{{order}} | Submit{% endblock %}
 
@@ -26,7 +26,7 @@ function show_details(type, caption) {
 {% endblock %}
 
 
-{% block content %}
+{% block wizard-base-content %}
 <form method="POST">
 <div class="grid_5">
 	<fieldset>
@@ -118,9 +118,5 @@ function show_details(type, caption) {
 
 </div>
 
-<div class="clear"></div>
-
-
-<a href="{% url order-wizard order.id %}">Back to order manager</a>
 
 {% endblock %}

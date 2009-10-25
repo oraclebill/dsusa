@@ -142,7 +142,7 @@ class Wizard(WizardBase):
         return context
     
     def step_order_review(self, request):
-        return _order_review(request, self.order)
+        return _order_review(request, self)
     
     def get_summary(self):
         return order_summary(self.order, STEPS_SUMMARY)
@@ -154,7 +154,8 @@ def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
 @render_to('wizard/order_review.html')
-def _order_review(request, order):
+def _order_review(request, wizard):
+    order = wizard.order
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
         order = form.save(commit=False)
@@ -168,7 +169,7 @@ def _order_review(request, order):
         exclude += excl
     OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
     summary += order_summary(order, [('Options', OPT_FIELDS)])
-    return {'order': order, 'data': dict(summary), 'form':form}
+    return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
 
 @render_to('print_order.html')
 def print_order(request, id):
