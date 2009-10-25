@@ -39,7 +39,7 @@ class WorkingOrder(models.Model):
     #New page
     project_name = models.CharField(max_length=150)
     desired = models.DateTimeField('Desired Completion')
-    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes', null=True, blank=True)
     
     #Manufacturer page (cabinetry options)

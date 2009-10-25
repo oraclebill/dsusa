@@ -5,28 +5,33 @@
 
 {% block extrastyle %}
 <script>
-	var PRICES = {{prices|safe}};
-	
 	$(function(){
-		$('#id_design_product').change(function(){
-			var value = "";
-			if (this.value != "")
-				value = PRICES[this.value];
-			$('#id_cost').val(value);
-		});
-
-		$('#id_desired').datepicker({ format: 'yyyy-mm-dd' });
-		
+		$('#id_desired').datepicker({ format: 'yyyy-mm-dd' });		
 	})
 </script> 
+
+<style type="text/css" media="screen">
+form p label {
+    display: block;
+    float: left;
+    width: 12em;
+    font-weight: bolder;
+}
+form p.buttons {
+    text-align: center;
+}
+</style>
 {% endblock %}
 
 {% block content %}
 
-<form method="POST">
-<div class="selector"></div>
-<table class="form">{{ form }}</table>
-<input type="submit" value="Create" >
-</form>
-
+<div class="grid_10 prefix_2">
+    <form method="POST">
+        <div class="selector"></div>
+        {{ form.as_p }}
+        <p class="buttons">
+        <input type="submit" value="Create Order" >
+        </p>
+    </form>
+</div>
 {% endblock %}
