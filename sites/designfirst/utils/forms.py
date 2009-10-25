@@ -26,20 +26,23 @@ class FieldsetList(object):
             if isinstance(content, (list, tuple)):
                 fields = content
                 image = None
+                styles = None
             else:
                 fields = content['fields']
                 image = content.get('image')
-            yield Fieldset(id, self.form, name, fields, image)
+                styles = content.get('styles')
+            yield Fieldset(id, self.form, name, fields, image, styles)
             id += 1
 
 
 class Fieldset(object):
-    def __init__(self, id, form, name, fields, image):
+    def __init__(self, id, form, name, fields, image, styles):
         self.id = id
         self.form = form
         self.name = name
         self.fields = fields
         self.image = image
+        self.styles = styles
     
     def __iter__(self):
         for name in self.fields:

@@ -59,6 +59,11 @@ $(function(){
 		wizard_go_to($(this).attr('step'))
 		return false;
 	})
+
+	//Collapse fieldsets:
+	$('fieldset.collapse legend').click(function() {
+		$(this).parent().find('div:first').toggle('fast');
+	}).parent().find('div:first').toggle();
 })
 </script>
 {% endblock %}

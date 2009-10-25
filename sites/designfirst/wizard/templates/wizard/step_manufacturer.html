@@ -75,14 +75,14 @@ $(function(){
 
 {% block wizard-content %}
 
-<div style="width: 60%; float: left;">
-<table>{{form}}</table>
-</div>
-
-<div style="width: 35%; float: left;" id="manufact_icons">
+<div style="width: 35%; float: right;" id="manufact_icons">
+	Choose manufacturer:
 	{% for item in manufacturers %}
 		<img src="{{item.small_logo.url}}" alt="{{item.name}}">
 	{% endfor %}
 </div>
+
+{% include "fieldsets_form.html" %}
+
 
 {% endblock %}

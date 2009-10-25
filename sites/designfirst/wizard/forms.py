@@ -7,7 +7,7 @@ from utils.forms import FieldsetForm
 
 NONE_IMG = settings.MEDIA_URL + 'wizard/none.png'
 
-class ManufacturerForm(forms.ModelForm):
+class ManufacturerForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fields = [
@@ -19,7 +19,13 @@ class ManufacturerForm(forms.ModelForm):
             'cabinet_finish_options',
             'cabinetry_notes'
         ]
-    
+    fieldsets = [
+        (None, {
+            'fields': ['cabinet_manufacturer','cabinet_product_line','cabinet_door_style','cabinet_wood','cabinet_finish','cabinet_finish_options']}),
+        ('Notes', {
+            'fields': ['cabinetry_notes'], 
+            'styles': 'collapse'}),
+    ]
     class Media:
         css = {'all': ('css/jquery.autocomplete.css',)}
         js = ('js/jquery.autocomplete.js', )

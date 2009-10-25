@@ -1,5 +1,5 @@
 {% for fieldset in form.get_fieldsets %}
-<fieldset id="fields_{{fieldset.id}}">
+<fieldset id="fields_{{fieldset.id}}"{% if fieldset.styles %} class="{{fieldset.styles}}"{% endif %}>
 	{% if fieldset.name %}<legend>{{fieldset.name}}</legend>{% endif %}
 	{% if fieldset.image %}
 		<img id="fieldset_img_{{fieldset.id}}" src="{{fieldset.image}}" style="float: right;">

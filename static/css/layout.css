@@ -572,3 +572,8 @@ table.form {
 .right_float_field span {
 	font-weight: bold;
 }
+
+fieldset.collapse legend {
+	text-decoration: underline;
+	cursor: pointer;
+} 
