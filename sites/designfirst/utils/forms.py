@@ -5,6 +5,7 @@ class FieldsetForm(object):
     "Base class for forms that have fieldsets"
     fieldsets = None
     field_styles = None
+    fieldset_image = None
     
     def get_fieldsets(self):
         return FieldsetList(self, self.fieldsets)
@@ -13,7 +14,11 @@ class FieldsetForm(object):
 class FieldsetList(object):
     def __init__(self, form, fieldsets):
         self.form = form
-        self.fieldsets = fieldsets or [(None, form.base_fields.keys())]
+        self.fieldsets = fieldsets or [(None, {'fields': form.base_fields.keys()})]
+        if not fieldsets and form.fieldset_image is not None:
+            self.fieldsets[0][1]['image'] = form.fieldset_image
+        
+            
     
     def __iter__(self):
         id = 0

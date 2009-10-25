@@ -12,7 +12,8 @@
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
 <script>
-
+var STEP = '{{wizard.step}}'
+var MEDIA_URL = '{{ MEDIA_URL }}'
 var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
 var KEY_TAB = 9;
 
@@ -27,6 +28,17 @@ $(function(){
 	$('form').validation({% render_ajax_fields form %});
 })
 {% endblock %}
+
+function get_fieldset_id(element) {
+	var id = false;
+	$(element).parents().each(function(){
+		if (this.tagName == 'FIELDSET') {
+			id = $(this).attr('id').replace('fields_', '')
+			return false
+		}
+	})
+	return id;
+}
 
 $(function(){
 	//Tabs navigation:	

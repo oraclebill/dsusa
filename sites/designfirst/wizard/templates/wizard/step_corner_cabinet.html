@@ -46,19 +46,8 @@ $(function(){
 	}
 
 
-	function _fieldset_id(element) {
-		var id = false;
-		$(element).parents().each(function(){
-			if (this.tagName == 'FIELDSET') {
-				id = $(this).attr('id').replace('fields_', '')
-				return false
-			}
-		})
-		return id;
-	}
-
 	function update_pic(input_el, temporary) {
-		var fs_id = _fieldset_id(input_el)
+		var fs_id = get_fieldset_id(input_el)
 		var img = image_for(input_el)
 		var $image = $('img#fieldset_img_'+fs_id)
 		$image.attr('src', img)
@@ -77,7 +66,7 @@ $(function(){
 				update_pic($(this).find('input').get(0), true)
 			}, 
 			function(){
-				var fs_id = _fieldset_id($(this).get(0))
+				var fs_id = get_fieldset_id($(this).get(0))
 				reset_img(fs_id)
 			}
 	)
