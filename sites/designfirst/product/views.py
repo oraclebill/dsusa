@@ -21,8 +21,24 @@ def product_list(request):
     account         = request.user.get_profile().account.dealerorganization
     pricelist       = [ (product, get_customer_price(account,product)) 
                         for product in Product.objects.filter(purchaseable=True) ]
+    
+    if request.method == 'POST':
+        products_quantities = [ (int(id), count) for (id, count) in request.POST.itemsiter() if id.startswith('count_')]
+        if product_quantities:
+            for prod_id, qty in products_quantities:
+                item = CartItem()
+                item.session = request.session()
+                item.product = Product.objects.get(pk=prod_id)
+                item.quantity = qty
+                item.unit_cost = product.base_cost
+                item.extended_cost = item.unit_cost * qty
+                item.save()
+                
+        products_quantities_cost = [(p,q, p*q) or (p,q) in products_quantities] 
         
-    return render_to_response( "product/product_list.html", 
+    else:
+        
+    return render_to_response( "product/product_selection.html", 
         locals(), context_instance=RequestContext(request) )
         
 def product_detail(request, prodid):
@@ -47,12 +63,12 @@ def product_purchase(request, prodid, qty=1):
     
     account = request.user.get_profile().account.dealerorganization
         
-    # get product and price information
-    product         = Product.objects.get(pk=prodid)
+    # get cart
+    cart = Cart.objects.get(pk=prodid)
     
     # create invoice, 'pending' status
     invoice = Invoice(id=uuid().get_hex(), customer=account, status=Invoice.PENDING)
-    invoice.description = "Quick Buy web purchase - %s" % product.name
+    invoice.description = "Web purchase - %s" % product.name
     invoice.add_line(
         product.name, 
         get_customer_price(account, product), 

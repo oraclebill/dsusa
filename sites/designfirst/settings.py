@@ -161,6 +161,7 @@ DEMO_MAIL_DESIGNER_ADDRESS = 'designer-notify@designserviceusa.com'
 PPM_TMP_ROOT = '/tmp/designfirst/'
 
 ACCOUNT_ACTIVATION_DAYS=2
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
 
 try:
     from settings_local import *

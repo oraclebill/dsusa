@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}
+DesignFirst - Purchase Design Credits 
+{% endblock %}
+
+{% block content %}
+
+	<div class="grid_14 prefix_1 ">
+		<div id="products" class="box">
+			<h2>Product List</h2>
+		    <div id="orderform">	
+		        <form action="." method="POST">
+    				<table>
+    					<thead>
+    						<tr><th>Name</th><th>Price</th><th>Account Credits</th><th>Count</th></tr>
+    					</thead>
+    					<tbody>
+        					{% for product, price in pricelist %}
+        					<tr>
+        						<td>{{ product.name }}</td>
+        						<td>{{ product.description }}</td>
+        						<td>{{ product.credit_value }}</td>
+        						<td>{{ price }}</td>
+        						<td><input type="text" name="count_{{product.id}}"></td>
+        					</tr>
+        					{% endfor %}
+    					</tbody>
+    				</table>
+				    <p><input type="submit" value="Confirm Purchase &rarr;"></p>
+		        </form>	        
+		        
+			</div>
+	    </div>
+	</div>	
+
+	<div class="grid_16">
+	    <p>Total: <span id="total_price"></span></p>
+    </div>
+{% endblock %}

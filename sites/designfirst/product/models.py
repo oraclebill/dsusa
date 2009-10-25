@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.translation import ugettext as _
 
@@ -98,7 +99,19 @@ def get_customer_price(customer, product):
 #             price = prices[0].retail_price
     return price
     
+class CartItem(models.Model):    
+    session     = models.ForeignKey(Session)
+    product     = models.ForeignKey(Product)
+    quantity    = models.IntegerField()
+    unit_cost   = models.DecimalField(max_digits=10, decimal_places=2)
 
+    @property
+    def extended_cost(self):
+        if not (unit_cost or count):
+            return Decimal(0)            
+        return qty * item.base_price
+                    
+    
 class Invoice(models.Model):
 #     invoice = Invoice(id='test=1', customer=account, status=Invoice.PENDING)
 #     invoice.description = "Quick Buy web purchase - %s" % product.name
@@ -114,6 +127,9 @@ class Invoice(models.Model):
     customer    = models.ForeignKey(DealerOrganization)
     status      = models.CharField(max_length=1, choices=INV_STATUS_CHOICES)
     description = models.TextField(blank=True)
+    ## TODO
+    # created = models.DateTimeField(auto_now_add=True)
+    # updated = models.DateTimeField(auto_now=True)
     
     @property
     def total(self):
