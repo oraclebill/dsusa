@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block extrastyle %}
+<style type="text/css" media="screen">
+
+.label {
+    font-weight: bolder;
+}
+
+.price {
+    width: 5em;
+    text-align: right;
+}
+
+.right {
+    text-align: right;
+}
+
+img {
+    padding: 1em;
+}
+
+</style>
+{% endblock %}
+
+{% block title %}Review Selected Products{% endblock %}
+
+{% block content %}
+
+    <div class="grid_14 prefix_1 ">
+    	<div id="products" class="box">
+    		<h2>Purchase Review</h2>
+    	    <div id="review">	
+			<table>
+				<thead>
+					<tr><th>Name</th><th>Description</th><th>Price</th><th>Count</th></tr>
+				</thead>
+				<tbody>
+					{% for item in cart_items %}
+					<tr>
+						<td class="label">{{ item.product.name }}</td>
+						<td>{{ item.product.description }}</td>
+						<td class="price">$ {{ item.unit_price|stringformat:"10.2f" }}</td>
+						<td>{{ item.quantity }}</td>
+					</tr>
+					{% endfor %}
+				    <tr>
+				        <td colspan="1"></td>
+			            <td class="label right">Total</td>
+			            <td class='price'>$ {{ cart_total|stringformat:"10.02f" }}</td>
+			            <td colspan="1"></td>
+		            </tr>
+				</tbody>
+			</table>
+        </div>
+    </div>	
+
+    <div class="grid_2 alpha">
+        <p>
+            <a href="{% url select_products %}">Return To Product Selection</a>
+        </p>
+    </div>
+    <div class="grid_3 prefix_8 ">
+        <a href="{% url review_and_process_payment_info %}?express"><img  src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif"  alt="PayPal"></a>
+    </div>
+    <div class="grid_3 omega">
+        <a href="{% url review_and_process_payment_info %}"><img src="{{ MEDIA_URL }}/images/grey-checkout-button.png"   alt="Purchase With Credit Card"></a>
+	</div>	
+
+{% endblock %}
+
