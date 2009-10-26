@@ -97,6 +97,7 @@ class Migration:
         # Adding model 'Transaction'
         db.create_table('home_transaction', (
             ('id', orm['home.Transaction:id']),
+            ('trace_id', orm['home.Transaction:trace_id']),
             ('account', orm['home.Transaction:account']),
             ('debit_or_credit', orm['home.Transaction:debit_or_credit']),
             ('trans_type', orm['home.Transaction:trans_type']),
@@ -155,7 +156,6 @@ class Migration:
             ('organization_ptr', orm['home.DealerOrganization:organization_ptr']),
             ('default_measure_units', orm['home.DealerOrganization:default_measure_units']),
             ('credit_balance', orm['home.DealerOrganization:credit_balance']),
-            ('price_sheet', orm['home.DealerOrganization:price_sheet']),
         ))
         db.send_create_signal('home', ['DealerOrganization'])
         
@@ -236,8 +236,7 @@ class Migration:
         'home.dealerorganization': {
             'credit_balance': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '10', 'decimal_places': '2'}),
             'default_measure_units': ('django.db.models.fields.CharField', [], {'max_length': '3'}),
-            'organization_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['home.Organization']", 'unique': 'True', 'primary_key': 'True'}),
-            'price_sheet': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['product.PriceSchedule']", 'null': 'True', 'blank': 'True'})
+            'organization_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['home.Organization']", 'unique': 'True', 'primary_key': 'True'})
         },
         'home.designorder': {
             'appliance_garage': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
@@ -362,6 +361,7 @@ class Migration:
             'description': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'trace_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'trans_type': ('django.db.models.fields.CharField', [], {'max_length': '1'})
         },
         'home.userprofile': {
@@ -369,12 +369,6 @@ class Migration:
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'unique': 'True'}),
             'usertype': ('django.db.models.fields.CharField', [], {'default': "'dealer'", 'max_length': '10'})
-        },
-        'product.priceschedule': {
-            'description': ('django.db.models.fields.TextField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_default': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '20'})
         }
     }
     
