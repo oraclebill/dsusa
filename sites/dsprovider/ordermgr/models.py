@@ -7,6 +7,7 @@ from django.contrib.contenttypes import models as ct_models
 from django.contrib.auth.models import User
 import django.dispatch
 from datetime import datetime
+from annoying.fields import AutoOneToOneField
 
 
 log = logging.getLogger('dsprovider.models')
@@ -32,15 +33,9 @@ class UserProfile(models.Model):
     """
     A profile for users that of the designer portal.
     """
-    user = models.ForeignKey(User, primary_key=True, related_name='order_profile')
+    user = AutoOneToOneField(User, primary_key=True, related_name='order_profile')
     is_manager = models.BooleanField(_('Special Admin Status?'), default=False)
     is_notified = models.BooleanField(_('Receive order notifications'), default=True)
-
-def create_profile(sender, instance, **kwargs):
-    UserProfile.objects.get_or_create(user=instance)
-
-models.signals.post_save.connect(create_profile, sender=User)
-
 
 class DesignOrderManager(models.Manager):
 
