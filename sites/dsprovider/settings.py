@@ -89,7 +89,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'ordermgr',
-    'south',
 )
 
 AUTH_PROFILE_MODULE = 'ordermgr.UserProfile'
