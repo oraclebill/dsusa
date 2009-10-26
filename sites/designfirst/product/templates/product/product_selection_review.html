@@ -37,12 +37,14 @@ img {
 				</thead>
 				<tbody>
 					{% for item in cart_items %}
-					<tr>
-						<td class="label">{{ item.product.name }}</td>
-						<td>{{ item.product.description }}</td>
-						<td class="price">$ {{ item.unit_price|stringformat:"10.2f" }}</td>
-						<td>{{ item.quantity }}</td>
-					</tr>
+    					{% if item.quantity %}
+    					<tr>
+    						<td class="label">{{ item.product.name }}</td>
+    						<td>{{ item.product.description }}</td>
+    						<td class="price">$ {{ item.unit_price|stringformat:"10.2f" }}</td>
+    						<td>{{ item.quantity }}</td>
+    					</tr>
+    					{% endif %}
 					{% endfor %}
 				    <tr>
 				        <td colspan="1"></td>

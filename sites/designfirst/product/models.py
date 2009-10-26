@@ -134,8 +134,8 @@ class Invoice(models.Model):
 #         get_customer_price(account, product), 
 #         qty)
 #     invoice.save()  # default status == PENDING
-    PENDING, PAID = ('E', 'A')
-    INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')))
+    CANCELLED, PENDING, PAID = ('C', 'E', 'A')
+    INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('CANCELLED')))
 
     id          = models.CharField(max_length=50, primary_key=True, default=uuid_key)
     customer    = models.ForeignKey(DealerOrganization)
@@ -166,6 +166,13 @@ class Invoice(models.Model):
             quantity=quantity
         )
         
+    def __unicode__(self):
+        return 'Invoice[id=%s,customer=%s,status=%s,created=%s]' % (
+                    self.id or 'None', 
+                    self.customer or 'None', 
+                    self.status or 'None', 
+                    self.created or 'None')
+
     
         
 class InvoiceLine(models.Model):
