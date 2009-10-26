@@ -1,17 +1,23 @@
 {% for fieldset in form.get_fieldsets %}
-<fieldset>
+<fieldset id="fields_{{fieldset.id}}"{% if fieldset.styles %} class="{{fieldset.styles}}"{% endif %}>
 	{% if fieldset.name %}<legend>{{fieldset.name}}</legend>{% endif %}
+	{% if fieldset.image %}
+		<img id="fieldset_img_{{fieldset.id}}" src="{{fieldset.image}}" style="float: right;">
+	{% endif %}
+	<div>
 	{% for field in fieldset %}
-		<div>
+		
+		<div{% if field.styles %} class="{{field.styles}}"{% endif %}>
 		 {% if field.errors %}<div class="errorlist">{{field.errors}}</div>{% endif %}
 		 {% if field.is_checkbox %}
 		 	<label>{{field}} {{field.label}}</label>
 		 {% else %}
-		 	{{field.label}}<br>
+		 	<span class="label">{{field.label}}</span><br>
 		 	{{field}}
 		 {% endif %}
 		{% if field.help_text %}{{field.help_text}}{% endif %}
 		</div>
 	{% endfor %}
+	</div>
 </fieldset>
 {% endfor %}

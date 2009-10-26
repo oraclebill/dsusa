@@ -40,7 +40,6 @@ class DealerProfileForm(forms.ModelForm):
         return profile_user
     
 class NewDesignOrderForm(forms.ModelForm):
-    cost = forms.CharField(widget=forms.TextInput(attrs={'readonly':'true'}))
     class Meta: 
         model = WorkingOrder
         fields = ['project_name', 'desired', 'cost', 'client_notes']
@@ -49,8 +48,9 @@ class NewDesignOrderForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         #changing order of the fields
-        self.base_fields.keyOrder = ['project_name', 'design_product', 'desired', 'cost', 'client_notes']
-        self.base_fields['client_notes'].label = 'Notes'
+        self.base_fields.keyOrder = ['project_name', 'design_product', 'desired', 'client_notes']
+        self.base_fields['client_notes'].min_length = 35
+        self.base_fields['project_name'].label = 'Notes'
         super(NewDesignOrderForm, self).__init__(*args, **kwargs)
     
 

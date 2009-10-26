@@ -163,6 +163,7 @@ PPM_TMP_ROOT = '/tmp/designfirst/'
 
 ACCOUNT_ACTIVATION_DAYS=2
 REGISTRATION_AUTHORIZATION = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
 
 try:
     from settings_local import *

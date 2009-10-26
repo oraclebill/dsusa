@@ -560,3 +560,24 @@ table.form {
 .row1 td {
 	background-color: lightgray;
 }
+
+.right_float_field {
+	position: absolute; 
+	top: 0px; 
+	left: 220px; 
+	border: 1px solid #BBBBBB; 
+	width: 200px;
+	padding: 4px;
+}
+.right_float_field span {
+	font-weight: bold;
+}
+
+fieldset.collapse legend {
+	text-decoration: underline;
+	cursor: pointer;
+} 
+
+fieldset.collapse div {
+	display: none;
+} 

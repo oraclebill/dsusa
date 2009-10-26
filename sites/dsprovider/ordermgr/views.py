@@ -291,7 +291,6 @@ def stats(request, queryset=None, field='completed',
         qs = qs.filter(**{'%s__gte' % field: start_date})
     if end_date:
         qs = qs.filter(**{'%s__lte' % field: end_date})
-
     context = {
         'form': forms.DateRangeForm(initial={
             'start': start_date,

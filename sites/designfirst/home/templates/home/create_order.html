@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}New order{% endblock %}
+
+
+{% block extrastyle %}
+<script>
+	$(function(){
+		$('#id_desired').datepicker({ format: 'yyyy-mm-dd' });		
+	})
+</script> 
+
+<style type="text/css" media="screen">
+form p label {
+    display: block;
+    float: left;
+    width: 12em;
+    font-weight: bolder;
+}
+form p.buttons {
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="grid_10 prefix_2">
+    <form method="POST">
+        <div class="selector"></div>
+        {{ form.as_p }}
+        <p class="buttons">
+        <input type="submit" value="Create Order" >
+        </p>
+    </form>
+</div>
+{% endblock %}

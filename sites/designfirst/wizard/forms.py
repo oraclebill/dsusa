@@ -1,20 +1,13 @@
+from django.conf import settings
 import os
 from django import forms
 from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
 
 
-class MockForm(forms.ModelForm):
-    class Meta:
-        model = WorkingOrder
-        fields = [
-            'cabinetry_notes'
-        ]
+NONE_IMG = settings.MEDIA_URL + 'wizard/none.png'
 
-
-
-
-class ManufacturerForm(forms.ModelForm):
+class ManufacturerForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fields = [
@@ -26,7 +19,13 @@ class ManufacturerForm(forms.ModelForm):
             'cabinet_finish_options',
             'cabinetry_notes'
         ]
-    
+    fieldsets = [
+        (None, {
+            'fields': ['cabinet_manufacturer','cabinet_product_line','cabinet_door_style','cabinet_wood','cabinet_finish','cabinet_finish_options']}),
+        ('Notes', {
+            'fields': ['cabinetry_notes'], 
+            'styles': 'collapse'}),
+    ]
     class Media:
         css = {'all': ('css/jquery.autocomplete.css',)}
         js = ('js/jquery.autocomplete.js', )
@@ -50,8 +49,12 @@ class HardwareForm(forms.ModelForm, FieldsetForm):
             'drawer_handle_model',
         ]
     fieldsets = [
-        ('Door', ['door_handle_type', 'door_handle_model']),
-        ('Drawer', ['drawer_handle_type', 'drawer_handle_model']),
+        ('Door', {
+            'fields': ['door_handle_type', 'door_handle_model'], 
+            'image':NONE_IMG}),
+        ('Drawer', {
+            'fields': ['drawer_handle_type', 'drawer_handle_model'], 
+            'image':NONE_IMG}),
     ]
 
 
@@ -74,7 +77,7 @@ def _soffit_clean(field):
         return value
     return wrapper
 
-class SoffitsForm(forms.ModelForm):
+class SoffitsForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fields = [
@@ -82,6 +85,7 @@ class SoffitsForm(forms.ModelForm):
             'soffit_height',
             'soffit_depth',
         ]
+    fieldset_image = NONE_IMG
     clean_soffit_width = _soffit_clean('soffit_width')
     clean_soffit_height = _soffit_clean('soffit_height')
     clean_soffit_depth = _soffit_clean('soffit_depth')
@@ -119,11 +123,24 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
             'degree90_corner_wall',
         ]
     fieldsets = [
-        ('Diagonal corner wall', ['diagonal_corner_wall', 'diagonal_corner_wall_shelv']),
-        ('Diagonal corner base', ['diagonal_corner_base', 'diagonal_corner_base_shelv']),
-        ('90 Degree corner wall', ['degree90_corner_wall']),
-        ('90 Degree corner base', ['degree90_corner_base', 'degree90_corner_base_shelv']),
+        ('Diagonal corner wall', {
+                'fields': ['diagonal_corner_wall', 'diagonal_corner_wall_shelv'], 
+                'image':NONE_IMG}),
+        ('Diagonal corner base', {
+                'fields': ['diagonal_corner_base', 'diagonal_corner_base_shelv'], 
+                'image':NONE_IMG}),
+        ('90 Degree corner wall', {
+                'fields': ['degree90_corner_wall'], 
+                'image':NONE_IMG}),
+        ('90 Degree corner base', {
+                'fields': ['degree90_corner_base', 'degree90_corner_base_shelv'], 
+                'image':NONE_IMG}),
     ]
+    field_styles = {
+        'diagonal_corner_wall_shelv': 'right_float_field',
+        'diagonal_corner_base_shelv': 'right_float_field',
+        'degree90_corner_base_shelv': 'right_float_field',
+    }
     def __init__(self, *args, **kwargs):
         #Labels/Widget customization
         for name, field in self.base_fields.items():
@@ -146,6 +163,7 @@ class InteriorsForm(forms.ModelForm, FieldsetForm):
             'plate_rack',
             'apliance_garage'
         ]
+    fieldset_image = NONE_IMG
 
 
 class MiscellaneousForm(forms.ModelForm, FieldsetForm):
@@ -160,6 +178,7 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
             'range_hood',
             'posts',
         ]
+    fieldset_image = NONE_IMG
 
 
 class SubmitForm(forms.ModelForm):

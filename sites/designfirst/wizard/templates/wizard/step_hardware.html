@@ -1,5 +1,11 @@
 {% extends "wizard/base.html" %}
 
+
+{% block extra-head %}
+	{{block.super}}
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/field_images.js"></script>
+{% endblock %}
+
 {% block wizard-content %}
 
 {% include "fieldsets_form.html" %}
