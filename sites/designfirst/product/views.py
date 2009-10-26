@@ -43,20 +43,21 @@ def select_products(request, template):
     if request.method == 'POST':
         cart_empty = True
         CartItem.objects.all().delete()
-        product_quantities = [ (int(id[6:]), count) for (id, count) in request.POST.items() if id.startswith('count_') and count]
+        product_quantities = [ (int(id[6:]), int(count or 0)) for (id, count) in request.POST.items() if id.startswith('count_') and int(count or 0)]
         if product_quantities:      
             cart_empty = False                  
             for prod_id, qty in product_quantities:
-                item = CartItem()
-                item.session_key = request.session.session_key
-                item.product = Product.objects.get(pk=prod_id)
-                item.quantity = int(qty)
+                item = CartItem(
+                    session_key = request.session.session_key,
+                    product = Product.objects.get(pk=prod_id),
+                    quantity = int(qty)
+                )
                 # item.unit_price = get_customer_price(account, product)
                 item.save()
                 
         if '_purchase' in request.POST:            
             if cart_empty:
-                errors = "You cannot checkout until you purchase at least one item!"
+                errors = ["You cannot checkout until you purchase at least one item!"]
             else:
                 # go to confirmation page
                 return HttpResponseRedirect(reverse("confirm_purchase_selections"))
