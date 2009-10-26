@@ -24,8 +24,7 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth import views as auth_views
 
-from registration.views import activate
-from registration.views import register
+from registration import views
 
 
 urlpatterns = patterns('',
@@ -33,8 +32,17 @@ urlpatterns = patterns('',
                        # [a-fA-F0-9]{40} because a bad activation key should still get to the view;
                        # that way it can return a sensible "invalid key" message instead of a
                        # confusing 404.
+                       url(r'^authorized/$',
+                           views.authorized_profiles_list,
+                           name='registration_authorized'),
+                       url(r'^unauthorized/$',
+                           views.unauthorized_profiles_list,
+                           name='registration_unauthorized'),
+                       url(r'^authorize/(?P<user_id>\d+)/$',
+                           views.authorize,
+                           name='registration_authorize'),
                        url(r'^activate/(?P<activation_key>\w+)/$',
-                           activate,
+                           views.activate,
                            name='registration_activate'),
                        url(r'^login/$',
                            auth_views.login,
@@ -63,7 +71,7 @@ urlpatterns = patterns('',
                            auth_views.password_reset_done,
                            name='auth_password_reset_done'),
                        url(r'^register/$',
-                           register,
+                           views.register,
                            name='registration_register'),
                        url(r'^register/complete/$',
                            direct_to_template,
