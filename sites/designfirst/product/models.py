@@ -1,9 +1,13 @@
 from decimal import Decimal
+from uuid import uuid1
 
+from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.translation import ugettext as _
 
 from home.models import DealerOrganization
+
+DECIMAL_ZERO = Decimal()
 
 #
 # Models
@@ -98,7 +102,30 @@ def get_customer_price(customer, product):
 #             price = prices[0].retail_price
     return price
     
+class CartItem(models.Model):    
+    session_key     = models.CharField(max_length=40)
+    product         = models.ForeignKey(Product)
+    quantity        = models.IntegerField()
 
+    @property
+    def extended_price(self):
+        if not (self.unit_price or self.quantity):
+            return Decimal(0)            
+        return self.quantity * self.unit_price
+    
+    @property
+    def unit_price(self):
+        if not self.product:
+            return DECIMAL_ZERO
+        ## TODO: how to reconcile this with account specific pricing??
+        return self.product.base_price;
+
+    def __unicode__(self):
+        return 'CartItem[key=%s,product=%s,quantity=%s]' % (self.session_key or 'None', self.product and self.product.name or 'None', self.quantity or 'None')
+            
+def uuid_key():
+    return uuid1().hex
+        
 class Invoice(models.Model):
 #     invoice = Invoice(id='test=1', customer=account, status=Invoice.PENDING)
 #     invoice.description = "Quick Buy web purchase - %s" % product.name
@@ -107,13 +134,16 @@ class Invoice(models.Model):
 #         get_customer_price(account, product), 
 #         qty)
 #     invoice.save()  # default status == PENDING
-    PENDING, PAID = ('E', 'A')
-    INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')))
+    CANCELLED, PENDING, PAID = ('C', 'E', 'A')
+    INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('CANCELLED')))
 
-    id          = models.CharField(max_length=50, primary_key=True)
+    id          = models.CharField(max_length=50, primary_key=True, default=uuid_key)
     customer    = models.ForeignKey(DealerOrganization)
     status      = models.CharField(max_length=1, choices=INV_STATUS_CHOICES)
     description = models.TextField(blank=True)
+    created     = models.DateTimeField(auto_now_add=True)
+    ## TODO
+    # updated = models.DateTimeField(auto_now=True)
     
     @property
     def total(self):
@@ -135,6 +165,15 @@ class Invoice(models.Model):
             unit_price=price, 
             quantity=quantity
         )
+        
+    def __unicode__(self):
+        return 'Invoice[id=%s,customer=%s,status=%s,created=%s]' % (
+                    self.id or 'None', 
+                    self.customer or 'None', 
+                    self.status or 'None', 
+                    self.created or 'None')
+
+    
         
 class InvoiceLine(models.Model):
     invoice     = models.ForeignKey(Invoice)

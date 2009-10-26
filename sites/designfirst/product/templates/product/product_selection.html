@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+DesignFirst - Purchase Design Credits 
+{% endblock %}
+
+{% block extrastyle %}
+<style type="text/css" media="screen">
+
+#orderform .label {
+    font-weight: bolder;
+}
+
+#orderform .price {
+    width: 5em;
+    text-align: right;
+}
+
+#orderform .right {
+    text-align: right;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+	<div class="grid_14 prefix_1 ">
+		<div id="products" class="box">
+			<h2>Product List</h2>
+		    <div id="orderform">	
+		        <form action="." method="POST">
+    				<table border="0" cellspacing="5" cellpadding="5">
+    				    <caption>Design Products</caption>
+    					<thead>
+    						<tr><th>Name</th><th>Description</th><th>Price</th><th>Count</th></tr>
+    					</thead>
+    					<tbody>
+        					{% for product, price, count in pricelist %}
+        					<tr>
+        						<td class="label">{{ product.name }}</td>
+        						<td>{{ product.description }}</td>
+        						<td class='price'>$ {{ price|stringformat:"10.02f" }}</td>
+        						<td><input type="text" name="count_{{product.id}}" size="4" value="{{ count }}"></td>
+        					</tr>
+        					{% endfor %}
+        				    <tr>
+        				        <td colspan="1"></td>
+    				            <td class="label right">Total</td>
+    				            <td class='price'>$ {{ cart_total|stringformat:"10.02f" }}</td>
+    				            <td colspan="1"></td>
+				            </tr>
+    					</tbody>
+    				</table>
+    				<table border="0" cellspacing="5" cellpadding="5">
+    				</table>
+				    <p><input type="submit" value="Update"></p>
+				    <p><input type="submit" name="_purchase" value="Purchase &rarr;"></p>
+		        </form>	        
+		        
+			</div>
+	    </div>
+	</div>	
+
+{% endblock %}
