@@ -4,3 +4,4 @@ sites/designfirst/settings_local.py
 *.db
 var/*
 static/data/*
+.ropeproject
