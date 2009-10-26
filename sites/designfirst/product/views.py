@@ -19,6 +19,12 @@ from django.contrib.auth.models import User
 from product.models import Product, PriceSchedule, PriceScheduleEntry, get_customer_price 
 from product.models import Invoice, CartItem
     
+def make_site_url(request, path):
+    from django.contrib.sites.models import Site
+    scheme = request.is_secure() and 'https' or 'http'
+    domain = Site.objects.get_current().domain
+    return '%s://%s/%s' % (scheme, domain, path)
+    
 def product_detail(request, prodid):
     user = request.user
     if user is None or not user.is_authenticated():
@@ -97,7 +103,7 @@ def review_and_process_payment_info(request):
                     confirm_template="paypal/express_confirmation.html",
                     success_url=reverse('dealer-dashboard')
     )                
-    if request.method == "POST":        
+    if request.method == "POST" or (request.method == "GET" and 'express' in request.GET):        
         # get a signature for this cart so we can tie it uniquely to our invoice
         sig = sha1(dumps(cart_items)).hexdigest()
         # if this invoice exists, something bad happened..        
@@ -135,8 +141,9 @@ def review_and_process_payment_info(request):
             "invnum":       invoice.id,
             "custom":       request.session.session_key,    # for debugging
             "desc":         invoice.description,
-            "cancelurl":    reverse('select_products'),     # Express checkout cancel url
-            "returnurl":    reverse('dealer-dashboard') }   # Express checkout return url
+            "cancelurl":    make_site_url(request, reverse('select_products')),     # Express checkout cancel url
+            "returnurl":    make_site_url(request, reverse('dealer-dashboard'))    # Express checkout return url
+        }
         view_func.context = locals()
     return view_func(request)
         
