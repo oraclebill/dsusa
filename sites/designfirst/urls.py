@@ -1,11 +1,10 @@
 from django.conf.urls.defaults import *
-from designfirst import home
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-import home.forms
+# import home.forms
 
 urlpatterns = patterns('',
     # Example:
@@ -19,7 +18,6 @@ urlpatterns = patterns('',
     (r'', include("home.urls")),    
     (r'^products/', include("product.urls")),    
     (r'^wizard/', include("wizard.urls")),
-    (r'^registration/', include("registration.urls")),
 
     # django-registration
     (r'^accounts/', include('registration.urls')),
@@ -27,9 +25,7 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 
     (r'^60b9f188a8a27ce69fcba9ee63b74b4e2fad2b3d/', include('paypal.standard.ipn.urls')),
-
 )
-
 
 from django.conf import settings
 if settings.DEBUG:

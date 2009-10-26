@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Unauthorized registration profiles" %}{% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		<h1>{% trans "Unauthorized registration profiles" %}</h1>
+        {% for profile in profile_list %}
+        <form method="post" action="{% url registration_authorize user_id=profile.user.pk %}">
+            <p>{{ profile.user.email }}</p>
+            <input type="submit" value="{% trans "Authorize" %}" />
+        </form>
+        {% endfor %}
+        <a href="{% url registration_authorized %}">{% trans "Authorized profiles list" %}</a>
+	</div> 
+
+{% endblock %}

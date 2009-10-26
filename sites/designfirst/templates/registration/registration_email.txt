@@ -1,0 +1,2 @@
+Thank you for registration on {{ site }}.
+You will recieve activation code after admin authorizes you.
