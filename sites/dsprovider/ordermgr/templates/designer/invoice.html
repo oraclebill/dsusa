@@ -5,6 +5,35 @@
 {% trans "DesignFirst Stats" %}
 {% endblock %}
 
+{% block extra-head %}
+    <style type="text/css" media="screen">
+        table td, table th {
+            width: 25%;
+        }
+
+        .subtotals {
+            border: none;
+        }
+
+        .subtotals tr, .subtotals td {
+            border: none;
+            background: none;
+        }
+
+        .subtotals td.empty {
+            width: 75%;
+        }
+
+        .total {
+            width: 27%;
+            float: right;
+            font-size: 1.5em;
+            margin-top: 1em;
+        }
+    </style>
+{% endblock %}
+
+
 {% block content %}
 <h1>{% blocktrans with start_date|date as start and end_date|date as end %}Your invoice for period between {{ start }} - {{ end }}{% endblocktrans %}</h1>
 <!-- left column -->
@@ -16,27 +45,34 @@
 	     <tr><th>{% trans "Design" %}</th>
              <th>{% trans "Options" %}</th>
              <th>{% trans "Comp. date" %}</th>
-             <!-- <th>{% trans "Tracking code" %}</th> -->
-             <th>{% trans "Price" %}</th>
              <th>{% trans "Cost" %}</th>
 	     </tr>
 	   </thead>
-	   <tbody>
-	     {% for order in orders %}
+       </table>
+       {% regroup orders|ordered_by_source by source as source_list %}
+
+	   {% for source in source_list %}
+       <h3>{% firstof source.grouper "Empty source" %}</h3>
+       <table>
+         {% for order in source.list %}
 	     <tr class="{% cycle 'even' 'odd' %}">
 	       <td> {{ order.id }}</a> </td> 
 		   <td> {{ order.options }} </td> 
 		   <td> {{ order.completed|date }} </td>
-		   <td> {{ order.cost }} </td>
 		   <td> $ {{ order.cost }} </td> 
 	     </tr>
-	     {% endfor %}
-	     <tr class="{% cycle 'even' 'odd' %}">
-	       	<td colspan=4> <strong>Total</strong> </td> 
-			<td> $ {{ sum }} </td>
-	     </tr>
-	   </tbody>
-	  </table>
+         {% endfor %}
+       </table>
+       <table class="subtotals">
+           <tr>
+               <td class="empty" colspan=3></td>
+               <td>$ {{ source.list|subtotals }}</td>
+           </tr>
+       </table>
+	   {% endfor %}
+        <div class="total">
+            <strong>Total: $ {{ sum }}</strong>
+        </div>
 	</div>
 </div>
 

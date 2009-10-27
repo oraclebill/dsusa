@@ -36,3 +36,12 @@ def order_stats():
         'arrived': stats('arrived'),
         'completed': stats('completed'),
     }
+
+
+@register.filter
+def ordered_by_source(orders_qs):
+    return orders_qs.order_by('source')
+
+@register.filter
+def subtotals(orders):
+    return sum([o.cost for o in orders])
