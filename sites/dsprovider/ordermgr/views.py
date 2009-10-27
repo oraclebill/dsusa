@@ -1,14 +1,18 @@
 ##
 import logging
-from datetime import datetime, timedelta
+import urllib
+from datetime import datetime, date, timedelta
 
 from django.core.exceptions import PermissionDenied
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.forms.models import modelform_factory
+from django.views.decorators.http import require_POST
+from django.http import Http404
+from django.views.generic.list_detail import object_list
 import dsprovider.ordermgr.models as models
 import dsprovider.ordermgr.forms as forms
-from django.forms.models import modelform_factory
 
 log = logging.getLogger('ordermgr.views')
 
@@ -267,23 +271,23 @@ def submit_order(request, orderid):
 
 @login_required
 def stats(request, queryset=None, field='completed',
-        template_name='designer/stats_page.html', extra_context=None):
+          start_date=None, end_date=None, extra_context=None,
+          template_name='designer/stats_page.html'):
     """
     Shows stats for completed orders over a period of time.
     """
     qs = queryset or models.DesignOrder.objects.filter(
                                             status=models.STATUS_COMPLETED)
 
-    form = forms.DateRangeForm(request.GET)
-    if form.is_valid():
-        start_date = form.cleaned_data['start']
-        end_date = form.cleaned_data['end']
-    else:
-        start_date, end_date = None, None
+    if not start_date and not end_date:
+        form = forms.DateRangeForm(request.GET)
+        if form.is_valid():
+            start_date = form.cleaned_data['start']
+            end_date = form.cleaned_data['end']
 
     if not start_date and not end_date:
         # last  two weeks by default
-        today = datetime.today()
+        today = date.today()
         start_date = today - timedelta(datetime.weekday(today) + 7)
         end_date = today
 
@@ -300,7 +304,10 @@ def stats(request, queryset=None, field='completed',
         'start_date': start_date,
         'end_date': end_date,
         'orders': qs,
-        'query': request.META['QUERY_STRING'],
+        'query': urllib.urlencode({
+            'start': start_date or '',
+            'end': end_date or '',
+        }),
     }
 
     if extra_context:
@@ -310,3 +317,42 @@ def stats(request, queryset=None, field='completed',
             context[key] = value
     return render_to_response(template_name, context,
                               context_instance=RequestContext(request))
+
+
+@login_required
+def invoice(request, invoice_id, template_name='designer/invoice.html'):
+    invoice = get_object_or_404(models.Invoice, pk=invoice_id)
+    return stats(
+        request,
+        start_date=invoice.start_date,
+        end_date=invoice.end_date,
+        template_name=template_name,
+        extra_context={
+            'invoice': invoice,
+        }
+    )
+
+@require_POST
+@login_required
+def create_invoice(request):
+    form = forms.DateRangeForm(request.POST)
+    if not form.is_valid():
+        print form.errors
+        raise Http404
+
+    invoice = models.Invoice(
+        start_date=form.cleaned_data['start'],
+        end_date=form.cleaned_data['end'],
+        owner=request.user
+    )
+    invoice.save()
+    return redirect(invoice)
+
+@login_required
+def invoice_list(request):
+    return object_list(
+        request,
+        queryset=models.Invoice.objects.filter(owner=request.user),
+        template_name='designer/invoice_list.html',
+        template_object_name='invoice'
+    )

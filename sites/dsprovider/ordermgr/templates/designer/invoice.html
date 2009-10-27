@@ -82,18 +82,14 @@
         <table>
             <tr>
                 <td>{% trans "Invoice number" %}</td>
-                <td>?</td>
+                <td>{{ invoice.pk }}</td>
             </tr>
             <tr>
                 <td>{% trans "Invoice date" %}</td>
-                <td>{{ invoice_date|date }}</td>
-            </tr>
-            <tr>
-                <td>{% trans "Customer" %}</td>
-                <td>?</td>
+                <td>{{ invoice.generated_on|date }}</td>
             </tr>
         </table>
-      <a href="{% url order_invoice_print %}?{{ query }}">{% trans 'Print' %}</a>
+      <a href="{% url order_invoice_print invoice_id=invoice.pk %}">{% trans 'Print' %}</a>
 	</div>
 </div>
 

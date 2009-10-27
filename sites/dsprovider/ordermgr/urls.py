@@ -3,7 +3,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('ordermgr.views',
         url(r'^$', 'dashboard', name='dashboard'),
-        
+
         url(r'^order/([\w-]+)/display/$', 'display_order',
             name='order_detail'),
 
@@ -20,18 +20,14 @@ urlpatterns = patterns('ordermgr.views',
             name='complete_order_page'),
 
         url(r'^stats/$', 'stats', name="order_log"),
-        url(r'^invoice/$', 'stats', {
-            'template_name': 'designer/invoice.html',
-            'extra_context': {
-                'invoice_date': datetime.today,
-            },
-        }, name="order_invoice"),
-        url(r'^invoice/print/$', 'stats', {
+
+        url(r'^invoice/(?P<invoice_id>\d+)/$', 'invoice',
+            name="order_invoice"),
+        url(r'^invoice/(?P<invoice_id>\d+)/print/$', 'invoice', {
             'template_name': 'designer/invoice_print.html',
-            'extra_context': {
-                'invoice_date': datetime.today,
-            },
         }, name="order_invoice_print"),
-
+        url(r'^invoice/create/$', 'create_invoice',
+            name='order_invoice_create'),
+        url(r'^invoice/$', 'invoice_list',
+            name='order_invoice_list'),
 )
-

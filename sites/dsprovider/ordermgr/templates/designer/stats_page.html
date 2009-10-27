@@ -47,10 +47,14 @@
                 {{ form }}
             </table>
             <input type="submit" name="" value="{% trans "Go" %}" />
-            {% if orders %}
-                <a href="{% url order_invoice %}?{{ query }}">{% trans 'Generate Invoice' %}</a>
-            {% endif %}
         </form>
+            {% if orders %}
+            <form method="post" id="" action="{% url order_invoice_create %}">
+                <input type="hidden" name="start" value="{{ start_date }}" />
+                <input type="hidden" name="end" value="{{ end_date }}" />
+                <input type="submit" name="" value="{% trans 'Generate invoice for this period' %}" />
+            </form>
+            {% endif %}
 	</div>
 </div>
 

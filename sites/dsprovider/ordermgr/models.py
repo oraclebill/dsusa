@@ -360,3 +360,19 @@ class KitchenDesignRequest(DesignOrder):
     glass_doors = models.BooleanField(default=False)
     range_hood = models.BooleanField(default=False)
     posts = models.BooleanField(default=False)
+
+
+class Invoice(models.Model):
+    start_date = models.DateField(_('start date'))
+    end_date = models.DateField(_('end date'))
+    generated_on = models.DateTimeField(_('generated on'), auto_now_add=True)
+    owner = models.ForeignKey(User)
+
+    class Meta:
+        verbose_name = _('Invoice')
+        verbose_name_plural = _('Invoices')
+        ordering = ('-generated_on', )
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('order_invoice', (), {'invoice_id': self.pk})

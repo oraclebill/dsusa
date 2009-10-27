@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="{% media /js/jquery-ui.js %}"></script>
 	<script type="text/javascript" src="{% media /js/jquery-fluid16.js %}"></script>
     <style type="text/css" media="screen">
-        body {
+        body, .box, table td {
             border: none;
             background: none;
         }
@@ -55,7 +55,9 @@
 
 <h1>{% blocktrans with start_date|date as start and end_date|date as end %}Your invoice for period between {{ start }} - {{ end }}{% endblocktrans %}</h1>
 
-
+<div class="grid_10">
+    <img src="{{ MEDIA_URL }}images/oneworld-logo.png" />
+</div>
 
 <!-- right column -->
 <div class="grid_5  omega">
@@ -63,11 +65,11 @@
         <table>
             <tr>
                 <td>{% trans "Invoice number" %}</td>
-                <td>?</td>
+                <td>{{ invoice.pk }}</td>
             </tr>
             <tr>
                 <td>{% trans "Invoice date" %}</td>
-                <td>{{ invoice_date|date }}</td>
+                <td>{{ invoice.generated_on|date }}</td>
             </tr>
         </table>
 	</div>
@@ -111,7 +113,7 @@
        </table>
 	   {% endfor %}
         <div class="total">
-            <strong>$ {{ sum }}</strong>
+            <strong>Total: $ {{ sum }}</strong>
         </div>
 	</div>
 </div>
