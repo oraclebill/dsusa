@@ -15,8 +15,9 @@ from django.contrib.auth.models import User
 
 
 from home import ACCOUNT_ID, ORDER_ID
-from home.models import DealerOrganization, DesignOrder, Transaction, OrderAppliance, \
-    OrderAttachment, UserProfile   
+from home.models import DealerOrganization, Transaction, OrderAppliance, \
+    OrderAttachment, UserProfile  
+from wizard.models import WorkingOrder 
 from home import designorderforms as dof
 from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
 from product.models import Product
@@ -39,7 +40,8 @@ def get_current_order(request, orderid):
     if user.is_authenticated():
         profile = user.get_profile()
         account = profile.account
-        order = account.created_orders.get(id=orderid)
+        # order = account.created_orders.get(id=orderid)
+        order = user.workingorder_set.get(id=orderid)
     else:
         raise PermissionDenied("You're not allowed here - anonymous users go home!")
     
@@ -135,12 +137,14 @@ def dealer_dashboard(request):
     
     account = request.user.get_profile().account.dealerorganization
     
-    orders = account.created_orders.all()
+    # orders = account.created_orders.all()
+    orders = user.workingorder_set.all()
     transactions = account.transaction_set.all()
     
-    open_orders = orders.filter( Q(status='DLR') | Q(status='RCL') | Q(status='CMP') )
-    working_orders = orders.filter( Q(status='ASG') | Q(status='SUB') )
-    archived_orders = orders.filter( Q(status='ACC') | Q(status='REJ') | Q(status='WTH') )
+    open_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
+    working_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )
+       ## TODO: fixme!
+    archived_orders = orders.exclude( status__in = [ WorkingOrder.DEALER_EDIT, WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] ) 
         
     return render_to_response( 'home/dealer_dashboard.html', locals(),                                
                                 context_instance=RequestContext(request) ) 
@@ -210,7 +214,8 @@ def edit_order_detail(request, order_id):
  
     profile = user.get_profile()
     account = profile.account.dealerorganization
-    order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
+    # order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
+    order = user.workingorder_set.get(id=order_id)  # will throw if current user didn't create current order
 
     if order.submitted is not None:
         raise Exception("Invalid Operation - can't edit submitted order")
@@ -369,7 +374,7 @@ def dealer_accept_order(request, orderid):
     elif request.method == "POST":
         form = DesignOrderAcceptanceForm(request.POST,instance=order)
         if form.is_valid():
-            order.status = 'ACC'
+            order.status = -1
             order.closed = datetime.now()
             form.save()            
             return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
