@@ -49,8 +49,6 @@ class NewDesignOrderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         #changing order of the fields
         self.base_fields.keyOrder = ['project_name', 'design_product', 'desired', 'client_notes']
-        self.base_fields['client_notes'].min_length = 35
-        self.base_fields['project_name'].label = 'Notes'
         super(NewDesignOrderForm, self).__init__(*args, **kwargs)
     
 
