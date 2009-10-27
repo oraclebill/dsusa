@@ -256,7 +256,7 @@ class Migration:
         'ordermgr.userprofile': {
             'is_manager': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'is_notified': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'order_profile'", 'primary_key': 'True', 'to': "orm['auth.User']"})
+            'user': ('AutoOneToOneField', ["orm['auth.User']"], {'related_name': "'order_profile'", 'primary_key': 'True'})
         }
     }
     
