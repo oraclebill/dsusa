@@ -90,7 +90,7 @@ function show_details(type, caption) {
 				<th>Depth</th>
 				<th> </th>
 			</tr>
-			{% for item in order.appliance_set.all %}
+			{% for item in order.appliances.all %}
 			<tr class="row{% cycle "1" "2"%}">
 				<td>{{item.type}}</td>
 				<td>{{item.description|default:"N/A"}}</td>

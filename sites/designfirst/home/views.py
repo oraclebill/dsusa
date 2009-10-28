@@ -24,16 +24,12 @@ from django.contrib.auth.models import User
 ##
 ## imports from other apps
 from product.models import Product
-from wizard.models import WorkingOrder 
-import wizard.forms as wf
-
+from wizard.models import WorkingOrder, Appliance, Moulding, Attachment
+from wizard import forms as wf
 ##
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
-# import designorderforms as dof
-
-from models import DealerOrganization, Transaction, OrderAppliance, \
-    OrderAttachment, UserProfile  
+from models import DealerOrganization, Transaction,UserProfile  
 from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
 
 
@@ -236,30 +232,30 @@ def edit_order_detail(request, order_id):
     posted_id = None
     subforms = []
     
-    ApplianceFormSet = modelformset_factory(wf.ApplianceForm, extra=1) 
-    AttachmentFormSet = modelformset_factory(wf.AttachmentForm, extra=1)
+    ApplianceFormSet = modelformset_factory(Appliance, wf.ApplianceForm, extra=1) 
+    AttachmentFormSet = modelformset_factory(Attachment, wf.AttachmentForm, extra=1)
     
     appliance_forms = None
-    attachment_forms = None
+    # attachment_forms = None
     
     file_upload = [None]
     
     def add_subform(form, selected_id=None):
         form.validity = form.is_valid() and 'valid' or 'invalid'
         # form.visited = ((1<<form.id) & order.visited_status) and 'visited' or ''
-        form.current = (form.id == selected_id) 
+        # form.current = (form.id == selected_id) 
         
-        if form.id != dof.FloorPlanDiagram.id:
-            subforms.append( form )
-        else:
+        if form._meta.model == Attachment:
             file_upload[0] = form
+        else:
+            subforms.append( form )
                     
 
     # if this is a get initialize order subforms for display
     if request.method == 'GET':
         
-        appliance_forms = ApplianceFormSet(queryset=order.appliance_set.all())
-        attachment_forms = AttachmentFormSet(queryset=order.attachment_set.all())
+        appliance_forms = ApplianceFormSet(queryset=order.appliances.all())
+        # attachment_forms = AttachmentFormSet(queryset=order.attachments.all())
 
         for form in ORDER_SUBFORMS:
             subform = form(instance=order)
@@ -293,21 +289,20 @@ def edit_order_detail(request, order_id):
             # posted form was not in list,
             # so it's either an appliance formset or attachment formset             
                 
-            appliance_forms = ApplianceFormSet(request.POST, queryset=order.appliance_set.all())
+            appliance_forms = ApplianceFormSet(request.POST, queryset=order.appliances.all())
             if appliance_forms and appliance_forms.is_valid():            
                 instances = appliance_forms.save(commit=False)
                 for instance in instances:  
                     instance.order_id = order.id                
-                    instance.save()         
-                               
-            attachment_forms = AttachmentFormSet(request.POST, request.FILES, queryset=order.attachment_set.all())
-            if attachment_forms and attachment_forms.is_valid():            
-                instances = attachment_forms.save(commit=False)
-                for instance in instances:  
-                    instance.order_id = order.id                
-                    instance.save()                    
+                    instance.save()                                        
+            # attachment_forms = AttachmentFormSet(request.POST, request.FILES, queryset=order.attachments.all())
+            # if attachment_forms and attachment_forms.is_valid():            
+            #     instances = attachment_forms.save(commit=False)
+            #     for instance in instances:  
+            #         instance.order_id = order.id                
+            #         instance.save()                    
     	else:
-            appliance_forms = ApplianceFormSet(queryset=order.appliance_set.all())
+            appliance_forms = ApplianceFormSet(queryset=order.appliances.all())
             if posted_subform.is_valid():
                 if request.FILES:
                     order.client_diagram_source = 'UPL'  

@@ -1,4 +1,5 @@
 from django.db.transaction import commit_on_success
+from django.utils.translation import ugettext, ugettext_lazy as _
 import os
 import logging
 
@@ -140,55 +141,7 @@ class WorkingOrder(models.Model):
         return [a.first_preview() for a in self.attachments.all()]
     
     
-class Attachment(models.Model):
-    FLOORPLAN, PHOTO, OTHER = range(1,4)
-    TYPE_CHOICES = (
-            (FLOORPLAN, 'Floorplan Sketch'),
-            (PHOTO, 'Photograph'),
-            (OTHER, 'Other'),)
-    order = models.ForeignKey(WorkingOrder, related_name='attachments')
-    type = models.PositiveSmallIntegerField(choices=TYPE_CHOICES)
-    file = models.FileField(upload_to='data/wizard/attachments/%Y/%m')
-    timestamp = models.DateTimeField(auto_now_add=True)
     
-    def __unicode__(self):
-        return os.path.basename(self.file.path)
-    
-    def first_preview(self):
-        if self.is_pdf():
-            return self.attachpreview_set.all()[0].file.url
-        return self.file.url
-    
-    def previews(self):
-        if self.is_pdf():
-            for f in self.attachpreview_set.all():
-                yield {'url':f.file.url, 'page': f.page}
-        else:
-            yield {'url':self.file.url, 'page': 1}
-    
-    def page_count(self):
-        if self.is_pdf():
-            return self.attachpreview_set.all().count()
-        return 1
-    
-    def is_pdf(self):
-        return self.file.name.lower().endswith('.pdf')
-    
-    def generate_pdf_previews(self):
-        try:
-            pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
-        except OSError:
-            log.error('OSError: pdf generation failed for %s' % self.file.path)
-            self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
-
-    
-    def _pdf_callback(self, filename, page, size):
-        preview = AttachPreview(page=page, attachment=self)
-        file = DjangoFile(open(filename, 'rb'))
-        preview.file.save(file.name, file)
-        preview.save()
-
-
 class Moulding(models.Model):
     TOP, BASE, BOTTOM = range(1,4)
     TYPE_CHOICES = (
@@ -247,7 +200,59 @@ class Moulding(models.Model):
             item.save()
             i += 1
                 
-            
+
+    
+class Attachment(models.Model):
+    FLOORPLAN, PHOTO, OTHER = range(1,4)
+    TYPE_CHOICES = (
+            (FLOORPLAN, 'Floorplan Sketch'),
+            (PHOTO, 'Photograph'),
+            (OTHER, 'Other'),)
+    UPLOADED, FAXED = ('U','F')
+    ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Upload')),(FAXED, _('Faxed')),)
+    
+    order = models.ForeignKey(WorkingOrder, related_name='attachments')
+    type = models.PositiveSmallIntegerField(choices=TYPE_CHOICES)
+    file = models.FileField(upload_to='data/wizard/attachments/%Y/%m')
+    source = models.CharField(_('Source'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=UPLOADED)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __unicode__(self):
+        return os.path.basename(self.file.path)
+    
+    def first_preview(self):
+        if self.is_pdf():
+            return self.attachpreview_set.all()[0].file.url
+        return self.file.url
+    
+    def previews(self):
+        if self.is_pdf():
+            for f in self.attachpreview_set.all():
+                yield {'url':f.file.url, 'page': f.page}
+        else:
+            yield {'url':self.file.url, 'page': 1}
+    
+    def page_count(self):
+        if self.is_pdf():
+            return self.attachpreview_set.all().count()
+        return 1
+    
+    def is_pdf(self):
+        return self.file.name.lower().endswith('.pdf')
+    
+    def generate_pdf_previews(self):
+        try:
+            pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
+        except OSError:
+            log.error('OSError: pdf generation failed for %s' % self.file.path)
+            self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
+
+    
+    def _pdf_callback(self, filename, page, size):
+        preview = AttachPreview(page=page, attachment=self)
+        file = DjangoFile(open(filename, 'rb'))
+        preview.file.save(file.name, file)
+        preview.save()
 
 
 class AttachPreview(models.Model):
@@ -261,9 +266,9 @@ class AttachPreview(models.Model):
     
 
 class Appliance(models.Model):
-    TYPES = ['Refrigerator', 'Microwave','Double sink','Cooktop','Oven']
+    TYPES = ['Refrigerator', 'Microwave', 'Double sink', 'Cooktop','Oven']
     
-    order = models.ForeignKey(WorkingOrder, editable=False)
+    order = models.ForeignKey(WorkingOrder, editable=False, related_name='appliances')
     type = models.CharField(max_length=100, choices=[(i,i) for i in TYPES])
     description = models.CharField(max_length=255, null=True, blank=True)
     width = DimensionField(null=True, blank=True)

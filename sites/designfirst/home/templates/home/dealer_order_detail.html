@@ -3,7 +3,7 @@
 {% block title %}
 DesignFirst - Design Order 
 {% endblock %}
-ljkdsfalsdkfj
+
 {% block extrastyle %} 
 <style type="text/css" media="screen">
 	span.areastatus {
@@ -29,9 +29,8 @@ ljkdsfalsdkfj
 				<div id="accordion">
 					
 					{% for subform in formlist %}
-					<h3 class="toggler atStart"><span>{{ subform.name }}</span>{% ifequal subform.visited 'visited' %}*{% endifequal %}
-							<span class="areastatus ">{{ subform.validity }}</span> </h3>
-					<div class="element atStart">
+					<div class="block">
+					    <h3>{{ subform.name }}</h3>
 						<form action="#" method="POST" accept-charset="utf-8">
 							<fieldset>
 								<input type="hidden" name="subform" value="{{ subform.id }}">

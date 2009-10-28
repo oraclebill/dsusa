@@ -19,6 +19,7 @@ class ManufacturerForm(forms.ModelForm, FieldsetForm):
             'cabinet_finish_options',
             'cabinetry_notes'
         ]
+    name = 'Manufacturer Selection'
     fieldsets = [
         (None, {
             'fields': ['cabinet_manufacturer','cabinet_product_line','cabinet_door_style','cabinet_wood','cabinet_finish','cabinet_finish_options']}),
@@ -48,6 +49,7 @@ class HardwareForm(forms.ModelForm, FieldsetForm):
             'drawer_handle_type',
             'drawer_handle_model',
         ]
+    name = 'Hardware Selection'
     fieldsets = [
         ('Door', {
             'fields': ['door_handle_type', 'door_handle_model'], 
@@ -61,6 +63,7 @@ class HardwareForm(forms.ModelForm, FieldsetForm):
 
 
 class MouldingForm(forms.ModelForm):
+    name = 'Moulding Selection'
     class Meta:
         model = Moulding
         fields = ['type', 'name']
@@ -78,6 +81,7 @@ def _soffit_clean(field):
     return wrapper
 
 class SoffitsForm(forms.ModelForm, FieldsetForm):
+    name = 'Soffits Information'
     class Meta:
         model = WorkingOrder
         fields = [
@@ -92,6 +96,7 @@ class SoffitsForm(forms.ModelForm, FieldsetForm):
 
 
 class DimensionsForm(forms.ModelForm, FieldsetForm):
+    name = 'Cabinet Dimensions'
     dimension_style =  forms.ChoiceField(choices=WorkingOrder.STYLE_CHOICES, 
                              widget=forms.RadioSelect(attrs={'class': 'dimension_style'}), 
                              label='')
@@ -111,6 +116,7 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
 
 
 class CornerCabinetForm(forms.ModelForm, FieldsetForm):
+    name = 'Corner Cabinet Options'
     class Meta:
         model = WorkingOrder
         fields = [
@@ -153,6 +159,7 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
 
 
 class InteriorsForm(forms.ModelForm, FieldsetForm):
+    name = 'Interior Options'
     class Meta:
         model = WorkingOrder
         fields = [
@@ -167,6 +174,7 @@ class InteriorsForm(forms.ModelForm, FieldsetForm):
 
 
 class MiscellaneousForm(forms.ModelForm, FieldsetForm):
+    name = 'Miscellaneous Options'
     class Meta:
         model = WorkingOrder
         fields = [
@@ -182,6 +190,7 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
 
 
 class SubmitForm(forms.ModelForm):
+    name = 'Order Processing Options'
     class Meta:
         model = WorkingOrder
         fields = [
@@ -192,6 +201,7 @@ class SubmitForm(forms.ModelForm):
 
 
 class AttachmentForm(forms.ModelForm):
+    name = 'Client Attachments'
     class Meta:
         model = Attachment
         exclude = ('order',)
@@ -207,6 +217,7 @@ class AttachmentForm(forms.ModelForm):
 
 
 class ApplianceForm(forms.ModelForm):
+    name = 'Appliances '
     class Meta:
         model = Appliance
         # exclude = ('order',)
