@@ -75,6 +75,7 @@ class WorkingOrder(models.Model):
     drawer_handle_model = models.CharField(max_length=255, null=True, blank=True)
     
     #Soffits page
+    has_soffits = models.NullBooleanField('Has Soffits?', null=True, blank=True)
     soffit_width = DimensionField('Width', null=True, blank=True)
     soffit_height = DimensionField('Height', null=True, blank=True)
     soffit_depth = DimensionField('Depth', null=True, blank=True)

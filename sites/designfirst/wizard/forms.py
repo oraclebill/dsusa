@@ -74,9 +74,10 @@ def _soffit_clean(field):
     "if mouldings are selected then soffits are required"
     def wrapper(form):
         value = form.cleaned_data.get(field)
-        if form.instance.mouldings.all().count() > 0:
+        has_soffits = bool(form.cleaned_data.get('has_soffits'))
+        if has_soffits and form.instance.mouldings.all().count() > 0:
             if value in ('', None):
-                raise forms.ValidationError('This field is required')
+                raise forms.ValidationError('Soffit dimensions must be specified when moldings selected')
         return value
     return wrapper
 
@@ -85,11 +86,13 @@ class SoffitsForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fields = [
+            'has_soffits',
             'soffit_width',
             'soffit_height',
             'soffit_depth',
         ]
     fieldset_image = NONE_IMG
+    clean_has_soffits = _soffit_clean('has_soffits')
     clean_soffit_width = _soffit_clean('soffit_width')
     clean_soffit_height = _soffit_clean('soffit_height')
     clean_soffit_depth = _soffit_clean('soffit_depth')

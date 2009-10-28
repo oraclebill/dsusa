@@ -18,6 +18,7 @@ STEPS_SUMMARY = [
     ('Moulding', [
     ]),
     ('Soffits', [
+        'has_soffits',
         'soffit_width',
         'soffit_height',
         'soffit_depth',
