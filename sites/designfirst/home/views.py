@@ -197,16 +197,20 @@ ORDER_SUBFORMS = [ wf.ManufacturerForm, wf.HardwareForm, wf.MouldingForm, wf.Sof
                     # wf.MiscellaneousForm,  ]
 
 # little util to help with form processing
-def process_form(form_class, inst, data=None, files=None, model_class=WorkingOrder):
+def process_form(form_class, order_inst, data=None, files=None, model_class=WorkingOrder):
     # some of the forms need to always be instantiated unbound, and will be in 
     model = form_class._meta.model
     modelmatch = model == model_class
-    if not modelmatch:
-        inst = model()        
+    if modelmatch:
+        inst = order_inst
+    else:
+        inst = model()                
     if data or files:
         form = form_class(data, files, instance=inst )
         if form.is_valid():
-            form.save()      
+            obj = form.save(commit=False)      
+            obj.order = order_inst
+            obj.save()            
     else:
         form = form_class(instance=inst)  
 
@@ -396,4 +400,16 @@ def _generate_floorplan_template(order):
     response.write( template.pdfBuffer.getvalue() )
     
     return response
+    
+def remove_order_appliance(request, orderid, appliance_key):
+    order = get_current_order(request, orderid)
+    # verify appliance is child of order
+    if request.method == "POST":
+        try:
+            appliance = order.appliances.get(pk=appliance_key)
+            appliance.delete()
+            appliance.save()
+        except Appliance.DoesNotExist:
+            raise RuntimeException('Appliance does not exist!')
+    return HttpResponseRedirect( reverse('edit_order', args=[orderid]) )
     

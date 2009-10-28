@@ -98,7 +98,7 @@ DesignFirst - Design Order
                         <td>{{ appliance.height }}</td>
                         <td>{{ appliance.depth }}</td>
                         <td>{{ appliance.options }}</td>
-                        <td><a href={% url delete_order_appliance appliance.id %}>Delete</a></td>
+                        <td><a href={% url delete_order_appliance order.id appliance.id %}>Delete</a></td>
                     </tr>
                     {% endfor %}
                 {% else %}
