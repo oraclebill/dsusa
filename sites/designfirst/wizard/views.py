@@ -10,7 +10,7 @@ from models import Attachment, Appliance
 from forms import *
 from summary import order_summary, STEPS_SUMMARY, SUBMIT_SUMMARY
 from django.template.loader import render_to_string
-
+from django.db import transaction
 
 
 
@@ -153,22 +153,28 @@ class Wizard(WizardBase):
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
+@transaction.commit_on_success
 @render_to('wizard/order_review.html')
 def _order_review(request, wizard):
     order = wizard.order
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
-        order = form.save(commit=False)
-        order.status = WorkingOrder.SUBMITTED
-        order.save()
-        return HttpResponseRedirect('/dealer/')
-    form = SubmitForm(instance=order)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.status = WorkingOrder.SUBMITTED
+            order.save()
+            return HttpResponseRedirect('/dealer/')
+    else:
+        form = SubmitForm(instance=order)
     summary = order_summary(order, SUBMIT_SUMMARY)
     exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
     for title, excl in SUBMIT_SUMMARY:
         exclude += excl
     OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
     summary += order_summary(order, [('Options', OPT_FIELDS)])
+    print form
+    return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
+    return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
     return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
 
 @render_to('print_order.html')

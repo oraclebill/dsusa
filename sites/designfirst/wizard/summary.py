@@ -56,7 +56,7 @@ STEPS_SUMMARY = [
 ]
 
 SUBMIT_SUMMARY = [
-    ('Cabinetary', [
+    ('Cabinetry', [
         'cabinet_manufacturer',
         'cabinet_door_style',
         'cabinet_wood',

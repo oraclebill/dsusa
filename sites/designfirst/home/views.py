@@ -283,30 +283,34 @@ def accept_floorplan_template_fax(request, orderid):
     
     
 @transaction.commit_on_success
-def dealer_submit_order(request, orderid):
+def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
     """
     Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
     
     TODO - error handling, logging, 
     """
+    user = request.user
+    if user is None or not user.is_authenticated():
+        return HttpResponseRedirect('/')
+ 
+    profile = user.get_profile()
+    account = profile.account.dealerorganization
+    order = user.workingorder_set.get(id=orderid) 
     
-    popup_error = None
-    order = get_current_order(request, orderid)
-    if order.attachments.filter(type__exact=Attachment.FLOORPLAN):
-        account = request.user.get_profile().account.dealerorganization
-        if account.credit_balance >= order.cost:
-            ## TODO: transactions
+    if request.method == 'GET':
+        form = form_class(instance=order)
+    else:
+        form = form_class(request.POST, instance=order)
+        if form.is_valid():
+            order = form.save(commit=False)
+            account = request.user.get_profile().account.dealerorganization
             now = datetime.utcnow()
-
-            cost = order.cost or Decimal()
-            
+            cost = order.cost or Decimal()            
             # update account
             account.credit_balance = account.credit_balance - cost
             account.save()   
-
             # update order
-            order.save()
-                        
+            order.save()                        
             # update transction log
             tx = Transaction()
             tx.account = account
@@ -317,16 +321,16 @@ def dealer_submit_order(request, orderid):
             tx.timestamp = now
             tx.save()                        
             
-        else:
-            return HttpResponse('Insufficient account credit to place order. \
-              Press "[back]" then fund your account to enable order submission.') 
-    else:
-        ##TODO: identify errors
-        return HttpResponse('Order is incomplete. \
-              Press "[back]" to return to the order detail screen and verify floorplan is attached.')
+            # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
+            return HttpResponseRedirect(reverse('home.views.dealer_dashboard') )              
               
-              
-    return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
+    class FakeWizard(object):
+        def __init__(self, order):
+            self.order = order
+            
+    return render_to_response('wizard/order_review.html',
+                dict(order=order, form=form, wizard=FakeWizard(order)),
+                context_instance=RequestContext(request))
     
     
 def dealer_review_order(request, orderid):

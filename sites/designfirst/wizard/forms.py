@@ -1,5 +1,6 @@
 from django.conf import settings
 import os
+from decimal import Decimal
 from django import forms
 from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
@@ -192,16 +193,44 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
     fieldset_image = NONE_IMG
 
 
+
+## TODO: do this right..
+def price_order(order):
+    price = Decimal('85')
+    if order.color_views:
+        price += 40
+        if order.rush:
+            price += 50
+    else:
+        if order.rush:
+            price += 40
+    return price
+    
+
 class SubmitForm(forms.ModelForm):
     name = 'Order Processing Options'
     class Meta:
         model = WorkingOrder
         fields = [
+            'project_name',
+            'rush',
             'color_views',
             'elevations',
             'quoted_cabinet_list',
+            'client_notes',
         ]
 
+    def clean(self):
+        order = self.instance
+        if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
+            raise forms.ValidationError('Valid orders must include at least one floorplan diagram. This one has none.')        
+        try:
+            order.cost = price_order(order)
+        except Exception, exc_info:
+            raise forms.ValidationError('Unable to price order. - %s' % exc_info)
+        balance = order.owner.get_profile().account.dealerorganization.credit_balance
+        if balance < order.cost:
+            raise forms.ValidationError('Insufficient funds in account - %s' % balance)            
 
 class AttachmentForm(forms.ModelForm):
     name = 'Client Attachments'
