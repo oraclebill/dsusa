@@ -3,7 +3,7 @@
 Grey Box Method - Layout CSS
 ----------------------------------------------- */
 
-body {
+body, #footer {
 	background: #eee;
 	border-top: 5px solid #000;
 	color: #333;
@@ -27,7 +27,8 @@ a:hover {
 /* 960 grid system container background
 ----------------------------------------------- */
 .container_12,
-.container_16 {
+.container_16,
+#content {
 	background:#fff;
 }
 

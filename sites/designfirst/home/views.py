@@ -192,34 +192,44 @@ def create_order(request, *args):
 #                     dof.SpaceManagement, dof.Miscellaneous, dof.FloorPlanDiagram ]
 # #                    dof.SpaceManagement, dof.Miscellaneous, dof.Appliances  ]
 ORDER_SUBFORMS = [ wf.ManufacturerForm, wf.HardwareForm, wf.MouldingForm, wf.SoffitsForm, 
-                    wf.DimensionsForm, wf.CornerCabinetForm, wf.InteriorsForm, wf.MiscellaneousForm]
+                    wf.DimensionsForm, wf.CornerCabinetForm, wf.InteriorsForm, 
+                    wf.MiscellaneousForm, wf.ApplianceForm, wf.AttachmentForm ]
+                    # wf.MiscellaneousForm,  ]
+
+# little util to help with form processing
+def process_form(form_class, inst, data=None, files=None, model_class=WorkingOrder):
+    # some of the forms need to always be instantiated unbound, and will be in 
+    model = form_class._meta.model
+    modelmatch = model == model_class
+    if not modelmatch:
+        inst = model()        
+    if data or files:
+        form = form_class(data, files, instance=inst )
+        if form.is_valid():
+            form.save()      
+    else:
+        form = form_class(instance=inst)  
+
+    if modelmatch:
+        return (None, form)
+    else:
+        name = '%s_form' % model.__name__.lower() 
+        return (name, form)
 
 def edit_order_detail(request, order_id):
     """
     Editable detailed design order display. 
 
-    This view
-        - validates login
-        - gets the current working order from session / db
-        - constructs as set of subforms based on current order.    
+    This view constructs a set of subforms based on current order.    
 
     We attempt to give the template some flexibility with respect to how to manage
     data entry by decomposing the field set of the design order into a number of subforms.
-
-    Based on the form_id in post request we update the 'visited_status' of the order 
-    to note the corresponding field group has been visited. 
 
     We pass the following to the template:
      - request context (of course)
      - order: the current DesignOrder object
      - formlist: a list of form objects for the field groups that comprise a DesignOrder
-         Each field group (form) has some additional properties just for enhancing 
-         display processing:
-            - status: ('valid'|'invalid') based on form.is_valid
-            - visited: ('visited'|'') based on bitset check in order.visited_status
-            - current: True if it was the form posted on last request, false otherwise
     """    
-
     user = request.user
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/')
@@ -228,93 +238,34 @@ def edit_order_detail(request, order_id):
     account = profile.account.dealerorganization
     # order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
     order = user.workingorder_set.get(id=order_id)  # will throw if current user didn't create current order
-
-    posted_id = None
-    subforms = []
-    
-    ApplianceFormSet = modelformset_factory(Appliance, wf.ApplianceForm, extra=1) 
-    AttachmentFormSet = modelformset_factory(Attachment, wf.AttachmentForm, extra=1)
-    
-    appliance_forms = None
-    # attachment_forms = None
-    
-    file_upload = [None]
-    
-    def add_subform(form, selected_id=None):
-        form.validity = form.is_valid() and 'valid' or 'invalid'
-        # form.visited = ((1<<form.id) & order.visited_status) and 'visited' or ''
-        # form.current = (form.id == selected_id) 
-        
-        if form._meta.model == Attachment:
-            file_upload[0] = form
-        else:
-            subforms.append( form )
-                    
-
-    # if this is a get initialize order subforms for display
-    if request.method == 'GET':
-        
-        appliance_forms = ApplianceFormSet(queryset=order.appliances.all())
-        # attachment_forms = AttachmentFormSet(queryset=order.attachments.all())
-
-        for form in ORDER_SUBFORMS:
-            subform = form(instance=order)
-            add_subform( subform )
-        
+                        
     # if this is an update, determine which subform to apply and validate
-    elif request.method == 'POST': 
-
+    form_name = None
+    if request.method == 'POST': 
         try:
-            posted_id = request.POST['subform']
+            form_name = request.POST['_formname']
         except:
-            posted_id = '-1'
+            raise IllegalStateException('Invalid form: missing required data!')   
+                     
+    formlist = []
+    context = RequestContext(request)  
+         
+    for form_class in ORDER_SUBFORMS:
+        if form_name and form_class.name == form_name:
+            name,obj = process_form(form_class, order, request.POST, request.FILES)            
+        else:
+            name,obj = process_form(form_class, order) 
             
-        posted_id = int( posted_id )
-        posted_subform = None        
-        
-        for form_class in ORDER_SUBFORMS:
-            if form_class.id == posted_id:
-                form = form_class(request.POST, request.FILES, instance=order)
-                posted_subform = form
-                # order.visited_status |= 1<<form.id
-            else:
-                form = form_class(instance=order)              
-        
-            log.debug("in loop(a), form.(name/id) = %s/%s" % (form.name, form.id) )
+        if name:
+            context[name] = obj
+        else:
+            formlist.append(obj)
 
-            add_subform( form, posted_id )
-            
-                    
-        if not posted_subform: 
-            # posted form was not in list,
-            # so it's either an appliance formset or attachment formset             
-                
-            appliance_forms = ApplianceFormSet(request.POST, queryset=order.appliances.all())
-            if appliance_forms and appliance_forms.is_valid():            
-                instances = appliance_forms.save(commit=False)
-                for instance in instances:  
-                    instance.order_id = order.id                
-                    instance.save()                                        
-            # attachment_forms = AttachmentFormSet(request.POST, request.FILES, queryset=order.attachments.all())
-            # if attachment_forms and attachment_forms.is_valid():            
-            #     instances = attachment_forms.save(commit=False)
-            #     for instance in instances:  
-            #         instance.order_id = order.id                
-            #         instance.save()                    
-    	else:
-            appliance_forms = ApplianceFormSet(queryset=order.appliances.all())
-            if posted_subform.is_valid():
-                if request.FILES:
-                    order.client_diagram_source = 'UPL'  
-                posted_subform.save()     
-
-    # otherwise choke
-    else:
-        raise "unsupported http method"
-
-    return render_to_response( "home/dealer_order_detail.html", 
-        dict( order=order, formlist=subforms, formset=appliance_forms, file_upload=file_upload[0]  ),
-        context_instance=RequestContext(request) )
+    # context control...
+    context['order'] = order
+    context['formlist'] = formlist
+    
+    return render_to_response( "home/dealer_order_detail.html", context_instance=context )
     
         
 def accept_floorplan_template_upload(request, orderid):
