@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.db.transaction import commit_on_success
 from django.utils.translation import ugettext, ugettext_lazy as _
 import os
@@ -28,22 +30,45 @@ class WorkingOrder(models.Model):
         (SUBMITTED, 'Submitted'),
         (ASSIGNED, 'Assigned'),
     )
+    
     owner = models.ForeignKey(User)
     updated = models.DateTimeField(auto_now=True, editable=False)
+    submitted = models.DateTimeField(auto_now=False, editable=False)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=DEALER_EDIT)
+    
     #Submit options
+    project_name = models.CharField(max_length=150)
+    rush = models.BooleanField(default=False)
     color_views = models.BooleanField(default=False)
     elevations = models.BooleanField(default=False)
     quoted_cabinet_list = models.BooleanField(default=False)
-    
-
-    
-    #New page
-    project_name = models.CharField(max_length=150)
     desired = models.DateTimeField('Desired Completion')
     cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes', null=True, blank=True)
-    
+
+    @property
+    def expected(self):
+        "Expected completion time"
+        if self.submitted:
+            if self.rush:
+                delta = timedelta(days=1)
+            else:
+                delta = timedelta(days=2)
+            return self.submitted + delta
+        return None
+            
+    @property
+    def flags(self):
+        "Processiong flags"
+        flags = []
+        if self.color_views:
+            flags.append('PRSNTR')
+        else:
+            flags.append('PRO')            
+        if self.rush:
+            flags.append('RUSH')
+        return ', '.join(flags)
+
     #Manufacturer page (cabinetry options)
     cabinet_manufacturer = models.CharField(max_length=150, blank=True, null=True, 
         verbose_name='Manufacturer')
