@@ -221,6 +221,7 @@ class SubmitForm(forms.ModelForm):
         ]
 
     def clean(self):
+        cleaned_data = self.cleaned_data
         order = self.instance
         if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
             raise forms.ValidationError('Valid orders must include at least one floorplan diagram. This one has none.')        
@@ -230,8 +231,9 @@ class SubmitForm(forms.ModelForm):
             raise forms.ValidationError('Unable to price order. - %s' % exc_info)
         balance = order.owner.get_profile().account.dealerorganization.credit_balance
         if balance < order.cost:
-            raise forms.ValidationError('Insufficient funds in account - %s' % balance)            
-
+            raise forms.ValidationError('Insufficient funds in account - %s' % balance)    
+        return cleaned_data        
+        
 class AttachmentForm(forms.ModelForm):
     name = 'Client Attachments'
     class Meta:

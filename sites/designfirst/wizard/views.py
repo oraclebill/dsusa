@@ -153,7 +153,6 @@ class Wizard(WizardBase):
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
-@transaction.commit_on_success
 @render_to('wizard/order_review.html')
 def _order_review(request, wizard):
     order = wizard.order
