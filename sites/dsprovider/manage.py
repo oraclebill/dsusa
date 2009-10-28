@@ -1,15 +1,15 @@
 #!/usr/bin/env python 
-import sys; 
-import os.path;
+import sys
+import os.path
 
 _root,_project=os.path.split(os.path.abspath(__file__))
 local_path=[]
 
 _root=os.path.dirname(_root)
-local_path.append(os.path.join(_root,'lib'))
-
 _root=os.path.dirname(_root)
+
 local_path.append(os.path.join(_root,'lib'))
+local_path.append(os.path.join(_root,'sites'))
 
 sys.path = local_path + sys.path
 

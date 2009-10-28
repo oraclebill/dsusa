@@ -1,0 +1,16 @@
+from menu import menus
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
+
+menus['dealer'] = lambda: (
+    (_('Dashboard'), reverse('dealer-dashboard')),
+    (_('New order'), reverse('new_order')),
+    (_('Purchase Designs'), reverse('select_products')),
+    # (_('Account'), reverse('')),
+    (_('Profile'), reverse('dealer-complete-profile')),
+    (_('With submenu'), (
+        (_('Dashboard'), reverse('dealer-dashboard')),
+        (_('New order'), reverse('new_order')),
+        (_('Purchase Designs'), reverse('select_products')),
+        ))
+)

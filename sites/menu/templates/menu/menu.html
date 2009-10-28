@@ -1,0 +1,19 @@
+{% load menu_tags %}
+<ul class="nav">
+{% for item in menu %}
+    <li class="{% if item.1|iterable %}dropdown{% else %}{% if current|startswith:item.1 %}active{% endif %}{% endif %}">
+        {% if item.1|iterable %}
+            <a href="#" class="dropdown">{{ item.0 }}</a>
+            <ul class="down-list">
+                {% for item in item.1 %}
+                    <li class="{% ifequal current item.1 %}active{% endifequal %}">
+                        <a href="{{ item.1 }}">{{ item.0 }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <a href="{{ item.1 }}">{{ item.0 }}</a>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>

@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n menu_tags %}
 
 {% block menu %}
+
 <div id="menu" class="menu">
-	<ul class="nav">
-		<li><a href="/dealer/">{% trans 'Home' %}</a></li>
-	</ul>
+    {% menu "dealer" %}
 </div>
 {% endblock %}

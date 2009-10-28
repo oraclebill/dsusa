@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
+import dsprovider.menus
 
 admin.autodiscover()
 

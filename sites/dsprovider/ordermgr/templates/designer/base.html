@@ -1,12 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n menu_tags %}
 
 {% block menu %}
+
 <div id="menu" class="menu">
-	<ul class="nav">
-		<li><a href="{% url dashboard %}">{% trans 'Dashboard' %}</a></li>
-		<li><a href="{% url order_log %}">{% trans 'Order Log' %}</a></li>
-		{# <li><a href="javascript:back()">{% trans 'Back' %}</a></li> #}
-	</ul>
+    {% menu "base" %}
 </div>
 {% endblock %}
