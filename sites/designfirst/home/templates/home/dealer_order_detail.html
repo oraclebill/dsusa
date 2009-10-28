@@ -18,9 +18,41 @@ DesignFirst - Design Order
 {% endblock %}
 
 {% block content %}
-	
-	<div class="grid_8   prefix_1">
-		
+
+<!-- order and account information -->
+<!-- order info -->
+    <div class="grid_6 prefix_1 alpha">
+    	<div id="order_info" class="box">
+    		<h2>Order </h2> 
+    		<table>
+    			<tbody>
+    				<tr><th>Project Name</th><td colspan=2>{{ order.description }}</td></tr>
+					<tr><th>Order #</th><td colspan=2>{{ order.id }}</td></tr>
+    				<tr><th>Status</th><td colspan=2>{{ order.get_status_display }} </td></tr>
+    				<tr><th>Last Modified</th><td colspan=2>{{ order.updated }}</td></tr>
+    			</tbody>
+    		</table>
+    	</div>
+    </div>
+    
+<!--  account info -->
+    <div class="grid_5 prefix_3 omega">
+    	<div id="account_info" class="box ">
+    		<h2>Account </h2>
+    		<table>
+    			<tbody>
+    				<tr><th>Customer</th><td>{{ order.owner.first_name }} {{ order.owner.last_name }} ({{ order.owner }})</td></tr>
+    				<tr><th>Account #</th><td>{{ order.owner.get_profile.account.id }}</td></tr>
+                    {# <tr><th>Available Credit</th><td>{{order.owner.get_profile.account.dealerorganization.credit_balance}}</td></tr> #}
+    				<tr><th>&nbsp;</th><td>&nbsp;</td></tr>
+    				<tr><th>&nbsp;</th><td>&nbsp;</td></tr>
+    			</tbody>
+    		</table>
+    	</div>
+    </div>
+    
+<!-- design details, section by section -->
+    <div class="grid_14 prefix_1 alpha">
 		<!-- Design Request Data Entry Area -->
 		<div id="order-entry" class="box">
 			<h2>Design Request Info</h2>
@@ -45,37 +77,10 @@ DesignFirst - Design Order
 			</div>
 
 		</div>
-	
-	</div>
+    </div>
 
-	<div class="grid_6  suffix_1 ">
-		
-    	<div id="order_info" class="box">
-    		<h2>Order </h2> 
-    		<table>
-    			<tbody>
-					<tr><th>ID</th><td colspan=2>{{ order.id }}</td></tr>
-    				<tr><th>Created</th><td colspan=2>{{ order.created }}</td></tr>
-    				<tr><th>Status</th><td colspan=2>{{ order.get_status_display }} [{{ order.visited_status|stringformat:"04X" }}]</td></tr>
-    				<tr><th>Description</th><td colspan=2>{{ order.description }}</td></tr>
-    				<tr><th>&nbsp;</th><td colspan=2></td></tr>
-    				<tr><th>Design Cost</th><td colspan=2>{{ order.cost }} Point(s)</td></tr>
-    			</tbody>
-    		</table>
-    	</div>
-    	
-    	<div id="account_info" class="box ">
-    		<h2>Account </h2>
-    		<table>
-    			<tbody>
-    				<tr><th>ID</th><td>{{ order.client_account.company_name }}</td></tr>
-    				<tr><th>Status</th><td>Active</td></tr>
-    				<tr><th>Available Design Credits</th><td>{{order.client_account.dealerorganization.credit_balance}}</td></tr>
-    			</tbody>
-    		</table>
-    	</div>
-    	
-        <!-- appliances -->
+<!-- appliance info -->
+    <div class="grid_14 prefix_1 alpha">
 	    <div id="appliance_option_form" class="box">
 			<h2>Appliances</h2>
 			<form method="POST" action="">
@@ -88,9 +93,11 @@ DesignFirst - Design Order
 	            <input type="submit" name="submit" value="add" />
 			</form>		
 	    </div>
+    </div>
 
-    	<!-- diagrams -->
-	    <div id="template-display" class="box">
+<!-- attachments and other stuff -->
+    <div class="grid_14 prefix_1 alpha">
+        <div id="template-display" class="box">
 	        <h2>diagrams</h2>
 			<p>Download your personalized floorplan template here
     			<a target="_blank" href=" {% url home.views.generate_floorplan_template order.id %}">
@@ -108,14 +115,15 @@ DesignFirst - Design Order
 			   </form>
 			</p>
         </div>
-
-    	
-	</div>
+    </div>
 	
-	<div class="grid_16">
+	
+	<div class="grid_3 alpha">
 		<form action="{% url home.views.dealer_dashboard %}" method="get" accept-charset="utf-8">
 			<p><input type="submit" value=" &larr; Back to Dashboard"></p>
 		</form>
+	</div>
+	<div class="grid_3 prefix_10 omega">
 		<form action="{% url home.views.dealer_submit_order order.id %}" method="get" accept-charset="utf-8">
 			<p><input type="submit" value="Submit Design Request &rarr;"></p>
 		</form>
