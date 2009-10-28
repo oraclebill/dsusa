@@ -3,6 +3,6 @@ from django.contrib import admin
 
 
 class WorkingOrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'owner', 'status', 'project_name']
+    list_display = ['updated', 'id', 'owner', 'status', 'project_name']
     
 admin.site.register(WorkingOrder, WorkingOrderAdmin)

@@ -1,6 +1,14 @@
+
+##
+## python imports
 import logging as log
 from datetime import datetime, timedelta
 
+##
+## library imports 
+
+##
+## django imports
 from django.utils import simplejson
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import PermissionDenied
@@ -13,14 +21,20 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 
-
-from home import ACCOUNT_ID, ORDER_ID
-from home.models import DealerOrganization, Transaction, OrderAppliance, \
-    OrderAttachment, UserProfile  
-from wizard.models import WorkingOrder 
-from home import designorderforms as dof
-from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
+##
+## imports from other apps
 from product.models import Product
+from wizard.models import WorkingOrder 
+import wizard.forms as wf
+
+##
+## local imports 
+from constants import ACCOUNT_ID, ORDER_ID
+# import designorderforms as dof
+
+from models import DealerOrganization, Transaction, OrderAppliance, \
+    OrderAttachment, UserProfile  
+from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
 
 
 
@@ -177,10 +191,12 @@ def create_order(request, *args):
 
 
 
-ORDER_SUBFORMS = [ dof.OrderInfo, dof.Cabinetry, dof.Hardware, dof.Mouldings, dof.CabinetBoxes, 
-                    dof.CornerCabinetOptions, dof.IslandAndPeninsula, dof.OtherConsiderations,
-                    dof.SpaceManagement, dof.Miscellaneous, dof.FloorPlanDiagram ]
-#                    dof.SpaceManagement, dof.Miscellaneous, dof.Appliances  ]
+# ORDER_SUBFORMS = [ dof.OrderInfo, dof.Cabinetry, dof.Hardware, dof.Mouldings, dof.CabinetBoxes, 
+#                     dof.CornerCabinetOptions, dof.IslandAndPeninsula, dof.OtherConsiderations,
+#                     dof.SpaceManagement, dof.Miscellaneous, dof.FloorPlanDiagram ]
+# #                    dof.SpaceManagement, dof.Miscellaneous, dof.Appliances  ]
+ORDER_SUBFORMS = [ wf.ManufacturerForm, wf.HardwareForm, wf.MouldingForm, wf.SoffitsForm, 
+                    wf.DimensionsForm, wf.CornerCabinetForm, wf.InteriorsForm, wf.MiscellaneousForm]
 
 def edit_order_detail(request, order_id):
     """
@@ -217,21 +233,20 @@ def edit_order_detail(request, order_id):
     # order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
     order = user.workingorder_set.get(id=order_id)  # will throw if current user didn't create current order
 
-    if order.submitted is not None:
-        raise Exception("Invalid Operation - can't edit submitted order")
-
     posted_id = None
     subforms = []
     
-    ApplianceFormSet = modelformset_factory(OrderAppliance, extra=1) 
+    ApplianceFormSet = modelformset_factory(wf.ApplianceForm, extra=1) 
+    AttachmentFormSet = modelformset_factory(wf.AttachmentForm, extra=1)
     
     appliance_forms = None
+    attachment_forms = None
     
     file_upload = [None]
     
     def add_subform(form, selected_id=None):
         form.validity = form.is_valid() and 'valid' or 'invalid'
-        form.visited = ((1<<form.id) & order.visited_status) and 'visited' or ''
+        # form.visited = ((1<<form.id) & order.visited_status) and 'visited' or ''
         form.current = (form.id == selected_id) 
         
         if form.id != dof.FloorPlanDiagram.id:
@@ -243,7 +258,8 @@ def edit_order_detail(request, order_id):
     # if this is a get initialize order subforms for display
     if request.method == 'GET':
         
-        appliance_forms = ApplianceFormSet(queryset=order.orderappliance_set.all())
+        appliance_forms = ApplianceFormSet(queryset=order.appliance_set.all())
+        attachment_forms = AttachmentFormSet(queryset=order.attachment_set.all())
 
         for form in ORDER_SUBFORMS:
             subform = form(instance=order)
@@ -264,7 +280,7 @@ def edit_order_detail(request, order_id):
             if form_class.id == posted_id:
                 form = form_class(request.POST, request.FILES, instance=order)
                 posted_subform = form
-                order.visited_status |= 1<<form.id
+                # order.visited_status |= 1<<form.id
             else:
                 form = form_class(instance=order)              
         
@@ -275,16 +291,23 @@ def edit_order_detail(request, order_id):
                     
         if not posted_subform: 
             # posted form was not in list,
-            # so it's  appliance formset             
+            # so it's either an appliance formset or attachment formset             
                 
-            appliance_forms = ApplianceFormSet(request.POST, queryset=order.orderappliance_set.all())
+            appliance_forms = ApplianceFormSet(request.POST, queryset=order.appliance_set.all())
             if appliance_forms and appliance_forms.is_valid():            
                 instances = appliance_forms.save(commit=False)
                 for instance in instances:  
                     instance.order_id = order.id                
+                    instance.save()         
+                               
+            attachment_forms = AttachmentFormSet(request.POST, request.FILES, queryset=order.attachment_set.all())
+            if attachment_forms and attachment_forms.is_valid():            
+                instances = attachment_forms.save(commit=False)
+                for instance in instances:  
+                    instance.order_id = order.id                
                     instance.save()                    
     	else:
-            appliance_forms = ApplianceFormSet(queryset=order.orderappliance_set.all())
+            appliance_forms = ApplianceFormSet(queryset=order.appliance_set.all())
             if posted_subform.is_valid():
                 if request.FILES:
                     order.client_diagram_source = 'UPL'  

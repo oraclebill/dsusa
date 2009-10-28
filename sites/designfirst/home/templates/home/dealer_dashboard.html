@@ -11,41 +11,32 @@ DesignFirst Customer Dashboard
 
 	<div class="block">
 		<!-- live orders table -->
-		<div id="open_order_table">
+		<div id="working_orders_table">
 		   <table summary="orders requiring user input">
 		   <thead>
-		     <tr><th class="table-head" colspan="5">Open Orders</th></tr>
+		     <tr><th class="table-head" colspan="5">Working Orders</th></tr>
 		     <tr>
 		       <th>order id</th>
 		       <th>status</th>
 		       <th>project</th>
-		       <th>created</th>
+		       <th>last update</th>
 		       <th>actions</th>
 		     </tr>
 		   </thead>
 		   <tbody>
-		     {% for order in open_orders %}
+		     {% for order in working_orders %}
 		     <tr class="{% cycle 'even' 'odd' %}">
 		       	<td> {{ order.id }} </td> 
 				<td> {{ order.get_status_display }} </td> 
 				<td> {{ order.project_name }} </td> 
-				<td> {{ order.modified|date:"D, M j @ P T" }} </td>
+				<td> {{ order.updated }} {{ order.updated|date:"T" }} </td>
 				<td>
-				{% if order.client_editable %} 
-		       		<a href="{% url home.views.edit_order_detail order.id %}">Update</a> 
-				{% endif %}
-				{% ifequal "DLR" order.status %} 
-		       		<a href="{% url home.views.edit_order_detail order.id %}">Delete</a> 
-				{% endifequal %}
+	       		<a href="{% url home.views.edit_order_detail order.id %}">Update</a> 
 				{% if order.is_submittable %}
 					<a href="{% url home.views.dealer_submit_order order.id %}">Submit</a>
+				{% else %}
+					<a disabled=disabled href="{% url home.views.dealer_submit_order order.id %}">Submit</a>
 				{% endif %}
-				{% if order.is_completed %}
-					<a href="{{ order.designer_package.url }}">Review</a> 
-					<a href="{% url home.views.dealer_accept_order order.id %}">Accept</a> 
-					<a href="{% url home.views.dealer_reject_order order.id %}">Reject</a> 
-				{% endif %}
-				&nbsp;
 				</td>
 		     </tr>
 		     {% endfor %}
@@ -70,7 +61,7 @@ DesignFirst Customer Dashboard
 		     <tr class="{% cycle 'even' 'odd' %}">
 		       	<td> {{ order.id }} </td> 
 				<td> {{ order.project_name }} </td> 
-				<td> {{ order.submitted|date:"D, M j @ P T" }} </td> 
+				<td> {{ order.updated|date:"D, M j @ P T" }} </td> 
 				<td> ... working ... </td>
 		     </tr>
 		     {% endfor %}

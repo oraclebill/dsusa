@@ -209,4 +209,4 @@ class AttachmentForm(forms.ModelForm):
 class ApplianceForm(forms.ModelForm):
     class Meta:
         model = Appliance
-        exclude = ('order',)
+        # exclude = ('order',)

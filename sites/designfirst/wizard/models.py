@@ -28,11 +28,13 @@ class WorkingOrder(models.Model):
         (ASSIGNED, 'Assigned'),
     )
     owner = models.ForeignKey(User)
+    updated = models.DateTimeField(auto_now=True, editable=False)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=DEALER_EDIT)
     #Submit options
     color_views = models.BooleanField(default=False)
     elevations = models.BooleanField(default=False)
     quoted_cabinet_list = models.BooleanField(default=False)
+    
 
     
     
@@ -261,7 +263,7 @@ class AttachPreview(models.Model):
 class Appliance(models.Model):
     TYPES = ['Refrigerator', 'Microwave','Double sink','Cooktop','Oven']
     
-    order = models.ForeignKey(WorkingOrder)
+    order = models.ForeignKey(WorkingOrder, editable=False)
     type = models.CharField(max_length=100, choices=[(i,i) for i in TYPES])
     description = models.CharField(max_length=255, null=True, blank=True)
     width = DimensionField(null=True, blank=True)
