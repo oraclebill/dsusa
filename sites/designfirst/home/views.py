@@ -1,8 +1,8 @@
-
 ##
 ## python imports
 import logging as log
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 ##
 ## library imports 
@@ -17,6 +17,8 @@ from django.forms.models import modelformset_factory
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Q
+from django.db import transaction
+
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -151,8 +153,8 @@ def dealer_dashboard(request):
     orders = user.workingorder_set.all()
     transactions = account.transaction_set.all()
     
-    open_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
-    working_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )
+    working_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
+    submitted_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )
        ## TODO: fixme!
     archived_orders = orders.exclude( status__in = [ WorkingOrder.DEALER_EDIT, WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] ) 
         
@@ -280,6 +282,7 @@ def accept_floorplan_template_fax(request, orderid):
     pass
     
     
+@transaction.commit_on_success
 def dealer_submit_order(request, orderid):
     """
     Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
@@ -289,24 +292,26 @@ def dealer_submit_order(request, orderid):
     
     popup_error = None
     order = get_current_order(request, orderid)
-    if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
+    if order.attachments.filter(type__exact=Attachment.FLOORPLAN):
         account = request.user.get_profile().account.dealerorganization
         if account.credit_balance >= order.cost:
             ## TODO: transactions
             now = datetime.utcnow()
 
+            cost = order.cost or Decimal()
+            
             # update account
-            account.credit_balance = account.credit_balance - order.cost     
+            account.credit_balance = account.credit_balance - cost
             account.save()   
 
             # update order
-            order.dealer_submit()
+            order.save()
                         
             # update transction log
             tx = Transaction()
             tx.account = account
-            tx.amount = order.cost
-            tx.debit_or_credti = 'C'  
+            tx.amount = cost
+            tx.debit_or_credit = 'C'  
             tx.trans_type = 'C'
             tx.description = 'design credit purchase'
             tx.timestamp = now

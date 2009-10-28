@@ -10,14 +10,13 @@ DesignFirst Customer Dashboard
 <div id="orders" class="grid_9  suffix_1">
 
 	<div class="block">
-		<!-- live orders table -->
+		<!-- WORKING -->
 		<div id="working_orders_table">
 		   <table summary="orders requiring user input">
 		   <thead>
 		     <tr><th class="table-head" colspan="5">Working Orders</th></tr>
 		     <tr>
-		       <th>order id</th>
-		       <th>status</th>
+		       <th>id</th>
 		       <th>project</th>
 		       <th>last update</th>
 		       <th>actions</th>
@@ -27,16 +26,11 @@ DesignFirst Customer Dashboard
 		     {% for order in working_orders %}
 		     <tr class="{% cycle 'even' 'odd' %}">
 		       	<td> {{ order.id }} </td> 
-				<td> {{ order.get_status_display }} </td> 
 				<td> {{ order.project_name }} </td> 
 				<td> {{ order.updated }} {{ order.updated|date:"T" }} </td>
 				<td>
-	       		<a href="{% url home.views.edit_order_detail order.id %}">Update</a> 
-				{% if order.is_submittable %}
-					<a href="{% url home.views.dealer_submit_order order.id %}">Submit</a>
-				{% else %}
-					<a disabled=disabled href="{% url home.views.dealer_submit_order order.id %}">Submit</a>
-				{% endif %}
+    	       		<a href="{% url home.views.edit_order_detail order.id %}">Update</a> 
+    				<a href="{% url home.views.dealer_submit_order order.id %}">Submit</a>
 				</td>
 		     </tr>
 		     {% endfor %}
@@ -44,25 +38,27 @@ DesignFirst Customer Dashboard
 		  </table>
 		</div>
 		
-		<!-- working orders table -->
-		<div id="working_order_table" class="block">
+		<!-- SUBMITTED -->
+		<div id="assigned_order_table" class="block">
 		   <table summary="orders being processed ">
 		   <thead>
-		     <tr><th class="table-head" colspan="5">Working Orders</th></tr>
+		     <tr><th class="table-head" colspan="5">Submitted Orders</th></tr>
 		     <tr>
-		       <th>order id</th>
-		       <th>project</th>
+  		       <th>id</th>
 		       <th>submitted</th>
-		       <th>last update</th>
+		       <th>project</th>
+		       <th>eta</th>
+		       <th>flags</th>
 		     </tr>
 		   </thead>
 		   <tbody>
-		     {% for order in working_orders %}
+		     {% for order in submitted_orders %}
 		     <tr class="{% cycle 'even' 'odd' %}">
 		       	<td> {{ order.id }} </td> 
-				<td> {{ order.project_name }} </td> 
 				<td> {{ order.updated|date:"D, M j @ P T" }} </td> 
-				<td> ... working ... </td>
+				<td> {{ order.project_name }} </td> 
+				<td> {{ order.expected }} </td> 
+				<td> {{ order.flags }} </td> 
 		     </tr>
 		     {% endfor %}
 		   </tbody>

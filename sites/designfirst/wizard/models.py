@@ -38,7 +38,6 @@ class WorkingOrder(models.Model):
     
 
     
-    
     #New page
     project_name = models.CharField(max_length=150)
     desired = models.DateTimeField('Desired Completion')
