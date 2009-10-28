@@ -123,12 +123,33 @@ DesignFirst - Design Order
     			   <img src="{{ MEDIA_URL }}/images/disk.png"></a>
 			</p>
 			<p>
-			   Currently Attached File: [<span class="">{{order.client_diagram}}</span>]
+			   Currently Attachments : 
+			   <table border="0" cellspacing="5" cellpadding="5">
+			       <thead>
+    			     <tr><th>Timestamp</th>
+    			         <th>Document ID</th>
+    			         <th>Filename</th>
+    			         <th>Type</th>
+    			         <th>Delete?</th>
+    			         </tr>
+			       </thead>
+			       <tbody>
+			     {% for attachment in  order.attachments.all %}
+    			     <tr>
+    			         <td>{{ attachment.timestamp|date }} - {{ attachment.timestamp|time }}</td>
+    			         <td>{{ attachment.order.id }}-{{ attachment.id }}</td>
+    			         <td><a href="{{ attachment.file.url }}">{{ attachment.file.name }}</a></td>
+    			         <td>{{ attachment.get_type_display }}</td>
+    			         <td><a href="#">delete</a></td>
+		            </tr>			         
+			     {% endfor %}
+			     </tbody>
+			   </table>
 			   Source: <span>{{order.}}</span>
 			   <form action="." method="POST" enctype="multipart/form-data">
-   				   <input type="hidden" name="_formname" value="{{ file_upload.name }}">
+   				   <input type="hidden" name="_formname" value="{{ attachment_form.name }}">
 			       <fieldset>
-                        {{ file_upload }}
+                        {{ attachment_form }}
                         <input type="submit" name="submit" value="update">
 			       </fieldset>
 			   </form>
