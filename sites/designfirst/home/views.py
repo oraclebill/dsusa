@@ -289,7 +289,7 @@ def dealer_submit_order(request, orderid):
     
     popup_error = None
     order = get_current_order(request, orderid)
-    if order.is_submittable():
+    if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
         account = request.user.get_profile().account.dealerorganization
         if account.credit_balance >= order.cost:
             ## TODO: transactions
@@ -318,7 +318,7 @@ def dealer_submit_order(request, orderid):
     else:
         ##TODO: identify errors
         return HttpResponse('Order is incomplete. \
-              Press "[back]" to return to the order detail screen.')
+              Press "[back]" to return to the order detail screen and verify floorplan is attached.')
               
               
     return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
