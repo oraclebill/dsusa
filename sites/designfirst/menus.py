@@ -2,6 +2,7 @@ from menu import menus
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
+#lambda is needed to prevent running reverse until urlpatterns are loaded
 menus['dealer'] = lambda: (
     (_('Dashboard'), reverse('dealer-dashboard')),
     (_('New order'), reverse('new_order')),
