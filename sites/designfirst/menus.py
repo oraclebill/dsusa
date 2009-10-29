@@ -6,13 +6,13 @@ menus['dealer'] = lambda: (
     (_('Dashboard'), reverse('dealer-dashboard')),
     (_('New order'), reverse('new_order')),
     (_('Purchase Designs'), reverse('select_products')),
-    # (_('Account'), reverse('')),
     (_('Profile'), reverse('dealer-complete-profile')),
-    (_('With submenu'), (
-        (_('Dashboard'), reverse('dealer-dashboard')),
-        (_('New order'), reverse('new_order')),
-        (_('Purchase Designs'), reverse('select_products')),
-        ))
+    # (_('Account'), reverse('')),
+    # (_('With submenu'), (
+    #     (_('Dashboard'), reverse('dealer-dashboard')),
+    #     (_('New order'), reverse('new_order')),
+    #     (_('Purchase Designs'), reverse('select_products')),
+    #     ))
 )
 
 
