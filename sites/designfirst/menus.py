@@ -14,3 +14,12 @@ menus['dealer'] = lambda: (
         (_('Purchase Designs'), reverse('select_products')),
         ))
 )
+
+
+menus['admin'] = lambda: (
+    (_('Dashboard'), reverse('dealer-dashboard')),
+    (_('Process Registration'), reverse('registration_unauthorized')),
+    # Process Fax
+    # Customer Info
+    # Profile
+)

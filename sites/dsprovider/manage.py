@@ -10,6 +10,7 @@ _root=os.path.dirname(_root)
 
 local_path.append(os.path.join(_root,'lib'))
 local_path.append(os.path.join(_root,'sites'))
+local_path.append(os.path.join(_root,'apps'))
 
 sys.path = local_path + sys.path
 
