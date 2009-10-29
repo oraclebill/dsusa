@@ -178,11 +178,13 @@ class WorkingOrder(models.Model):
     
     
 class Moulding(models.Model):
-    TOP, BASE, BOTTOM = range(1,4)
+    TOP, BOTTOM, BASE, SCRIBE, OTHER = range(1,6)
     TYPE_CHOICES = (
         (TOP, _('Top of Wall Cabinet')),
         (BOTTOM, _('Bottom of Wall Cabinet')),
         (BASE, _('Base Cabinet')),
+        (SCRIBE, _('Scribe')),
+        (OTHER, _('Other')),
     )
     order = models.ForeignKey(WorkingOrder, related_name='mouldings')
     num = models.PositiveIntegerField(_('#'), )
