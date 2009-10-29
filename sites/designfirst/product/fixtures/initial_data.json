@@ -82,26 +82,5 @@
    "credit_value": 480, 
    "base_price": "400"
   }
- }, 
- {
-  "pk": "f719255ec14c11de82ce00254bb5eab6", 
-  "model": "product.invoice", 
-  "fields": {
-   "customer": 1, 
-   "status": "E", 
-   "description": "Quick Buy web purchase - Pro Design 6-4-5"
-  }
- }, 
- {
-  "pk": 1, 
-  "model": "product.invoiceline", 
-  "fields": {
-   "description": "Pro Design 6-4-5", 
-   "number": null, 
-   "unit_price": "425", 
-   "invoice": "f719255ec14c11de82ce00254bb5eab6", 
-   "_unit_credit": null, 
-   "quantity": 1
-  }
- }
+ } 
 ]
