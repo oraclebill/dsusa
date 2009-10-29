@@ -45,10 +45,10 @@ class HardwareForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fieldsets = [
-            ('Door', {
+            ('Door Handle Selection', {
                 'fields': ['door_handle_type', 'door_handle_model'], 
                 'image':NONE_IMG}),
-            ('Drawer', {
+            ('Drawer Handle Selection', {
                 'fields': ['drawer_handle_type', 'drawer_handle_model'], 
                 'image':NONE_IMG}),
         ]

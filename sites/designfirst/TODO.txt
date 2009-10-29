@@ -8,70 +8,24 @@ DONE	* 'cancel' button makes no sense
 
 New Order Screen
 
-DONE	* product names 
 	* desired -> rush	
-	
-+ verbose name for all fields in home/models
-+ removed 'cabinet_' prefix from all model fields
-+ added 'drawer_front_style' field	
-+ added 'finish_type' field
-+ renamed 'finish' to 'finish_color'
-TODO - finish_color/type should display as a compound field
-TODO - finish_color/type should be multivalue
-+ installed postgresql and validated django / app works (;)
-TODO - restrict access of non-'active' org users
-TODO - remove 'usertype' from profile (it comes from org type)
-TODO - remove 'default measurement' from profile (always inches)
-?TODO - remove 'price sheets' (not needed)
-TODO - add dealer profile edit/view page []
-+ added fields to detail depth and height for all of wall, vanity and base cabinets
-  - not the right way to do it...
-	- merge registration?
-TODO - use 'codes' instead of numbers for field abbreviations. 
-TODO - upload storage for design files
-TODO - implement directory organization for file storage
-+ made 'source' uneditable in attachments
-+ changed 'description' to 'model' and added 'options' to Appliances
-+ changed lengths of fields in Appliances to not be huge
-+ researched form metaclass model.. in the end just playing with the existing structure to create DRY fieldsets
-
-TODO - rationalize field sized in WorkingOrder
-	- FILESTORE_ROOT
-		- {CUSTOMERID}
-			- {ORDERID}
-				- SUBMITTED
-					- FAX
-					- UPLOAD
-				- DELIVERED
-				- NOTES
-			- {ORIG-ORDERID}-{REV-ORDERID}   <-- revisions
-				- * same as order * 
-TODO - breakout new 'reusable' app - 'customer' - precious data app..
-TODO - mouldings in wizard summary !!
-TODO - make summary DRY
-+ did some normalization in summary.py..
-+ enhanced summary section names..
-
-TODO - make summary translatable
-TODO - get better looking drop down boxes!!				
-  == nomenclature == ??
-	* tab navigation broken
 	* limit options or 'desired'
-	* visible indicators of validity in fields
-	* add dollar signs to currency fields
-	# diagram references
+	DONE	* product names 
+	MOVED	* tab navigation broken
+	MOVED	* visible indicators of validity in fields (css)
+	DONE	* add dollar signs to currency fields
 	
 Manufacturer Screen
 
-	* checkbox for stain vs. paint
-	* rename 'wood' to 'material'
+	DONE (dropdown)	* checkbox for stain vs. paint			
+	DONE	* rename 'wood' to 'material'
 	
 Hardware Screen
 
-	* Naming: "Hardware Selections"
-	* focus indication (css)
 	* disable 'model' when option is 'none'
-	* tab through individual options
+	DONE	* Naming: "Hardware Selections"
+	MOVED	* focus indication (css)
+	MOVED	* tab through individual options
 	
 Multi-user Problem?
 	
@@ -79,11 +33,11 @@ Multi-user Problem?
 	
 Moulding
 
-	* 'X' --> 'remove'
-	* add 'extra' option ??secondary??
-	* add 'scribe' option molding - there's a lot 
-	* order of molding options
-	* use 'molding' instead of 'moulding'
+	? use 'molding' instead of 'moulding'
+	REMOVE	* 'X' --> 'remove'
+	DONE	* add 'extra' option ??secondary??
+	DONE	* add 'scribe' option molding - there's a lot 
+	DONE	* order of molding options
 	
 
 Corner Boxes
@@ -142,8 +96,11 @@ Attachments
 Review
 
 	* Review section headers should link to section
+	* summary - false --> "No"
 	
 General	
+	* tab based navigation
+	* focus indicators
 	* all lengths in inches, using decimal notation
 		- if user use fractional notations, correct them and/or display value as decimal
 		.. 'dimensionfield' ..
@@ -152,5 +109,61 @@ General
 	* catalog and index EK images
 	* tooltips
 	* autocomplete
-	* nomenclature based lookups
+	## diagram references
+	## nomenclature based lookups
 		- nomenclature 'Dictionaries'
+		
+		=========================================================================
+		=========================================================================
+		=========================================================================
+		=========================================================================
+		=========================================================================
+		
+		
+=== 2am ===
+ - TODO - make summary translatable
+    + added verbose name for all fields in home/models
+    + removed 'cabinet_' prefix from all model fields
+    + added 'drawer_front_style' field	
+    + added 'finish_type' field
+    + renamed 'finish' to 'finish_color'
+ - TODO - finish_color/type should display as a compound field
+ - TODO - finish_color/type should be multivalue
+    + installed postgresql and validated django / app works (;)
+ - TODO - restrict access of non-'active' org users
+ - TODO - remove 'usertype' from profile (it comes from org type)
+ - TODO - remove 'default measurement' from profile (always inches)
+ - TODO?? - remove 'price sheets' (not needed)
+ - TODO - add dealer profile edit/view page []
+    + added fields to detail depth and height for all of wall, vanity and base cabinets
+  - not the right way to do it...
+	- merge registration?
+ - TODO - use 'codes' instead of numbers for field abbreviations. 
+ - TODO - upload storage for design files
+ - TODO - implement directory organization for file storage
+    + made 'source' uneditable in attachments
+    + changed 'description' to 'model' and added 'options' to Appliances
+    + changed lengths of fields in Appliances to not be huge
+    + researched form metaclass model.. in the end just playing with the existing structure 
+		to create DRY fieldsets
+
+ - TODO - rationalize field sized in WorkingOrder
+	- FILESTORE_ROOT
+		- {CUSTOMERID}
+			- {ORDERID}
+				- SUBMITTED
+					- FAX
+					- UPLOAD
+				- DELIVERED
+				- NOTES
+			- {ORIG-ORDERID}-{REV-ORDERID}   <-- revisions
+				- * same as order * 
+ - TODO - breakout new 'reusable' app - 'customer' - precious data app..
+ - TODO - mouldings in wizard summary !!
+ - TODO - make summary DRY
+    + did some normalization in summary.py..
+    + enhanced summary section names..
+ - TODO - get better looking drop down boxes!!				
+
+
+=== 7am ===		
