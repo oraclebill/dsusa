@@ -123,7 +123,7 @@ class WorkingOrder(models.Model):
         (S_STG_HBC, _('Staggered Height Base Cabinets')),
         (S_STG_DBC, _('Staggered Depth Base Cabinets')))
 
-    STANDARD_SIZES = [16, 32, 36]
+    STANDARD_SIZES = [12,15,18,21,24,27,30,36,42]
     dimension_style = models.PositiveSmallIntegerField(_('Cabinet Arrangements'), choices=STYLE_CHOICES, default=S_NONE)
     standard_sizes = models.BooleanField(_('Use Standard Sizes'))   
     wall_cabinet_height = DimensionField(_('Wall Cabinet Height'), null=True, blank=True)

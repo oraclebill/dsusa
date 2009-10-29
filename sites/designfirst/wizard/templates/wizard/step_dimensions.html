@@ -16,7 +16,9 @@
 		var options = '<option></option>'
 		for (var i=0; i<standard_sizes.length; i++) {
 			var selected = ''
-			if (value == standard_sizes[i])
+			if (value=='' && i==0)
+				selected = ' selected="selected"'
+			else if (value == standard_sizes[i])
 				selected = ' selected="selected"'
 			options += '<option value="'+standard_sizes[i]+'"'+selected+'> '+standard_sizes[i]+'&#148; </option>'
 		}
@@ -35,9 +37,12 @@
 	}
 
 	function toggle_fields(standard) {
-		replace_widget('id_wall_cabinet_height', 'wall_cabinet_height', standard)
-		replace_widget('id_vanity_cabinet_height', 'vanity_cabinet_height', standard)
-		replace_widget('id_depth', 'depth', standard)
+		// replace_widget('id_wall_cabinet_height', 'wall_cabinet_height', standard)
+		// replace_widget('id_wall_cabinet_depth', 'wall_cabinet_depth', ['12"','24"'])
+		// replace_widget('id_base_cabinet_height', 'base_cabinet_height', ['34.5"'])
+		// replace_widget('id_base_cabinet_depth', 'base_cabinet_depth', ['24"'])
+		// replace_widget('id_vanity_cabinet_height', 'vanity_cabinet_height', ['30"', '34.5"'])
+		// replace_widget('id_vanity_cabinet_depth', 'vanity_cabinet_depth', ['24.5"'])
 	}
 	
 	$(function(){
