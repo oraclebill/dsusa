@@ -8,30 +8,29 @@ from utils.forms import FieldsetForm
 
 NONE_IMG = settings.MEDIA_URL + 'wizard/none.png'
 
+def fieldset_fields(fieldsets):
+    fieldlist = []
+    for fset in fieldsets:
+        fieldlist.extend( fset[1]['fields']) # dups possible..
+    return fieldlist
+    
 class ManufacturerForm(forms.ModelForm, FieldsetForm):
-    class Meta:
-        model = WorkingOrder
-        fields = [
-            'cabinet_manufacturer',
-            'cabinet_product_line',
-            'cabinet_door_style',
-            'cabinet_wood',
-            'cabinet_finish',
-            'cabinet_finish_options',
-            'cabinetry_notes'
-        ]
-    name = 'Manufacturer Selection'
-    fieldsets = [
-        (None, {
-            'fields': ['cabinet_manufacturer','cabinet_product_line','cabinet_door_style','cabinet_wood','cabinet_finish','cabinet_finish_options']}),
-        ('Notes', {
-            'fields': ['cabinetry_notes'], 
-            'styles': 'collapse'}),
-    ]
     class Media:
         css = {'all': ('css/jquery.autocomplete.css',)}
         js = ('js/jquery.autocomplete.js', )
-
+    class Meta:
+        model = WorkingOrder
+        fieldsets = [
+            (None, {
+                'fields': ['manufacturer','product_line','cabinet_material','door_style','drawer_front_style','finish_type','finish_color','finish_options']}),
+            # ('Notes', {
+            #     'fields': ['cabinetry_notes'], 
+            #     'styles': 'collapse'}),
+        ]
+        fields = fieldset_fields(fieldsets)
+        
+    name = 'Manufacturer Selection'
+    fieldsets = Meta.fieldsets
 
 
 def HandleType(**kwargs):
@@ -40,26 +39,21 @@ def HandleType(**kwargs):
                              label='Type', **kwargs)
 
 class HardwareForm(forms.ModelForm, FieldsetForm):
+    name = 'Hardware Selection'
     door_handle_type = HandleType()
     drawer_handle_type = HandleType()
     class Meta:
         model = WorkingOrder
-        fields = [
-            'door_handle_type',
-            'door_handle_model',
-            'drawer_handle_type',
-            'drawer_handle_model',
+        fieldsets = [
+            ('Door', {
+                'fields': ['door_handle_type', 'door_handle_model'], 
+                'image':NONE_IMG}),
+            ('Drawer', {
+                'fields': ['drawer_handle_type', 'drawer_handle_model'], 
+                'image':NONE_IMG}),
         ]
-    name = 'Hardware Selection'
-    fieldsets = [
-        ('Door', {
-            'fields': ['door_handle_type', 'door_handle_model'], 
-            'image':NONE_IMG}),
-        ('Drawer', {
-            'fields': ['drawer_handle_type', 'drawer_handle_model'], 
-            'image':NONE_IMG}),
-    ]
-
+        fields = fieldset_fields(fieldsets)
+    fieldsets=Meta.fieldsets
 
 
 
@@ -106,46 +100,41 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
                              label='')
     class Meta:
         model = WorkingOrder
-        fields = [
-            'dimension_style',
-            'standard_sizes',
-            'wall_cabinet_height',
-            'vanity_cabinet_height',
-            'depth'
+        fieldsets = [
+            ('Stacking and Staggering Options', {
+                'fields': ['dimension_style', 'standard_sizes'] }),
+            ('Wall Cabinets', {
+                'fields': ['wall_cabinet_height', 'wall_cabinet_depth']}),
+            ('Base Cabinets', {
+                'fields': ['base_cabinet_height', 'base_cabinet_depth']}),
+            ('Vanity Cabinets', {
+                'fields': ['vanity_cabinet_height', 'vanity_cabinet_depth']}),
         ]
-    fieldsets = [
-        ('Stacking and Staggering Options', ['dimension_style']),
-        ('Sizes', ['standard_sizes', 'wall_cabinet_height', 'vanity_cabinet_height', 'depth']),
-    ]
+        fields = fieldset_fields(fieldsets)
+    fieldsets = Meta.fieldsets
 
 
 class CornerCabinetForm(forms.ModelForm, FieldsetForm):
     name = 'Corner Cabinet Options'
     class Meta:
         model = WorkingOrder
-        fields = [
-            'diagonal_corner_base',
-            'diagonal_corner_base_shelv',
-            'diagonal_corner_wall',
-            'diagonal_corner_wall_shelv',
-            'degree90_corner_base',
-            'degree90_corner_base_shelv',
-            'degree90_corner_wall',
+        fieldsets = [
+            ('Diagonal corner wall', {
+                    'fields': ['diagonal_corner_wall', 'diagonal_corner_wall_shelv'], 
+                    'image':NONE_IMG}),
+            ('Diagonal corner base', {
+                    'fields': ['diagonal_corner_base', 'diagonal_corner_base_shelv'], 
+                    'image':NONE_IMG}),
+            ('90 Degree corner wall', {
+                    'fields': ['degree90_corner_wall'], 
+                    'image':NONE_IMG}),
+            ('90 Degree corner base', {
+                    'fields': ['degree90_corner_base', 'degree90_corner_base_shelv'], 
+                    'image':NONE_IMG}),
         ]
-    fieldsets = [
-        ('Diagonal corner wall', {
-                'fields': ['diagonal_corner_wall', 'diagonal_corner_wall_shelv'], 
-                'image':NONE_IMG}),
-        ('Diagonal corner base', {
-                'fields': ['diagonal_corner_base', 'diagonal_corner_base_shelv'], 
-                'image':NONE_IMG}),
-        ('90 Degree corner wall', {
-                'fields': ['degree90_corner_wall'], 
-                'image':NONE_IMG}),
-        ('90 Degree corner base', {
-                'fields': ['degree90_corner_base', 'degree90_corner_base_shelv'], 
-                'image':NONE_IMG}),
-    ]
+        fields = fieldset_fields(fieldsets)
+    fieldsets = Meta.fieldsets
+    
     field_styles = {
         'diagonal_corner_wall_shelv': 'right_float_field',
         'diagonal_corner_base_shelv': 'right_float_field',
@@ -167,12 +156,11 @@ class InteriorsForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fields = [
-            'lazy_susan',
             'slide_out_trays',
             'waste_bin',
             'wine_rack',
             'plate_rack',
-            'apliance_garage'
+            'appliance_garage'
         ]
     fieldset_image = NONE_IMG
 
@@ -182,16 +170,15 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
     class Meta:
         model = WorkingOrder
         fields = [
-            'corables',
+            'corbels',
             'brackets',
             'valance',
-            'leas_feet',
+            'legs_feet',
             'glass_doors',
             'range_hood',
             'posts',
         ]
     fieldset_image = NONE_IMG
-
 
 
 ## TODO: do this right..

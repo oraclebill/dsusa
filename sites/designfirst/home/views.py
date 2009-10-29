@@ -173,6 +173,7 @@ def create_order(request, *args):
             order = form.save(commit=False)
             order.client_account = account#TODO: there is actually no client_account in working order
             order.owner = request.user
+	    order.submitted = datetime.now()
             order.save()
                         
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))

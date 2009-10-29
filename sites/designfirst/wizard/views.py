@@ -190,7 +190,7 @@ def print_order(request, id):
 def is_existing_manufacturer(order):
     #TODO: move to Manufacturer model
     try:
-        Manufacturer.objects.get(name=order.cabinet_manufacturer)
+        Manufacturer.objects.get(name=order.manufacturer)
         return True
     except Manufacturer.DoesNotExist:
         return False
