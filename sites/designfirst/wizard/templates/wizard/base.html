@@ -89,7 +89,7 @@ $(function(){
 <form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
 <input type="hidden" name="next_step_" id="next_step" value="_next_">
 {% block wizard-base-content %}
-<div id="wizard_content" class="grid_11">
+<div id="wizard_content" class="grid_11 alpha">
 <fieldset>
 	<legend>{{wizard.step_title}}</legend>
 	{% block wizard-content %}
@@ -122,12 +122,14 @@ $(function(){
 
 <div class="clear"></div>
 
-<div class="grid_13" style="text-align: center;">
-<!--
+<div class="grid_2" style="text-align: center;">
+
+<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+<a href="/dealer/">Back to dashboard</a>
+</div>
+<div class="grid_3 prefix_11">
 <input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 <input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
-<input type="submit" name="{{BTN_SKIP}}" value="Skip">
--->
 </div>
 
 <div class="clear"></div>

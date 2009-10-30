@@ -167,16 +167,14 @@ def _order_review(request, wizard):
             return HttpResponseRedirect('/dealer/')
     else:
         form = SubmitForm(instance=order)
-    summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
+    result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
     exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
     for title, excl in summary.SUBMIT_SUMMARY:
         exclude += excl
     OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
-    summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
+    result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
     print form
-    return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
-    return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
-    return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
+    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 
 @render_to('print_order.html')
 def print_order(request, id):
