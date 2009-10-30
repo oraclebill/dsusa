@@ -76,7 +76,7 @@ def home(request):
     return render_to_response( 'home/home.html',context_instance=RequestContext(request) )
 
 
-def do_login(request):
+def do_login(request, next=None):
     """
     Log user in and direct them to the proper area.
     
@@ -93,10 +93,9 @@ def do_login(request):
             try:
                 profile = user.get_profile()
             except UserProfile.DoesNotExist:
-                return HttpResponseRedirect(reverse('dealer-complete-profile') )                
-                
-            usertype = profile.usertype            
-            return HttpResponseRedirect( '/%s/' % usertype )
+                return HttpResponseRedirect(reverse('dealer-complete-profile') )                                
+            next = request.POST.get('next')   
+            return HttpResponseRedirect( next or '/dealer/' )
         else:
             login_message="User is locked. Please contact support"
     else:
@@ -161,6 +160,7 @@ def dealer_dashboard(request):
                                 context_instance=RequestContext(request) ) 
  
 
+@login_required
 def create_order(request, *args):
     """
     Create a new order.
@@ -222,6 +222,8 @@ def process_form(form_class, order_inst, data=None, files=None, model_class=Work
         name = '%s_form' % model.__name__.lower() 
         return (name, form)
 
+
+@login_required
 def edit_order_detail(request, order_id):
     """
     Editable detailed design order display. 
@@ -274,14 +276,17 @@ def edit_order_detail(request, order_id):
     return render_to_response( "home/dealer_order_detail.html", context_instance=context )
     
         
+@login_required
 def accept_floorplan_template_upload(request, orderid):
     pass
     
 
+@login_required
 def accept_floorplan_template_fax(request, orderid):
     pass
     
     
+@login_required
 @transaction.commit_on_success
 def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
     """
@@ -333,6 +338,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
                 context_instance=RequestContext(request))
     
     
+@login_required
 def dealer_review_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
@@ -349,6 +355,7 @@ def dealer_review_order(request, orderid):
     return render_to_response( "home/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
+@login_required
 def dealer_accept_order(request, orderid):
     order = get_current_order(request, orderid)
     if request.method == "GET":
@@ -366,6 +373,7 @@ def dealer_accept_order(request, orderid):
     return render_to_response( "home/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
+@login_required
 def dealer_reject_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
@@ -382,6 +390,7 @@ def dealer_reject_order(request, orderid):
     return render_to_response( "home/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
+@login_required
 def generate_floorplan_template(request, orderid):
     """
     Generate a floorplan template, customized to the current user (dealer) and order.
@@ -410,6 +419,7 @@ def _generate_floorplan_template(order):
     
     return response
     
+@login_required
 def remove_order_appliance(request, orderid, appliance_key):
     order = get_current_order(request, orderid)
     # verify appliance is child of order
