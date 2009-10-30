@@ -46,26 +46,26 @@
 	}
 	
 	$(function(){
-		toggle_fields($('#id_standard_sizes').get(0).checked)
-		
-		$('#id_standard_sizes').change(function() {
-			toggle_fields(this.checked)
-		})
-		
-		//Fixing navigation
-		$('#id_depth').keydown(function(event){
-			if (event.keyCode == KEY_TAB && !event.shiftKey) {
-				wizard_go_to('_next_');
-				return false;
-			}
-		})
+		// toggle_fields($('#id_standard_sizes').get(0).checked)
+		// 
+		// $('#id_standard_sizes').change(function() {
+		// 	toggle_fields(this.checked)
+		// })
+		// 
+		// //Fixing navigation
+		// $('#id_depth').keydown(function(event){
+		// 	if (event.keyCode == KEY_TAB && !event.shiftKey) {
+		// 		wizard_go_to('_next_');
+		// 		return false;
+		// 	}
+		// })
 
 		//Stack/Staggering images
-		var img_html = '<img id="stack_sgage" src="/media/images/wizard/dimensions.png" style="float: right; width: 300px; height: 200px;">'
+		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/dimensions.png" style="float: right; width: 300px; height: 200px;">'
 		$(img_html).insertAfter('fieldset fieldset:first legend')
 		
 		function switch_image() {
-			var val = $('input.dimension_style[checked]').val();
+			var val = $('input.dimension_style[checked]:radio').val();
 			var image = '{{stack_images_base}}' + stack_images[val];
 			$('#stack_sgage').attr('src', image);
 		}

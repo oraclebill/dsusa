@@ -91,7 +91,11 @@ def order_summary(order, summary_fields):
     result = []
     for name, list in summary_fields:
         values = []
-        for field in list:
+        for val in list:
+            if hasattr(val, '__iter__'):
+                field, val = val
+            else:
+                field = val
             item_name = WorkingOrder._meta.get_field(field).verbose_name
             item_name = capfirst(item_name)
             if hasattr(order, 'get_%s_display' % field):

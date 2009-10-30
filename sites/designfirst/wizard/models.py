@@ -42,7 +42,7 @@ class WorkingOrder(models.Model):
     color_views = models.BooleanField(_('Include Color Perspectives'), default=False)
     elevations = models.BooleanField(_('Include Elevations'), default=False)
     quoted_cabinet_list = models.BooleanField(_('Include Cabinetry Quote'), default=False)
-    desired = models.DateTimeField('Desired Delivered Date')
+    desired = models.DateTimeField('Desired Delivered Date', null=True)
     cost = models.DecimalField(_('Total Design Cost'), max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes for the Designer', null=True, blank=True)
 
@@ -107,18 +107,18 @@ class WorkingOrder(models.Model):
     drawer_handle_model = models.CharField(_('Model/Style'), max_length=255, null=True, blank=True)
     
     #Soffits page
-    has_soffits = models.NullBooleanField(_('Has Soffits?'), null=True, blank=True)
+    has_soffits = models.BooleanField(_('Has Soffits?'), blank=True, default=False)
     soffit_width = DimensionField(_('Width'), null=True, blank=True)
     soffit_height = DimensionField(_('Height'), null=True, blank=True)
     soffit_depth = DimensionField(_('Depth'), null=True, blank=True)
     
     
     #Dimension page
-    S_NONE, S_STACKED, S_STG_HWC, S_STG_DHWC, S_STG_HBC, S_STG_DBC = range(6)
+    S_NONE, S_STACKED, S_STG_HWC, S_STG_HWD, S_STG_DHWC, S_STG_HBC, S_STG_DBC = range(7)
     STYLE_CHOICES = (
         (S_NONE, _('Normal')),
         (S_STACKED, _('Stacked Wall Cabinets')),
-        (S_STG_HWC, _('Staggered Height Wall Cabinets')),
+        (S_STG_HWC, _('Staggered Depth Wall Cabinets')),
         (S_STG_DHWC, _('Staggered Depth and Height Wall Cabinets')),
         (S_STG_HBC, _('Staggered Height Base Cabinets')),
         (S_STG_DBC, _('Staggered Depth Base Cabinets')))

@@ -94,7 +94,8 @@ def do_login(request, next=None):
                 profile = user.get_profile()
             except UserProfile.DoesNotExist:
                 return HttpResponseRedirect(reverse('dealer-complete-profile') )                                
-            next = request.POST.get('next')   
+            next = request.POST.get('next') 
+            request.session.set_expiry(0)  # expire at browser close  
             return HttpResponseRedirect( next or '/dealer/' )
         else:
             login_message="User is locked. Please contact support"
@@ -177,13 +178,8 @@ def create_order(request, *args):
                         
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
     else:
-        desired = (datetime.now() + timedelta(days=2))
-        form = NewDesignOrderForm(initial={'desired': desired, 'cost':None})
+        form = NewDesignOrderForm()
     
-    #Prices is used to get price from product when user switches product in from
-    prices = dict([(p.id, float(p.customer_price(account))) 
-                   for p in Product.objects.all()])
-    prices = simplejson.dumps(prices)
     return render_to_response('home/create_order.html', locals(),                                
                               context_instance=RequestContext(request) ) 
 

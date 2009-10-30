@@ -102,7 +102,8 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
         model = WorkingOrder
         fieldsets = [
             ('Stacking and Staggering Options', {
-                'fields': ['dimension_style', 'standard_sizes'] }),
+                # 'fields': ['dimension_style', 'standard_sizes'] }),
+                'fields': ['dimension_style'] }),
             ('Wall Cabinets', {
                 'fields': ['wall_cabinet_height', 'wall_cabinet_depth']}),
             ('Base Cabinets', {

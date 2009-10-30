@@ -42,12 +42,9 @@ Moulding
 
 Corner Boxes
 
-	* stacking image doesn't change on focus
 	* sizes -> use real values
-	* navigation via icons
-		- mouse over images heat up
-		- enlarge click area around buttons
-		- tooltips on hover
+DONE	* page title incorrect
+DONE	* stacking image doesn't change on focus
 		
 Corner Cabinets
 	
@@ -101,6 +98,10 @@ Review
 General	
 	* tab based navigation
 	* focus indicators
+	* navigation via icons
+		- mouse over images heat up
+		- enlarge click area around buttons
+		- tooltips on hover
 	* all lengths in inches, using decimal notation
 		- if user use fractional notations, correct them and/or display value as decimal
 		.. 'dimensionfield' ..
@@ -167,3 +168,6 @@ General
 
 
 === 7am ===		
+11pm - 2am : mail server setup
+
+=== 2:30 am ==

@@ -42,14 +42,9 @@ class DealerProfileForm(forms.ModelForm):
 class NewDesignOrderForm(forms.ModelForm):
     class Meta: 
         model = WorkingOrder
-        fields = ['project_name', 'desired', 'cost', 'client_notes']
+        fields = ['project_name', 'design_product', 'rush', 'client_notes']
     
     design_product = forms.ModelChoiceField(queryset=Product.objects.filter(debitable=True))
-    
-    def __init__(self, *args, **kwargs):
-        #changing order of the fields
-        self.base_fields.keyOrder = ['project_name', 'design_product', 'desired', 'client_notes']
-        super(NewDesignOrderForm, self).__init__(*args, **kwargs)
     
 
 class DesignOrderForm(forms.ModelForm):
