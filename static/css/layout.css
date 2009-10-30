@@ -545,7 +545,14 @@ table.form {
 	width: 500px;
 }
 
+input {
+    padding: 1px;
+}
 
+select {
+    font-size: 1em;
+    border: 1px solid #999999;
+}
 /* Wizard ------------------------- */
 
 #wizard_steps div {

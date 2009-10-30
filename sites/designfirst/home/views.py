@@ -22,6 +22,7 @@ from django.db import transaction
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 ##
 ## imports from other apps
@@ -136,6 +137,7 @@ def create_profile(request):
                 context_instance=RequestContext(request))
                 
     
+@login_required
 def dealer_dashboard(request):
     """
     Display summary information for areas of dealer interest, provide primary navigation to work areas.
@@ -143,10 +145,7 @@ def dealer_dashboard(request):
     TODO - document
     """
     
-    user = request.user
-    if user is None or not user.is_authenticated():
-        return HttpResponseRedirect('/')
-    
+    user = request.user    
     account = request.user.get_profile().account.dealerorganization
     
     # orders = account.created_orders.all()
