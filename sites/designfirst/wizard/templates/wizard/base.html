@@ -135,7 +135,6 @@ $(function(){
 	{% block wizard-content %}
 	{% endblock %}
 </fieldset>
-</form>
 </div>
 
 
@@ -173,7 +172,6 @@ $(function(){
 <a href="/dealer/">Back to dashboard</a>
 </div>
 <div class="grid_3 prefix_11">
-<form method="POST" id="wizard_nav_form">
 <input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 <input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
 </form>
