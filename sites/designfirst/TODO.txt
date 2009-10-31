@@ -70,7 +70,7 @@ Miscellaneous
 Interiors
 
 	* add count to slide out trays
-	* remove "lazy susan" (duplicate)
+FIXED	* remove "lazy susan" (duplicate)
 	* add 'recycle bin' 
 	* add 'same cabinet' option when 'waste' and 'recycle' selected
 	* add 'stem glass rack'
