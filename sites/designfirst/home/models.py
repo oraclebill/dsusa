@@ -43,7 +43,34 @@ class Organization(models.Model):
     company_phone = models.CharField(max_length=20, blank=True)
     company_fax = models.CharField(max_length=20, blank=True)
     company_email = models.EmailField()
-    
+
+
+    account_repr = models.CharField(verbose_name=_('Account Representative'),
+                                   blank=True, max_length=80)
+
+    locations_num = models.IntegerField(verbose_name=_('Number of locations'),
+                                   blank=True, null=True)
+    rush = models.BooleanField(verbose_name=_('Rush My Signup!'))
+
+    product_type = models.CharField(
+        verbose_name=_("Prefered design product type"),
+        choices=(
+            ('pro', 'Pro Design - 20/20 .KIT File plus cabinet quote report.'),
+            ('presentation', 'Presentation Pack - 20/20 file plus printable full-color perspective views, floorplan and cabinet elevations, and cabinet quote report (retail).'),
+            ('dunno', 'Not sure.'),
+        ), blank=True, max_length=20
+    )
+
+    revisions = models.IntegerField(
+        verbose_name=_('How many revisions do you typically produce for a customer?'),
+        choices=(
+            (1, 'One - the first one usually does it'),
+            (2, 'Two - the original plus a touch up'),
+            (3, 'Three - the original and two updates'),
+            (4, 'Four or more'),
+        ), null=True, blank=True
+    )
+
     def __unicode__(self):
         return self.company_name
     
@@ -57,7 +84,8 @@ class DealerOrganization(Organization):
     review the status of any orders that they have created. 
     """
                                 
-    default_measure_units = models.CharField(max_length=3, choices=DIMENSION_UNIT_CHOICES)
+    default_measure_units = models.CharField(max_length=3,
+                                             default=INCH_DIMENSION, choices=DIMENSION_UNIT_CHOICES)
     credit_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 #     price_sheet = models.ForeignKey(PriceSchedule,blank=True,null=True)
     

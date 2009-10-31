@@ -5,6 +5,7 @@ Forms and validation code for user registration.
 
 
 from django.contrib.auth.models import User
+from django.db.models import ObjectDoesNotExist
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -52,7 +53,7 @@ class RegistrationForm(forms.Form):
         """
         try:
             user = User.objects.get(username__iexact=self.cleaned_data['username'])
-        except User.DoesNotExist:
+        except ObjectDoesNotExist:
             return self.cleaned_data['username']
         raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
 
