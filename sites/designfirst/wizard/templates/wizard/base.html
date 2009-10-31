@@ -8,6 +8,42 @@
 
 
 {% block extra-head %}
+<style>
+#summary_content {
+  height: 500px;
+  margin-right: -10px;
+  padding-right: 10px;
+  overflow: auto;
+}
+
+#summary_content fieldset {
+}
+
+#summary_content fieldset legend {
+  background: inherit;
+  border: none;
+  font-weight: bolder;
+}
+
+#summary_content dl {
+  margin-bottom: 0;
+}
+
+#summary_content dt {
+  display: run-in;
+  font-weight: bolder;
+  padding: .25em .5em;
+  background: #cccccc;
+}
+
+#summary_content dd {
+  padding-top: .25em;
+  padding-left: 2em;
+  margin-bottom: 1em;
+}
+
+</style>
+
 	{{form.media}}
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
@@ -70,7 +106,8 @@ $(function(){
 
 
 {% block content %}
-
+</div> <!-- end container -->
+<div class="container_16">
 <div id="wizard_steps" class="grid_16">
 {% block wizard-steps%}
 	{% for step in wizard.get_tabs %}
@@ -81,58 +118,69 @@ $(function(){
 		</div>
 	{% endfor %}
 {% endblock %}
-</div>
 <div class="clear"></div>
+</div>
 
 
 
+</div> <!-- end container -->
+<div class="container_16 clearfix">
+
+{% block wizard-base-content %}
+<div id="wizard_content" class="grid_11 ">
 <form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
 <input type="hidden" name="next_step_" id="next_step" value="_next_">
-{% block wizard-base-content %}
-<div id="wizard_content" class="grid_11">
 <fieldset>
 	<legend>{{wizard.step_title}}</legend>
 	{% block wizard-content %}
 	{% endblock %}
 </fieldset>
+</form>
 </div>
 
 
-<div id="wizard_summary"  class="gird_5">
+<div id="wizard_summary"  class="grid_5 ">
 <fieldset>
 	<legend>Order summary</legend>
 	{% block wizard-summary%}
 	Project Name: <strong>{{wizard.order}}</strong>
 	
-	<div style="height: 300px; overflow: auto;"">
+	<div id="summary_content">
 	{% for section, values in wizard.get_summary %}
-		<fieldset>
-			<legend>{{section}}</legend>
+	<fieldset>
+		<legend>{{section}}</legend>
+		<dl>
 		{% for name, value in values %}
-			{{name}}: {{value}}<br>
+		    <dt>{{name}}</dt><dd>{{value|default:"Not Specified"}}</dd>
 		{% endfor %}
-		</fieldset>
+		</dl>
+	</fieldset>
 	{% endfor %}
 	</div>	
 	{% endblock %}
 </fieldset>
 </div>
 
+
 {% endblock wizard-base-content %}
 
-<div class="clear"></div>
+</div> <!-- end container -->
+<div class="container_16">
 
-<div class="grid_13" style="text-align: center;">
-<!--
+<div class="grid_2" style="text-align: center;">
+
+<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+<a href="/dealer/">Back to dashboard</a>
+</div>
+<div class="grid_3 prefix_11">
+<form method="POST" id="wizard_nav_form">
 <input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 <input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
-<input type="submit" name="{{BTN_SKIP}}" value="Skip">
--->
+</form>
 </div>
 
 <div class="clear"></div>
 
-</form>
 
 
 

@@ -28,47 +28,45 @@ function show_details(type, caption) {
 
 {% block wizard-base-content %}
 <form method="POST">
-<div class="grid_5">
-	<fieldset>
-		<legend>Order information</legend>
-		Project Name: <strong>{{order}}</strong><br>
-		Order #: <strong>{{order.id}}</strong><br>
-	</fieldset>
-</div>
-<div class="grid_5">
-	<fieldset>
-		<legend>Format options</legend>
-		<table>{{form}}</table>
-	</fieldset>
-</div>
-<div class="grid_6">
-	<fieldset>
-		<legend>Order control</legend>
-			<input type="submit" value="Submit">
-			<a href="{% url print-order order.id %}">Print</a>
-	</fieldset>
-</div>
-</form>
+    <div class="grid_6 alpha">
+    	<div class="box"> 
+    	    <h2>Submit Project</h2>
+    	    <div>
+        		Project Name: <strong>{{order.project_name}}</strong><br>
+        		Order #: <strong>{{order.id}}</strong><br>		
+        	</div>
+    	</div>
+    	<div class="box"> 
+    	    <h2>Set Processing Options</h2>
+    	    <div>
+        		<table>{{form}}</table>
+        	</div>
+    	</div>
+    	<div class="box">
+        	<a href="{% url print-order order.id %}">Print</a>
+    		<input type="submit" value="Submit">
+    	</div>
+    </div>
 
-<div class="clear"></div>
-
-<div class="grid_5">
-	{% for section, values in data.items %}
-		{% ifequal section "Options" %}
-		{% else %}
-		<fieldset>
-			<legend>{{section}}</legend>
-		{% for name, value in values %}
-			{{name}}: {{value}}<br>
-		{% endfor %}
-		</fieldset>
-		{% endifequal %}
-	{% endfor %}
-</div>
-
-
-<div  class="gird_11">
-<fieldset>
+<div class="grid_10 omega">
+	<div class="box"> 
+	    <h2>Design Selections</h2>
+	    <div>
+        	{% for section, values in data.items %}
+        		{% ifequal section "Options" %}
+        		{% else %}
+        		<div class="box">
+        			<h2>{{section}}</h2>
+        			<div>
+            		{% for name, value in values %}
+            			<p>{{name}}: {{value}}</p>
+            		{% endfor %}
+            		</div>
+        		</div>
+        		{% endifequal %}
+        	{% endfor %}
+    	</div>
+    <fieldset>
 	<legend id="caption">Options</legend>
 		<div id="options" class="details">
 		<table>
@@ -90,7 +88,7 @@ function show_details(type, caption) {
 				<th>Depth</th>
 				<th> </th>
 			</tr>
-			{% for item in order.appliance_set.all %}
+			{% for item in order.appliances.all %}
 			<tr class="row{% cycle "1" "2"%}">
 				<td>{{item.type}}</td>
 				<td>{{item.description|default:"N/A"}}</td>
@@ -115,6 +113,7 @@ function show_details(type, caption) {
 		<input type="button" value="Applicances" onclick="show_details('applicances', 'Applicances')">
 		<input type="button" value="Diagrams" onclick="show_details('diagrams', 'Diagrams')">
 </fieldset>
+</form>
 
 </div>
 

@@ -1,0 +1,173 @@
+  - 10/22 meeting items -
+
+
+Dashboard
+
+DONE	* "New Order" menu option replaces 'new' button
+DONE	* 'cancel' button makes no sense
+
+New Order Screen
+
+	* desired -> rush	
+	* limit options or 'desired'
+	DONE	* product names 
+	MOVED	* tab navigation broken
+	MOVED	* visible indicators of validity in fields (css)
+	DONE	* add dollar signs to currency fields
+	
+Manufacturer Screen
+
+	DONE (dropdown)	* checkbox for stain vs. paint			
+	DONE	* rename 'wood' to 'material'
+	
+Hardware Screen
+
+	* disable 'model' when option is 'none'
+	DONE	* Naming: "Hardware Selections"
+	MOVED	* focus indication (css)
+	MOVED	* tab through individual options
+	
+Multi-user Problem?
+	
+	* Test multi-user!!!
+	
+Moulding
+
+	? use 'molding' instead of 'moulding'
+	REMOVE	* 'X' --> 'remove'
+	DONE	* add 'extra' option ??secondary??
+	DONE	* add 'scribe' option molding - there's a lot 
+	DONE	* order of molding options
+	
+
+Corner Boxes
+
+	* sizes -> use real values
+DONE	* page title incorrect
+DONE	* stacking image doesn't change on focus
+		
+Corner Cabinets
+	
+	* "left hinged", etc
+	* if none, shelving option disabled
+	* "shelf" as default
+	* order [dia cw, 90 cw, dia cb, 90 cb]
+	* future: ask: corner #1 type?, hinge side?
+		- designers look at designs clockwise and will assume
+			leftmost corner is #1
+		- will be able to locate corners in sketch based on numbering
+	
+Miscellaneous
+
+	* onlays / applique - styles
+	* add optional 'style' text for options when selected
+	* miscellaneous overlays on "appliances"
+	* "catalog form" discussion (ow process)
+	* wooden hood
+	* legs feet typo
+	* corbels typo
+	
+Interiors
+
+	* add count to slide out trays
+FIXED	* remove "lazy susan" (duplicate)
+	* add 'recycle bin' 
+	* add 'same cabinet' option when 'waste' and 'recycle' selected
+	* add 'stem glass rack'
+	* add 'lift up doors'
+	
+Appliance
+
+	* Always inches
+	* Add dbl sink, offset sink, bar sink
+	  range, range top, double oven, coffee maker, under counter
+	 dishwasher, refrigerator drawers, vent hood ???
+	
+Attachments
+
+	* rename "Sketches and Diagrams"
+	* increase upload limit - 4 meg 
+	* image preview broken
+	* default 'type' to sketch
+	
+Review
+
+	* Review section headers should link to section
+	* summary - false --> "No"
+	
+General	
+	* tab based navigation
+	* focus indicators
+	* navigation via icons
+		- mouse over images heat up
+		- enlarge click area around buttons
+		- tooltips on hover
+	* all lengths in inches, using decimal notation
+		- if user use fractional notations, correct them and/or display value as decimal
+		.. 'dimensionfield' ..
+		.. whdfield ..
+	* restore 'next' 'prev' navigation
+	* catalog and index EK images
+	* tooltips
+	* autocomplete
+	## diagram references
+	## nomenclature based lookups
+		- nomenclature 'Dictionaries'
+		
+		=========================================================================
+		=========================================================================
+		=========================================================================
+		=========================================================================
+		=========================================================================
+		
+		
+=== 2am ===
+ - TODO - make summary translatable
+    + added verbose name for all fields in home/models
+    + removed 'cabinet_' prefix from all model fields
+    + added 'drawer_front_style' field	
+    + added 'finish_type' field
+    + renamed 'finish' to 'finish_color'
+ - TODO - finish_color/type should display as a compound field
+ - TODO - finish_color/type should be multivalue
+    + installed postgresql and validated django / app works (;)
+ - TODO - restrict access of non-'active' org users
+ - TODO - remove 'usertype' from profile (it comes from org type)
+ - TODO - remove 'default measurement' from profile (always inches)
+ - TODO?? - remove 'price sheets' (not needed)
+ - TODO - add dealer profile edit/view page []
+    + added fields to detail depth and height for all of wall, vanity and base cabinets
+  - not the right way to do it...
+	- merge registration?
+ - TODO - use 'codes' instead of numbers for field abbreviations. 
+ - TODO - upload storage for design files
+ - TODO - implement directory organization for file storage
+    + made 'source' uneditable in attachments
+    + changed 'description' to 'model' and added 'options' to Appliances
+    + changed lengths of fields in Appliances to not be huge
+    + researched form metaclass model.. in the end just playing with the existing structure 
+		to create DRY fieldsets
+
+ - TODO - rationalize field sized in WorkingOrder
+	- FILESTORE_ROOT
+		- {CUSTOMERID}
+			- {ORDERID}
+				- SUBMITTED
+					- FAX
+					- UPLOAD
+				- DELIVERED
+				- NOTES
+			- {ORIG-ORDERID}-{REV-ORDERID}   <-- revisions
+				- * same as order * 
+ - TODO - breakout new 'reusable' app - 'customer' - precious data app..
+ - TODO - mouldings in wizard summary !!
+ - TODO - make summary DRY
+    + did some normalization in summary.py..
+    + enhanced summary section names..
+ - TODO - get better looking drop down boxes!!				
+
+
+=== 7am ===		
+11pm - 2am : mail server setup
+
+=== 2:30 am ==

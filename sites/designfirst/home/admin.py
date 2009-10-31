@@ -29,8 +29,8 @@ class DesignOrderAdmin(admin.ModelAdmin):
         ( 'Cabinetry Selections', {
             'classes' : [],
             'description' : None,
-            'fields' : ( 'cabinet_manufacturer', 'cabinet_door_style', 'cabinet_wood',
-                'cabinet_stain', 'cabinet_finish', 'cabinet_finish_options', 'cabinetry_notes' )
+            'fields' : ( 'manufacturer', 'door_style', 'wood',
+                'stain', 'finish_color', 'finish_options', 'cabinetry_notes' )
             }),
         ( 'Door & Drawer Hardware Selections', {
             'classes' : [],

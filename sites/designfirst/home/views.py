@@ -1,6 +1,14 @@
+##
+## python imports
 import logging as log
 from datetime import datetime, timedelta
+from decimal import Decimal
 
+##
+## library imports 
+
+##
+## django imports
 from django.utils import simplejson
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import PermissionDenied
@@ -9,17 +17,23 @@ from django.forms.models import modelformset_factory
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Q
+from django.db import transaction
+
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
-
-from home import ACCOUNT_ID, ORDER_ID
-from home.models import DealerOrganization, DesignOrder, Transaction, OrderAppliance, \
-    OrderAttachment, UserProfile   
-from home import designorderforms as dof
-from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
+##
+## imports from other apps
 from product.models import Product
+from wizard.models import WorkingOrder, Appliance, Moulding, Attachment
+from wizard import forms as wf
+##
+## local imports 
+from constants import ACCOUNT_ID, ORDER_ID
+from models import DealerOrganization, Transaction,UserProfile  
+from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
 
 
 
@@ -39,7 +53,8 @@ def get_current_order(request, orderid):
     if user.is_authenticated():
         profile = user.get_profile()
         account = profile.account
-        order = account.created_orders.get(id=orderid)
+        # order = account.created_orders.get(id=orderid)
+        order = user.workingorder_set.get(id=orderid)
     else:
         raise PermissionDenied("You're not allowed here - anonymous users go home!")
     
@@ -61,7 +76,7 @@ def home(request):
     return render_to_response( 'home/home.html',context_instance=RequestContext(request) )
 
 
-def do_login(request):
+def do_login(request, next=None):
     """
     Log user in and direct them to the proper area.
     
@@ -78,10 +93,10 @@ def do_login(request):
             try:
                 profile = user.get_profile()
             except UserProfile.DoesNotExist:
-                return HttpResponseRedirect(reverse('dealer-complete-profile') )                
-                
-            usertype = profile.usertype            
-            return HttpResponseRedirect( '/%s/' % usertype )
+                return HttpResponseRedirect(reverse('dealer-complete-profile') )                                
+            next = request.POST.get('next') 
+            request.session.set_expiry(0)  # expire at browser close  
+            return HttpResponseRedirect( next or '/dealer/' )
         else:
             login_message="User is locked. Please contact support"
     else:
@@ -122,6 +137,7 @@ def create_profile(request):
                 context_instance=RequestContext(request))
                 
     
+@login_required
 def dealer_dashboard(request):
     """
     Display summary information for areas of dealer interest, provide primary navigation to work areas.
@@ -129,23 +145,23 @@ def dealer_dashboard(request):
     TODO - document
     """
     
-    user = request.user
-    if user is None or not user.is_authenticated():
-        return HttpResponseRedirect('/')
-    
+    user = request.user    
     account = request.user.get_profile().account.dealerorganization
     
-    orders = account.created_orders.all()
+    # orders = account.created_orders.all()
+    orders = user.workingorder_set.all()
     transactions = account.transaction_set.all()
     
-    open_orders = orders.filter( Q(status='DLR') | Q(status='RCL') | Q(status='CMP') )
-    working_orders = orders.filter( Q(status='ASG') | Q(status='SUB') )
-    archived_orders = orders.filter( Q(status='ACC') | Q(status='REJ') | Q(status='WTH') )
+    working_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
+    submitted_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )
+       ## TODO: fixme!
+    archived_orders = orders.exclude( status__in = [ WorkingOrder.DEALER_EDIT, WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] ) 
         
     return render_to_response( 'home/dealer_dashboard.html', locals(),                                
                                 context_instance=RequestContext(request) ) 
  
 
+@login_required
 def create_order(request, *args):
     """
     Create a new order.
@@ -157,195 +173,168 @@ def create_order(request, *args):
             order = form.save(commit=False)
             order.client_account = account#TODO: there is actually no client_account in working order
             order.owner = request.user
+	    order.submitted = datetime.now()
             order.save()
                         
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
     else:
-        desired = (datetime.now() + timedelta(days=2))
-        form = NewDesignOrderForm(initial={'desired': desired, 'cost':None})
+        form = NewDesignOrderForm()
     
-    #Prices is used to get price from product when user switches product in from
-    prices = dict([(p.id, float(p.customer_price(account))) 
-                   for p in Product.objects.all()])
-    prices = simplejson.dumps(prices)
     return render_to_response('home/create_order.html', locals(),                                
                               context_instance=RequestContext(request) ) 
 
 
 
-ORDER_SUBFORMS = [ dof.OrderInfo, dof.Cabinetry, dof.Hardware, dof.Mouldings, dof.CabinetBoxes, 
-                    dof.CornerCabinetOptions, dof.IslandAndPeninsula, dof.OtherConsiderations,
-                    dof.SpaceManagement, dof.Miscellaneous, dof.FloorPlanDiagram ]
-#                    dof.SpaceManagement, dof.Miscellaneous, dof.Appliances  ]
+# ORDER_SUBFORMS = [ dof.OrderInfo, dof.Cabinetry, dof.Hardware, dof.Mouldings, dof.CabinetBoxes, 
+#                     dof.CornerCabinetOptions, dof.IslandAndPeninsula, dof.OtherConsiderations,
+#                     dof.SpaceManagement, dof.Miscellaneous, dof.FloorPlanDiagram ]
+# #                    dof.SpaceManagement, dof.Miscellaneous, dof.Appliances  ]
+ORDER_SUBFORMS = [ wf.ManufacturerForm, wf.HardwareForm, wf.MouldingForm, wf.SoffitsForm, 
+                    wf.DimensionsForm, wf.CornerCabinetForm, wf.InteriorsForm, 
+                    wf.MiscellaneousForm, wf.ApplianceForm, wf.AttachmentForm ]
+                    # wf.MiscellaneousForm,  ]
 
+# little util to help with form processing
+def process_form(form_class, order_inst, data=None, files=None, model_class=WorkingOrder):
+    # some of the forms need to always be instantiated unbound, and will be in 
+    model = form_class._meta.model
+    modelmatch = model == model_class
+    if modelmatch:
+        inst = order_inst
+    else:
+        inst = model()                
+    if data or files:
+        form = form_class(data, files, instance=inst )
+        if form.is_valid():
+            obj = form.save(commit=False)      
+            obj.order = order_inst
+            obj.save()            
+    else:
+        form = form_class(instance=inst)  
+
+    if modelmatch:
+        return (None, form)
+    else:
+        name = '%s_form' % model.__name__.lower() 
+        return (name, form)
+
+
+@login_required
 def edit_order_detail(request, order_id):
     """
     Editable detailed design order display. 
 
-    This view
-        - validates login
-        - gets the current working order from session / db
-        - constructs as set of subforms based on current order.    
+    This view constructs a set of subforms based on current order.    
 
     We attempt to give the template some flexibility with respect to how to manage
     data entry by decomposing the field set of the design order into a number of subforms.
-
-    Based on the form_id in post request we update the 'visited_status' of the order 
-    to note the corresponding field group has been visited. 
 
     We pass the following to the template:
      - request context (of course)
      - order: the current DesignOrder object
      - formlist: a list of form objects for the field groups that comprise a DesignOrder
-         Each field group (form) has some additional properties just for enhancing 
-         display processing:
-            - status: ('valid'|'invalid') based on form.is_valid
-            - visited: ('visited'|'') based on bitset check in order.visited_status
-            - current: True if it was the form posted on last request, false otherwise
     """    
-
     user = request.user
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/')
  
     profile = user.get_profile()
     account = profile.account.dealerorganization
-    order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
-
-    if order.submitted is not None:
-        raise Exception("Invalid Operation - can't edit submitted order")
-
-    posted_id = None
-    subforms = []
-    
-    ApplianceFormSet = modelformset_factory(OrderAppliance, extra=1) 
-    
-    appliance_forms = None
-    
-    file_upload = [None]
-    
-    def add_subform(form, selected_id=None):
-        form.validity = form.is_valid() and 'valid' or 'invalid'
-        form.visited = ((1<<form.id) & order.visited_status) and 'visited' or ''
-        form.current = (form.id == selected_id) 
-        
-        if form.id != dof.FloorPlanDiagram.id:
-            subforms.append( form )
-        else:
-            file_upload[0] = form
-                    
-
-    # if this is a get initialize order subforms for display
-    if request.method == 'GET':
-        
-        appliance_forms = ApplianceFormSet(queryset=order.orderappliance_set.all())
-
-        for form in ORDER_SUBFORMS:
-            subform = form(instance=order)
-            add_subform( subform )
-        
+    # order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
+    order = user.workingorder_set.get(id=order_id)  # will throw if current user didn't create current order
+                        
     # if this is an update, determine which subform to apply and validate
-    elif request.method == 'POST': 
-
+    form_name = None
+    if request.method == 'POST': 
         try:
-            posted_id = request.POST['subform']
+            form_name = request.POST['_formname']
         except:
-            posted_id = '-1'
+            raise IllegalStateException('Invalid form: missing required data!')   
+                     
+    formlist = []
+    context = RequestContext(request)  
+         
+    for form_class in ORDER_SUBFORMS:
+        if form_name and form_class.name == form_name:
+            name,obj = process_form(form_class, order, request.POST, request.FILES)            
+        else:
+            name,obj = process_form(form_class, order) 
             
-        posted_id = int( posted_id )
-        posted_subform = None        
-        
-        for form_class in ORDER_SUBFORMS:
-            if form_class.id == posted_id:
-                form = form_class(request.POST, request.FILES, instance=order)
-                posted_subform = form
-                order.visited_status |= 1<<form.id
-            else:
-                form = form_class(instance=order)              
-        
-            log.debug("in loop(a), form.(name/id) = %s/%s" % (form.name, form.id) )
+        if name:
+            context[name] = obj
+        else:
+            formlist.append(obj)
 
-            add_subform( form, posted_id )
-            
-                    
-        if not posted_subform: 
-            # posted form was not in list,
-            # so it's  appliance formset             
-                
-            appliance_forms = ApplianceFormSet(request.POST, queryset=order.orderappliance_set.all())
-            if appliance_forms and appliance_forms.is_valid():            
-                instances = appliance_forms.save(commit=False)
-                for instance in instances:  
-                    instance.order_id = order.id                
-                    instance.save()                    
-    	else:
-            appliance_forms = ApplianceFormSet(queryset=order.orderappliance_set.all())
-            if posted_subform.is_valid():
-                if request.FILES:
-                    order.client_diagram_source = 'UPL'  
-                posted_subform.save()     
-
-    # otherwise choke
-    else:
-        raise "unsupported http method"
-
-    return render_to_response( "home/dealer_order_detail.html", 
-        dict( order=order, formlist=subforms, formset=appliance_forms, file_upload=file_upload[0]  ),
-        context_instance=RequestContext(request) )
+    # context control...
+    context['order'] = order
+    context['formlist'] = formlist
+    
+    return render_to_response( "home/dealer_order_detail.html", context_instance=context )
     
         
+@login_required
 def accept_floorplan_template_upload(request, orderid):
     pass
     
 
+@login_required
 def accept_floorplan_template_fax(request, orderid):
     pass
     
     
-def dealer_submit_order(request, orderid):
+@login_required
+@transaction.commit_on_success
+def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
     """
     Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
     
     TODO - error handling, logging, 
     """
+    user = request.user
+    if user is None or not user.is_authenticated():
+        return HttpResponseRedirect('/')
+ 
+    profile = user.get_profile()
+    account = profile.account.dealerorganization
+    order = user.workingorder_set.get(id=orderid) 
     
-    popup_error = None
-    order = get_current_order(request, orderid)
-    if order.is_submittable():
-        account = request.user.get_profile().account.dealerorganization
-        if account.credit_balance >= order.cost:
-            ## TODO: transactions
+    if request.method == 'GET':
+        form = form_class(instance=order)
+    else:
+        form = form_class(request.POST, instance=order)
+        if form.is_valid():
+            order = form.save(commit=False)
+            account = request.user.get_profile().account.dealerorganization
             now = datetime.utcnow()
-
+            cost = order.cost or Decimal()            
             # update account
-            account.credit_balance = account.credit_balance - order.cost     
+            account.credit_balance = account.credit_balance - cost
             account.save()   
-
             # update order
-            order.dealer_submit()
-                        
+            order.save()                        
             # update transction log
             tx = Transaction()
             tx.account = account
-            tx.amount = order.cost
-            tx.debit_or_credti = 'C'  
+            tx.amount = cost
+            tx.debit_or_credit = 'C'  
             tx.trans_type = 'C'
             tx.description = 'design credit purchase'
             tx.timestamp = now
             tx.save()                        
             
-        else:
-            return HttpResponse('Insufficient account credit to place order. \
-              Press "[back]" then fund your account to enable order submission.') 
-    else:
-        ##TODO: identify errors
-        return HttpResponse('Order is incomplete. \
-              Press "[back]" to return to the order detail screen.')
+            # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
+            return HttpResponseRedirect(reverse('home.views.dealer_dashboard') )              
               
-              
-    return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
+    class FakeWizard(object):
+        def __init__(self, order):
+            self.order = order
+            
+    return render_to_response('wizard/order_review.html',
+                dict(order=order, form=form, wizard=FakeWizard(order)),
+                context_instance=RequestContext(request))
     
     
+@login_required
 def dealer_review_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
@@ -362,6 +351,7 @@ def dealer_review_order(request, orderid):
     return render_to_response( "home/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
+@login_required
 def dealer_accept_order(request, orderid):
     order = get_current_order(request, orderid)
     if request.method == "GET":
@@ -369,7 +359,7 @@ def dealer_accept_order(request, orderid):
     elif request.method == "POST":
         form = DesignOrderAcceptanceForm(request.POST,instance=order)
         if form.is_valid():
-            order.status = 'ACC'
+            order.status = -1
             order.closed = datetime.now()
             form.save()            
             return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
@@ -379,6 +369,7 @@ def dealer_accept_order(request, orderid):
     return render_to_response( "home/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
+@login_required
 def dealer_reject_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
@@ -395,6 +386,7 @@ def dealer_reject_order(request, orderid):
     return render_to_response( "home/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
+@login_required
 def generate_floorplan_template(request, orderid):
     """
     Generate a floorplan template, customized to the current user (dealer) and order.
@@ -422,4 +414,17 @@ def _generate_floorplan_template(order):
     response.write( template.pdfBuffer.getvalue() )
     
     return response
+    
+@login_required
+def remove_order_appliance(request, orderid, appliance_key):
+    order = get_current_order(request, orderid)
+    # verify appliance is child of order
+    if request.method == "POST":
+        try:
+            appliance = order.appliances.get(pk=appliance_key)
+            appliance.delete()
+            appliance.save()
+        except Appliance.DoesNotExist:
+            raise RuntimeException('Appliance does not exist!')
+    return HttpResponseRedirect( reverse('edit_order', args=[orderid]) )
     

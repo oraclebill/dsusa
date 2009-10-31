@@ -2,74 +2,87 @@
 from django.utils.text import capfirst
 
 
-STEPS_SUMMARY = [
-    ('Manufacturer', [
-        'cabinet_manufacturer',
-        'cabinet_door_style',
-        'cabinet_wood',
-        'cabinet_finish',
-    ]),
-    ('Hardware', [
+MFG_SECTION = ('Cabinet Line Selection', [
+        'manufacturer',
+        'door_style',
+        'drawer_front_style',
+        'cabinet_material',
+        'finish_type',
+        'finish_color',
+        'finish_options',
+    ])    
+    
+HARDWARE_SECTION = ('Door/Drawer Hardware Selections', [
         'door_handle_type',
         'door_handle_model',
         'drawer_handle_type',
         'drawer_handle_model',
-    ]),
-    ('Moulding', [
-    ]),
-    ('Soffits', [
+    ])    
+    
+MOULDING_SECTION = ('Moulding Selections', [
+    ])
+    
+SOFFIT_SECTION = ('Soffit Dimensions', [
+        'has_soffits',
         'soffit_width',
         'soffit_height',
         'soffit_depth',
-    ]),
-    ('Dimensions', [
+    ])
+    
+DIMENSION_SECTION = ('Cabinet Arrangments / Sizing Options', [
         'dimension_style',
         'standard_sizes',
         'wall_cabinet_height',
+        'wall_cabinet_depth',
+        'base_cabinet_height',
+        'base_cabinet_depth',
         'vanity_cabinet_height',
-        'depth'
-    ]),
-    ('Corner cabinet', [
-        'diagonal_corner_base',
+        'vanity_cabinet_depth',
+    ])
+    
+CORNER_CABINET_SECTION = ('Corner Cabinet Options', [
         'diagonal_corner_wall',
-        'degree90_corner_base',
+        'diagonal_corner_wall_shelv',
+        'diagonal_corner_base',
+        'diagonal_corner_base_shelv',
         'degree90_corner_wall',
-    ]),
-    ('Interiors', [
-        'lazy_susan',
+        'degree90_corner_base',
+        'degree90_corner_base_shelv',
+    ])
+    
+CABINET_INTERIORS_SECTION = ('Interiors Options', [
         'slide_out_trays',
         'waste_bin',
         'wine_rack',
         'plate_rack',
-        'apliance_garage'
-    ]),
-    ('Miscellaneous', [
-        'corables',
+        'appliance_garage'
+    ])
+    
+MISCELLANEOUS_OPTIONS_SECTION = ('Miscellaneous Options', [
+        'corbels',
         'brackets',
         'valance',
-        'leas_feet',
+        'legs_feet',
         'glass_doors',
         'range_hood',
         'posts',
-    ]),
+    ])
+            
+STEPS_SUMMARY = [
+    MFG_SECTION,
+    HARDWARE_SECTION,
+    MOULDING_SECTION,
+    SOFFIT_SECTION,
+    DIMENSION_SECTION,
+    CORNER_CABINET_SECTION,
+    CABINET_INTERIORS_SECTION,
+    MISCELLANEOUS_OPTIONS_SECTION,
 ]
 
 SUBMIT_SUMMARY = [
-    ('Cabinetary', [
-        'cabinet_manufacturer',
-        'cabinet_door_style',
-        'cabinet_wood',
-        'cabinet_finish',
-    ]),
-    ('Moulding', [
-    ]),
-    ('Dimensions', [
-        'dimension_style',
-        'standard_sizes',
-        'wall_cabinet_height',
-        'vanity_cabinet_height',
-        'depth'
-    ]),
+    MFG_SECTION,
+    MOULDING_SECTION,
+    DIMENSION_SECTION,
 ]
 
 def order_summary(order, summary_fields):
@@ -78,7 +91,11 @@ def order_summary(order, summary_fields):
     result = []
     for name, list in summary_fields:
         values = []
-        for field in list:
+        for val in list:
+            if hasattr(val, '__iter__'):
+                field, val = val
+            else:
+                field = val
             item_name = WorkingOrder._meta.get_field(field).verbose_name
             item_name = capfirst(item_name)
             if hasattr(order, 'get_%s_display' % field):

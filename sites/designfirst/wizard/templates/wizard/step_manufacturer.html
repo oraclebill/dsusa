@@ -61,7 +61,7 @@ $(function(){
 	})
 
 	//Finish autocompleter
-	$("#id_cabinet_finish").autocomplete('{% url ajax-finish %}', {
+	$("#id_cabinet_finish").autocomplete('{% url ajax-finish_color %}', {
 		extraParams: {
 			manufacturer: function() { return $("#id_cabinet_manufacturer").val(); }
 		}

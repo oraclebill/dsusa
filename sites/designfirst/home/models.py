@@ -137,17 +137,17 @@ class DesignOrder(models.Model):
     quote_cabinet_list = models.BooleanField(blank=True, verbose_name='Quoted Cabinet List')
 
     # cabinetry options
-    cabinet_manufacturer = models.CharField(max_length=20, blank=True, null=True, 
+    manufacturer = models.CharField(max_length=20, blank=True, null=True, 
         verbose_name='Manufacturer')
-    cabinet_door_style = models.CharField(max_length=20, blank=True, null=True, 
+    door_style = models.CharField(max_length=20, blank=True, null=True, 
         verbose_name='Door Style')
-    cabinet_wood = models.CharField(max_length=20, blank=True, null=True, 
+    wood = models.CharField(max_length=20, blank=True, null=True, 
         verbose_name='Wood')
-    cabinet_stain = models.CharField(max_length=20, blank=True, null=True, 
+    stain = models.CharField(max_length=20, blank=True, null=True, 
         verbose_name='Stain')
-    cabinet_finish = models.CharField(max_length=20, blank=True, null=True, 
+    finish_color = models.CharField(max_length=20, blank=True, null=True, 
         verbose_name='Other Finish')
-    cabinet_finish_options =  models.CharField(max_length=20, blank=True, null=True, 
+    finish_options =  models.CharField(max_length=20, blank=True, null=True, 
         verbose_name='Special Options')
     cabinetry_notes =  models.CharField(max_length=20, blank=True, null=True, 
         verbose_name='Notes')

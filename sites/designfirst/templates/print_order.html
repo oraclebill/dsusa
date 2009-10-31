@@ -61,7 +61,7 @@
 		<th style="background-color: lightgray;">Height</th>
 		<th style="background-color: lightgray;">Depth</th>
 	</tr>
-	{% for item in order.appliance_set.all %}
+	{% for item in order.appliances.all %}
 	<tr class="row{% cycle "1" "2"%}">
 		<td>{{item.type}}</td>
 		<td>{{item.description|default:"N/A"}}</td>

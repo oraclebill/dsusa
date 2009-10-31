@@ -36,8 +36,8 @@ class Cabinetry(forms.ModelForm):
 
     class Meta:
         model = DesignOrder
-        fields = ['cabinet_manufacturer', 'cabinet_door_style', 'cabinet_wood', 'cabinet_stain',
-                  'cabinet_finish', 'cabinet_finish_options', 'cabinetry_notes']
+        fields = ['manufacturer', 'door_style', 'wood', 'stain',
+                  'finish_color', 'finish_options', 'cabinetry_notes']
 
     name = "Cabinetry"
     id = 2    

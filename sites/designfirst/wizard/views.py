@@ -1,16 +1,18 @@
-from django.utils import simplejson
+
+from django.conf import settings
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect,\
     HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils import simplejson
+
 from base import WizardBase
 from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from utils.views import render_to
 from models import Attachment, Appliance
 from forms import *
-from summary import order_summary, STEPS_SUMMARY, SUBMIT_SUMMARY
-from django.template.loader import render_to_string
-
+import summary 
 
 
 
@@ -83,7 +85,7 @@ class Wizard(WizardBase):
             'stack_images_base': images_base,
         }
         return self.handle_form(request, DimensionsForm, context)
-    step_dimensions.title = 'Corner boxes'
+    step_dimensions.title = summary.DIMENSION_SECTION[0]
     
     
     def step_corner_cabinet(self, request):
@@ -145,7 +147,7 @@ class Wizard(WizardBase):
         return _order_review(request, self)
     
     def get_summary(self):
-        return order_summary(self.order, STEPS_SUMMARY)
+        return summary.order_summary(self.order, summary.STEPS_SUMMARY)
         
 
 
@@ -158,25 +160,28 @@ def _order_review(request, wizard):
     order = wizard.order
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
-        order = form.save(commit=False)
-        order.status = WorkingOrder.SUBMITTED
-        order.save()
-        return HttpResponseRedirect('/dealer/')
-    form = SubmitForm(instance=order)
-    summary = order_summary(order, SUBMIT_SUMMARY)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.status = WorkingOrder.SUBMITTED
+            order.save()
+            return HttpResponseRedirect('/dealer/')
+    else:
+        form = SubmitForm(instance=order)
+    result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
     exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
-    for title, excl in SUBMIT_SUMMARY:
+    for title, excl in summary.SUBMIT_SUMMARY:
         exclude += excl
     OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
-    summary += order_summary(order, [('Options', OPT_FIELDS)])
-    return {'order': order, 'data': dict(summary), 'form':form, 'wizard': wizard}
+    result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
+    print form
+    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 
 @render_to('print_order.html')
 def print_order(request, id):
     order = get_object_or_404(WorkingOrder, id=id)
     if order.owner.id != request.user.id:
         return HttpResponseForbidden("Not allowed to view this order")
-    summary = order_summary(order, STEPS_SUMMARY)
+    summary = summary.order_summary(order, summary.STEPS_SUMMARY)
     #making two columns display
     l = len(summary)/2
     summary = summary[:l], summary[l:]
@@ -185,7 +190,7 @@ def print_order(request, id):
 def is_existing_manufacturer(order):
     #TODO: move to Manufacturer model
     try:
-        Manufacturer.objects.get(name=order.cabinet_manufacturer)
+        Manufacturer.objects.get(name=order.manufacturer)
         return True
     except Manufacturer.DoesNotExist:
         return False

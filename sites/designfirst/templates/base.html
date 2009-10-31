@@ -1,4 +1,6 @@
 {% load util %}
+{% load i18n %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -6,7 +8,7 @@
     <title>{% block title %} Design First {% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% media /css/reset.css %}" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% media /css/text.css %}" media="screen" />
-    <link rel="stylesheet" type="text/css" href="{% media /css/grid.css %}" media="screen" />
+    <link rel="stylesheet" type="text/css" href="{% media /css/960.css %}" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% media /css/layout.css %}" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% media /css/nav.css %}" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% media /css/jquery-ui.css %}" media="screen" />
@@ -22,57 +24,75 @@
 	{% endblock %}
   </head>
   <body>
-    <div id="main" class="container_16">
-		<div id="header">
+	<div id="header" class="container_16">
 
-			<!-- begin branding block -->
-			<h1 id="branding">Design Services USA - Dealers Design Service</h1>
-			<!-- end branding block -->
+		<!-- begin branding block -->
+		<img src="{{MEDIA_URL}}images/dsusa-small-brn.png" height="50">
+		<!-- end branding block -->
 
-			{% if user.is_authenticated %}
-			<!-- begin authenticated header content -->
-			<!-- begin status line -->
-			<div id="status" class="box">
-		    	<div class="grid_13 ">
-			  		Welcome {{ user.first_name }} {{ user.last_name }} [{{ user.username }}]
-		        </div>
-		    	<div class="grid_3 omega">
-			  		<em ><a href="{% url do-logout %}"> click here to logout</a></em>
-		        </div>
-				<div class="grid_16">
-					{% block menu %}
-					{% endblock %}
-				</div>
-			    <div class="clear"></div>
+		{% if user.is_authenticated %}
+		<!-- begin authenticated header content -->
+		<!-- begin status line -->
+		<div id="status" class="box">
+	    	<div class="grid_13 alpha">
+		  		Welcome {{ user.first_name }} {{ user.last_name }} [{{ user.username }}]
+	        </div>
+	    	<div class="grid_3 omega">
+		  		<em ><a href="{% url do-logout %}"> click here to logout</a></em>
+	        </div>
+			<div class="grid_16 alpha omega">
+				{% block menu %}
+                <div>
+                    <ul class="nav">
+                        <li><a href="/dealer/">Dashboard</a></li>
+                        <li><a href="{% url dealer-create-order %}">New Order</a></li>
+                        <li><a href="#">Order Log</a></li>
+                        <li><a href="#">Account</a></li>
+                    </ul>
+                </div>
+				{% endblock %}
 			</div>
-			<!-- end status line -->
-
-				{# {% if user.get_profile.has_menu %} #}
-				{# <!-- begin user menu block --> #}
-				{# <div id="menu" class="menu"> #}
-				{# 	MENU PLACEHOLDER #}
-				{# </div> #}
-				{# <!-- end menu block --> #}
-				{# {% endif %} #}
-				
-			<!-- end authenticated header content -->
-			{% endif %}
-		</div>		
+		    <div class="clear"></div>
+		</div>
+		<!-- end status line -->
+        
+			
+		<!-- end authenticated header content -->
+		{% endif %}
         <div class="clear"></div>
+	</div>		
 
-      <div id="content">
-		<!-- begin main content block -->
-		{% block content %} {% endblock %}
-		<!-- end main content block -->
-      </div>
+    <div id="content" class="container_16">
+        <!-- begin main content block -->
+        {% block content %} {% endblock %}
+        <!-- end main content block -->
 
-      <div class="clear"></div>
-
-      <div id="footer" class="grid_16">
-		{% block footer %} <address>&copy; 2009 Design Service USA LLC</address>{% endblock %}
-      </div>
-
+        <div class="clear"></div>        
     </div>
+
+    <div id="content2" class="container_12">
+        <!-- begin main content block -->
+        {% block content2 %} {% endblock %}
+        <!-- end main content block -->
+
+        <div class="clear"></div>        
+    </div>
+
+      
+      <div id="footer" class="container_16">      
+          <div id="site-info" class="grid_16">
+              <div class="box">
+        		{% block footer %}
+        		<p>
+        		    &copy; 2009 Design Service USA LLC, all rights reserved</p><p>
+            		<span><a href="/terms">Terms and Conditions</a></span>
+            		<span style="text-align:right;"><a href="/privacy">Privacy Policy</a></span>
+        		</p>        		
+        		{% endblock %}
+              </div>
+          </div>
+          <div class="clear"></div>          
+      </div>
 
 	<!-- begin tail javascript -->
 	<!-- end tail javascript -->

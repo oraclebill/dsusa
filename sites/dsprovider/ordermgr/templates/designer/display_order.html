@@ -75,12 +75,12 @@ DesignFirst - Order Information for Order # {{ order.project_name }} [ {{order.i
 			<h2>{% trans "Cabinetry" %}</h2>
 			<div>
 				<table>
-					{% row_if order.cabinet_manufacturer %}	
-					{% row_if order.cabinet_door_style %}	
-					{% row_if order.cabinet_wood %}	
-					{% row_if order.cabinet_stain %}	
-					{% row_if order.cabinet_finish %}	
-					{% row_if order.cabinet_finish_options N/A %}	
+					{% row_if order.manufacturer %}	
+					{% row_if order.door_style %}	
+					{% row_if order.wood %}	
+					{% row_if order.stain %}	
+					{% row_if order.finish_color %}	
+					{% row_if order.finish_options N/A %}	
 					{% row_if order.cabinetry_notes "N/A" %}	
 				</table>
 			</div>
