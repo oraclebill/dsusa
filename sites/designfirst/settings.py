@@ -132,7 +132,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     }
 
-AUTH_PROFILE_MODULE = "home.UserProfile"
+AUTH_PROFILE_MODULE = "customer.UserProfile"
 
 
 ##

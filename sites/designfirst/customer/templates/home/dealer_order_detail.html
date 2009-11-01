@@ -119,7 +119,7 @@ DesignFirst - Design Order
         <div id="template-display" class="box">
 	        <h2>diagrams</h2>
 			<p>Download your personalized floorplan template here
-    			<a target="_blank" href=" {% url home.views.generate_floorplan_template order.id %}">
+    			<a target="_blank" href=" {% url customer.views.generate_floorplan_template order.id %}">
     			   <img src="{{ MEDIA_URL }}/images/disk.png"></a>
 			</p>
 			<p>
@@ -159,12 +159,12 @@ DesignFirst - Design Order
 	
 	
 	<div class="grid_3 alpha">
-		<form action="{% url home.views.dealer_dashboard %}" method="get" accept-charset="utf-8">
+		<form action="{% url customer.views.dealer_dashboard %}" method="get" accept-charset="utf-8">
 			<p><input type="submit" value=" &larr; Back to Dashboard"></p>
 		</form>
 	</div>
 	<div class="grid_3 prefix_10 omega">
-		<form action="{% url home.views.dealer_submit_order order.id %}" method="get" accept-charset="utf-8">
+		<form action="{% url customer.views.dealer_submit_order order.id %}" method="get" accept-charset="utf-8">
 			<p><input type="submit" value="Submit Design Request &rarr;"></p>
 		</form>
 	</div>

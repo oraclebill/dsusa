@@ -1,7 +1,7 @@
 
 from south.db import db
 from django.db import models
-from designfirst.home.models import *
+from designfirst.customer.models import *
 
 class Migration:
     
@@ -9,162 +9,162 @@ class Migration:
         
         # Adding model 'OrderNotes'
         db.create_table('home_ordernotes', (
-            ('id', orm['home.OrderNotes:id']),
-            ('order', orm['home.OrderNotes:order']),
-            ('sequence', orm['home.OrderNotes:sequence']),
-            ('created', orm['home.OrderNotes:created']),
+            ('id', orm['customer.OrderNotes:id']),
+            ('order', orm['customer.OrderNotes:order']),
+            ('sequence', orm['customer.OrderNotes:sequence']),
+            ('created', orm['customer.OrderNotes:created']),
         ))
         db.send_create_signal('home', ['OrderNotes'])
         
         # Adding model 'DesignOrder'
         db.create_table('home_designorder', (
-            ('id', orm['home.DesignOrder:id']),
-            ('client_account', orm['home.DesignOrder:client_account']),
-            ('project_name', orm['home.DesignOrder:project_name']),
-            ('description', orm['home.DesignOrder:description']),
-            ('status', orm['home.DesignOrder:status']),
-            ('cost', orm['home.DesignOrder:cost']),
-            ('designer', orm['home.DesignOrder:designer']),
-            ('color_views', orm['home.DesignOrder:color_views']),
-            ('elevations', orm['home.DesignOrder:elevations']),
-            ('quote_cabinet_list', orm['home.DesignOrder:quote_cabinet_list']),
-            ('cabinet_manufacturer', orm['home.DesignOrder:cabinet_manufacturer']),
-            ('cabinet_door_style', orm['home.DesignOrder:cabinet_door_style']),
-            ('cabinet_wood', orm['home.DesignOrder:cabinet_wood']),
-            ('cabinet_stain', orm['home.DesignOrder:cabinet_stain']),
-            ('cabinet_finish', orm['home.DesignOrder:cabinet_finish']),
-            ('cabinet_finish_options', orm['home.DesignOrder:cabinet_finish_options']),
-            ('cabinetry_notes', orm['home.DesignOrder:cabinetry_notes']),
-            ('include_hardware', orm['home.DesignOrder:include_hardware']),
-            ('door_hardware', orm['home.DesignOrder:door_hardware']),
-            ('drawer_hardware', orm['home.DesignOrder:drawer_hardware']),
-            ('ceiling_height', orm['home.DesignOrder:ceiling_height']),
-            ('crown_mouldings', orm['home.DesignOrder:crown_mouldings']),
-            ('skirt_mouldings', orm['home.DesignOrder:skirt_mouldings']),
-            ('soffits', orm['home.DesignOrder:soffits']),
-            ('soffit_height', orm['home.DesignOrder:soffit_height']),
-            ('soffit_width', orm['home.DesignOrder:soffit_width']),
-            ('soffit_depth', orm['home.DesignOrder:soffit_depth']),
-            ('stacked_staggered', orm['home.DesignOrder:stacked_staggered']),
-            ('wall_cabinet_height', orm['home.DesignOrder:wall_cabinet_height']),
-            ('vanity_cabinet_height', orm['home.DesignOrder:vanity_cabinet_height']),
-            ('vanity_cabinet_depth', orm['home.DesignOrder:vanity_cabinet_depth']),
-            ('corner_cabinet_base_bc', orm['home.DesignOrder:corner_cabinet_base_bc']),
-            ('corner_cabinet_base_bc_direction', orm['home.DesignOrder:corner_cabinet_base_bc_direction']),
-            ('corner_cabinet_wall_bc', orm['home.DesignOrder:corner_cabinet_wall_bc']),
-            ('corner_cabinet_wall_bc_direction', orm['home.DesignOrder:corner_cabinet_wall_bc_direction']),
-            ('island_peninsula_option', orm['home.DesignOrder:island_peninsula_option']),
-            ('countertop_option', orm['home.DesignOrder:countertop_option']),
-            ('backsplash', orm['home.DesignOrder:backsplash']),
-            ('toekick', orm['home.DesignOrder:toekick']),
-            ('lazy_susan', orm['home.DesignOrder:lazy_susan']),
-            ('slide_out_trays', orm['home.DesignOrder:slide_out_trays']),
-            ('waste_bin', orm['home.DesignOrder:waste_bin']),
-            ('wine_rack', orm['home.DesignOrder:wine_rack']),
-            ('plate_rack', orm['home.DesignOrder:plate_rack']),
-            ('appliance_garage', orm['home.DesignOrder:appliance_garage']),
-            ('corbels_brackets', orm['home.DesignOrder:corbels_brackets']),
-            ('valance', orm['home.DesignOrder:valance']),
-            ('legs_feet', orm['home.DesignOrder:legs_feet']),
-            ('glass_doors', orm['home.DesignOrder:glass_doors']),
-            ('range_hood', orm['home.DesignOrder:range_hood']),
-            ('posts', orm['home.DesignOrder:posts']),
-            ('miscellaneous_notes', orm['home.DesignOrder:miscellaneous_notes']),
-            ('client_diagram', orm['home.DesignOrder:client_diagram']),
-            ('client_diagram_source', orm['home.DesignOrder:client_diagram_source']),
-            ('client_diagram_notes', orm['home.DesignOrder:client_diagram_notes']),
-            ('designer_package', orm['home.DesignOrder:designer_package']),
-            ('designer_package_notes', orm['home.DesignOrder:designer_package_notes']),
-            ('client_review_rating', orm['home.DesignOrder:client_review_rating']),
-            ('client_review_notes', orm['home.DesignOrder:client_review_notes']),
-            ('client_notes', orm['home.DesignOrder:client_notes']),
-            ('designer_notes', orm['home.DesignOrder:designer_notes']),
-            ('created', orm['home.DesignOrder:created']),
-            ('modified', orm['home.DesignOrder:modified']),
-            ('modified_by', orm['home.DesignOrder:modified_by']),
-            ('visited_status', orm['home.DesignOrder:visited_status']),
-            ('valid_status', orm['home.DesignOrder:valid_status']),
-            ('desired', orm['home.DesignOrder:desired']),
-            ('submitted', orm['home.DesignOrder:submitted']),
-            ('assigned', orm['home.DesignOrder:assigned']),
-            ('projected', orm['home.DesignOrder:projected']),
-            ('completed', orm['home.DesignOrder:completed']),
-            ('closed', orm['home.DesignOrder:closed']),
-            ('tracking_notes', orm['home.DesignOrder:tracking_notes']),
+            ('id', orm['customer.DesignOrder:id']),
+            ('client_account', orm['customer.DesignOrder:client_account']),
+            ('project_name', orm['customer.DesignOrder:project_name']),
+            ('description', orm['customer.DesignOrder:description']),
+            ('status', orm['customer.DesignOrder:status']),
+            ('cost', orm['customer.DesignOrder:cost']),
+            ('designer', orm['customer.DesignOrder:designer']),
+            ('color_views', orm['customer.DesignOrder:color_views']),
+            ('elevations', orm['customer.DesignOrder:elevations']),
+            ('quote_cabinet_list', orm['customer.DesignOrder:quote_cabinet_list']),
+            ('cabinet_manufacturer', orm['customer.DesignOrder:cabinet_manufacturer']),
+            ('cabinet_door_style', orm['customer.DesignOrder:cabinet_door_style']),
+            ('cabinet_wood', orm['customer.DesignOrder:cabinet_wood']),
+            ('cabinet_stain', orm['customer.DesignOrder:cabinet_stain']),
+            ('cabinet_finish', orm['customer.DesignOrder:cabinet_finish']),
+            ('cabinet_finish_options', orm['customer.DesignOrder:cabinet_finish_options']),
+            ('cabinetry_notes', orm['customer.DesignOrder:cabinetry_notes']),
+            ('include_hardware', orm['customer.DesignOrder:include_hardware']),
+            ('door_hardware', orm['customer.DesignOrder:door_hardware']),
+            ('drawer_hardware', orm['customer.DesignOrder:drawer_hardware']),
+            ('ceiling_height', orm['customer.DesignOrder:ceiling_height']),
+            ('crown_mouldings', orm['customer.DesignOrder:crown_mouldings']),
+            ('skirt_mouldings', orm['customer.DesignOrder:skirt_mouldings']),
+            ('soffits', orm['customer.DesignOrder:soffits']),
+            ('soffit_height', orm['customer.DesignOrder:soffit_height']),
+            ('soffit_width', orm['customer.DesignOrder:soffit_width']),
+            ('soffit_depth', orm['customer.DesignOrder:soffit_depth']),
+            ('stacked_staggered', orm['customer.DesignOrder:stacked_staggered']),
+            ('wall_cabinet_height', orm['customer.DesignOrder:wall_cabinet_height']),
+            ('vanity_cabinet_height', orm['customer.DesignOrder:vanity_cabinet_height']),
+            ('vanity_cabinet_depth', orm['customer.DesignOrder:vanity_cabinet_depth']),
+            ('corner_cabinet_base_bc', orm['customer.DesignOrder:corner_cabinet_base_bc']),
+            ('corner_cabinet_base_bc_direction', orm['customer.DesignOrder:corner_cabinet_base_bc_direction']),
+            ('corner_cabinet_wall_bc', orm['customer.DesignOrder:corner_cabinet_wall_bc']),
+            ('corner_cabinet_wall_bc_direction', orm['customer.DesignOrder:corner_cabinet_wall_bc_direction']),
+            ('island_peninsula_option', orm['customer.DesignOrder:island_peninsula_option']),
+            ('countertop_option', orm['customer.DesignOrder:countertop_option']),
+            ('backsplash', orm['customer.DesignOrder:backsplash']),
+            ('toekick', orm['customer.DesignOrder:toekick']),
+            ('lazy_susan', orm['customer.DesignOrder:lazy_susan']),
+            ('slide_out_trays', orm['customer.DesignOrder:slide_out_trays']),
+            ('waste_bin', orm['customer.DesignOrder:waste_bin']),
+            ('wine_rack', orm['customer.DesignOrder:wine_rack']),
+            ('plate_rack', orm['customer.DesignOrder:plate_rack']),
+            ('appliance_garage', orm['customer.DesignOrder:appliance_garage']),
+            ('corbels_brackets', orm['customer.DesignOrder:corbels_brackets']),
+            ('valance', orm['customer.DesignOrder:valance']),
+            ('legs_feet', orm['customer.DesignOrder:legs_feet']),
+            ('glass_doors', orm['customer.DesignOrder:glass_doors']),
+            ('range_hood', orm['customer.DesignOrder:range_hood']),
+            ('posts', orm['customer.DesignOrder:posts']),
+            ('miscellaneous_notes', orm['customer.DesignOrder:miscellaneous_notes']),
+            ('client_diagram', orm['customer.DesignOrder:client_diagram']),
+            ('client_diagram_source', orm['customer.DesignOrder:client_diagram_source']),
+            ('client_diagram_notes', orm['customer.DesignOrder:client_diagram_notes']),
+            ('designer_package', orm['customer.DesignOrder:designer_package']),
+            ('designer_package_notes', orm['customer.DesignOrder:designer_package_notes']),
+            ('client_review_rating', orm['customer.DesignOrder:client_review_rating']),
+            ('client_review_notes', orm['customer.DesignOrder:client_review_notes']),
+            ('client_notes', orm['customer.DesignOrder:client_notes']),
+            ('designer_notes', orm['customer.DesignOrder:designer_notes']),
+            ('created', orm['customer.DesignOrder:created']),
+            ('modified', orm['customer.DesignOrder:modified']),
+            ('modified_by', orm['customer.DesignOrder:modified_by']),
+            ('visited_status', orm['customer.DesignOrder:visited_status']),
+            ('valid_status', orm['customer.DesignOrder:valid_status']),
+            ('desired', orm['customer.DesignOrder:desired']),
+            ('submitted', orm['customer.DesignOrder:submitted']),
+            ('assigned', orm['customer.DesignOrder:assigned']),
+            ('projected', orm['customer.DesignOrder:projected']),
+            ('completed', orm['customer.DesignOrder:completed']),
+            ('closed', orm['customer.DesignOrder:closed']),
+            ('tracking_notes', orm['customer.DesignOrder:tracking_notes']),
         ))
         db.send_create_signal('home', ['DesignOrder'])
         
         # Adding model 'Transaction'
         db.create_table('home_transaction', (
-            ('id', orm['home.Transaction:id']),
-            ('trace_id', orm['home.Transaction:trace_id']),
-            ('account', orm['home.Transaction:account']),
-            ('debit_or_credit', orm['home.Transaction:debit_or_credit']),
-            ('trans_type', orm['home.Transaction:trans_type']),
-            ('amount', orm['home.Transaction:amount']),
-            ('description', orm['home.Transaction:description']),
-            ('timestamp', orm['home.Transaction:timestamp']),
+            ('id', orm['customer.Transaction:id']),
+            ('trace_id', orm['customer.Transaction:trace_id']),
+            ('account', orm['customer.Transaction:account']),
+            ('debit_or_credit', orm['customer.Transaction:debit_or_credit']),
+            ('trans_type', orm['customer.Transaction:trans_type']),
+            ('amount', orm['customer.Transaction:amount']),
+            ('description', orm['customer.Transaction:description']),
+            ('timestamp', orm['customer.Transaction:timestamp']),
         ))
         db.send_create_signal('home', ['Transaction'])
         
         # Adding model 'OrderAttachment'
         db.create_table('home_orderattachment', (
-            ('id', orm['home.OrderAttachment:id']),
-            ('document_id', orm['home.OrderAttachment:document_id']),
-            ('document', orm['home.OrderAttachment:document']),
-            ('order', orm['home.OrderAttachment:order']),
-            ('source', orm['home.OrderAttachment:source']),
-            ('doctype', orm['home.OrderAttachment:doctype']),
-            ('method', orm['home.OrderAttachment:method']),
-            ('user', orm['home.OrderAttachment:user']),
-            ('org', orm['home.OrderAttachment:org']),
-            ('timestamp', orm['home.OrderAttachment:timestamp']),
+            ('id', orm['customer.OrderAttachment:id']),
+            ('document_id', orm['customer.OrderAttachment:document_id']),
+            ('document', orm['customer.OrderAttachment:document']),
+            ('order', orm['customer.OrderAttachment:order']),
+            ('source', orm['customer.OrderAttachment:source']),
+            ('doctype', orm['customer.OrderAttachment:doctype']),
+            ('method', orm['customer.OrderAttachment:method']),
+            ('user', orm['customer.OrderAttachment:user']),
+            ('org', orm['customer.OrderAttachment:org']),
+            ('timestamp', orm['customer.OrderAttachment:timestamp']),
         ))
         db.send_create_signal('home', ['OrderAttachment'])
         
         # Adding model 'Organization'
         db.create_table('home_organization', (
-            ('id', orm['home.Organization:id']),
-            ('status', orm['home.Organization:status']),
-            ('legal_name', orm['home.Organization:legal_name']),
-            ('address_1', orm['home.Organization:address_1']),
-            ('address_2', orm['home.Organization:address_2']),
-            ('city', orm['home.Organization:city']),
-            ('state', orm['home.Organization:state']),
-            ('zip4', orm['home.Organization:zip4']),
-            ('phone', orm['home.Organization:phone']),
-            ('fax', orm['home.Organization:fax']),
-            ('email', orm['home.Organization:email']),
+            ('id', orm['customer.Organization:id']),
+            ('status', orm['customer.Organization:status']),
+            ('legal_name', orm['customer.Organization:legal_name']),
+            ('address_1', orm['customer.Organization:address_1']),
+            ('address_2', orm['customer.Organization:address_2']),
+            ('city', orm['customer.Organization:city']),
+            ('state', orm['customer.Organization:state']),
+            ('zip4', orm['customer.Organization:zip4']),
+            ('phone', orm['customer.Organization:phone']),
+            ('fax', orm['customer.Organization:fax']),
+            ('email', orm['customer.Organization:email']),
         ))
         db.send_create_signal('home', ['Organization'])
         
         # Adding model 'OrderAppliance'
         db.create_table('home_orderappliance', (
-            ('id', orm['home.OrderAppliance:id']),
-            ('order', orm['home.OrderAppliance:order']),
-            ('appliance_type', orm['home.OrderAppliance:appliance_type']),
-            ('description', orm['home.OrderAppliance:description']),
-            ('height', orm['home.OrderAppliance:height']),
-            ('width', orm['home.OrderAppliance:width']),
-            ('depth', orm['home.OrderAppliance:depth']),
-            ('options', orm['home.OrderAppliance:options']),
+            ('id', orm['customer.OrderAppliance:id']),
+            ('order', orm['customer.OrderAppliance:order']),
+            ('appliance_type', orm['customer.OrderAppliance:appliance_type']),
+            ('description', orm['customer.OrderAppliance:description']),
+            ('height', orm['customer.OrderAppliance:height']),
+            ('width', orm['customer.OrderAppliance:width']),
+            ('depth', orm['customer.OrderAppliance:depth']),
+            ('options', orm['customer.OrderAppliance:options']),
         ))
         db.send_create_signal('home', ['OrderAppliance'])
         
         # Adding model 'DealerOrganization'
         db.create_table('home_dealerorganization', (
-            ('organization_ptr', orm['home.DealerOrganization:organization_ptr']),
-            ('default_measure_units', orm['home.DealerOrganization:default_measure_units']),
-            ('credit_balance', orm['home.DealerOrganization:credit_balance']),
+            ('organization_ptr', orm['customer.DealerOrganization:organization_ptr']),
+            ('default_measure_units', orm['customer.DealerOrganization:default_measure_units']),
+            ('credit_balance', orm['customer.DealerOrganization:credit_balance']),
         ))
         db.send_create_signal('home', ['DealerOrganization'])
         
         # Adding model 'UserProfile'
         db.create_table('home_userprofile', (
-            ('id', orm['home.UserProfile:id']),
-            ('user', orm['home.UserProfile:user']),
-            ('account', orm['home.UserProfile:account']),
-            ('usertype', orm['home.UserProfile:usertype']),
+            ('id', orm['customer.UserProfile:id']),
+            ('user', orm['customer.UserProfile:user']),
+            ('account', orm['customer.UserProfile:account']),
+            ('usertype', orm['customer.UserProfile:usertype']),
         ))
         db.send_create_signal('home', ['UserProfile'])
         
@@ -233,12 +233,12 @@ class Migration:
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'home.dealerorganization': {
+        'customer.dealerorganization': {
             'credit_balance': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '10', 'decimal_places': '2'}),
             'default_measure_units': ('django.db.models.fields.CharField', [], {'max_length': '3'}),
-            'organization_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['home.Organization']", 'unique': 'True', 'primary_key': 'True'})
+            'organization_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['customer.Organization']", 'unique': 'True', 'primary_key': 'True'})
         },
-        'home.designorder': {
+        'customer.designorder': {
             'appliance_garage': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'assigned': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'backsplash': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
@@ -250,7 +250,7 @@ class Migration:
             'cabinet_wood': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True', 'blank': 'True'}),
             'cabinetry_notes': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True', 'blank': 'True'}),
             'ceiling_height': ('django.db.models.fields.CharField', [], {'max_length': '6', 'null': 'True', 'blank': 'True'}),
-            'client_account': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'created_orders'", 'to': "orm['home.Organization']"}),
+            'client_account': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'created_orders'", 'to': "orm['customer.Organization']"}),
             'client_diagram': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'client_diagram_notes': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'client_diagram_source': ('django.db.models.fields.CharField', [], {'default': "'UPL'", 'max_length': '3', 'null': 'True', 'blank': 'True'}),
@@ -313,35 +313,35 @@ class Migration:
             'waste_bin': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'wine_rack': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'})
         },
-        'home.orderappliance': {
+        'customer.orderappliance': {
             'appliance_type': ('django.db.models.fields.CharField', [], {'max_length': '3'}),
             'depth': ('django.db.models.fields.IntegerField', [], {}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
             'height': ('django.db.models.fields.IntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'options': ('django.db.models.fields.CharField', [], {'max_length': '240', 'blank': 'True'}),
-            'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['home.DesignOrder']"}),
+            'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['customer.DesignOrder']"}),
             'width': ('django.db.models.fields.IntegerField', [], {})
         },
-        'home.orderattachment': {
+        'customer.orderattachment': {
             'doctype': ('django.db.models.fields.SmallIntegerField', [], {}),
             'document': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'document_id': ('django.db.models.fields.CharField', [], {'max_length': '24', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'method': ('django.db.models.fields.SmallIntegerField', [], {}),
-            'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['home.DesignOrder']", 'null': 'True', 'blank': 'True'}),
-            'org': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['home.Organization']", 'null': 'True', 'blank': 'True'}),
+            'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['customer.DesignOrder']", 'null': 'True', 'blank': 'True'}),
+            'org': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['customer.Organization']", 'null': 'True', 'blank': 'True'}),
             'source': ('django.db.models.fields.SmallIntegerField', [], {}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'})
         },
-        'home.ordernotes': {
+        'customer.ordernotes': {
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['home.DesignOrder']"}),
+            'order': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['customer.DesignOrder']"}),
             'sequence': ('django.db.models.fields.IntegerField', [], {})
         },
-        'home.organization': {
+        'customer.organization': {
             'address_1': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True', 'blank': 'True'}),
             'address_2': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
@@ -354,8 +354,8 @@ class Migration:
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'ACT'", 'max_length': '3'})
         },
-        'home.transaction': {
-            'account': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['home.DealerOrganization']"}),
+        'customer.transaction': {
+            'account': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['customer.DealerOrganization']"}),
             'amount': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'debit_or_credit': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
@@ -364,8 +364,8 @@ class Migration:
             'trace_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'trans_type': ('django.db.models.fields.CharField', [], {'max_length': '1'})
         },
-        'home.userprofile': {
-            'account': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['home.Organization']"}),
+        'customer.userprofile': {
+            'account': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['customer.Organization']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'unique': 'True'}),
             'usertype': ('django.db.models.fields.CharField', [], {'default': "'dealer'", 'max_length': '10'})

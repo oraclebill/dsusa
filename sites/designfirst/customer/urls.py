@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 import paypal
 
-urlpatterns = patterns('home.views', 
+urlpatterns = patterns('customer.views', 
     (r'^$', 'home'),
     
     (r'^login/$', 'do_login'),

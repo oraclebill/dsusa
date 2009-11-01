@@ -367,7 +367,7 @@ class DesignOrder(models.Model):
         self.save()
                 
     def get_absolute_url(self):
-        return reverse('home.edit_order_detail')
+        return reverse('customer.edit_order_detail')
                 
     def __unicode__(self):
         return "Order #%s for %s [%s] - %s" % (self.id, self.client_account.legal_name, self.status, self.description)

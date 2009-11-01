@@ -1,5 +1,5 @@
 from django import forms
-from home.models import DesignOrder
+from customer.models import DesignOrder
 
 
 class DimensionField(forms.CharField):

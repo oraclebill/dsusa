@@ -1,5 +1,5 @@
 from django import forms
-from home.models import *
+from customer.models import *
 from product.models import Product
 import designorderforms
 from wizard.models import WorkingOrder

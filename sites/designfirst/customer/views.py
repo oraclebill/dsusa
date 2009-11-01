@@ -73,7 +73,7 @@ def home(request):
     TODO should be static?
     """
     
-    return render_to_response( 'home/home.html',context_instance=RequestContext(request) )
+    return render_to_response( 'home/customer.html',context_instance=RequestContext(request) )
 
 
 def do_login(request, next=None):
@@ -102,7 +102,7 @@ def do_login(request, next=None):
     else:
         login_message="Login failed."
 
-    return render_to_response('home/home.html', 
+    return render_to_response('home/customer.html', 
         dict(login_message=login_message),
         context_instance=RequestContext(request))
 
@@ -117,7 +117,7 @@ def do_logout(request):
         request.session.flush()
     except:
         pass
-    return HttpResponseRedirect(reverse('home.views.home'))
+    return HttpResponseRedirect(reverse('customer.views.home'))
 
 ## FIXME: for now all users without profiles are assumed dealers.
 def create_profile(request):
@@ -323,7 +323,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
             tx.save()                        
             
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
-            return HttpResponseRedirect(reverse('home.views.dealer_dashboard') )              
+            return HttpResponseRedirect(reverse('customer.views.dealer_dashboard') )              
               
     class FakeWizard(object):
         def __init__(self, order):
@@ -344,7 +344,7 @@ def dealer_review_order(request, orderid):
         form = DesignOrderAcceptanceForm(request.POST,instance=order)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
+            return HttpResponseRedirect( reverse('customer.views.dealer_dashboard') )
     else:
         raise Exception, 'Invalid HTTP operation %s' % request.method        
         
@@ -362,7 +362,7 @@ def dealer_accept_order(request, orderid):
             order.status = -1
             order.closed = datetime.now()
             form.save()            
-            return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
+            return HttpResponseRedirect( reverse('customer.views.dealer_dashboard') )
     else:
         raise Exception, 'Invalid HTTP operation %s' % request.method        
         
@@ -379,7 +379,7 @@ def dealer_reject_order(request, orderid):
         form = DesignOrderAcceptanceForm(request.POST,instance=order)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect( reverse('home.views.dealer_dashboard') )
+            return HttpResponseRedirect( reverse('customer.views.dealer_dashboard') )
     else:
         raise Exception, 'Invalid HTTP operation %s' % request.method        
         

@@ -1,4 +1,4 @@
-from designfirst.home.models import *
+from designfirst.customer.models import *
 from django.contrib import admin
 
 class ApplianceInline(admin.TabularInline):

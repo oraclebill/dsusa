@@ -57,4 +57,4 @@ Customer - 1
 	- logout
 	- confirm customer email notification
 	
-4. submit order from customer home.
+4. submit order from customer customer.

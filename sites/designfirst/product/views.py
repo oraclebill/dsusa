@@ -153,7 +153,7 @@ def paypal_success_callback(sender, **kwargs):
     invoice = Invoice.objects.get(pk=invnum)
     invoice.status = Invoice.PAID
     invoice.save()
-    from home.models import register_purchase
+    from customer.models import register_purchase
     register_purchase(invoice.id, invoice.customer, invoice.total, invoice.total_credit)
         
 from paypal.pro.signals import payment_was_successful

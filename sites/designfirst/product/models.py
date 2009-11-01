@@ -5,7 +5,7 @@ from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from home.models import DealerOrganization
+from customer.models import DealerOrganization
 
 DECIMAL_ZERO = Decimal()
 

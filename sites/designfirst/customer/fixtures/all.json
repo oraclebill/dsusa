@@ -107,7 +107,7 @@
  }, 
  {
   "pk": 1, 
-  "model": "home.organization", 
+  "model": "customer.organization", 
   "fields": {
    "status": "A", 
    "phone": "", 
@@ -118,7 +118,7 @@
  }, 
  {
   "pk": 2, 
-  "model": "home.organization", 
+  "model": "customer.organization", 
   "fields": {
    "status": "P", 
    "phone": "", 
@@ -129,7 +129,7 @@
  }, 
  {
   "pk": 3, 
-  "model": "home.organization", 
+  "model": "customer.organization", 
   "fields": {
    "status": "A", 
    "phone": "", 
@@ -140,7 +140,7 @@
  }, 
  {
   "pk": 1, 
-  "model": "home.dealerorganization", 
+  "model": "customer.dealerorganization", 
   "fields": {
    "credit_balance": "0", 
    "default_measure_units": "IN"
@@ -148,7 +148,7 @@
  }, 
  {
   "pk": 2, 
-  "model": "home.dealerorganization", 
+  "model": "customer.dealerorganization", 
   "fields": {
    "credit_balance": "0", 
    "default_measure_units": "IN"
@@ -156,7 +156,7 @@
  }, 
  {
   "pk": 1, 
-  "model": "home.userprofile", 
+  "model": "customer.userprofile", 
   "fields": {
    "usertype": "dealer", 
    "account": 1, 
@@ -165,7 +165,7 @@
  }, 
  {
   "pk": 2, 
-  "model": "home.userprofile", 
+  "model": "customer.userprofile", 
   "fields": {
    "usertype": "dealer", 
    "account": 2, 
@@ -174,7 +174,7 @@
  }, 
  {
   "pk": 3, 
-  "model": "home.userprofile", 
+  "model": "customer.userprofile", 
   "fields": {
    "usertype": "designer", 
    "account": 3, 
@@ -183,7 +183,7 @@
  }, 
  {
   "pk": 4, 
-  "model": "home.userprofile", 
+  "model": "customer.userprofile", 
   "fields": {
    "usertype": "dealer", 
    "account": 2, 

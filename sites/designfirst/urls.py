@@ -5,7 +5,7 @@ import designfirst.menus
 from django.contrib import admin
 admin.autodiscover()
 
-# import home.forms
+# import customer.forms
 
 urlpatterns = patterns('',
     # Example:
@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    (r'', include("home.urls")),    
+    (r'', include("customer.urls")),    
     (r'^products/', include("product.urls")),    
     (r'^wizard/', include("wizard.urls")),
 
