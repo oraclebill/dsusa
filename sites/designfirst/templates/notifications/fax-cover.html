@@ -102,7 +102,7 @@ tr > td:first-child {
 </div>
 <div id="content">
 <div id="header">
-<h1>Fax Cover Sheet</h1>
+<h1>Design Service Fax Cover Sheet</h1>
 <p>This coversheet has a barcode unique to your order, so please print and fax the coversheet with your floorplan sketch and any other order related documents. We will send an email to you at {{ account.email }} to confirm that we received your documents as soon as the fax enters our system.</p>
 </div>
 <form action="" method="post">
@@ -118,7 +118,7 @@ tr > td:first-child {
       </tr>
       <tr>
         <td align="left" valign="top">Re</td>
-        <td><label for="fax-pages">Floorplan Sketch</label></td>
+        <td><label>Floorplan Sketch</label></td>
       </tr>
       <tr>
         <td width="30%" align="left" valign="top"><p>Pages</p></td>
@@ -129,24 +129,24 @@ tr > td:first-child {
     </table>
     <table class="column" width="100%" border="1">
       <tr>
-        <td width="30%" align="left" valign="top">Order #</td>
-        <td>{ order.id }</td>
+        <td width="40%" align="left" valign="top">Order #</td>
+        <td>{{ order.id }}</td>
       </tr>
       <tr>
-        <td width="30%" align="left" valign="top">From</td>
-        <td>{ account.name }</td>
+        <td width="30%" align="left" valign="top">Account Name</td>
+        <td>{{ account.legal_name }}</td>
       </tr>
       <tr>
-        <td width="30%" align="left" valign="top">Phone</td>
-        <td>{ account.phone }</td>
+        <td width="30%" align="left" valign="top">Phone #</td>
+        <td>{{ account.phone }}</td>
       </tr>
       <tr>
-        <td align="left" valign="top">Date</td>
-        <td>{ today }</td>
-      </tr>
-      <tr>
-        <td width="30%" align="left" valign="top">Email</td>
-        <td>{ account.email }</td>
+        <td align="left" valign="top">Date Sent</td>
+        <td>{% now  "F jS Y" %}</td>
+      {# </tr> #}
+      {# <tr> #}
+      {#   <td width="30%" align="left" valign="top">Email</td> #}
+      {#   <td>{{ account.email }}</td> #}
       </tr>
     </table>
 </div>
@@ -161,8 +161,8 @@ tr > td:first-child {
   	<input type="button" value="Return to Dashboard" onclick="void();">    
   </div>
   <div id="barcode-area">
-    <p><img src="{% url generate_barcode type=c128,val=order.id %}"></p>
-    <p><img src="{% url generate_barcode type=dmtx,val=order.id %}"></p>
+    <p><img src="{% url generate_barcode type='c128',val=orderid %}"></p>
+    <p><img src="{% url generate_barcode type='dmtx',val=orderid %}"></p>
   </div>
 
 </div>

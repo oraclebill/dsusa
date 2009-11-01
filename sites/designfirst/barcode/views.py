@@ -26,7 +26,7 @@ def _generate_datamatrix(val, scale):
 
 _symbologies = {
     'c128': (_generate_code128, 3),
-    'dmtx': (_generate_datamatrix, 5),
+    'dmtx': (_generate_datamatrix, 10),
 }
     
 def generate_barcode_response(request, type, val):

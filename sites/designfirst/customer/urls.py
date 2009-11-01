@@ -24,9 +24,7 @@ urlpatterns = patterns('customer.views',
         'remove_order_appliance', 
         name='delete_order_appliance'),
         
-    (r'^dealer/order/(\w+)/fax-cover/', 'current_order_info', {
-        'template': 'notification/fax-cover.html',
-        }, 
+    (r'^dealer/order/(\w+)/fax-cover/', 'current_order_info', {},
         'fax_cover')
 )
 

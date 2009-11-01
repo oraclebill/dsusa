@@ -227,7 +227,7 @@ def current_order_info(request, orderid, template='notifications/fax-cover.html'
     account = profile.account.dealerorganization
     order   = user.workingorder_set.get(id=orderid)  # will throw if current user didn't create current order
     
-    return render_to_response(template, context_instance=RequestContext(locals()))
+    return render_to_response(template, locals(), context_instance=RequestContext(request))
     
 @login_required
 def edit_order_detail(request, order_id):
