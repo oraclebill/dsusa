@@ -217,7 +217,7 @@ class SubmitForm(forms.ModelForm):
             order.cost = price_order(order)
         except Exception, exc_info:
             raise forms.ValidationError('Unable to price order. - %s' % exc_info)
-        balance = order.owner.get_profile().account.dealerorganization.credit_balance
+        balance = order.owner.get_profile().account.credit_balance
         if balance < order.cost:
             raise forms.ValidationError('Insufficient funds in account - %s' % balance)    
         return cleaned_data        

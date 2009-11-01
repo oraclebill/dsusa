@@ -31,7 +31,7 @@ def product_detail(request, prodid):
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/') ## FIXME
     
-    account         = request.user.get_profile().account.dealerorganization
+    account         = request.user.get_profile().account
     product         = Product.objects.get(pk=prodid)
     price_retail    = get_customer_price(account, product)
         
@@ -44,7 +44,7 @@ def select_products(request, template):
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/') ## FIXME with decorators..
     
-    account = request.user.get_profile().account.dealerorganization
+    account = request.user.get_profile().account
 
     # post means they've selected somethign to purchase. put the items in your 'cart' and go to confirm stage
     if request.method == 'POST':
@@ -83,7 +83,7 @@ def select_products(request, template):
                 
 def confirm_selections(request):
     "Display the selected products and pricing info and identify payment mechanism."
-    account = request.user.get_profile().account.dealerorganization
+    account = request.user.get_profile().account
 
     cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)
     cart_total = sum([i.extended_price for i in cart_items])
@@ -94,7 +94,7 @@ def confirm_selections(request):
 @transaction.commit_on_success
 def review_and_process_payment_info(request):
     "Display and/or collect payment information while displaying a summary of products to be purchased."    
-    account = request.user.get_profile().account.dealerorganization
+    account = request.user.get_profile().account
     cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)    
     # if the cart is empty we have nothing to do..
     if not cart_items:

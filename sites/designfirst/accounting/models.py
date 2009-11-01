@@ -2,7 +2,7 @@ from django.db import models
 from django.db import transaction
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from customer.models import DealerOrganization
+from customer.models import Dealer
 
 # Create your models here.
 DEBIT, CREDIT = ( 'D', 'C')
@@ -13,7 +13,7 @@ TRANS_TYPE_CHOICES = ((ACCT_CREDIT, _('Account Credit')), (CASH, _('Cash')))
         
 class Transaction(models.Model): # TODO --> invoice becomes transaction
     trace_id = models.CharField(max_length=50)
-    account = models.ForeignKey(DealerOrganization)
+    account = models.ForeignKey(Dealer)
     debit_or_credit = models.CharField(max_length=1, choices=DC_CHOICES)
     trans_type = models.CharField(max_length=1, choices=TRANS_TYPE_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

@@ -76,7 +76,7 @@ class WizardBase(object):
         for step in self.steps:
             yield {
                 'title': capfirst(' '.join(step.split('_'))),
-                'url': reverse('order-orders-step', args=[self.order.id, step]),
+                'url': reverse('order-wizard-step', args=[self.order.id, step]),
                 'selected': self.step == step,
                 'slug': step,
             }
@@ -91,7 +91,7 @@ class WizardBase(object):
             step = self.previous_step()
         if step is None:
             return HttpResponseRedirect(reverse(
-                        'order-orders-complete', args=[self.order.id]))
+                        'order-wizard-complete', args=[self.order.id]))
         return self.go_to_step(step)
     
     
@@ -111,7 +111,7 @@ class WizardBase(object):
         return self.steps.index(self.step) == 0
     
     def go_to_step(self, step):
-        return HttpResponseRedirect(reverse('order-orders-step', args=[self.order.id, step]))
+        return HttpResponseRedirect(reverse('order-wizard-step', args=[self.order.id, step]))
     
     def step_title(self):
         if hasattr(self.method, 'title'):

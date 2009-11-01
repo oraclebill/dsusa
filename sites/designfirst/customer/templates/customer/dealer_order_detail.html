@@ -44,7 +44,7 @@ DesignFirst - Design Order
     			<tbody>
     				<tr><th>Customer</th><td>{{ order.owner.first_name }} {{ order.owner.last_name }} ({{ order.owner }})</td></tr>
     				<tr><th>Account #</th><td>{{ order.owner.get_profile.account.id }}</td></tr>
-                    {# <tr><th>Available Credit</th><td>{{order.owner.get_profile.account.dealerorganization.credit_balance}}</td></tr> #}
+                    {# <tr><th>Available Credit</th><td>{{order.owner.get_profile.account.credit_balance}}</td></tr> #}
     				<tr><th>&nbsp;</th><td>&nbsp;</td></tr>
     				<tr><th>&nbsp;</th><td>&nbsp;</td></tr>
     			</tbody>

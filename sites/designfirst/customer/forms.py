@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from customer.models import DealerOrganization
+from customer.models import Dealer
 from product.models import Product
 
 from orders.models import WorkingOrder
@@ -22,7 +22,7 @@ class DealerProfileForm(forms.ModelForm):
     def save(self, **kwargs):
         profile_user = self.instance
         super(DealerProfileForm, self).save(**kwargs)
-        profile_org = DealerOrganization(
+        profile_org = Dealer(
                         legal_name=self.cleaned_data['company'], 
                         address_1=self.cleaned_data['address'], 
                         city=self.cleaned_data['city'], 

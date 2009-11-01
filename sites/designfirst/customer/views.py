@@ -33,7 +33,7 @@ from orders import forms as wf
 ##
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
-from models import DealerOrganization, UserProfile  
+from models import Dealer, UserProfile  
 from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
 
 
@@ -148,7 +148,7 @@ def dealer_dashboard(request):
     """
     
     user = request.user    
-    account = request.user.get_profile().account.dealerorganization
+    account = request.user.get_profile().account
     
     # orders = account.created_orders.all()
     orders = user.workingorder_set.all()
@@ -168,7 +168,7 @@ def create_order(request, *args):
     """
     Create a new order.
     """
-    account = request.user.get_profile().account.dealerorganization              
+    account = request.user.get_profile().account              
     if request.method == 'POST':
         form = NewDesignOrderForm(request.POST)
         if form.is_valid():
@@ -224,7 +224,7 @@ def process_form(form_class, order_inst, data=None, files=None, model_class=Work
 def current_order_info(request, orderid, template='notifications/fax-cover.html'):
     user    = request.user
     profile = user.get_profile()
-    account = profile.account.dealerorganization
+    account = profile.account
     order   = user.workingorder_set.get(id=orderid)  # will throw if current user didn't create current order
     order_code = 'dds-010-%03d-%03d' % (account.id, order.id)
     
@@ -250,7 +250,7 @@ def edit_order_detail(request, order_id):
         return HttpResponseRedirect('/')
  
     profile = user.get_profile()
-    account = profile.account.dealerorganization
+    account = profile.account
     # order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
     order = user.workingorder_set.get(id=order_id)  # will throw if current user didn't create current order
                         
@@ -306,7 +306,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
         return HttpResponseRedirect('/')
  
     profile = user.get_profile()
-    account = profile.account.dealerorganization
+    account = profile.account
     order = user.workingorder_set.get(id=orderid) 
     
     if request.method == 'GET':
@@ -315,7 +315,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
         form = form_class(request.POST, instance=order)
         if form.is_valid():
             order = form.save()
-            account = request.user.get_profile().account.dealerorganization
+            account = request.user.get_profile().account
             cost = order.cost or Decimal()  
             register_design_order(user, account, order, cost)
             

@@ -5,7 +5,7 @@ from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from customer.models import DealerOrganization
+from customer.models import Dealer
 
 DECIMAL_ZERO = Decimal()
 
@@ -138,7 +138,7 @@ class Invoice(models.Model):
     INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('CANCELLED')))
 
     id          = models.CharField(max_length=50, primary_key=True, default=uuid_key)
-    customer    = models.ForeignKey(DealerOrganization)
+    customer    = models.ForeignKey(Dealer)
     status      = models.CharField(max_length=1, choices=INV_STATUS_CHOICES)
     description = models.TextField(blank=True)
     created     = models.DateTimeField(auto_now_add=True)
