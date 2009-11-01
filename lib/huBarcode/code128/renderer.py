@@ -2,7 +2,7 @@
 
 __revision__ = "$Rev: 1$"
 
-import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw
 import logging, os
 
 log = logging.getLogger( "code128" )
@@ -27,9 +27,8 @@ class Code128Renderer:
         self.text = text
 
 
-    def write_file( self, filename, bar_width ):
+    def get_pilimage( self, bar_width ):
         """Write barcode data out to image file
-        filename - the name of the image file
         bar_width - the desired width in pixels of each bar"""
         
         # 11 bars per character, plus the stop
@@ -81,19 +80,33 @@ class Code128Renderer:
         writer.write_bars( self.bars )
 
         # Draw the text
-        font_size = font_sizes.get(bar_width, 24)
-            
-		# Locate the font file relative to the module
-        c128dir, _ = os.path.split( __file__ )
-        rootdir, _ = os.path.split( c128dir )  
-        fontfile = os.path.join( rootdir, "fonts", 
-                                "courR%02d.pil" % font_size )
-        font = ImageFont.load_path( fontfile )
-        draw = ImageDraw.Draw( img )
+	if self.text:
+		font_size = font_sizes.get(bar_width, 24)
+		    
+			# Locate the font file relative to the module
+		c128dir, _ = os.path.split( __file__ )
+		rootdir, _ = os.path.split( c128dir )  
+		fontfile = os.path.join( rootdir, "fonts", 
+					"courR%02d.pil" % font_size )
+		font = ImageFont.load_path( fontfile )
+		draw = ImageDraw.Draw( img )
 
-        xtextwidth = len(self.text) * font_size  
-        xtextpos = image_width/2 - (xtextwidth/2)
-        draw.text( (xtextpos, int(image_height*.8)), 
-                    self.text, font=font )
+		xtextwidth = len(self.text) * font_size  
+		xtextpos = image_width/2 - (xtextwidth/2)
+		draw.text( (xtextpos, int(image_height*.8)), 
+			    self.text, font=font )
 
+	return img
+
+    def write_file( self, filename, bar_width ):
+        """Write the matrix out to an image file"""
+        img = self.get_pilimage( filename, bar_width )
         img.save( filename )
+
+    def get_imagedata( self, bar_width ):
+        """Write the matrix out as PNG to an bytestream"""
+        buffer = StringIO()
+        img = self.get_pilimage( bar_width )
+        img.save( buffer, "PNG" )
+        return buffer.getvalue()
+

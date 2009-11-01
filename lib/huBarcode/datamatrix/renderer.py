@@ -3,7 +3,7 @@
 __revision__ = "$Rev: 4182 $"
 
 from cStringIO import StringIO
-import Image
+from PIL import Image
 
 class DataMatrixRenderer:
     """Rendering class - given a pre-populated datamatrix. 

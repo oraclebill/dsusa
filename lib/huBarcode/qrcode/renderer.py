@@ -3,7 +3,7 @@
 __revision__ = "$Rev: 1927 $"
 
 from cStringIO import StringIO 
-import Image
+from PIL import Image
 
 class QRCodeRenderer:
     """Rendering class - given a pre-populated QR Code matrix.

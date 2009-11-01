@@ -3,9 +3,7 @@
 __revision__ = "$Rev: 3451 $"
 
 import os
-import Image
-import ImageFont
-import ImageDraw
+from PIL import Image, ImageFont, ImageDraw
 from pkg_resources import resource_filename
 
 # maps bar width against font size
