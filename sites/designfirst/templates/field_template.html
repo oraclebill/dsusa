@@ -1,0 +1,12 @@
+<li id="" class="">
+	<label id="label_{{field.name}}" class="" for="{{field.id}}">
+		{{field.label}}
+		{% if field.required %}<span id="" class="req">*</span>{% endif %}		
+	</label>
+	<div>
+		{{field}}
+	</div>
+	<p id="instruct" class="instruct">
+		<small>{{field.help_text}}</small>
+	</p>
+</li>
