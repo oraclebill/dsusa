@@ -90,8 +90,8 @@ tr > td:first-child {
 
 #content #barcode-area p {
 	padding-top: 2em;
-	padding-left: 5em;
-}
+/*	padding-left: 5em;
+*/}
 -->
 </style>
 </head>
@@ -161,8 +161,8 @@ tr > td:first-child {
   	<input type="button" value="Return to Dashboard" onclick="void();">    
   </div>
   <div id="barcode-area">
-    <p><img src="{% url generate_barcode type='c128',val=orderid %}"></p>
-    <p><img src="{% url generate_barcode type='dmtx',val=orderid %}"></p>
+    <p><img src="{% url generate_barcode type='c128',val=order_code %}"></p>
+    <p><img src="{% url generate_barcode type='dmtx',val=order_code %}"></p>
   </div>
 
 </div>

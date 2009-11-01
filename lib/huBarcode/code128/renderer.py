@@ -45,7 +45,7 @@ class Code128Renderer:
         # # Image height 30% of width
         # image_height = image_width / 3 
         # Image height one half inch
-        image_height = 100 # approx .69 inch @ 72 dpi 
+        image_height = 150 # approx .69 inch @ 72 dpi 
 
         log.debug( "Image is %d x %d", image_width, image_height )
 

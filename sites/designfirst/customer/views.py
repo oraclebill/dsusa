@@ -226,6 +226,7 @@ def current_order_info(request, orderid, template='notifications/fax-cover.html'
     profile = user.get_profile()
     account = profile.account.dealerorganization
     order   = user.workingorder_set.get(id=orderid)  # will throw if current user didn't create current order
+    order_code = 'dds-010-%03d-%03d' % (account.id, order.id)
     
     return render_to_response(template, locals(), context_instance=RequestContext(request))
     
