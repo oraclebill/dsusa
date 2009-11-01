@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'', include("customer.urls")),    
     (r'^products/', include("product.urls")),    
-    (r'^wizard/', include("wizard.urls")),
+    (r'^orders/', include("orders.urls")),
 
     # django-registration
     (r'^accounts/', include('registration.urls')),

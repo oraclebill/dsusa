@@ -1,4 +1,4 @@
-{% extends "wizard/base.html" %}
+{% extends "orders/base.html" %}
 
 {% block extra-head %}
 {{block.super}}
@@ -55,13 +55,13 @@
 		// //Fixing navigation
 		// $('#id_depth').keydown(function(event){
 		// 	if (event.keyCode == KEY_TAB && !event.shiftKey) {
-		// 		wizard_go_to('_next_');
+		// 		orders_go_to('_next_');
 		// 		return false;
 		// 	}
 		// })
 
 		//Stack/Staggering images
-		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/dimensions.png" style="float: right; width: 300px; height: 200px;">'
+		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/orders/dimensions.png" style="float: right; width: 300px; height: 200px;">'
 		$(img_html).insertAfter('fieldset fieldset:first legend')
 		
 		function switch_image() {
@@ -79,7 +79,7 @@
 </script>
 {% endblock %}
 
-{% block wizard-content %}
+{% block orders-content %}
 
 {% include "fieldsets_form.html" %}
 

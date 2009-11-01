@@ -94,49 +94,47 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'designfirst.urls'
-
+AUTH_PROFILE_MODULE = "customer.UserProfile"
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'designfirst.customer',
-    'designfirst.product',
-    'designfirst.wizard',
     'paypal.standard.ipn',
     'paypal.standard', 
     'paypal.pro', 
-    'validation',
-    'menu',
-    # django-registration
-    'registration',
-    # if debug.. 
-    'debug_toolbar',
     'ajax_forms',
+    'menu',
+    'registration',
+    'designfirst.customer',
+    'designfirst.product',
+    'designfirst.orders',
+    'designfirst.accounting',
+    'designfirst.validation',
 )
 
-DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    'debug_toolbar.panels.signals.SignalDebugPanel',
-    'debug_toolbar.panels.logger.LoggingPanel',
-)
-
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
+if DEBUG:
+    INSTALLED_APPS += ( 
+        'debug_toolbar',
+    )
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
     }
 
-AUTH_PROFILE_MODULE = "customer.UserProfile"
-
-
 ##
-PAYPAL_TEST             = True      # Testing mode on
+PAYPAL_TEST                 = True      # Testing mode on
 if PAYPAL_TEST:
     PAYPAL_WPP_USER         = "cosell_1252871123_biz_api1.averline.com"     # Get from PayPal
     PAYPAL_WPP_PASSWORD     = "1252871133"
@@ -147,8 +145,6 @@ else:
     PAYPAL_WPP_PASSWORD     = ""
     PAYPAL_WPP_SIGNATURE    = ""
     PAYPAL_RECEIVER_EMAIL   = ""
-
-
 
 # system mail parameters
 MAIL_SYSTEM_REPLYTO_ADDRESS = 'system@designserviceusa.com'

@@ -16,8 +16,9 @@ from django.shortcuts import render_to_response
 
 from django.contrib.auth.models import User
 
-from product.models import Product, PriceSchedule, PriceScheduleEntry, get_customer_price 
-from product.models import Invoice, CartItem
+from accounting.models import register_purchase
+from models import Product, PriceSchedule, PriceScheduleEntry, get_customer_price 
+from models import Invoice, CartItem
     
 def make_site_url(request, path):
     from django.contrib.sites.models import Site
@@ -153,7 +154,6 @@ def paypal_success_callback(sender, **kwargs):
     invoice = Invoice.objects.get(pk=invnum)
     invoice.status = Invoice.PAID
     invoice.save()
-    from customer.models import register_purchase
     register_purchase(invoice.id, invoice.customer, invoice.total, invoice.total_credit)
         
 from paypal.pro.signals import payment_was_successful

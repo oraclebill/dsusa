@@ -160,7 +160,7 @@ General
 			- {ORIG-ORDERID}-{REV-ORDERID}   <-- revisions
 				- * same as order * 
  - TODO - breakout new 'reusable' app - 'customer' - precious data app..
- - TODO - mouldings in wizard summary !!
+ - TODO - mouldings in orders summary !!
  - TODO - make summary DRY
     + did some normalization in summary.py..
     + enhanced summary section names..

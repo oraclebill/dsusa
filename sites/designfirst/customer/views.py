@@ -26,13 +26,14 @@ from django.contrib.auth.decorators import login_required
 
 ##
 ## imports from other apps
+from accounting.models import register_design_order
 from product.models import Product
-from wizard.models import WorkingOrder, Appliance, Moulding, Attachment
-from wizard import forms as wf
+from orders.models  import WorkingOrder, Appliance, Moulding, Attachment
+from orders import forms as wf
 ##
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
-from models import DealerOrganization, Transaction,UserProfile  
+from models import DealerOrganization, UserProfile  
 from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
 
 
@@ -176,7 +177,7 @@ def create_order(request, *args):
 	    order.submitted = datetime.now()
             order.save()
                         
-            return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
+            return HttpResponseRedirect(reverse("order-orders", args=[order.id]))
     else:
         form = NewDesignOrderForm()
     
@@ -303,24 +304,10 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
     else:
         form = form_class(request.POST, instance=order)
         if form.is_valid():
-            order = form.save(commit=False)
+            order = form.save()
             account = request.user.get_profile().account.dealerorganization
-            now = datetime.utcnow()
-            cost = order.cost or Decimal()            
-            # update account
-            account.credit_balance = account.credit_balance - cost
-            account.save()   
-            # update order
-            order.save()                        
-            # update transction log
-            tx = Transaction()
-            tx.account = account
-            tx.amount = cost
-            tx.debit_or_credit = 'C'  
-            tx.trans_type = 'C'
-            tx.description = 'design credit purchase'
-            tx.timestamp = now
-            tx.save()                        
+            cost = order.cost or Decimal()  
+            register_design_order(user, account, order, cost)
             
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
             return HttpResponseRedirect(reverse('customer.views.dealer_dashboard') )              
@@ -329,8 +316,8 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
         def __init__(self, order):
             self.order = order
             
-    return render_to_response('wizard/order_review.html',
-                dict(order=order, form=form, wizard=FakeWizard(order)),
+    return render_to_response('orders/order_review.html',
+                dict(order=order, form=form, orders=FakeWizard(order)),
                 context_instance=RequestContext(request))
     
     

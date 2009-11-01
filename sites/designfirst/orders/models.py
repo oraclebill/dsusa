@@ -16,12 +16,12 @@ import settings
 PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
 PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
 
-log = logging.getLogger('wizard.models')
+log = logging.getLogger('orders.models')
 
 class WorkingOrder(models.Model):
     """
     This is a temporary object used for storing data 
-    when  user goes step to step in wizard
+    when  user goes step to step in orders
     """
     #Basic stuff
     DEALER_EDIT, SUBMITTED, ASSIGNED = range(1,4)
@@ -250,7 +250,7 @@ class Attachment(models.Model):
     
     order = models.ForeignKey(WorkingOrder, related_name='attachments')
     type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES)
-    file = models.FileField(_('File'), upload_to='data/wizard/attachments/%Y/%m')
+    file = models.FileField(_('File'), upload_to='data/orders/attachments/%Y/%m')
     source = models.CharField(_('Source'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=UPLOADED, editable=False)
     timestamp = models.DateTimeField(_(''), auto_now_add=True)
     
@@ -296,7 +296,7 @@ class AttachPreview(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
     page = models.PositiveIntegerField(_(''), )
-    file = models.ImageField(_(''), upload_to='data/wizard/attachments/%Y/%m/preview')
+    file = models.ImageField(_(''), upload_to='data/orders/attachments/%Y/%m/preview')
     
     class Meta:
         ordering = ['page']

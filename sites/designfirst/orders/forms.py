@@ -6,7 +6,7 @@ from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
 
 
-NONE_IMG = settings.MEDIA_URL + 'wizard/none.png'
+NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
 
 def fieldset_fields(fieldsets):
     fieldlist = []

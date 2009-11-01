@@ -1,4 +1,4 @@
-{% extends "wizard/base.html" %}
+{% extends "orders/base.html" %}
 
 {% block ajax-validation %}{% endblock %}
 
@@ -9,7 +9,7 @@
 <script type="text/javascript">
 $(function(){
 	$('input#add_moulding').click(function(){
-		$('#wizard_form').ajaxSubmit({
+		$('#orders_form').ajaxSubmit({
 			target: '#mouldings_data',
 			resetForm: true,
 			beforeSubmit: function(data){
@@ -36,10 +36,10 @@ $(function(){
 {% endblock %}
 
 
-{% block wizard-content %}
+{% block orders-content %}
 
 <div id="mouldings_data">
-	{% include "wizard/moulding_items.html" %}
+	{% include "orders/moulding_items.html" %}
 </div>
 
 <table>{{form}}</table>

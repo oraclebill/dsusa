@@ -1,5 +1,5 @@
 '''
-Base class for wizard views
+Base class for orders views
 '''
 from django.shortcuts import get_object_or_404, render_to_response
 from django.http import Http404, HttpResponse, HttpResponseRedirect,\
@@ -37,16 +37,16 @@ class WizardBase(object):
         if isinstance(result, HttpResponse):
             return result
         
-        template = 'wizard/step_%s.html' % self.step
+        template = 'orders/step_%s.html' % self.step
         context = {
-            'wizard': self,
+            'orders': self,
             'BTN_SAVENEXT': BTN_SAVENEXT
         }
         if isinstance(result, (list, tuple)):
             result, template = result
         context.update(result)
         
-        return render_to_response((template, 'wizard/form.html'), 
+        return render_to_response((template, 'orders/form.html'), 
                                   context, RequestContext(request))
     
     def dispatch(self, request):
@@ -71,12 +71,12 @@ class WizardBase(object):
     
     def get_tabs(self):
         """
-        Returns iterator if tab items(icon+text on top of wizard)
+        Returns iterator if tab items(icon+text on top of orders)
         """
         for step in self.steps:
             yield {
                 'title': capfirst(' '.join(step.split('_'))),
-                'url': reverse('order-wizard-step', args=[self.order.id, step]),
+                'url': reverse('order-orders-step', args=[self.order.id, step]),
                 'selected': self.step == step,
                 'slug': step,
             }
@@ -91,7 +91,7 @@ class WizardBase(object):
             step = self.previous_step()
         if step is None:
             return HttpResponseRedirect(reverse(
-                        'order-wizard-complete', args=[self.order.id]))
+                        'order-orders-complete', args=[self.order.id]))
         return self.go_to_step(step)
     
     
@@ -111,7 +111,7 @@ class WizardBase(object):
         return self.steps.index(self.step) == 0
     
     def go_to_step(self, step):
-        return HttpResponseRedirect(reverse('order-wizard-step', args=[self.order.id, step]))
+        return HttpResponseRedirect(reverse('order-orders-step', args=[self.order.id, step]))
     
     def step_title(self):
         if hasattr(self.method, 'title'):

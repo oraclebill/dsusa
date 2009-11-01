@@ -1,4 +1,4 @@
-{% extends "wizard/base.html" %}
+{% extends "orders/base.html" %}
 
 {% block extra-head %}
 {{block.super}}
@@ -8,7 +8,7 @@ $(function(){
 	//TODO: this should be done automatically
 	$('#id_degree90_corner_base_shelv_0').keydown(function(event){
 		if (event.keyCode == KEY_TAB && !event.shiftKey) {
-			wizard_go_to('_next_')
+			orders_go_to('_next_')
 			return false;
 		}
 	})
@@ -41,7 +41,7 @@ $(function(){
 				img_path += '_'
 			img_path += value
 		}
-		img_path = '{{MEDIA_URL}}wizard/corner_cabinet/' + group[0] + '/' + img_path + '.png'
+		img_path = '{{MEDIA_URL}}orders/corner_cabinet/' + group[0] + '/' + img_path + '.png'
 		return img_path;
 	}
 
@@ -61,7 +61,7 @@ $(function(){
 		$image.attr('src', $image.data('original'))
 	}
 
-	$('#wizard_content li label').hover(
+	$('#orders_content li label').hover(
 			function(){
 				update_pic($(this).find('input').get(0), true)
 			}, 
@@ -71,18 +71,18 @@ $(function(){
 			}
 	)
 
-	$('#wizard_content input:radio:checked').each(function(){
+	$('#orders_content input:radio:checked').each(function(){
 		update_pic(this)
 	})
 
-	$('#wizard_content input:radio').click(function(){
+	$('#orders_content input:radio').click(function(){
 		update_pic(this)
 	})
 })
 </script>
 {% endblock %}
 
-{% block wizard-content %}
+{% block orders-content %}
 
 {% include "fieldsets_form.html" %}
 

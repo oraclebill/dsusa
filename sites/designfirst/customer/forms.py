@@ -1,9 +1,10 @@
 from django import forms
-from customer.models import *
+from django.contrib.auth.models import User
+
+from customer.models import DealerOrganization
 from product.models import Product
-import designorderforms
-from wizard.models import WorkingOrder
-# from designorderforms import *
+
+from orders.models import WorkingOrder
 
 
 class DealerProfileForm(forms.ModelForm):
@@ -47,31 +48,9 @@ class NewDesignOrderForm(forms.ModelForm):
     design_product = forms.ModelChoiceField(queryset=Product.objects.filter(debitable=True))
     
 
-class DesignOrderForm(forms.ModelForm):
-    class Meta: 
-        model = DesignOrder
-        exclude = [ 'id', 'client_account', 'visited_status', 'valid_status', 'designer',
-            'designer_package', 'designer_package_notes', 'designer_notes', 'modified', 
-            'modified_by', 'created', 'submitted', 'assigned', 'completed', 'closed', 
-            'tracking_notes' ]
-        
-
-class DesignOrderAppliancesForm(forms.ModelForm):
-    class Meta: 
-        model = OrderAppliance
-        exclude = [ 'order' ]
-
-class DesignOrderAttachmentForm(forms.ModelForm):
-    class Meta: 
-        model = OrderAttachment
-        exclude = [ 'order' ]
-
-class DesignOrderAcceptanceForm(forms.ModelForm):
-    class Meta: 
-        model = DesignOrder
-        fields = [ 'client_review_rating', 'client_review_notes' ]
-
-class DesignOrderRejectionForm(forms.ModelForm):
-    class Meta: 
-        model = DesignOrder
-        fields = [ 'client_review_notes' ]
+class DesignOrderAcceptanceForm(forms.Form):
+    rating = forms.IntegerField()
+    comments = forms.CharField(widget=forms.Textarea)
+    
+class DesignOrderRejectionForm(forms.Form):
+    reason = forms.CharField(widget=forms.Textarea)
