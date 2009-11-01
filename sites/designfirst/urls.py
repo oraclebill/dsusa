@@ -18,18 +18,16 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'', include("customer.urls")),    
     (r'^products/', include("product.urls")),    
-    (r'^orders/', include("orders.urls")),
-
-    # django-registration
+    (r'^orders/',   include("orders.urls")),
     (r'^accounts/', include('registration.urls')),
+    (r'^barcode/',  include("barcode.urls")),
+    (r'^admin/',    include(admin.site.urls)),
 
-    (r'^admin/', include(admin.site.urls)),
-
-    (r'^60b9f188a8a27ce69fcba9ee63b74b4e2fad2b3d/', include('paypal.standard.ipn.urls')),
+    # (r'^60b9f188a8a27ce69fcba9ee63b74b4e2fad2b3d/', include('paypal.standard.ipn.urls')),
 )
 
 from django.conf import settings
-if settings.DEBUG:
+if settings.DEBUG and settings.LOCAL:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     )

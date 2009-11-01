@@ -13,6 +13,7 @@ sys.path.insert(0, rel('..', '..', 'lib'))#Adding lib to system path
 
 
 DEBUG = True
+LOCAL = DEBUG
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -112,6 +113,7 @@ INSTALLED_APPS = (
     'designfirst.orders',
     'designfirst.accounting',
     'designfirst.validation',
+    'designfirst.barcode',
 )
 
 if DEBUG:
