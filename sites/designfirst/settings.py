@@ -46,7 +46,7 @@ SITE_ID = 1
 USE_I18N = True
 
 # Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
+# Example: "/customer/media/media.lawrence.com/"
 MEDIA_ROOT = rel('..', '..', 'static')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
@@ -101,7 +101,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'designfirst.customer',
+    'designfirst.home',
     'designfirst.product',
     'designfirst.wizard',
     'paypal.standard.ipn',

@@ -123,7 +123,7 @@ General
 		
 === 2am ===
  - TODO - make summary translatable
-    + added verbose name for all fields in home/models
+    + added verbose name for all fields in customer/models
     + removed 'cabinet_' prefix from all model fields
     + added 'drawer_front_style' field	
     + added 'finish_type' field

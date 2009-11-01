@@ -73,7 +73,7 @@ def home(request):
     TODO should be static?
     """
     
-    return render_to_response( 'home/home.html',context_instance=RequestContext(request) )
+    return render_to_response( 'customer/home.html',context_instance=RequestContext(request) )
 
 
 def do_login(request, next=None):
@@ -102,7 +102,7 @@ def do_login(request, next=None):
     else:
         login_message="Login failed."
 
-    return render_to_response('home/customer.html', 
+    return render_to_response('customer/customer.html', 
         dict(login_message=login_message),
         context_instance=RequestContext(request))
 
@@ -157,7 +157,7 @@ def dealer_dashboard(request):
        ## TODO: fixme!
     archived_orders = orders.exclude( status__in = [ WorkingOrder.DEALER_EDIT, WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] ) 
         
-    return render_to_response( 'home/dealer_dashboard.html', locals(),                                
+    return render_to_response( 'customer/dealer_dashboard.html', locals(),                                
                                 context_instance=RequestContext(request) ) 
  
 
@@ -180,7 +180,7 @@ def create_order(request, *args):
     else:
         form = NewDesignOrderForm()
     
-    return render_to_response('home/create_order.html', locals(),                                
+    return render_to_response('customer/create_order.html', locals(),                                
                               context_instance=RequestContext(request) ) 
 
 
@@ -269,7 +269,7 @@ def edit_order_detail(request, order_id):
     context['order'] = order
     context['formlist'] = formlist
     
-    return render_to_response( "home/dealer_order_detail.html", context_instance=context )
+    return render_to_response( "customer/dealer_order_detail.html", context_instance=context )
     
         
 @login_required
@@ -348,7 +348,7 @@ def dealer_review_order(request, orderid):
     else:
         raise Exception, 'Invalid HTTP operation %s' % request.method        
         
-    return render_to_response( "home/design_rating_form.html", locals(),
+    return render_to_response( "customer/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
 @login_required
@@ -366,7 +366,7 @@ def dealer_accept_order(request, orderid):
     else:
         raise Exception, 'Invalid HTTP operation %s' % request.method        
         
-    return render_to_response( "home/design_rating_form.html", locals(),
+    return render_to_response( "customer/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
 @login_required
@@ -383,7 +383,7 @@ def dealer_reject_order(request, orderid):
     else:
         raise Exception, 'Invalid HTTP operation %s' % request.method        
         
-    return render_to_response( "home/design_rating_form.html", locals(),
+    return render_to_response( "customer/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
     
 @login_required
