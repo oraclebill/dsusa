@@ -73,7 +73,7 @@ def home(request):
     TODO should be static?
     """
     
-    return render_to_response( 'home/customer.html',context_instance=RequestContext(request) )
+    return render_to_response( 'home/home.html',context_instance=RequestContext(request) )
 
 
 def do_login(request, next=None):
