@@ -110,10 +110,10 @@
   "model": "home.organization", 
   "fields": {
    "status": "A", 
-   "company_phone": "", 
-   "company_fax": "", 
-   "company_name": "Small Dealer", 
-   "company_email": "dealerorg@designserviceusa.com"
+   "phone": "", 
+   "fax": "", 
+   "legal_name": "Small Dealer", 
+   "email": "dealerorg@designserviceusa.com"
   }
  }, 
  {
@@ -121,10 +121,10 @@
   "model": "home.organization", 
   "fields": {
    "status": "P", 
-   "company_phone": "", 
-   "company_fax": "", 
-   "company_name": "Large Dealer", 
-   "company_email": "largeorg@designserviceusa.com"
+   "phone": "", 
+   "fax": "", 
+   "legal_name": "Large Dealer", 
+   "email": "largeorg@designserviceusa.com"
   }
  }, 
  {
@@ -132,10 +132,10 @@
   "model": "home.organization", 
   "fields": {
    "status": "A", 
-   "company_phone": "", 
-   "company_fax": "", 
-   "company_name": "Design Servicing Org", 
-   "company_email": "designorg@designserviceusa.com"
+   "phone": "", 
+   "fax": "", 
+   "legal_name": "Design Servicing Org", 
+   "email": "designorg@designserviceusa.com"
   }
  }, 
  {

@@ -22,13 +22,13 @@ class DealerProfileForm(forms.ModelForm):
         profile_user = self.instance
         super(DealerProfileForm, self).save(**kwargs)
         profile_org = DealerOrganization(
-                        company_name=self.cleaned_data['company'], 
-                        company_address_1=self.cleaned_data['address'], 
-                        company_city=self.cleaned_data['city'], 
-                        company_state=self.cleaned_data['state'], 
-                        company_zip4=self.cleaned_data['zip'], 
-                        company_phone=self.cleaned_data['phone'], 
-                        company_email=self.instance.email,
+                        legal_name=self.cleaned_data['company'], 
+                        address_1=self.cleaned_data['address'], 
+                        city=self.cleaned_data['city'], 
+                        state=self.cleaned_data['state'], 
+                        zip4=self.cleaned_data['zip'], 
+                        phone=self.cleaned_data['phone'], 
+                        email=self.instance.email,
                         default_measure_units=INCH_DIMENSION)
         profile_org.save()
         profile = UserProfile(

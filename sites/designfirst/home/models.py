@@ -34,18 +34,18 @@ class Organization(models.Model):
     ACCOUNT_STATUSES = ( ('P', 'Pending'), ('A', 'Active'), 
                          ('S', 'Suspended'), ('C','Cancelled'), ('O', 'Archived' ))
     status  = models.CharField(max_length=3, default="ACT", choices=ACCOUNT_STATUSES)
-    company_name = models.CharField(max_length=50)
-    company_address_1 = models.CharField(max_length=40, blank=True, null=True)
-    company_address_2 = models.CharField(max_length=40, blank=True, null=True)
-    company_city = models.CharField(max_length=10, blank=True, null=True)
-    company_state = models.CharField(max_length=2, blank=True, null=True)
-    company_zip4 = models.CharField(max_length=10, blank=True, null=True)
-    company_phone = models.CharField(max_length=20, blank=True)
-    company_fax = models.CharField(max_length=20, blank=True)
-    company_email = models.EmailField()
+    legal_name = models.CharField(max_length=50)
+    address_1 = models.CharField(max_length=40, blank=True, null=True)
+    address_2 = models.CharField(max_length=40, blank=True, null=True)
+    city = models.CharField(max_length=10, blank=True, null=True)
+    state = models.CharField(max_length=2, blank=True, null=True)
+    zip4 = models.CharField(max_length=10, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True)
+    fax = models.CharField(max_length=20, blank=True)
+    email = models.EmailField()
     
     def __unicode__(self):
-        return self.company_name
+        return self.legal_name
     
     
 class DealerOrganization(Organization):
@@ -370,7 +370,7 @@ class DesignOrder(models.Model):
         return reverse('home.edit_order_detail')
                 
     def __unicode__(self):
-        return "Order #%s for %s [%s] - %s" % (self.id, self.client_account.company_name, self.status, self.description)
+        return "Order #%s for %s [%s] - %s" % (self.id, self.client_account.legal_name, self.status, self.description)
 
 
 
