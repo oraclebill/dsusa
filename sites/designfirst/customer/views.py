@@ -72,8 +72,9 @@ def home(request):
     Render the home page.
     
     TODO should be static?
-    """
-    
+    """    
+    if request.session:
+        request.session.flush()
     return render_to_response( 'customer/home.html',context_instance=RequestContext(request) )
 
 
@@ -174,9 +175,8 @@ def create_order(request, *args):
             order = form.save(commit=False)
             order.client_account = account#TODO: there is actually no client_account in working order
             order.owner = request.user
-	    order.submitted = datetime.now()
-            order.save()
-                        
+            order.submitted = datetime.now()
+            order.save()                        
             return HttpResponseRedirect(reverse("order-orders", args=[order.id]))
     else:
         form = NewDesignOrderForm()
@@ -220,6 +220,15 @@ def process_form(form_class, order_inst, data=None, files=None, model_class=Work
         return (name, form)
 
 
+@login_required
+def current_order_info(request, orderid, template='notifications/fax-cover.html'):
+    user    = request.user
+    profile = user.get_profile()
+    account = profile.account.dealerorganization
+    order   = user.workingorder_set.get(id=orderid)  # will throw if current user didn't create current order
+    
+    return render_to_response(template, context_instance=RequestContext(locals()))
+    
 @login_required
 def edit_order_detail(request, order_id):
     """
@@ -316,7 +325,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
         def __init__(self, order):
             self.order = order
             
-    return render_to_response('orders/order_review.html',
+    return render_to_response('wizard/order_review.html',
                 dict(order=order, form=form, orders=FakeWizard(order)),
                 context_instance=RequestContext(request))
     

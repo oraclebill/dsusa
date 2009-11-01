@@ -108,11 +108,11 @@ $(function(){
 {% block content %}
 </div> <!-- end container -->
 <div class="container_16">
-<div id="orders_steps" class="grid_16">
+<div id="wizard_steps" class="grid_16">
 {% block orders-steps%}
 	{% for step in orders.get_tabs %}
 		<div{% if step.selected %} class="selected"{% endif %}>
-			<a href="{{ step.url }}" step="{{step.slug}}"><img src="{{MEDIA_URL}}images/orders/{{step.slug}}{% if step.selected %}_selected{% endif %}.png"></a>
+			<a href="{{ step.url }}" step="{{step.slug}}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png"></a>
 			<br>
 			{{step.title}}
 		</div>

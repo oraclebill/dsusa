@@ -53,7 +53,7 @@ class Wizard(WizardBase):
                 return self.dispatch_next_step()
             items = Moulding.groups(self.order)
             return HttpResponse(render_to_string(
-                        'orders/moulding_items.html', {'items':items}))
+                        'wizard/moulding_items.html', {'items':items}))
         form = MouldingForm()
         return {'form': form, 'items': Moulding.groups(self.order)}
     
@@ -155,7 +155,7 @@ class Wizard(WizardBase):
 def orders(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
-@render_to('orders/order_review.html')
+@render_to('wizard/order_review.html')
 def _order_review(request, orders):
     order = orders.order
     if request.method == 'POST':
@@ -205,7 +205,7 @@ def _manufacturer_related(request, model):
     return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in items]))
 
 
-@render_to('orders/attachment_details.html')
+@render_to('wizard/attachment_details.html')
 def ajax_attach_details(request, id):
     attachment = get_object_or_404(Attachment, id=id)
     return {'attachment': attachment}

@@ -46,7 +46,7 @@ class WizardBase(object):
             result, template = result
         context.update(result)
         
-        return render_to_response((template, 'orders/form.html'), 
+        return render_to_response((template, 'wizard/form.html'), 
                                   context, RequestContext(request))
     
     def dispatch(self, request):

@@ -33,5 +33,21 @@ form p.buttons {
         <input type="submit" value="Create Order" >
         </p>
     </form>
+	<div>
+		<p>
+			If you have your floorplan sketch please take the time to fax that to us now.
+		   	In order to ensure timely processing make sure you use the 
+			{# <a href="{% url fax_cover order %}">special fax cover sheet</a>. #}
+			
+			This cover sheet has all of your account and order information plus barcodes that
+			we use to automatically attach your diagram to your order.
+		</p>
+		<p>
+		 	Your fax order submission number is - {{ account.fax_submission_number }}.
+		</p>
+		<p>
+			Once your sketch is received and you complete the web form your order can be submitted.
+		</p
+	</div>
 </div>
 {% endblock %}

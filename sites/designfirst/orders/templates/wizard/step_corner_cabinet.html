@@ -1,4 +1,4 @@
-{% extends "orders/base.html" %}
+{% extends "wizard/base.html" %}
 
 {% block extra-head %}
 {{block.super}}
@@ -41,7 +41,7 @@ $(function(){
 				img_path += '_'
 			img_path += value
 		}
-		img_path = '{{MEDIA_URL}}orders/corner_cabinet/' + group[0] + '/' + img_path + '.png'
+		img_path = '{{MEDIA_URL}}wizard/corner_cabinet/' + group[0] + '/' + img_path + '.png'
 		return img_path;
 	}
 

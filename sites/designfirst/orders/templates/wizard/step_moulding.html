@@ -1,4 +1,4 @@
-{% extends "orders/base.html" %}
+{% extends "wizard/base.html" %}
 
 {% block ajax-validation %}{% endblock %}
 
@@ -39,7 +39,7 @@ $(function(){
 {% block orders-content %}
 
 <div id="mouldings_data">
-	{% include "orders/moulding_items.html" %}
+	{% include "wizard/moulding_items.html" %}
 </div>
 
 <table>{{form}}</table>

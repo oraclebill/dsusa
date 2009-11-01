@@ -1,4 +1,6 @@
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
+
 import designfirst.menus
 
 # Uncomment the next two lines to enable the admin:
@@ -20,9 +22,8 @@ urlpatterns = patterns('',
     (r'^products/', include("product.urls")),    
     (r'^orders/',   include("orders.urls")),
     (r'^accounts/', include('registration.urls')),
-    (r'^barcode/',  include("barcode.urls")),
+    (r'^barcode/',  include("barcode.urls")),        
     (r'^admin/',    include(admin.site.urls)),
-
     # (r'^60b9f188a8a27ce69fcba9ee63b74b4e2fad2b3d/', include('paypal.standard.ipn.urls')),
 )
 

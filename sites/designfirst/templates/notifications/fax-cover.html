@@ -161,8 +161,8 @@ tr > td:first-child {
   	<input type="button" value="Return to Dashboard" onclick="void();">    
   </div>
   <div id="barcode-area">
-    <p><img src="/images/barcode1.jpg"></p>
-    <p><img src="/images/barcode2.jpg"></p>
+    <p><img src="{% url generate_barcode type=c128,val=order.id %}"></p>
+    <p><img src="{% url generate_barcode type=dmtx,val=order.id %}"></p>
   </div>
 
 </div>
