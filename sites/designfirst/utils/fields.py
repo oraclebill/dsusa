@@ -13,6 +13,7 @@ for s in TEST_DATA:
     
 VALID_EXAMPLES = ('12', '12"', '10’', '42’ 3 1/2"')
 
+
 class DimensionFormField(forms.RegexField):
     default_error_messages = {
         'invalid': mark_safe('Invalid value format. Valid Examples:<br> %s' % '<br>'.join(VALID_EXAMPLES))
@@ -22,6 +23,46 @@ class DimensionFormField(forms.RegexField):
         forms.RegexField.__init__(self, dimension_re, max_length, min_length, *args,
                             **kwargs)
 
+
+class CheckedTextWidget(forms.widgets.MultiWidget):
+    class Media:
+        css = {
+            'all': ('checkedtext.css',)
+        }
+        js = ('jquery-1.3.2.min.js', 'checkedtext.js')
+        
+    def __init__(self, attrs=None):
+        widgets = [forms.fields.CheckboxInput, forms.fields.TextInput]
+        super(CheckedTextWidget, self).__init__(widgets, attrs)
+        
+    def decompress(self, value):
+        if value:
+            return (True, value)
+        return (False, value)
+        
+    def render(self, name, value, attrs=None):
+        # value is a list of values, each corresponding to a widget
+        # in self.widgets.
+        if not isinstance(value, list):
+            value = self.decompress(value)
+        output = []
+        final_attrs = self.build_attrs(attrs)
+        id_ = final_attrs.get('id', None)
+        cl = final_attrs.get('class', '')
+        cl += ' cktxt'        
+        final_attrs['class']=cl
+        checkbox = self.widgets[0]
+        if id_:
+            final_attrs = dict(final_attrs, id='%s_ck' % id_)
+        output.append(checkbox.render(name + '_ck', value[0], final_attrs))
+        charfield = self.widgets[1]
+        if id_:
+            final_attrs = dict(final_attrs, id='%s' % id_)
+        if not value[0]:
+            final_attrs = dict(final_attrs, disabled='disabled')            
+        output.append(charfield.render(name + '_txt', value[1], final_attrs))
+        return mark_safe(self.format_output(output))
+        
 
 class DimensionField(models.CharField):
     def __init__(self, *args, **kwargs):

@@ -153,11 +153,11 @@ class WorkingOrder(models.Model):
     degree90_corner_base_shelv = models.PositiveSmallIntegerField(_('Shelving Option'), choices=SHELVING_CHOICES, default=SHELF)
     
     #Interiors page
-    slide_out_trays = models.BooleanField(_('Slide Out Trays') )
-    waste_bin = models.BooleanField(_('Waste Bin') )
-    wine_rack = models.BooleanField(_('Wine Rack') )
-    plate_rack = models.BooleanField(_('Plate Rack') )
-    appliance_garage = models.BooleanField(_('Appliance Garage') )
+    slide_out_trays = models.CharField(_('Slide Out Trays'), max_length=15 )
+    waste_bin = models.CharField(_('Waste Bin'), max_length=15  )
+    wine_rack = models.CharField(_('Wine Rack'), max_length=15  )
+    plate_rack = models.CharField(_('Plate Rack'), max_length=15  )
+    appliance_garage = models.CharField(_('Appliance Garage'), max_length=15 )
     
     #Miscellaneous page
     corbels = models.BooleanField(_('Corbels') )
@@ -303,7 +303,8 @@ class AttachPreview(models.Model):
     
 
 class Appliance(models.Model):
-    TYPES = ['Refrigerator', 'Microwave', 'Double sink', 'Cooktop','Oven']
+    TYPES = ['Refrigerator', 'Microwave', 'Sink', 'Offset Sink', 'Double sink', 'Bar Sink', 'Cooktop', 'Oven', 
+        'Double Oven', 'Range', 'Range Top', 'Coffee Maker', 'Under Counter Refrigerator', 'Vent Hood']
     
     order = models.ForeignKey(WorkingOrder, editable=False, related_name='appliances')
     type = models.CharField(_('Type'), max_length=20, choices=[(i,i) for i in TYPES])

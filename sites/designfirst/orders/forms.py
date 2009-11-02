@@ -2,8 +2,10 @@ from django.conf import settings
 import os
 from decimal import Decimal
 from django import forms
+import django.db.models as dj_models
 from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
+from utils.fields import CheckedTextWidget
 
 
 NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
@@ -152,8 +154,20 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
         super(CornerCabinetForm, self).__init__(*args, **kwargs)
 
 
+class CheckedCharField(forms.CharField):
+    def __init__(self, max_length=None, min_length=None, *args, **kwargs):
+        nargs = kwargs and dict(kwargs, widget=CheckedTextWidget) or {'widget':widget}
+        return super(CheckedCharField, self).__init__(max_length, min_length, *args, **nargs)
+        
+def make_checked_textfield(f):
+    if isinstance(f, dj_models.CharField):
+        return f.formfield(form_class=CheckedCharField)
+    else:
+        return f.formfield()
+
 class InteriorsForm(forms.ModelForm, FieldsetForm):
     name = 'Interior Options'
+    formfield_callback = make_checked_textfield
     class Meta:
         model = WorkingOrder
         fields = [
@@ -167,6 +181,7 @@ class InteriorsForm(forms.ModelForm, FieldsetForm):
 
 
 class MiscellaneousForm(forms.ModelForm, FieldsetForm):
+    formfield_callback = make_checked_textfield
     name = 'Miscellaneous Options'
     class Meta:
         model = WorkingOrder

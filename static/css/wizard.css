@@ -130,20 +130,32 @@ form p.error {
   padding-left: 2em;
   margin-bottom: 1em;
 }
-/*
+
 #wizard_form .fs_row {
-    margin-top: .2em;
+/*    background: #eee;
+*/    margin-top: .2em;
     padding-top: .2em;
+    clear: both;
+    vertical-align: baseline;
 }
 
-#wizard_form .fs_row ul,
-#wizard_form .fs_row select,
-#wizard_form .fs_row input
-{
-    margin-left: 70px;
-    clear: right;
+#wizard_form .fs_row span {
+    width: 12em;
+    float: left;
+    font-weight: bolder;
 }
 
+#wizard_form .fs_row ul {
+    display: block;
+    float: left;
+    font-weight: bolder;
+}
+
+#wizard_form .fs_row ul li {
+    margin: 0px;
+}
+
+/*#wizard_form .fs_row ul,
 #wizard_form .label
  {
     margin: .2em .5em .2em .5em;
@@ -152,7 +164,15 @@ form p.error {
     float: left;
     font-weight: bolder;
 }
+
+#wizard_form .fs_row select,
+#wizard_form .fs_row input
+{
+    margin-left: 70px;
+    clear: right;
+}
 */
+
 
 #wizard_form fieldset fieldset {
     min-height: 180px;
