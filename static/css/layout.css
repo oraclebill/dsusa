@@ -3,8 +3,8 @@
 Grey Box Method - Layout CSS
 ----------------------------------------------- */
 
-body, #footer {
-	background: #A8A799;
+body {
+	background: #eee;
 	border-top: 5px solid #000;
 	color: #333;
 	font-size: 11px;
@@ -27,8 +27,7 @@ a:hover {
 /* 960 grid system container background
 ----------------------------------------------- */
 .container_12,
-.container_16,
-#content {
+.container_16 {
 	background:#fff;
 }
 
@@ -344,10 +343,6 @@ fieldset.login input.button {
 form p.notice {
 	font-weight:bold;
 }
-form p.error {
-    font-weight:bold;
-    color:#900;
-}
 input.search.text {
 	width:66%;
 }
@@ -356,17 +351,6 @@ input.search.button {
 	margin-left:2%;
 }
 
-form tbody th,
-form tbody td {
-	border-top:0px;
-	border-bottom:0px;
-}
-form tbody th {
-    vertical-align: top;
-}
-form ul {
-    list-style-type: none;
-}
 
 /* articles
 ----------------------------------------------- */
@@ -534,4 +518,3 @@ form ul {
 #kwick .four {
 	background: #999;
 }
-
