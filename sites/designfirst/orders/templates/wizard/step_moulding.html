@@ -9,7 +9,7 @@
 <script type="text/javascript">
 $(function(){
 	$('input#add_moulding').click(function(){
-		$('#orders_form').ajaxSubmit({
+		$('#wizard_form').ajaxSubmit({
 			target: '#mouldings_data',
 			resetForm: true,
 			beforeSubmit: function(data){
@@ -36,7 +36,7 @@ $(function(){
 {% endblock %}
 
 
-{% block orders-content %}
+{% block wizard-content %}
 
 <div id="mouldings_data">
 	{% include "wizard/moulding_items.html" %}

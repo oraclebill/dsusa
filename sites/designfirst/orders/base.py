@@ -1,5 +1,5 @@
 '''
-Base class for orders views
+Base class for wizard views
 '''
 from django.shortcuts import get_object_or_404, render_to_response
 from django.http import Http404, HttpResponse, HttpResponseRedirect,\
@@ -37,9 +37,9 @@ class WizardBase(object):
         if isinstance(result, HttpResponse):
             return result
         
-        template = 'orders/step_%s.html' % self.step
+        template = 'wizard/step_%s.html' % self.step
         context = {
-            'orders': self,
+            'wizard': self,
             'BTN_SAVENEXT': BTN_SAVENEXT
         }
         if isinstance(result, (list, tuple)):
@@ -71,7 +71,7 @@ class WizardBase(object):
     
     def get_tabs(self):
         """
-        Returns iterator if tab items(icon+text on top of orders)
+        Returns iterator if tab items(icon+text on top of wizard)
         """
         for step in self.steps:
             yield {

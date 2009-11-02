@@ -8,7 +8,7 @@ $(function(){
 	//TODO: this should be done automatically
 	$('#id_degree90_corner_base_shelv_0').keydown(function(event){
 		if (event.keyCode == KEY_TAB && !event.shiftKey) {
-			orders_go_to('_next_')
+			wizard_go_to('_next_')
 			return false;
 		}
 	})
@@ -61,7 +61,7 @@ $(function(){
 		$image.attr('src', $image.data('original'))
 	}
 
-	$('#orders_content li label').hover(
+	$('#wizard_content li label').hover(
 			function(){
 				update_pic($(this).find('input').get(0), true)
 			}, 
@@ -71,18 +71,18 @@ $(function(){
 			}
 	)
 
-	$('#orders_content input:radio:checked').each(function(){
+	$('#wizard_content input:radio:checked').each(function(){
 		update_pic(this)
 	})
 
-	$('#orders_content input:radio').click(function(){
+	$('#wizard_content input:radio').click(function(){
 		update_pic(this)
 	})
 })
 </script>
 {% endblock %}
 
-{% block orders-content %}
+{% block wizard-content %}
 
 {% include "fieldsets_form.html" %}
 

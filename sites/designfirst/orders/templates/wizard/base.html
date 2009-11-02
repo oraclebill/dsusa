@@ -2,7 +2,7 @@
 {% load ajax_form_utils %}
 
 
-{% block title %}{{orders.order}} | {{orders.step_title}}{% endblock %}
+{% block title %}{{wizard.order}} | {{wizard.step_title}}{% endblock %}
 
 
 
@@ -48,14 +48,14 @@
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
 <script>
-var STEP = '{{orders.step}}'
+var STEP = '{{wizard.step}}'
 var MEDIA_URL = '{{ MEDIA_URL }}'
-var IS_FIRST_STEP = {{orders.is_first_step|lower}};
+var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
 var KEY_TAB = 9;
 
-function orders_go_to(step) {
+function wizard_go_to(step) {
 	$('#next_step').val(step)
-	$('form#orders_form').submit();
+	$('form#wizard_form').submit();
 }
 
 {% block ajax-validation %}
@@ -78,21 +78,21 @@ function get_fieldset_id(element) {
 
 $(function(){
 	//Tabs navigation:	
-	$('#orders_content :input:visible:first').keydown(function(event){
+	$('#wizard_content :input:visible:first').keydown(function(event){
 		if (event.keyCode == KEY_TAB && event.shiftKey) {
 			if (!IS_FIRST_STEP)
-				orders_go_to('_prev_')
+				wizard_go_to('_prev_')
 			return false;
 		}
 	}).focus()
-	$('#orders_content :input:visible:last').keydown(function(event){
+	$('#wizard_content :input:visible:last').keydown(function(event){
 		if (event.keyCode == KEY_TAB && !event.shiftKey) {
-			orders_go_to('_next_')
+			wizard_go_to('_next_')
 			return false;
 		}
 	})
-	$('#orders_steps a').click(function(){
-		orders_go_to($(this).attr('step'))
+	$('#wizard_steps a').click(function(){
+		wizard_go_to($(this).attr('step'))
 		return false;
 	})
 
@@ -109,8 +109,8 @@ $(function(){
 </div> <!-- end container -->
 <div class="container_16">
 <div id="wizard_steps" class="grid_16">
-{% block orders-steps%}
-	{% for step in orders.get_tabs %}
+{% block wizard-steps%}
+	{% for step in wizard.get_tabs %}
 		<div{% if step.selected %} class="selected"{% endif %}>
 			<a href="{{ step.url }}" step="{{step.slug}}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png"></a>
 			<br>
@@ -126,26 +126,26 @@ $(function(){
 </div> <!-- end container -->
 <div class="container_16 clearfix">
 
-{% block orders-base-content %}
-<div id="orders_content" class="grid_11 ">
-<form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="orders_form">
+{% block wizard-base-content %}
+<div id="wizard_content" class="grid_11 ">
+<form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
 <input type="hidden" name="next_step_" id="next_step" value="_next_">
 <fieldset>
-	<legend>{{orders.step_title}}</legend>
-	{% block orders-content %}
+	<legend>{{wizard.step_title}}</legend>
+	{% block wizard-content %}
 	{% endblock %}
 </fieldset>
 </div>
 
 
-<div id="orders_summary"  class="grid_5 ">
+<div id="wizard_summary"  class="grid_5 ">
 <fieldset>
 	<legend>Order summary</legend>
-	{% block orders-summary%}
-	Project Name: <strong>{{orders.order}}</strong>
+	{% block wizard-summary%}
+	Project Name: <strong>{{wizard.order}}</strong>
 	
 	<div id="summary_content">
-	{% for section, values in orders.get_summary %}
+	{% for section, values in wizard.get_summary %}
 	<fieldset>
 		<legend>{{section}}</legend>
 		<dl>
@@ -161,7 +161,7 @@ $(function(){
 </div>
 
 
-{% endblock orders-base-content %}
+{% endblock wizard-base-content %}
 
 </div> <!-- end container -->
 <div class="container_16">
@@ -172,7 +172,7 @@ $(function(){
 <a href="/dealer/">Back to dashboard</a>
 </div>
 <div class="grid_3 prefix_11">
-<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if orders.is_first_step %} disabled="disabled"{%endif%}>
+<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 <input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
 </form>
 </div>

@@ -20,7 +20,7 @@ class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
-             'appliances', 'diagrams', 'order_review']
+             'appliances', 'attachments', 'order_review']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
@@ -118,7 +118,7 @@ class Wizard(WizardBase):
         appliances = Appliance.objects.filter(order=self.order)
         return {'form': form, 'appliances': appliances}
     
-    def step_diagrams(self, request):
+    def step_attachments(self, request):
         context = {}
         if request.method == 'POST':
             if 'upload_file' not in request.POST:
@@ -152,12 +152,12 @@ class Wizard(WizardBase):
 
 
 
-def orders(request, id, step=None, complete=False):
+def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
 @render_to('wizard/order_review.html')
-def _order_review(request, orders):
-    order = orders.order
+def _order_review(request, wizard):
+    order = wizard.order
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
         if form.is_valid():
@@ -174,7 +174,7 @@ def _order_review(request, orders):
     OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
     result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
     print form
-    return {'order': order, 'data': dict(result_summary), 'form':form, 'orders': orders}
+    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 
 @render_to('print_order.html')
 def print_order(request, id):
