@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect,\
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import simplejson
+from django.contrib.auth.decorators import login_required
 
 from base import WizardBase
 from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
@@ -152,6 +153,7 @@ class Wizard(WizardBase):
 
 
 
+@login_required
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
