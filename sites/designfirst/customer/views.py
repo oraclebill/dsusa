@@ -281,7 +281,7 @@ def edit_order_detail(request, order_id):
     
     return render_to_response( "customer/dealer_order_detail.html", context_instance=context )
     
-        
+
 @login_required
 def accept_floorplan_template_upload(request, orderid):
     pass

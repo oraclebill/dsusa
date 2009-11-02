@@ -149,8 +149,6 @@ class Wizard(WizardBase):
     
     def get_summary(self):
         return summary.order_summary(self.order, summary.STEPS_SUMMARY)
-        
-
 
 
 @login_required

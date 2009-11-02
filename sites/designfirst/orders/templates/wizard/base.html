@@ -9,39 +9,19 @@
 
 {% block extra-head %}
 <style>
-#summary_content {
-  height: 500px;
-  margin-right: -10px;
-  padding-right: 10px;
-  overflow: auto;
+.step_icon {
+	text-align: center;
 }
-
-#summary_content fieldset {
+.step_icon a {
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15px;
 }
-
-#summary_content fieldset legend {
-  background: inherit;
-  border: none;
-  font-weight: bolder;
+.step_icon a span {
+	display: block;
+    margin: auto;
 }
-
-#summary_content dl {
-  margin-bottom: 0;
-}
-
-#summary_content dt {
-  display: run-in;
-  font-weight: bolder;
-  padding: .25em .5em;
-  background: #cccccc;
-}
-
-#summary_content dd {
-  padding-top: .25em;
-  padding-left: 2em;
-  margin-bottom: 1em;
-}
-
 </style>
 
 	{{form.media}}
@@ -107,18 +87,18 @@ $(function(){
 
 {% block content %}
 </div> <!-- end container -->
-<div class="container_16">
+<div class="container_16 clearfix">
 <div id="wizard_steps" class="grid_16">
 {% block wizard-steps%}
 	{% for step in wizard.get_tabs %}
-		<div{% if step.selected %} class="selected"{% endif %}>
-			<a href="{{ step.url }}" step="{{step.slug}}"><img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png"></a>
-			<br>
-			{{step.title}}
+		<div class="step_icon{% if step.selected %} selected{% endif %}">
+			<a href="{{ step.url }}" step="{{step.slug}}">
+				<img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png">
+				<span>{{step.title}}</span>
+			</a>
 		</div>
 	{% endfor %}
 {% endblock %}
-<div class="clear"></div>
 </div>
 
 

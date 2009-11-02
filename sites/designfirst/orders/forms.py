@@ -29,7 +29,7 @@ class ManufacturerForm(forms.ModelForm, FieldsetForm):
         ]
         fields = fieldset_fields(fieldsets)
         
-    name = 'Manufacturer Selection'
+    name = 'Cabinet Line Selection'
     fieldsets = Meta.fieldsets
 
 

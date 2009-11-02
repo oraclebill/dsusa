@@ -76,7 +76,6 @@ $(function(){
 {% block wizard-content %}
 
 <div style="width: 35%; float: right;" id="manufact_icons">
-	Choose manufacturer:
 	{% for item in manufacturers %}
 		<img src="{{item.small_logo.url}}" alt="{{item.name}}">
 	{% endfor %}

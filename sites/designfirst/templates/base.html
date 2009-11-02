@@ -25,39 +25,38 @@
   </head>
   <body>
 	<div id="header" class="container_16">
-
 		<!-- begin branding block -->
-		<img src="{{MEDIA_URL}}images/dsusa-small-brn.png" height="50">
+		<div id="logo" class="grid_2">
+			<img src="{{MEDIA_URL}}images/dsusa-small-brn.png" height="50">
+		</div>
 		<!-- end branding block -->
 
 		{% if user.is_authenticated %}
 		<!-- begin authenticated header content -->
 		<!-- begin status line -->
-		<div id="status" class="box">
-	    	<div class="grid_13 alpha">
-		  		Welcome {{ user.first_name }} {{ user.last_name }} [{{ user.username }}]
-	        </div>
-	    	<div class="grid_3 omega">
-		  		<em ><a href="{% url do-logout %}"> click here to logout</a></em>
-	        </div>
-			<div class="grid_16 alpha omega">
-				{% block menu %}
-                <div>
-                    <ul class="nav">
-                        <li><a href="/dealer/">Dashboard</a></li>
-                        <li><a href="{% url new_order %}">New Order</a></li>
-                        <li><a href="#">Order Log</a></li>
-                        <li><a href="#">Account</a></li>
-                    </ul>
-                </div>
-				{% endblock %}
+		<div class="grid_11">
+			<p>&nbsp;</p>
+			{% block menu %}
+			<div>
+				<ul class="nav">
+					<li><a href="/dealer/">Dashboard</a></li>
+					<li><a href="{% url new_order %}">New Order</a></li>
+					<li><a href="#">Order Log</a></li>
+					<li><a href="#">Account</a></li>
+				</ul>
 			</div>
-		    <div class="clear"></div>
+			{% endblock %}
 		</div>
+    	<div class="grid_3">
+	  		Welcome {{ user.first_name }} {{ user.last_name }} [{{ user.username }}]
+	  		<em ><a href="{% url do-logout %}"> click here to logout</a></em>
+        </div>
 		<!-- end status line -->
-        
-			
 		<!-- end authenticated header content -->
+		{% else %}
+		<div class="grid_14">
+			&nbsp;
+		</div>
 		{% endif %}
         <div class="clear"></div>
 	</div>		
