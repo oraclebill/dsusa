@@ -8,6 +8,16 @@
 	height: 400px;
 	overflow: auto;
 }
+
+.summary-row {
+}
+
+div.summary-row span {
+	display: block;
+	width: 17em;
+	font-weight: bolder;
+}
+
 </style>
 <script>
 $(function(){
@@ -28,16 +38,9 @@ function show_details(type, caption) {
 
 {% block wizard-base-content %}
 <form method="POST">
-    <div class="grid_6 alpha">
+    <div class="grid_8 alpha">
     	<div class="box"> 
-    	    <h2>Submit Project</h2>
-    	    <div>
-        		Project Name: <strong>{{order.project_name}}</strong><br>
-        		Order #: <strong>{{order.id}}</strong><br>		
-        	</div>
-    	</div>
-    	<div class="box"> 
-    	    <h2>Set Processing Options</h2>
+    	    <h2>Order Processing Options</h2>
     	    <div>
         		<table>{{form}}</table>
         	</div>
@@ -48,31 +51,32 @@ function show_details(type, caption) {
     	</div>
     </div>
 
-<div class="grid_10 omega">
+<div class="grid_8 omega">
 	<div class="box"> 
 	    <h2>Design Selections</h2>
+	&nbsp;
+       	{% for section, values in data.items %}
 	    <div>
-        	{% for section, values in data.items %}
-        		{% ifequal section "Options" %}
-        		{% else %}
-        		<div class="box">
-        			<h2>{{section}}</h2>
-        			<div>
-            		{% for name, value in values %}
-            			<p>{{name}}: {{value}}</p>
-            		{% endfor %}
-            		</div>
-        		</div>
-        		{% endifequal %}
-        	{% endfor %}
+			{% ifequal section "Options" %}
+			{% else %}
+			<fieldset>
+				<legend>{{section}}</legend>
+				{% for name, value in values %}
+				<div class="summary-row">
+					<span>{{name}}</span> {{value}}
+				</div>
+				{% endfor %}
+			</fieldset>
+			{% endifequal %}
     	</div>
+       	{% endfor %}
     <fieldset>
 	<legend id="caption">Options</legend>
 		<div id="options" class="details">
 		<table>
 			{% for name, value in data.Options %}
 				<tr class="row{% cycle "1" "2"%}">
-					<td>{{name}}</td><td>{{value}}</td>
+					<th>{{name}}</th><td>{{value|yesno}}</td>
 				</tr>
 			{% endfor %}
 		</table>

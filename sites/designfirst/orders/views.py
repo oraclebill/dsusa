@@ -173,7 +173,6 @@ def _order_review(request, wizard):
         exclude += excl
     OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
     result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
-    print form
     return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 
 @render_to('print_order.html')

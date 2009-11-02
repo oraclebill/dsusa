@@ -5,17 +5,16 @@
 		<img id="fieldset_img_{{fieldset.id}}" src="{{fieldset.image}}" style="float: right;">
 	{% endif %}
 	<div>
-	{% for field in fieldset %}
-		
+	{% for field in fieldset %}		
 		<div{% if field.styles %} class="{{field.styles}}"{% endif %}>
 		 {% if field.errors %}<div class="errorlist">{{field.errors}}</div>{% endif %}
 		 {% if field.is_checkbox %}
 		 	<label>{{field}} {{field.label}}</label>
 		 {% else %}
-		 	<span class="label">{{field.label}}</span><br>
+		 	<span class="label">{{field.label}}</span>
 		 	{{field}}
 		 {% endif %}
-		{% if field.help_text %}{{field.help_text}}{% endif %}
+		 {% if field.help_text %}{{field.help_text}}{% endif %}
 		</div>
 	{% endfor %}
 	</div>

@@ -249,7 +249,7 @@ class Attachment(models.Model):
     ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Upload')),(FAXED, _('Faxed')),)
     
     order = models.ForeignKey(WorkingOrder, related_name='attachments')
-    type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES)
+    type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES, default=FLOORPLAN)
     file = models.FileField(_('File'), upload_to='data/orders/attachments/%Y/%m')
     source = models.CharField(_('Source'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=UPLOADED, editable=False)
     timestamp = models.DateTimeField(_(''), auto_now_add=True)
