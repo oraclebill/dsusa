@@ -15,6 +15,7 @@ sys.path.insert(0, rel('..', '..', 'lib'))#Adding lib to system path
 DEBUG = True
 LOCAL = DEBUG
 TEMPLATE_DEBUG = DEBUG
+INTERNAL_IPS = ('127.0.0.1',)
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),

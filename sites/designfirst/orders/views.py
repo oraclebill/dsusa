@@ -20,7 +20,7 @@ class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
-             'appliances', 'attachments', 'order_review']
+             'appliances', 'diagrams', 'order_review']
     
     def step_manufacturer(self, request):
         manufacturers = list(Manufacturer.objects.all())
@@ -118,7 +118,7 @@ class Wizard(WizardBase):
         appliances = Appliance.objects.filter(order=self.order)
         return {'form': form, 'appliances': appliances}
     
-    def step_attachments(self, request):
+    def step_diagrams(self, request):
         context = {}
         if request.method == 'POST':
             if 'upload_file' not in request.POST:

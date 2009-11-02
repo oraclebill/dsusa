@@ -104,7 +104,7 @@ def do_login(request, next=None):
     else:
         login_message="Login failed."
 
-    return render_to_response('customer/customer.html', 
+    return render_to_response('registration/login.html', 
         dict(login_message=login_message),
         context_instance=RequestContext(request))
 
@@ -121,7 +121,6 @@ def do_logout(request):
         pass
     return HttpResponseRedirect(reverse('customer.views.home'))
 
-## FIXME: for now all users without profiles are assumed dealers.
 def create_profile(request):
     user = request.user;
     
