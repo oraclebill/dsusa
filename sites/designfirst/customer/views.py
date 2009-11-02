@@ -176,7 +176,7 @@ def create_order(request, *args):
             order.owner = request.user
             order.submitted = datetime.now()
             order.save()                        
-            return HttpResponseRedirect(reverse("order-orders", args=[order.id]))
+            return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
     else:
         form = NewDesignOrderForm()
     
