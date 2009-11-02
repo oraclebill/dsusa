@@ -1,21 +1,34 @@
 {% for fieldset in form.get_fieldsets %}
 <fieldset id="fields_{{fieldset.id}}"{% if fieldset.styles %} class="{{fieldset.styles}}"{% endif %}>
+	<!-- fieldset.name -->
 	{% if fieldset.name %}<legend>{{fieldset.name}}</legend>{% endif %}
+	<!-- fieldset.image -->
 	{% if fieldset.image %}
 		<img id="fieldset_img_{{fieldset.id}}" src="{{fieldset.image}}" style="float: right;">
 	{% endif %}
 	<div>
+	<!-- fieldset fields -->
 	{% for field in fieldset %}		
-		<div{% if field.styles %} class="{{field.styles}}"{% endif %}>
+		<!-- start field: {{field.name}} -->
+		<div  class="fs_row{% if field.styles %} {{field.styles}}{% endif %}">
+			<!-- start field errors -->
 		 {% if field.errors %}<div class="errorlist">{{field.errors}}</div>{% endif %}
+			<!-- end field errors -->
 		 {% if field.is_checkbox %}
+			<!-- start checkbox rendered -->
 		 	<label>{{field}} {{field.label}}</label>
+			<!-- end checkbox rendered -->
 		 {% else %}
+			<!-- start non-checkbox rendered -->
 		 	<span class="label">{{field.label}}</span>
 		 	{{field}}
+			<!-- end non-checkbox rendered -->
 		 {% endif %}
+		 <!-- start field help text -->
 		 {% if field.help_text %}{{field.help_text}}{% endif %}
+		 <!-- end field help text -->
 		</div>
+		<!-- end field {{field.name}} -->
 	{% endfor %}
 	</div>
 </fieldset>
