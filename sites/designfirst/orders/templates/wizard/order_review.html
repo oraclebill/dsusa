@@ -75,7 +75,7 @@ function show_details(type, caption) {
 	<legend id="caption">Options</legend>
 		<div id="options" class="details">
 			{% for name, value in data.Options %}
-				<div class="summary-row">
+				<div class="summary-row row{% cycle "1" "2" %}">
 					<span>{{name}}</span> {{value}}
 				</div>
 			{% endfor %}
