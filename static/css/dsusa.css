@@ -1,0 +1,27 @@
+/* Colors
+----------------------------------------------- */
+body {
+    background: #A8A799;
+}
+
+#header {
+    color: #464550;
+    background: #8c8a78;
+    background: #A8A799;
+    background: #C7CBC2;
+    padding-top: 6px;
+}
+
+#content, #content2 {
+    background: #fff;
+}
+
+#footer {
+    border-top-style: solid;
+    border-top-color: #000000;
+    border-top-width: 5px;
+    margin-top: 5px;
+    background-color: #A8A799;
+}
+
+
