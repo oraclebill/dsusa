@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     'ajax_forms',
     'menu',
     'registration',
+    'south',
     'designfirst.customer',
     'designfirst.product',
     'designfirst.orders',
