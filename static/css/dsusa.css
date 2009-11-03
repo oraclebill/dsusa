@@ -24,4 +24,10 @@ body {
     background-color: #A8A799;
 }
 
-
+/* Text
+----------------------------------------------- */
+fieldset legend {
+  background: #C7CBC2;
+  border: none;
+  font-weight: bolder;
+}
