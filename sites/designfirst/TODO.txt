@@ -1,31 +1,18 @@
-  - 10/22 meeting items -
-
 
 Dashboard
 
-DONE	* "New Order" menu option replaces 'new' button
-DONE	* 'cancel' button makes no sense
 
 New Order Screen
 
 	* desired -> rush	
 	* limit options or 'desired'
-	DONE	* product names 
-	MOVED	* tab navigation broken
-	MOVED	* visible indicators of validity in fields (css)
-	DONE	* add dollar signs to currency fields
 	
 Manufacturer Screen
-
-	DONE (dropdown)	* checkbox for stain vs. paint			
-	DONE	* rename 'wood' to 'material'
+	
 	
 Hardware Screen
 
 	* disable 'model' when option is 'none'
-	DONE	* Naming: "Hardware Selections"
-	MOVED	* focus indication (css)
-	MOVED	* tab through individual options
 	
 Multi-user Problem?
 	
@@ -33,18 +20,10 @@ Multi-user Problem?
 	
 Moulding
 
-	? use 'molding' instead of 'moulding'
-	REMOVE	* 'X' --> 'remove'
-	DONE	* add 'extra' option ??secondary??
-	DONE	* add 'scribe' option molding - there's a lot 
-	DONE	* order of molding options
-	
 
 Corner Boxes
 
 	* sizes -> use real values
-DONE	* page title incorrect
-DONE	* stacking image doesn't change on focus
 		
 Corner Cabinets
 	
@@ -59,13 +38,12 @@ Corner Cabinets
 	
 Miscellaneous
 
-	* onlays / applique - styles
-	* add optional 'style' text for options when selected
-	* miscellaneous overlays on "appliances"
-	* "catalog form" discussion (ow process)
-	* wooden hood
-	* legs feet typo
-	* corbels typo
+	* add: onlays / applique - styles
+!!INPROG	* add: optional 'style' text for options when selected
+	* add miscellaneous overlays on "appliances"
+DONE	* wooden hood
+DONE	* legs feet typo
+DONE	* corbels typo
 	
 Interiors
 
@@ -119,7 +97,8 @@ General
 		=========================================================================
 		=========================================================================
 		=========================================================================
-		
+* "catalog form" discussion (ow process)
+
 		
 === 2am ===
  - TODO - make summary translatable

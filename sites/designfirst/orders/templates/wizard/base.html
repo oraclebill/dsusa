@@ -129,18 +129,16 @@ $(function(){
 {% endblock wizard-base-content %}
 
 </div> <!-- end container -->
-<div class="container_16">
-
-<div class="grid_2" style="text-align: center;">
-
-<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
-<a href="/dealer/">Back to dashboard</a>
-</div>
-<div class="grid_3 prefix_11">
-<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
-<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
-</form>
-</div>
+<div id="wizard-steps-nav"  class="container_16">
+	<div class="grid_3 ">
+		<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+		<a href="/dealer/"><em>Back to Dashboard</em></a>
+	</div>
+	<div class="grid_4 prefix_9">
+		<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
+		<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
+		</form>
+	</div>
 
 <div class="clear"></div>
 

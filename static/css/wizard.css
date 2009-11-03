@@ -4,7 +4,7 @@ body {
     background: #A8A799;
 }
 
-#content {
+#content, #content2 {
     background: #fff;
 }
 
@@ -22,6 +22,15 @@ form ul {
 
 /* Jones Hacks
 ----------------------------------------------- */
+
+#footer {
+    border-top-style: solid;
+    border-top-color: #000000;
+    border-top-width: 5px;
+    margin-top: 5px;
+    background-color: #A8A799;
+}
+
 #order_table {
     min-height: 300px;
 }
@@ -56,6 +65,42 @@ form p.error {
 
 #wizard_steps {
     background: #fff;
+}
+
+
+#wizard-steps-nav a, 
+#wizard-steps-nav input {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding: 1em 1.5em;
+    text-align: center;    
+    font-weight: bold;
+} 
+
+#wizard-steps-nav a:hover,
+#wizard-steps-nav input:hover
+{
+    opacity: 0.7;
+}
+
+#wizard-steps-nav a {
+/*    color: #8c8a78;
+    background-color: #C7CBC2;
+    border-color: #A8A799;
+    border-style: solid;
+    border-width: 1px;
+*/}
+
+#wizard-steps-nav input {
+    border-style: solid;
+    border-width: 1px;
+    background-color: #C7CBC2;
+    border-color: #A8A799;
+    vertical-align: center;    
+    position:relative;
+    float: left;    
+    margin-right: .2em;
 }
 
 #wizard_steps div {
@@ -135,7 +180,6 @@ form p.error {
 /*    background: #eee;
 */    margin-top: .2em;
     padding-top: .2em;
-    clear: both;
     vertical-align: baseline;
 }
 
@@ -175,7 +219,7 @@ form p.error {
 
 
 #wizard_form fieldset fieldset {
-    min-height: 180px;
+/*    min-height: 180px; */
 }
 
 .row1 td, .row1 th {
