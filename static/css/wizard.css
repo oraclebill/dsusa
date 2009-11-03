@@ -1,12 +1,5 @@
 /* Vitaly Hacks
 ----------------------------------------------- */
-body {
-    background: #A8A799;
-}
-
-#content, #content2 {
-    background: #fff;
-}
 
 form tbody th,
 form tbody td {
@@ -23,13 +16,6 @@ form ul {
 /* Jones Hacks
 ----------------------------------------------- */
 
-#footer {
-    border-top-style: solid;
-    border-top-color: #000000;
-    border-top-width: 5px;
-    margin-top: 5px;
-    background-color: #A8A799;
-}
 
 #order_table {
     min-height: 300px;
@@ -55,13 +41,6 @@ form p.error {
 
 /* Wizard ------------------------- */
 
-#header {
-    color: #464550;
-    background: #8c8a78;
-    background: #A8A799;
-    background: #C7CBC2;
-    padding-top: 6px;
-}
 
 #wizard_steps {
     background: #fff;
@@ -176,11 +155,17 @@ form p.error {
   margin-bottom: 1em;
 }
 
+
+/*  form field row
+ -------------------------------------- */
+ 
 #wizard_form .fs_row {
-/*    background: #eee;
-*/    margin-top: .2em;
+    margin-top: .2em;
     padding-top: .2em;
-    vertical-align: baseline;
+    vertical-align: baseline;    
+    position: relative;
+    float: left;
+    clear: left;
 }
 
 #wizard_form .fs_row span {
