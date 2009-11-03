@@ -149,4 +149,12 @@ General
 === 7am ===		
 11pm - 2am : mail server setup
 
-=== 2:30 am ==
+=== TUE 2:30 am ==
+TODO - always use string keys - uuid as default
+TODO - add subscription type product
+TODO - handle subscription pricing as part of signup
+   1) let them in but limit access
+	  ? use security model - is_subscribed
+	  ? use account status - active vs not..
+   2) make them pay at registration
+	  

@@ -1,4 +1,3 @@
-from uuid import uuid1 as uuid
 from datetime import datetime
 from decimal import Decimal
 from hashlib import sha1
@@ -17,8 +16,8 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
 
 from accounting.models import register_purchase
-from models import Product, PriceSchedule, PriceScheduleEntry, get_customer_price 
-from models import Invoice, CartItem
+from models import Product,CartItem
+from customer.models import Invoice 
     
 def make_site_url(request, path):
     from django.contrib.sites.models import Site
@@ -33,7 +32,7 @@ def product_detail(request, prodid):
     
     account         = request.user.get_profile().account
     product         = Product.objects.get(pk=prodid)
-    price_retail    = get_customer_price(account, product)
+    price_retail    = product.base_price
         
     return render_to_response( "product/product_detail.html", 
         locals(), context_instance=RequestContext(request) )
@@ -59,7 +58,6 @@ def select_products(request, template):
                     product = Product.objects.get(pk=prod_id),
                     quantity = int(qty)
                 )
-                # item.unit_price = get_customer_price(account, product)
                 item.save()
                 
         if '_purchase' in request.POST:            
@@ -71,7 +69,7 @@ def select_products(request, template):
 
     # using a aggregate here seems silly, but baffled as to how else to do this cleanly..
     pricelist = [ ( product, 
-                    get_customer_price(account,product), 
+                    product.base_price, 
                     product.cartitem_set.aggregate(Sum('quantity')).get('quantity__sum') or 0
                   ) for product in Product.objects.filter(purchaseable=True) ]
     cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)
@@ -132,7 +130,7 @@ def review_and_process_payment_info(request):
         invoice = Invoice(id=sig, customer=account, status=Invoice.PENDING)
         invoice.description = "Web Purchase by '%s' on '%s'" % (request.user.email, datetime.now())
         for item in cart_items:
-            invoice.add_line(item.product.name, get_customer_price(account, item.product), item.quantity)
+            invoice.add_line(item.product.name, item.product.base_price, item.quantity)
             item.delete()
         invoice.save()    
             

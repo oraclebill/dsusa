@@ -5,7 +5,6 @@ from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.translation import ugettext as _
 
-from customer.models import Dealer
 
 DECIMAL_ZERO = Decimal()
 
@@ -61,46 +60,6 @@ class Product(models.Model):
     def __unicode__(self):
         return self.name
     
-    def customer_price(self, customer):
-        return get_customer_price(customer, self)
-    
-        
-class PriceSchedule(models.Model):
-    """
-    A set of prices that apply to a group of customers.
-    
-    Price sheet prices override base prices.
-    """
-    name            = models.CharField(max_length=20)
-    description     = models.TextField()
-    is_default      = models.BooleanField(default=False)
-    
-    def __unicode__(self):
-        return self.name
-
-class PriceScheduleEntry(models.Model):
-    """
-    A retail price override association for a specific product/pricesheet pair
-    
-    """
-    price_sheet     = models.ForeignKey(PriceSchedule)
-    product         = models.ForeignKey(Product)
-    retail_price    = models.DecimalField(max_digits=10, decimal_places=2)
-
-    # class Meta:
-    #     order_with_respect_to = 'product'
-
-    def __unicode__(self):
-        return self.product.name
-
-
-def get_customer_price(customer, product):
-    price = product.base_price
-#     if customer and customer.price_sheet:
-#         prices = customer.price_sheet.pricesheetentry_set.objects.filter(product=product)
-#         if prices:
-#             price = prices[0].retail_price
-    return price
     
 class CartItem(models.Model):    
     session_key     = models.CharField(max_length=40)
@@ -123,75 +82,3 @@ class CartItem(models.Model):
     def __unicode__(self):
         return 'CartItem[key=%s,product=%s,quantity=%s]' % (self.session_key or 'None', self.product and self.product.name or 'None', self.quantity or 'None')
             
-def uuid_key():
-    return uuid1().hex
-        
-class Invoice(models.Model):
-#     invoice = Invoice(id='test=1', customer=account, status=Invoice.PENDING)
-#     invoice.description = "Quick Buy web purchase - %s" % product.name
-#     invoice.add_line(
-#         product.name, 
-#         get_customer_price(account, product), 
-#         qty)
-#     invoice.save()  # default status == PENDING
-    CANCELLED, PENDING, PAID = ('C', 'E', 'A')
-    INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('CANCELLED')))
-
-    id          = models.CharField(max_length=50, primary_key=True, default=uuid_key)
-    customer    = models.ForeignKey(Dealer)
-    status      = models.CharField(max_length=1, choices=INV_STATUS_CHOICES)
-    description = models.TextField(blank=True)
-    created     = models.DateTimeField(auto_now_add=True)
-    ## TODO
-    # updated = models.DateTimeField(auto_now=True)
-    
-    @property
-    def total(self):
-        return reduce(
-            lambda x,y: x+y, 
-            [il.line_price for il in self.invoiceline_set.all()], 
-            Decimal() )
-    
-    @property
-    def total_credit(self):
-        return reduce(
-            lambda x,y: x+y, 
-            [il.line_credit for il in self.invoiceline_set.all()], 
-            Decimal() )
-    
-    def add_line(self, description, price, quantity=1):
-        return self.invoiceline_set.create(
-            description=description, 
-            unit_price=price, 
-            quantity=quantity
-        )
-        
-    def __unicode__(self):
-        return 'Invoice[id=%s,customer=%s,status=%s,created=%s]' % (
-                    self.id or 'None', 
-                    self.customer or 'None', 
-                    self.status or 'None', 
-                    self.created or 'None')
-
-    
-        
-class InvoiceLine(models.Model):
-    invoice     = models.ForeignKey(Invoice)
-    number      = models.IntegerField(null=True, blank=True)
-    description = models.CharField(max_length=80)
-    quantity    = models.IntegerField()
-    unit_price  = models.DecimalField(max_digits=10, decimal_places=2)
-    _unit_credit  = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    
-    @property
-    def unit_credit(self):
-        return self._unit_credit or self.unit_price
-
-    @property
-    def line_price(self):
-        return self.unit_price * self.quantity        
-        
-    @property
-    def line_credit(self):
-        return self.unit_credit * self.quantity        
-        
