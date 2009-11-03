@@ -171,7 +171,7 @@ def _order_review(request, wizard):
     exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
     for title, excl in summary.SUBMIT_SUMMARY:
         exclude += excl
-    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude]
+    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude and f.editable]
     result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
     return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 

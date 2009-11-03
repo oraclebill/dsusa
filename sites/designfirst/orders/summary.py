@@ -1,6 +1,9 @@
 "Data and helper for diplaying summary information"
 from django.utils.text import capfirst
+from datetime import datetime
 import forms;
+
+TIMETYPE = type(datetime.now())
 
 __forms__ = [    
             forms.ManufacturerForm,
@@ -57,6 +60,10 @@ def order_summary(order, summary_fields):
                 item_value = getattr(order, 'get_%s_display' % field)()
             else:
                 item_value = getattr(order, field)
+            if type(item_value) == type(True):
+                item_value = item_value and 'Yes' or 'No'
+            elif type(item_value) == type(TIMETYPE):
+                item_value = item_value.date().isoformat()
             if item_value not in ('', None):
                 values.append((item_name,item_value))
         if len(values) > 0:
