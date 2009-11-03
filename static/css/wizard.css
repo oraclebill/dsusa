@@ -168,10 +168,19 @@ form p.error {
     clear: left;
 }
 
+#wizard_form .fs_row > div {
+    display: block;
+    float: left;
+}
+
 #wizard_form .fs_row span {
     width: 12em;
     float: left;
     font-weight: bolder;
+}
+
+#wizard_form .fs_row .fs_images img {
+    width: 180px;
 }
 
 #wizard_form .fs_row ul {
