@@ -1,72 +1,27 @@
 "Data and helper for diplaying summary information"
 from django.utils.text import capfirst
+import forms;
 
+__forms__ = [    
+            forms.ManufacturerForm,
+            forms.HardwareForm,
+            forms.MouldingForm,
+            forms.SoffitsForm,
+            forms.DimensionsForm,
+            forms.CornerCabinetForm,
+            forms.InteriorsForm,
+            forms.MiscellaneousForm,
+            forms.AttachmentForm,
+            forms.ApplianceForm,
+            forms.SubmitForm,
+        ]
 
-MFG_SECTION = ('Cabinet Line Selection', [
-        'manufacturer',
-        'door_style',
-        'drawer_front_style',
-        'cabinet_material',
-        'finish_type',
-        'finish_color',
-        'finish_options',
-    ])    
-    
-HARDWARE_SECTION = ('Door/Drawer Hardware Selections', [
-        'door_handle_type',
-        'door_handle_model',
-        'drawer_handle_type',
-        'drawer_handle_model',
-    ])    
-    
-MOULDING_SECTION = ('Moulding Selections', [
-    ])
-    
-SOFFIT_SECTION = ('Soffit Dimensions', [
-        'has_soffits',
-        'soffit_width',
-        'soffit_height',
-        'soffit_depth',
-    ])
-    
-DIMENSION_SECTION = ('Cabinet Arrangments / Sizing Options', [
-        'dimension_style',
-        'standard_sizes',
-        'wall_cabinet_height',
-        'wall_cabinet_depth',
-        'base_cabinet_height',
-        'base_cabinet_depth',
-        'vanity_cabinet_height',
-        'vanity_cabinet_depth',
-    ])
-    
-CORNER_CABINET_SECTION = ('Corner Cabinet Options', [
-        'diagonal_corner_wall',
-        'diagonal_corner_wall_shelv',
-        'diagonal_corner_base',
-        'diagonal_corner_base_shelv',
-        'degree90_corner_wall',
-        'degree90_corner_base',
-        'degree90_corner_base_shelv',
-    ])
-    
-CABINET_INTERIORS_SECTION = ('Interiors Options', [
-        'slide_out_trays',
-        'waste_bin',
-        'wine_rack',
-        'plate_rack',
-        'appliance_garage'
-    ])
-    
-MISCELLANEOUS_OPTIONS_SECTION = ('Miscellaneous Options', [
-        'corbels',
-        'brackets',
-        'valance',
-        'legs_feet',
-        'glass_doors',
-        'range_hood',
-        'posts',
-    ])
+def make_summary(form):
+    name = form.name
+    fset_list = getattr(form, 'fieldsets', None)
+    return (name, fset_list and forms.fieldset_fields(fset_list) or tuple())
+        
+MFG_SECTION, HARDWARE_SECTION, MOULDING_SECTION, SOFFIT_SECTION, DIMENSION_SECTION, CORNER_CABINET_SECTION, CABINET_INTERIORS_SECTION, MISCELLANEOUS_OPTIONS_SECTION, ATTACHMENT_SECTION, APPLIANCE_SECTION, TRACKING_SECTION = [ make_summary(f) for f in __forms__ ]
             
 STEPS_SUMMARY = [
     MFG_SECTION,

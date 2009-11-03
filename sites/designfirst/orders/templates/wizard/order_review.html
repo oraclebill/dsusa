@@ -10,12 +10,12 @@
 	overflow: auto;
 }
 
-.summary-row {
+div.summary-row * {
+	display: inline-block;
 }
 
 div.summary-row span {
-	display: block;
-	width: 17em;
+	width: 20em;
 	font-weight: bolder;
 }
 
@@ -74,13 +74,11 @@ function show_details(type, caption) {
     <fieldset>
 	<legend id="caption">Options</legend>
 		<div id="options" class="details">
-		<table>
 			{% for name, value in data.Options %}
-				<tr class="row{% cycle "1" "2"%}">
-					<th>{{name}}</th><td>{{value|yesno}}</td>
-				</tr>
+				<div class="summary-row">
+					<span>{{name}}</span> {{value}}
+				</div>
 			{% endfor %}
-		</table>
 		</div>
 		
 		<div id="applicances" class="details" style="display: none;">
