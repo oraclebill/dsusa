@@ -58,7 +58,7 @@ class Organization(models.Model):
             ('pro', 'Pro Design - 20/20 .KIT File plus cabinet quote report.'),
             ('presentation', 'Presentation Pack - 20/20 file plus printable full-color perspective views, floorplan and cabinet elevations, and cabinet quote report (retail).'),
             ('dunno', 'Not sure.'),
-        ), blank=True, max_length=20
+        ), max_length=20, default='pro'
     )
 
     revisions = models.IntegerField(
@@ -68,7 +68,11 @@ class Organization(models.Model):
             (2, 'Two - the original plus a touch up'),
             (3, 'Three - the original and two updates'),
             (4, 'Four or more'),
-        ), null=True, blank=True
+        ), default=1
+    )
+
+    expected_orders = models.PositiveSmallIntegerField(blank=True, null=True,
+        verbose_name=_('Expected orders per month')
     )
 
     def __unicode__(self):

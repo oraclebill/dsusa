@@ -9,6 +9,10 @@ from home import models
 attrs_dict = {'class': 'required'}
 
 
+def organization_field(name, **kwargs):
+    return models.DealerOrganization._meta.get_field(name).formfield(**kwargs)
+
+
 class RegistrationForm(forms.ModelForm):
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
@@ -25,6 +29,8 @@ class RegistrationForm(forms.ModelForm):
                                 label=_(u'password (again)'))
 
     redirect_to = forms.CharField(widget=forms.HiddenInput, required=False)
+    product_type = organization_field('product_type', widget=forms.widgets.RadioSelect)
+    revisions = organization_field('revisions', widget=forms.widgets.RadioSelect)
 
     class Meta:
         model = models.DealerOrganization
