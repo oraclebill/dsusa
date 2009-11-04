@@ -14,6 +14,7 @@ body {
 
 #content, #content2 {
     background: #fff;
+    padding-top: 10px;
 }
 
 #footer {
@@ -32,3 +33,99 @@ fieldset legend {
   border: none;
   font-weight: bolder;
 }
+
+#payment_info fieldset
+{ 
+    margin-top: 10px;
+}
+
+
+
+#payment_info table,
+#payment_info tbody tr,
+#payment_info tbody td,
+#payment_info tbody th
+{
+    border: none;
+    background: inherit;
+}
+
+
+/* Buttons ## TODO - change to class and apply to wizard-steps
+----------------------------------------------- */
+
+
+#payment_info a, 
+#payment_info input[type=cancel],
+#payment_info input[type=submit]
+ {
+    background-color: #C7CBC2;
+    border-color: #A8A799;
+    border-style: solid;
+    border-width: 1px;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 15px;
+    margin-right: .2em;
+    margin-top: 10px;
+    padding: 1em 1.5em;
+    position:relative;
+    text-align: center;    
+    vertical-align: center;    
+}
+
+#payment_info input[type=submit] {
+    float: right;
+    min-width: 15em;
+}
+
+#payment_info input[type=cancel] {
+    float: left;
+    max-width: 15em;
+}     
+
+#payment_info a:hover, 
+#payment_info input[type=cancel]:hover,
+#payment_info input[type=submit]:hover
+{
+    opacity: 0.7;
+}
+
+#payment_info a {
+/*    color: #8c8a78;
+    background-color: #C7CBC2;
+    border-color: #A8A799;
+    border-style: solid;
+    border-width: 1px;
+*/}
+
+
+
+/* common columnar label: value format
+ ----------------------------------------------- */
+.labeled_row {
+     margin-top: .2em;
+     padding-top: .2em;
+     
+     vertical-align: baseline;    
+     position: relative;
+     display: block;
+     float: left;
+ }
+ 
+.labeled_row span {
+    display: block; 
+    position: relative;
+    float:left;
+/*}
+
+.labeled_row span:first-child {
+*/
+    margin-right: 5px;    
+    padding: 2px;    
+    width: 8em;
+    font-weight: bolder;
+}
+ 
+
+ 

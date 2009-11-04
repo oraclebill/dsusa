@@ -63,7 +63,8 @@ form p.error {
     opacity: 0.7;
 }
 
-#wizard-steps-nav a {
+#wizard-steps-nav a 
+{
 /*    color: #8c8a78;
     background-color: #C7CBC2;
     border-color: #A8A799;
@@ -71,7 +72,8 @@ form p.error {
     border-width: 1px;
 */}
 
-#wizard-steps-nav input {
+#wizard-steps-nav input 
+{
     border-style: solid;
     border-width: 1px;
     background-color: #C7CBC2;

@@ -101,8 +101,8 @@ def uuid_key():
     return uuid1().hex
         
 class Invoice(models.Model):
-    CANCELLED, PENDING, PAID = ('C', 'E', 'A')
-    INV_STATUS_CHOICES = ((PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('CANCELLED')))
+    NEW, CANCELLED, PENDING, PAID = ('N', 'C', 'E', 'A')
+    INV_STATUS_CHOICES = ((NEW, _('NEW')), (PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('CANCELLED')))
 
     id          = models.CharField(max_length=50, primary_key=True, default=uuid_key)
     customer    = models.ForeignKey(Dealer)
@@ -116,18 +116,18 @@ class Invoice(models.Model):
     def total(self):
         return reduce(
             lambda x,y: x+y, 
-            [il.line_price for il in self.invoiceline_set.all()], 
+            [il.line_price for il in self.lines.all()], 
             Decimal() )
     
     @property
     def total_credit(self):
         return reduce(
             lambda x,y: x+y, 
-            [il.line_credit for il in self.invoiceline_set.all()], 
+            [il.line_credit for il in self.lines.all()], 
             Decimal() )
     
     def add_line(self, description, price, quantity=1):
-        return self.invoiceline_set.create(
+        return self.lines.create(
             description=description, 
             unit_price=price, 
             quantity=quantity
@@ -143,7 +143,7 @@ class Invoice(models.Model):
     
         
 class InvoiceLine(models.Model):
-    invoice     = models.ForeignKey(Invoice)
+    invoice     = models.ForeignKey(Invoice, related_name='lines')
     number      = models.IntegerField(null=True, blank=True)
     description = models.CharField(max_length=80)
     quantity    = models.IntegerField()

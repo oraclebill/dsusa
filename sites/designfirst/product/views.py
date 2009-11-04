@@ -2,8 +2,11 @@ from datetime import datetime
 from decimal import Decimal
 from hashlib import sha1
 from pickle import dumps
+import logging
 
 from paypal.pro.views import PayPalPro            
+from paypal.pro.signals import payment_was_successful, payment_was_flagged
+
 
 from django.db import transaction
 from django.db.models import Sum        
@@ -19,6 +22,30 @@ from accounting.models import register_purchase
 from models import Product,CartItem
 from customer.models import Invoice 
     
+log = logging.getLogger('product.views')
+log.addHandler(logging.StreamHandler())
+
+@transaction.commit_on_success
+def paypal_success_callback(sender, **kwargs):
+    log.debug('paypal_success_callback: sender=%s, kwargs=%s' % (sender, kwargs))
+    invnum = sender['invnum']    
+    invoice = Invoice.objects.get(pk=invnum)
+    invoice.status = Invoice.PAID
+    invoice.save()
+    register_purchase(invoice.id, invoice.customer, invoice.total, invoice.total_credit)
+payment_was_successful.connect(paypal_success_callback)
+        
+@transaction.commit_on_success
+def paypal_failure_callback(sender, **kwargs):
+    log.debug('paypal_failure_callback: sender=%s, kwargs=%s' % (sender, kwargs))
+    invnum = sender['invnum']    
+    invoice = Invoice.objects.get(pk=invnum)
+    invoice.status = Invoice.CANCELLED
+    invoice.save()
+    register_purchase(invoice.id, invoice.customer, invoice.total, invoice.total_credit)        
+payment_was_flagged.connect(paypal_failure_callback)
+
+
 def make_site_url(request, path):
     from django.contrib.sites.models import Site
     scheme = request.is_secure() and 'https' or 'http'
@@ -92,68 +119,57 @@ def confirm_selections(request):
 @transaction.commit_on_success
 def review_and_process_payment_info(request):
     "Display and/or collect payment information while displaying a summary of products to be purchased."    
+    #
     account = request.user.get_profile().account
-    cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)    
-    # if the cart is empty we have nothing to do..
-    if not cart_items:
-        return HttpResponseRedirect('/invoices') ##TODO- fix        
-    cart_total = sum([i.extended_price for i in cart_items])
+    #
+    # we're basically a wrapper around this view func... so lets configure it.
     view_func = PayPalPro(payment_template="product/payment_info_review.html",     
                     confirm_template="paypal/express_confirmation.html",
                     success_url=reverse('dealer-dashboard')
-    )                
-    if request.method == "POST" or (request.method == "GET" and 'express' in request.GET):        
-        # get a signature for this cart so we can tie it uniquely to our invoice
-        sig = sha1(dumps(cart_items)).hexdigest()
-        # if this invoice exists, something bad happened..        
+    )    
+    try:        
+        # if there's no NEW invoice, create one from current cart
         try:
-            old_invoice = Invoice.objects.get(id__exact=sig)            
-            if old_invoice.status == Invoice.PENDING:
-                # they're resubmitting a pending order, ignore it but log it...
-                # TODO: log   
-                return HttpResponseRedirect(reverse('dealer-dashboard'))    # TODO - 'success' URL         
-            elif old_invoice.status == Invoice.PAID:
-                # they're resubmitting a PAID order which should absolutely not be possible, bail hard..
-                raise RuntimeError('PAID RESUB')
-            elif old_invoice.status == Invoice.CANCELLED:
-                # they're resubmitting a CANCELLED order which should absolutely not be possible, bail hard..
-                raise RuntimeError('CNCL RESUB')
-        except Invoice.DoesNotExist: 
-            pass
-            
-        # also, there shouldn't be any other existing, pending invoices for this account, but lets check...
-        pending_invoices = Invoice.objects.filter(customer=account, status=Invoice.PENDING)
-        if pending_invoices:
-            raise RuntimeError(repr(pending_invoices)) # fixme
-            
-        # now we know what to do.. note that none of the db operations commit unless paypal has no error (exceptions)
-        invoice = Invoice(id=sig, customer=account, status=Invoice.PENDING)
-        invoice.description = "Web Purchase by '%s' on '%s'" % (request.user.email, datetime.now())
-        for item in cart_items:
-            invoice.add_line(item.product.name, item.product.base_price, item.quantity)
-            item.delete()
-        invoice.save()    
-            
-        # configure the paypal processor with invoice info.
-        view_func.item = {
-            "amt":          invoice.total,
-            "invnum":       invoice.id,
-            "custom":       request.session.session_key,    # for debugging
-            "desc":         invoice.description,
-            "cancelurl":    make_site_url(request, reverse('select_products')),     # Express checkout cancel url
-            "returnurl":    make_site_url(request, reverse('dealer-dashboard'))    # Express checkout return url
-        }
-        view_func.context = locals()
+            invoice = account.invoice_set.get(status=Invoice.NEW)
+            log.debug('review_and_process_payment_info: [%s] found pre-existing new invoice [%s]' % (request.session.session_key, invoice.id))
+        except Invoice.DoesNotExist:
+            sig = sha1(repr(datetime.now())).hexdigest()
+            invoice = Invoice(id=sig, customer=account, status=Invoice.NEW)
+            invoice.description = "Web Purchase by '%s' on '%s'" % (request.user.email, datetime.now())
+            cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)    
+            for item in cart_items:
+                invoice.add_line(item.product.name, item.product.base_price, item.quantity)
+                item.delete()
+            # note - we are in transaction context.. save probably has no effect...
+            invoice.save()    
+            log.debug('review_and_process_payment_info: [%s] created new invoice [%s]' % (request.session.session_key, invoice.id))
+        #
+        # if this is a post, we try to process the invoice.
+        if request.method == "POST" or (request.method == "GET" and 'express' in request.GET):        
+            # change invoice status to pending 
+            invoice.status = Invoice.PENDING
+            # configure the paypal processor with invoice info.
+            view_func.item = {
+                "amt":          invoice.total,
+                "invnum":       invoice.id,
+                "custom":       request.session.session_key,    # for debugging
+                "desc":         invoice.description,
+                "cancelurl":    make_site_url(request, reverse('select_products')),     # Express checkout cancel url
+                "returnurl":    make_site_url(request, reverse('dealer-dashboard'))     # Express checkout return url
+            }        
+            request.user.message_set.create(message='Thanks for your order!')
+    except:
+        transaction.rollback()
+        errors = "Failed to create new invoice!"
+    else:
+        transaction.commit()
+    #    
+    view_func.context = locals()
+    log.debug('review_and_process_payment_info: session #%s: payment request for invoice [%s] submitted to paypal with item=%s, context=%s' % (
+        request.session.session_key, 
+        invoice,
+        view_func.item,
+        view_func.context)
+    )
     return view_func(request)
         
-@transaction.commit_on_success
-def paypal_success_callback(sender, **kwargs):
-    invnum = sender['invnum']    
-    invoice = Invoice.objects.get(pk=invnum)
-    invoice.status = Invoice.PAID
-    invoice.save()
-    register_purchase(invoice.id, invoice.customer, invoice.total, invoice.total_credit)
-        
-from paypal.pro.signals import payment_was_successful
-payment_was_successful.connect(paypal_success_callback)
-

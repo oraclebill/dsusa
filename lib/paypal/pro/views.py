@@ -142,6 +142,7 @@ class PayPalPro(object):
                 payment_was_successful.send(sender=self.item)
                 return HttpResponseRedirect(self.success_url)
             else:
+                payment_was_flagged.send(sender=self.item)
                 self.context['errors'] = self.errors['processing']
 
         self.context[self.form_context_name] = form

@@ -2,31 +2,82 @@
 
 {% block title %}Review Payment Information{% endblock %}
 
+{% block extra-head %}
+<style type="text/css" media="screen">
+#payment_info input[type=submit],
+#payment_info input[type=cancel]
+{
+	display: block;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin: 10px;
+	background: #ccc;
+	border: #aaa solid 1px;
+	text-align: center;
+	font-weight: bolder;
+}
+
+</style>	
+{% endblock %}
+
 {% block content %}
 
-<div class="grid_11 suffix_1">
+<div class="grid_10">
+	<form method=POST>
 	<div id="payment_info" class="box ">
-		<h2>Credit Card </h2>
-		<form method=POST>
-		<table>
-			<tbody>
-	            {% if errors %}<tr><td colspan="2" align="center">{{ errors }}</td></tr>{% endif %}
-	            {{ form.as_table }}
-	            <tr><td colspan="2" align="right"><input type="submit" value="Complete Order"/></td></tr>
-			</tbody>
-		</table>
-		</form>
-	</div>
+		<h2>Complete Payment</h2>
+			<fieldset>
+				<legend>Enter Your Credit Card Information</legend>
+				<table>
+					<tbody>
+			            {% if errors %}<tr><td colspan="2" align="center">{{ errors }}</td></tr>{% endif %}
+			            {{ form.as_table }}
+					</tbody>
+				</table>
+			</fieldset>
+			<div class="submit-buttons clearfix">
+	        	<input type="cancel" value="Cancel"/>
+	        	<input type="submit" value="Complete Order"/>
+			</div>
+		</div>
+	</form>
 </div>
 
-<div class="grid_4 omega">
+<div class="grid_6 omega">
 	<div id="order_summary" class="box ">
 		<h2>Order Summary</h2>
 	    <div>
-	        {% for item in cart_items %}
-	         <p><span class="column">{{ item.quantity }} X {{ item.product.name }}</span>{{ item.extended_price }}</p>
-	        {% endfor %}
-	         <p><span class="column">Total</span>{{ cart_total }}</p>	        
+			&nbsp;
+			<table>				
+				<thead><th class="table-head" colspan="2">Invoice Detail</th></thead>
+	         	<tr><th>Inv. #</th><td>{{ invoice.id|slice:":20" }}</td></tr>
+	         	<tr><th>Inv. Date</th><td>{{ invoice.created|date }}</td></tr>	        
+	         	<tr><th>Description</th><td>{{ invoice.description }}...</td></tr>	        
+	         	<tr><th>Total</th><td>{{ invoice.total }}</td></tr>	
+			</table>
+			<table border="0" cellspacing="5" cellpadding="5">
+				<thead>
+					<th class="table-head" colspan="5">Line Items</th>
+				<tr>
+					<th>#</th>
+					<th>Description</th>
+					<th>Qty</th>
+					<th>Unit</th>
+					<th>Total</th>
+					</tr>
+				</thead>
+	        	{% for item in invoice.lines.all %}
+				<tr>
+					<td>{{ item.number|wordwrap:15 }}</td>
+					<td>{{ item.description|wordwrap:15 }}</td>
+					<td>{{ item.quantity }}</td>
+					<td>{{ item.unit_price }}</td>
+					<td>{{ item.line_price }}</td>
+					</tr>
+	        	{% endfor %}
+			</table>
+	         <div class="labeled_row"><span class="column">Order Total</span>{{ invoice.total }}</div>	 
+	       	<div class="clear"> </div>
         </div>
     </div>
 </div>

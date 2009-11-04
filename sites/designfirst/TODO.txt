@@ -29,7 +29,7 @@ Corner Cabinets
 	
 	* "left hinged", etc
 	* if none, shelving option disabled
-	* "shelf" as default
+DONE 	* "shelf" as default
 	* order [dia cw, 90 cw, dia cb, 90 cb]
 	* future: ask: corner #1 type?, hinge side?
 		- designers look at designs clockwise and will assume
@@ -71,20 +71,20 @@ DONE (10m)	* increase upload limit - 4 meg
 Review
 
 	* Review section headers should link to section
-	* summary - false --> "No"
+DONE	* summary - false --> "No"
 	
 General	
 	* tab based navigation
 	* focus indicators
-	* navigation via icons
-		- mouse over images heat up
-		- enlarge click area around buttons
+DONE	* navigation via icons
+DONE		- mouse over images heat up
+DONE		- enlarge click area around buttons
 		- tooltips on hover
 	* all lengths in inches, using decimal notation
 		- if user use fractional notations, correct them and/or display value as decimal
 		.. 'dimensionfield' ..
 		.. whdfield ..
-	* restore 'next' 'prev' navigation
+DONE	* restore 'next' 'prev' navigation
 	* catalog and index EK images
 	* tooltips
 	* autocomplete
@@ -157,4 +157,4 @@ TODO - handle subscription pricing as part of signup
 	  ? use security model - is_subscribed
 	  ? use account status - active vs not..
    2) make them pay at registration
-	  
+TODO - 
