@@ -1,5 +1,6 @@
 from uuid import uuid1
 from datetime import datetime
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import models, transaction
