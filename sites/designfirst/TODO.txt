@@ -64,7 +64,7 @@ Appliance
 Attachments
 
 	* rename "Sketches and Diagrams"
-	* increase upload limit - 4 meg 
+DONE (10m)	* increase upload limit - 4 meg 
 	* image preview broken
 	* default 'type' to sketch
 	
