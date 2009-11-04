@@ -1,21 +1,258 @@
-{% extends "base.html" %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-{% block title %} Account Registration {% endblock %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
 
-{% block content %}
-	<div class="grid_6 prefix_5 suffix_5">
-		<h1>Registration</h1>
-		<div class=box>
-			<h2>Registration Info</h2>
-			<div>
-				<form method='POST' action='{% url registration_register %}'>
-					<table>
-						{{ form }}
-					</table>
-					<input name='submit' type='submit' value='Register'>
-				</form>
-			</div>
-		</div>
-	</div> 
+        <title>DSUSA Dealer Design Service Registration</title>
+        <!-- Meta Tags -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-{% endblock %}
+        <!-- CSS -->
+        <link rel="stylesheet" href="{{ MEDIA_URL }}wufu/css/structure.css" type="text/css" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}wufu/css/form.css" type="text/css" />
+        <link rel="stylesheet" href="{{ MEDIA_URL }}wufu/css/theme.css" type="text/css" />
+
+        <!-- JavaScript -->
+        <script type="text/javascript" src="{{ MEDIA_URL }}/scripts/wufoo.js"></script>
+    </head>
+
+    <body id="public">
+        <div id="container">
+
+            <form id="form1" name="form1" class="wufoo topLabel page1" autocomplete="off"
+	              enctype="multipart/form-data" method="post" action=".">
+
+                <div class="info">
+	                <h2>DSUSA Dealer Design Service Registration</h2>
+	                <div>Dealers can use this form to begin the dealer registration process for DSUSA's Dealer Design Services. Once your contact information has been verified a sales rep will contact you to complete the process. <br />
+                        <br />
+                        DSUSA's Dealer Design Service is a subscription service. </div>
+                </div>
+                <ul>
+                    <li id="foli25" class="section ">
+                        <h3 id="title25">Primary Contact Information</h3>
+                        <div id="instruct25">Enter the personal information for the primary contact for your organization.</div>
+                    </li>
+                    <li id="foli19" class=" ">
+                        <label class="desc" id="title19" for="Field19">
+                            Name<br />
+                            <span id="req_19" class="req">*</span>
+                        </label>
+                        <span>
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                            <!-- <input id="Field19" name="first_name" type="text" class="field text" value="" size="8" tabindex="2" /> -->
+                            <label for="Field19">First</label>
+                        </span>
+                        <span>
+                            <!-- <input id="Field20" name="last_name" type="text" class="field text" value="" size="14" tabindex="3" /> -->
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                            <label for="Field20">Last</label>
+                        </span>
+                        <p class="instruct" id="instruct19"><small>The name of the primary contact for your account.</small></p>
+                    </li>
+                    <li id="foli21" class=" ">
+                        <label class="desc" id="title21" for="Field21">
+                            Email
+                            <span id="req_21" class="req">*</span>
+                        </label>
+                        <div>
+                            <!-- <input id="Field21" name="email" type="text" class="field text medium" value="" maxlength="255" tabindex="4" />  -->
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                        <p class="instruct" id="instruct21"><small>A valid email address.<br />
+                                <br />
+                                We will use this email to verify your registration.</small></p>
+                    </li>
+
+                    <li id="foli23" class="section ">
+                        <h3 id="title23">Business Information<br />
+                        </h3>
+                        <div id="instruct23">Enter primary accont information.</div>
+                    </li>
+
+
+                    <li id="foli4" class=" ">
+                        <label class="desc" id="title4" for="Field4">
+                            Legal Name
+                            <span id="req_4" class="req">*</span>
+                        </label>
+                        <div>
+                            <!-- <input id="Field4" name="company_name" type="text" class="field text medium" value="" maxlength="255" tabindex="5" /> -->
+                            {{ form.company_name }}
+                            {{ form.company_name.errors }}
+                        </div>
+                        <p class="instruct" id="instruct4"><small>Your organizations legal business name. </small></p>
+                    </li>
+
+
+                    <li id="foli12" class="complex ">
+                        <label class="desc" id="title12" for="Field12">
+                            Primary Address
+                            <span id="req_12" class="req">*</span>
+                        </label>
+                        <div>
+                            <span class="full">
+                                <!-- <input id="Field12" name="company_address_2" type="text" class="field text addr" value="" tabindex="6" /> -->
+                                {{ form.company_address }}
+                                {{ form.company_address.errors }}
+                                <label for="Field12">Street Address</label>
+                            </span>
+                            <span class="full">
+                                <!-- <input id="Field13" name="company_address_2" type="text" class="field text addr" value="" tabindex="7" /> -->
+                                {{ form.company_address_2 }}
+                                {{ form.company_address_2.errors }}
+                                <label for="Field13">Address Line 2</label>
+                            </span>
+                            <span class="left">
+                                <!-- <input id="Field14" name="company_city" type="text" class="field text addr" value="" tabindex="8" /> -->
+                                {{ form.company_city }}
+                                {{ form.company_city.errors }}
+                                <label for="Field14">City</label>
+                            </span>
+                            <span class="right">
+                                <!-- <input id="Field15" name="company_state" type="text" class="field text addr" value="" tabindex="9" /> -->
+                                {{ form.company_state }}
+                                {{ form.company_state.errors }}
+                                <label for="Field15">State / Province / Region</label>
+                            </span>
+                            <span class="left">
+                                <!-- <input id="Field16" name="company_zip4" type="text" class="field text addr" value="" maxlength="15" tabindex="10" /> -->
+                                {{ form.company_zip4 }}
+                                {{ form.company_zip4.errors }}
+                                <label for="Field16">Postal / Zip Code</label>
+                            </span>
+                            <span class="right">
+                    </li>
+
+                    <li id="foli26" class="section ">
+                        <h3 id="title26">Account Information</h3>
+                    </li>
+
+
+                    <li id="foli150" class=" ">
+                        <label class="desc" id="title150" for="Field150">
+                            Account Representative
+                        </label>
+                        <div>
+                            <!-- <input id="Field150" name="account_repr" type="text" class="field text medium" value="" maxlength="255" tabindex="18" /> -->
+                            {{ form.account_repr }}
+                            {{ form.account_repr.errors }}
+                        </div>
+                        <p class="instruct" id="instruct150"><small>Your account rep can help you get started, and provide detailed information about the service.</small></p>
+                    </li>
+
+
+                    <li id="foli38" class=" ">
+                        <label class="desc" id="title38" for="Field38">
+                            Number of Locations
+                        </label>
+                        <div>
+                            <!-- <input id="Field38" name="locations_num" type="text" class="field text medium" value="" maxlength="255" tabindex="19" onkeyup="validateRange(38, 'digit');" /> -->
+                            {{ form.locations_num }}
+                            {{ form.locations_num.errors }}
+                            <label for="Field38">Maximum Allowed: <var id="rangeMaxMsg38">25</var> digits.&nbsp;&nbsp;&nbsp; <em class="currently">Currently Used: <var id="rangeUsedMsg38">0</var> digits.</em></label>
+                        </div>
+                        <p class="instruct" id="instruct38"><small>If you have more than one location, please indicate how many.</small></p>
+                    </li>
+
+                    <li id="foli30" class="section ">
+                        <h3 id="title30">Expected Service Usage</h3>
+                        <div id="instruct30">Please enter your anticipated usage of the design service. We are careful to ensure that we have the resources to support our customers completely. This information helps us to ensure that as we grow we maintain the highest possible levels of reliability and customer responsiveness.</div>
+                    </li>
+
+
+                    <li id="foli40" class=" ">
+                        <label class="desc" id="title40" for="Field40">
+                            Are you ready to get started now? 
+                        </label>
+                        <div class="col">
+                            <span>
+                                <!-- <input id="Field40" name="rush" type="checkbox" class="field checkbox" value="Rush My Signup!" tabindex="20" /> -->
+                                {{ form.rush }}
+                                {{ form.rush.errors }}
+                                <label class="choice" for="Field40">Rush My Signup!</label>
+                            </span>
+                        </div>
+                        <p class="instruct" id="instruct40"><small>Check this box if you have designs to submit within the next week and would like accelerated processing on your registration.</small></p>
+                    </li>
+
+
+                    <li id="foli142" class=" ">
+                        <label class="desc" id="title142" for="Field142">
+                            What type of design products are you most interested in?
+                        </label>
+                        <div class="col">
+                            {{ form.product_type }}
+                            {{ form.product_type.errors }}
+                        </div>
+                    </li>
+
+
+                    <li id="foli145" class=" ">
+                        <label class="desc" id="title145" for="Field145">
+                            How many revisions do you typically produce for a customer?
+                        </label>
+                        <div class="col">
+                            {{ form.revisions }}
+                            {{ form.revisions.errors }}
+                        </div>
+                        <p class="instruct" id="instruct145"><small>Many things can affect how many designs a dealer creates for a prospect or customer. Understanding this helps you to plan costs with </small></p>
+                    </li>
+                    <li id="foli39" class=" ">
+                        <label class="desc" id="title39" for="Field39">
+                            If the service met your needs, how many designs per month would you anticipate purchasing?
+                        </label>
+                        <div>
+                            {{ form.expected_orders }}
+                            {{ form.expected_orders.errors }}
+
+                        </div>
+                        <p class="instruct" id="instruct39"><small>You can base your estimate on the number of designs you currently produce, or on the number that you would produce if the process was quicker and less costly. </small></p>
+                    </li>
+
+                    <li id="foli152" class="section ">
+                        <h3 id="title152">Terms and Conditions</h3>
+                        <div id="instruct152">Acceptance of the <a target="_blank" href="http://docs.google.com/View?id=dd9hkswj_0ckcz43hp">DSUSA Terms and Conditions</a> is required for membership. Please be sure to read this document carefully prior to submitting this form. Submission of the form will be construed as acceptance of the terms.</div>
+                    </li>
+
+
+                    <li id="foli153" class=" ">
+                        <label class="desc" id="title153" for="Field153">
+                            Acceptance statement
+                            <span id="req_153" class="req">*</span>
+                        </label>
+                        <div class="col">
+                            <span>
+                                <input id="Field153" name="tos" type="checkbox" class="field checkbox" value="I agree to the &lt;a target=&quot;_blank&quot; href=&quot;http://docs.google.com/View?id=dd9hkswj_0ckcz43hp&quot;&gt;DSUSA Terms and Conditions&lt;/a&gt;." tabindex="29" />
+                                <label class="choice" for="Field153">I agree to the <a target="_blank" href="http://docs.google.com/View?id=dd9hkswj_0ckcz43hp">DSUSA Terms and Conditions</a>.</label>
+                            </span>
+                        </div>
+                    </li>
+
+
+                    
+                    
+                    <li class="buttons">
+                        <input type="hidden" name="currentPage" id="currentPage" value="5Zy6wm9XSkTVTICMoLPdewuBez2KIN2ITdc56dlcqGOw50=">
+                            <input id="saveForm" class="btTxt submit" type="submit" value="Submit" />
+                            
+                            
+
+                        </li>
+
+                    <li style="display:none">
+                        <label for="comment">Do Not Fill This Out</label>
+                        <textarea name="comment" id="comment" rows="1" cols="1"></textarea>
+                        <input type="hidden" id="idstamp" name="idstamp" value="" />
+                    </li>
+                    </ul>
+                </form>
+
+            </div><!--container-->
+            <img id="bottom" src="images/bottom.png" alt="" />
+        </body>
+    </html>
