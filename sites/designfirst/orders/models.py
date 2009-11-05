@@ -1,22 +1,42 @@
 from datetime import datetime, timedelta
-
-from django.db.transaction import commit_on_success
-from django.utils.translation import ugettext, ugettext_lazy as _
-import os
+import os, os.path
 import logging
 
-from utils.fields import DimensionField
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import File as DjangoFile
-from django.utils.datastructures import SortedDict
+from django.core.files.storage import FileSystemStorage
+from django.db.transaction import commit_on_success
 from django.db import models
-from utils.pdf import pdf2ppm
+from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext, ugettext_lazy as _
 
-import settings
+from utils.pdf import pdf2ppm
+from utils.fields import DimensionField
+
 PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
 PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
 
+def attachment_upload_location(attachment_obj, filename):
+    return os.path.join( 'accounts',
+        str(attachment_obj.order.owner.get_profile().account.id), 
+        'orders',
+        str(attachment_obj.order.id), 
+        'diagrams',
+        str(filename)
+    )    
+def preview_upload_location(preview_obj, filename):
+    return os.path.join( 'accounts', 
+        str(preview_obj.attachment.order.owner.get_profile().account.id), 
+        'orders',
+        str(preview_obj.attachment.order.id), 
+        'previews',
+        str(filename)
+    )
+
+
 log = logging.getLogger('orders.models')
+log.addHandler(logging.StreamHandler())
 
 class WorkingOrder(models.Model):
     """
@@ -238,7 +258,6 @@ class Moulding(models.Model):
             i += 1
                 
 
-    
 class Attachment(models.Model):
     FLOORPLAN, PHOTO, OTHER = range(1,4)
     TYPE_CHOICES = (
@@ -250,13 +269,13 @@ class Attachment(models.Model):
     
     order = models.ForeignKey(WorkingOrder, related_name='attachments')
     type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES, default=FLOORPLAN)
-    file = models.FileField(_('File'), upload_to='data/orders/attachments/%Y/%m')
+    file = models.FileField(_('File'), upload_to=attachment_upload_location)
     source = models.CharField(_('Source'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=UPLOADED, editable=False)
     timestamp = models.DateTimeField(_(''), auto_now_add=True)
     
     def __unicode__(self):
         return os.path.basename(self.file.path)
-    
+            
     def first_preview(self):
         if self.is_pdf():
             return self.attachpreview_set.all()[0].file.url
@@ -296,7 +315,7 @@ class AttachPreview(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
     page = models.PositiveIntegerField(_(''), )
-    file = models.ImageField(_(''), upload_to='data/orders/attachments/%Y/%m/preview')
+    file = models.ImageField(_(''), upload_to=preview_upload_location)
     
     class Meta:
         ordering = ['page']

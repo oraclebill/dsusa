@@ -11,7 +11,6 @@ sys.path.insert(0, rel('..', '..', 'lib'))#Adding lib to system path
 
 
 
-
 DEBUG = True
 LOCAL = DEBUG
 TEMPLATE_DEBUG = DEBUG
@@ -136,6 +135,10 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
     }
+
+
+APPLICATION_FILES_ROOT = rel('..','..','var','application-data')
+APPLICATION_FILES_URL  = rel('..','..','var','application-data')
 
 ##
 PAYPAL_TEST                 = True      # Testing mode on

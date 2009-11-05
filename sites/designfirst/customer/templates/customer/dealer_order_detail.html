@@ -4,19 +4,51 @@
 DesignFirst - Design Order 
 {% endblock %}
 
-{% block extrastyle %} 
+{% block extra-head %}
 <style type="text/css" media="screen">
-	span.areastatus {
-		float: right;
-		font-style: italic;
-		font-size: 0.8em;
-	}
-	span.invalid {
-		color: red;
-	}
-</style>
-{% endblock %}
 
+	label {
+		font-weight: bolder;
+	}
+	
+	ul  {
+		list-style: none;
+	}
+	
+	tbody th {
+		margin-top: 3px;
+		margin-bottom: 3px;
+		border-top: none;
+		border-bottom: none;
+	}
+	
+	#appliance_option_form table {
+		border-style: solid;
+		border-color: #444;
+		border-width: 1px;
+		margin-top: 10px;
+	}
+	
+	#appliance_option_form p {
+		display: inline;
+		position: relative;
+		float: left;
+		clear: left;
+		margin: 5px;	
+	}
+	
+	#appliance_option_form label {
+		display: inline-block;		
+		width: 8em;
+		
+	}
+	
+	#appliance_option_form input {
+		display: inline;	
+	}
+</style>	
+	
+{% endblock %}
 {% block content %}
 
 
@@ -60,14 +92,16 @@ DesignFirst - Design Order
 			
     {% for form in formlist %}
     <!-- Design Request Data Entry Area -->
-    <div class="grid_4">
+    <div class="grid_8 {% cycle "" "clearfix" %}">
         <div class="box">            
             <h2> {{ form.name }} </h2>
         	<form action="." method="POST" accept-charset="utf-8">
         		<input type="hidden" name="_formname" value="{{ form_name }}">
         		<fieldset>
-        			{{ form.as_p }}
-        			<input type="submit" value="update">
+				<table>
+        			{{ form }}
+				</table>
+				<input type="submit" value="update">
         		</fieldset>
         	</form>            	            
         </div>
@@ -81,7 +115,9 @@ DesignFirst - Design Order
     <div class="grid_14 prefix_1 alpha">
 	    <div id="appliance_option_form" class="box">
 			<h2>Appliances</h2>
-			<table border="0" cellspacing="5" cellpadding="5">
+			<table>
+				<thead>
+				<tr><th class="table-head" colspan="7">Appliances</th></tr>
                 <tr><th>Type</th>
                     <th>Model</th>
                     <th>Width</th>
@@ -90,6 +126,8 @@ DesignFirst - Design Order
                     <th>Options</th>
                     <th>#</th>
                 </tr>
+			</thead>
+			<tbody>
                 {% if order.appliances %}
                     {% for appliance in order.appliances.all %}
                     <tr><td>{{ appliance.type }}</td>
@@ -104,13 +142,18 @@ DesignFirst - Design Order
                 {% else %}
                     <tr><td colspan="6">&nbsp;</tr>
                 {% endif %}
-                
+            </tbody>
 			</table>
+			<div class="box">
 			<form method="POST" action="">
-				<input type="hidden" name="_formname" value="{{ appliance_form.name }}">
-                {{ appliance_form }}
+				<fieldset>
+					<legend>Add Appliance</legend>
+					<input type="hidden" name="_formname" value="{{ appliance_form.name }}">
+	                {{ appliance_form.as_p }}
+				</fieldset>
                 <input type="submit" name="submit" value="add appliance" />
 			</form>		
+		</div>
 	    </div>
     </div>
 
@@ -138,20 +181,20 @@ DesignFirst - Design Order
     			     <tr>
     			         <td>{{ attachment.timestamp|date }} - {{ attachment.timestamp|time }}</td>
     			         <td>{{ attachment.order.id }}-{{ attachment.id }}</td>
-    			         <td><a href="{{ attachment.file.url }}">{{ attachment.file.name }}</a></td>
+    			         <td><a href="{{ attachment.file.url }}">{{ attachment }}</a></td>
     			         <td>{{ attachment.get_type_display }}</td>
-    			         <td><a href="#">delete</a></td>
+    			         <td><a href="{% url order-wizard-step attachment.order.id,"diagrams" %}?delete={{attachment.id}}">delete</a></td>
 		            </tr>			         
 			     {% endfor %}
 			     </tbody>
 			   </table>
-			   Source: <span>{{order.}}</span>
 			   <form action="." method="POST" enctype="multipart/form-data">
    				   <input type="hidden" name="_formname" value="{{ attachment_form.name }}">
 			       <fieldset>
+						<legend>Add Attachment</legend>
                         {{ attachment_form }}
-                        <input type="submit" name="submit" value="update">
 			       </fieldset>
+                   <input type="submit" name="submit" value="Upload">
 			   </form>
 			</p>
         </div>

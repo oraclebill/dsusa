@@ -50,6 +50,16 @@ fieldset legend {
     background: inherit;
 }
 
+span.areastatus {
+	float: right;
+	font-style: italic;
+	font-size: 0.8em;
+}
+span.invalid {
+	color: red;
+}
+
+
 
 /* Buttons ## TODO - change to class and apply to wizard-steps
 ----------------------------------------------- */

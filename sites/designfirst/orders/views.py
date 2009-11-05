@@ -113,6 +113,7 @@ class Wizard(WizardBase):
                 appliance = get_object_or_404(Appliance, order=self.order, 
                                            id=int(request.GET['delete']))
                 appliance.delete()
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
                 return HttpResponseRedirect('./')
             form = AttachmentForm()
             form = ApplianceForm()
