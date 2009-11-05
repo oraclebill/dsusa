@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.db import transaction
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -17,7 +19,7 @@ class Transaction(models.Model): # TODO --> invoice becomes transaction
     debit_or_credit = models.CharField(max_length=1, choices=DC_CHOICES)
     trans_type = models.CharField(max_length=1, choices=TRANS_TYPE_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.CharField(max_length=32)
+    description = models.CharField(max_length=50)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 @transaction.commit_on_success
