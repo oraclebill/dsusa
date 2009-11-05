@@ -49,8 +49,8 @@ payment_was_flagged.connect(paypal_failure_callback)
 def make_site_url(request, path):
     from django.contrib.sites.models import Site
     scheme = request.is_secure() and 'https' or 'http'
-    domain = Site.objects.get_current().domain
-    return '%s://%s/%s' % (scheme, domain, path)
+    domain = Site.objects.get_current().domain.rstrip('/')    
+    return '%s://%s/%s' % (scheme, domain, path.lstrip('/'))
     
 def product_detail(request, prodid):
     user = request.user
