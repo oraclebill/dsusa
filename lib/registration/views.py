@@ -12,7 +12,7 @@ from django.views.generic.list_detail import object_list
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 
-from registration.forms import RegistrationForm
+from registration.forms import RegistrationForm, ActivateAndRegisterForm
 from registration.models import RegistrationProfile
 
 from django.views.decorators.http import require_POST
@@ -83,6 +83,34 @@ def activate(request, activation_key,
                               { 'account': account,
                                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },
                               context_instance=context)
+
+
+def activate_and_register(request, activation_key,
+                          form_class=ActivateAndRegisterForm,
+                          template_name='registration/activate_and_register.html'):
+    activation_key = activation_key.lower() # Normalize before trying anything with it.
+    profile = RegistrationProfile.objects.key_valid(activation_key)
+    if not profile:
+        return #Not active key
+
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=profile.content_object.email,
+                password=form.cleaned_data['password1'],
+            )
+            user.first_name = profile.content_object.first_name
+            user.last_name = profile.content_object.last_name
+            user.save()
+            RegistrationProfile.objects.activate(activation_key)
+            return redirect('dashboard')
+    return render_to_response(template_name,
+                              { 'account': account,
+                                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },
+                              context_instance=RequestContext(request)
+                              )
 
 
 def register(request, success_url=None,
@@ -183,7 +211,9 @@ def unauthorized_profiles_list(request):
 
 @require_POST
 @permission_required("registration.can_authorize")
-def authorize(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
-    RegistrationProfile.objects.authorize(user)
+def authorize(request, profile_id, email=lambda p: p.content_object.email):
+    profile = get_object_or_404(RegistrationProfile, pk=profile_id)
+    RegistrationProfile.objects.authorize(profile)
+    if email and callable(email):
+        RegistrationProfile.objects.activation_email(profile, email(profile))
     return redirect('registration_unauthorized')
