@@ -105,9 +105,11 @@ function show_details(type, caption) {
 		</div>
 		
 		<div id="diagrams" class="details" style="display: none;">
+		{% if  order.attachement_previews %}			
 		{% for url in order.attachement_previews %}
 			<a href="{{url}}" class="diagram">{{forloop.counter}}</a>
 		{% endfor %}
+		{% endif %}
 		<br>
 		<img src="{{order.attachement_previews.0}}" id="diagram">
 		</div>

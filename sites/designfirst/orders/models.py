@@ -191,7 +191,7 @@ class WorkingOrder(models.Model):
     def __unicode__(self):
         return self.project_name
     
-    def attachement_previews(self):
+    def attachment_previews(self):
         "Return urls of all attachment previews"
         return [a.first_preview() for a in self.attachments.all()]
     
@@ -277,13 +277,13 @@ class Attachment(models.Model):
         return os.path.basename(self.file.path)
             
     def first_preview(self):
-        if self.is_pdf():
+        if self.is_pdf() and self.attachpreview_set.all():
             return self.attachpreview_set.all()[0].file.url
         return self.file.url
     
     def previews(self):
         if self.is_pdf():
-            for f in self.attachpreview_set.all():
+            for f in self.attachpreview_set.count():
                 yield {'url':f.file.url, 'page': f.page}
         else:
             yield {'url':self.file.url, 'page': 1}

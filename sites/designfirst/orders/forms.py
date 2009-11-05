@@ -99,7 +99,7 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
     name = 'Cabinet Dimensions'
     dimension_style =  forms.ChoiceField(choices=WorkingOrder.STYLE_CHOICES, 
                              widget=forms.RadioSelect(attrs={'class': 'dimension_style'}), 
-                             label='')
+                             label='Type')
     class Meta:
         model = WorkingOrder
         fieldsets = [
