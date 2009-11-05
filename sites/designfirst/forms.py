@@ -13,6 +13,10 @@ def organization_field(name, **kwargs):
     return models.DealerOrganization._meta.get_field(name).formfield(**kwargs)
 
 
+def value_as_key(choices):
+    return tuple([(c, c) for c in choices])
+
+
 class RegistrationForm(forms.ModelForm):
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
@@ -56,6 +60,18 @@ class RegistrationForm(forms.ModelForm):
                                                                     redirect_to=self.cleaned_data.get('redirect_to'))
         organization = super(RegistrationForm, self).save()
         profile = models.UserProfile(user=new_user, account=organization)
+
+        notes='\n'.join([
+            '%s: %s' % (self.fields[field].label, self.cleaned_data[field])
+            for field in ('rush', 'product_type', 'revisions', 'expected_orders' )
+        ])
+
+        profile = models.UserProfile(
+            first_name = self.cleaned_data['first_name'],
+            last_name = self.cleaned_data['last_name'],
+            email=self.cleaned_data['email'],
+            notes=notes,
+            account=organization)
         profile.save()
 
         new_user.first_name = self.cleaned_data['first_name']

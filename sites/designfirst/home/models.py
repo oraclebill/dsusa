@@ -50,31 +50,6 @@ class Organization(models.Model):
 
     locations_num = models.IntegerField(verbose_name=_('Number of locations'),
                                    blank=True, null=True)
-    rush = models.BooleanField(verbose_name=_('Rush My Signup!'))
-
-    product_type = models.CharField(
-        verbose_name=_("Prefered design product type"),
-        choices=(
-            ('pro', 'Pro Design - 20/20 .KIT File plus cabinet quote report.'),
-            ('presentation', 'Presentation Pack - 20/20 file plus printable full-color perspective views, floorplan and cabinet elevations, and cabinet quote report (retail).'),
-            ('dunno', 'Not sure.'),
-        ), max_length=20, default='pro'
-    )
-
-    revisions = models.IntegerField(
-        verbose_name=_('How many revisions do you typically produce for a customer?'),
-        choices=(
-            (1, 'One - the first one usually does it'),
-            (2, 'Two - the original plus a touch up'),
-            (3, 'Three - the original and two updates'),
-            (4, 'Four or more'),
-        ), default=1
-    )
-
-    expected_orders = models.PositiveSmallIntegerField(blank=True, null=True,
-        verbose_name=_('Expected orders per month')
-    )
-
     def __unicode__(self):
         return self.company_name
     
@@ -102,8 +77,12 @@ class UserProfile(models.Model):
     Customer profile is a linking mechanism. It identifies usertype which will determine which core profile
     object contains that profiles' defining information. 
     """    
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=True, null=True, blank=True)
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    email = models.EmailField(_('e-mail address'), blank=True)
     account = models.ForeignKey(Organization)
+    notes = models.TextField(_('Notes'), blank=True)
     usertype = models.CharField(max_length=10, 
         choices=[('designer', 'Designer'), ('dealer','Dealer'),], default='dealer') # TODO: usertype is determined by 'account'
 
