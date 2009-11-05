@@ -11,7 +11,8 @@ from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import EmailMessage
-
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
 
@@ -49,6 +50,18 @@ class RegistrationManager(models.Manager):
     keys), and for cleaning out expired inactive accounts.
 
     """
+
+    def key_valid(self, activation_key):
+        if SHA1_RE.search(activation_key):
+            try:
+                profile = self.get(activation_key=activation_key)
+            except self.model.DoesNotExist:
+                return None
+            if not profile.activation_key_expired() \
+                   and profile.status == 'authorized':
+                return profile
+        return None
+
     def activate_user(self, activation_key):
         """
         Validate an activation key and activate the corresponding
@@ -159,41 +172,41 @@ class RegistrationManager(models.Manager):
         return new_user
     create_inactive_user = transaction.commit_on_success(create_inactive_user)
 
-    def send_activation_email(self, user):
+    def send_activation_email(self, registration_profile, email=None):
         """
         Send email with activation code to an authorized user.
         """
-        registration_profile = self.get(user=user)
         make_message(
             'registration/activation_email_subject.txt',
             'registration/activation_email.txt',
-            [user.email],
+            [email or registration_profile.content_object.email],
             extra_context={
                 'activation_key': registration_profile.activation_key,
                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                'user': user,
+                'profile': profile,
             },
             html=getattr(settings, 'REGISTRATION_EMAIL_HTML', False),
             send=True)
 
-    def send_registered_email(self, user):
+    def send_registered_email(self, registration_profile, email=None):
         """
         Send email to registered but not yet authorized user.
         """
         make_message(
             'registration/registration_email_subject.txt',
             'registration/registration_email.txt',
-            [user.email],
+            [email or registration_profile.content_object.email],
             extra_context={
-                'user': user,
+                'profile': registration_profile,
             },
             html=getattr(settings, 'REGISTRATION_EMAIL_HTML', False),
             send=True)
 
-    def create_profile(self, user, redirect_to, authorize=None):
+    def create_profile(self, user=None, related_object=None,
+                               redirect_to=None, authorize=None):
         """
         Create a ``RegistrationProfile`` for a given
-        ``User``, and return the ``RegistrationProfile``.
+        ``User`` or related object, and return the ``RegistrationProfile``.
 
         The activation key for the ``RegistrationProfile`` will be a
         SHA1 hash, generated from a combination of the ``User``'s
@@ -213,26 +226,22 @@ class RegistrationManager(models.Manager):
 
         return self.create(user=user,
                            activation_key=activation_key,
-                           redirect_to=redirect_to,
+                           redirect_to=redirect_to or '',
+                           content_object=related_object,
                            status=status)
 
-    def authorize(self, user, send_email=None):
+    def authorize(self, profile, send_email=None):
         from registration.signals import user_authorized
 
         salt = sha_constructor(str(random.random())).hexdigest()[:5]
         activation_key = sha_constructor(salt+user.username).hexdigest()
 
-        user.registration_profile.status = 'authorized'
-        user.registration_profile.activation_key = activation_key
-        user.registration_profile.save()
+        profile.status = 'authorized'
+        profile.activation_key = activation_key
+        profile.save()
 
-        if send_email is None:
-            send_email = getattr(settings, 'REGISTRATION_SEND_EMAIL', True)
-
-        if send_email:
-            self.send_activation_email(user)
-
-        user_authorized.send(sender=self.model, user=user)
+        if profile.user_id:
+            user_authorized.send(sender=self.model, user=user)
 
 
     def delete_expired_users(self):
@@ -303,6 +312,8 @@ class RegistrationProfile(models.Model):
     so. This model's sole purpose is to store data temporarily during
     account registration and activation.
 
+    
+
     """
     STATUSES = (
         ('not-authorized', _('Not authorized')),
@@ -310,11 +321,15 @@ class RegistrationProfile(models.Model):
         ('activated', _('Activated')),
     )
 
-    user = models.OneToOneField(User, verbose_name=_('user'),
-                                        related_name='registration_profile')
+    user = models.OneToOneField(User, verbose_name=_('user'), null=True, blank=True,
+                                related_name='registration_profile')
     activation_key = models.CharField(_('activation key'), max_length=40, blank=True)
-    redirect_to = models.CharField(_('redirect to'), max_length=100, blank=True)
+    redirect_to = models.CharField(_('redirect to'), max_length=100, blank=True, default='')
     status = models.CharField(_('status'), choices=STATUSES, max_length=25)
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey()
 
     objects = RegistrationManager()
 

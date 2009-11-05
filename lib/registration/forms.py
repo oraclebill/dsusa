@@ -19,6 +19,23 @@ from registration.models import RegistrationProfile
 attrs_dict = { 'class': 'required' }
 
 
+class ActivateAndRegisterForm(forms.Form):
+    username = forms.RegexField(regex=r'^\w+$',
+                                max_length=30,
+                                widget=forms.TextInput(attrs=attrs_dict),
+                                label=_(u'username'))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
+                                label=_(u'password'))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
+                                label=_(u'password (again)'))
+
+    def clean(self):
+        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
+            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+                raise forms.ValidationError(_(u'You must type the same password each time'))
+        return self.cleaned_data
+
+
 class RegistrationForm(forms.Form):
     """
     Form for registering a new user account.
