@@ -16,6 +16,9 @@ LOCAL = DEBUG
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ('127.0.0.1',)
 
+APP_FILES_ROOT = rel('..','..','var','application-data')
+APP_FILES_URL = '/files'
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )

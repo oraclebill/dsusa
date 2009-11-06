@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import os, os.path
 import logging
+import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -17,18 +18,33 @@ from utils.fields import DimensionField
 PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
 PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
 
+class AppStorage(FileSystemStorage):
+    def __init__(self): 
+        super(AppStorage, self).__init__(
+            location=getattr(settings, 'APP_FILES_ROOT', settings.MEDIA_ROOT), 
+            base_url=getattr(settings, 'APP_FILES_URL', settings.MEDIA_URL)       
+        )
+        
+    def url(self,name):
+        if not self.base_url or urlparse.urlparse(self.base_url).scheme:
+            return super(AppStorage, self).url(name)
+        return os.path.join(self.base_url, name)
+        
+APPSTORAGE = AppStorage()        
+    
 def attachment_upload_location(attachment_obj, filename):
-    return os.path.join( 'accounts',
+    return os.path.join( 'account-data',
         str(attachment_obj.order.owner.get_profile().account.id), 
-        'orders',
+        'order-data',
         str(attachment_obj.order.id), 
         'diagrams',
         str(filename)
     )    
+    
 def preview_upload_location(preview_obj, filename):
-    return os.path.join( 'accounts', 
+    return os.path.join( 'account-data', 
         str(preview_obj.attachment.order.owner.get_profile().account.id), 
-        'orders',
+        'order-data',
         str(preview_obj.attachment.order.id), 
         'previews',
         str(filename)
@@ -269,7 +285,7 @@ class Attachment(models.Model):
     
     order = models.ForeignKey(WorkingOrder, related_name='attachments')
     type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES, default=FLOORPLAN)
-    file = models.FileField(_('File'), upload_to=attachment_upload_location)
+    file = models.FileField(_('File'), upload_to=attachment_upload_location, storage=APPSTORAGE)
     source = models.CharField(_('Source'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=UPLOADED, editable=False)
     timestamp = models.DateTimeField(_(''), auto_now_add=True)
     
@@ -309,16 +325,22 @@ class Attachment(models.Model):
         file = DjangoFile(open(filename, 'rb'))
         preview.file.save(file.name, file)
         preview.save()
+        
+    class Meta:
+        verbose_name = _('attachment')
+        verbose_name_plural = _('attachments')
 
 
 class AttachPreview(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
-    page = models.PositiveIntegerField(_(''), )
-    file = models.ImageField(_(''), upload_to=preview_upload_location)
+    page = models.PositiveIntegerField(_('page'), )
+    file = models.ImageField(_('file'), upload_to=preview_upload_location, storage=APPSTORAGE)
     
     class Meta:
-        ordering = ['page']
+        verbose_name = _('attachment preview')
+        verbose_name_plural = _('attachment previews')
+#         ordering = ['page']
     
 
 class Appliance(models.Model):
