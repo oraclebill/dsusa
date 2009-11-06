@@ -1,3 +1,6 @@
 [submodule "modules/django"]
 	path = modules/django
 	url = git@github.com:oraclebill/django.git
+[submodule "modules/django-notification"]
+	path = modules/django-notification
+	url = git://github.com/jtauber/django-notification.git

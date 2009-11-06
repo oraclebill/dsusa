@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     'menu',
     'registration',
     'south',
+    'notification',
     'designfirst.customer',
     'designfirst.product',
     'designfirst.orders',
