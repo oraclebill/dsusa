@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from customer.models import Dealer
+from customer.models import Dealer, UserProfile
 from product.models import Product
 
 from orders.models import WorkingOrder
@@ -29,13 +29,11 @@ class DealerProfileForm(forms.ModelForm):
                         state=self.cleaned_data['state'], 
                         zip4=self.cleaned_data['zip'], 
                         phone=self.cleaned_data['phone'], 
-                        email=self.instance.email,
-                        default_measure_units=INCH_DIMENSION)
+                        email=self.instance.email)
         profile_org.save()
         profile = UserProfile(
                         user=profile_user, 
                         account=profile_org, 
-                        usertype='dealer'
                         )
         profile.save()    
         return profile_user
