@@ -19,6 +19,7 @@
 
     <body id="public">
         <div id="container">
+            {{ form.errors }}
 
             <form id="form1" name="form1" class="wufoo topLabel page1" autocomplete="off"
 	              enctype="multipart/form-data" method="post" action=".">
@@ -97,8 +98,8 @@
                         <div>
                             <span class="full">
                                 <!-- <input id="Field12" name="company_address_2" type="text" class="field text addr" value="" tabindex="6" /> -->
-                                {{ form.company_address }}
-                                {{ form.company_address.errors }}
+                                {{ form.company_address_1 }}
+                                {{ form.company_address_1.errors }}
                                 <label for="Field12">Street Address</label>
                             </span>
                             <span class="full">
@@ -227,7 +228,7 @@
                         </label>
                         <div class="col">
                             <span>
-                                <input id="Field153" name="tos" type="checkbox" class="field checkbox" value="I agree to the &lt;a target=&quot;_blank&quot; href=&quot;http://docs.google.com/View?id=dd9hkswj_0ckcz43hp&quot;&gt;DSUSA Terms and Conditions&lt;/a&gt;." tabindex="29" />
+                                <input id="Field153" name="tos" type="checkbox" class="field checkbox" value="I agree to the &lt;a target=&quot;_blank&quot; href=&quot;http://docs.google.com/View?id=dd9hkswj_0ckcz43hp&quot;&gt;DSUSA Terms and Conditions&lt;/a&gt;."/>
                                 <label class="choice" for="Field153">I agree to the <a target="_blank" href="http://docs.google.com/View?id=dd9hkswj_0ckcz43hp">DSUSA Terms and Conditions</a>.</label>
                             </span>
                         </div>
