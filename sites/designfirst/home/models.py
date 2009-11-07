@@ -86,6 +86,15 @@ class UserProfile(models.Model):
     usertype = models.CharField(max_length=10, 
         choices=[('designer', 'Designer'), ('dealer','Dealer'),], default='dealer') # TODO: usertype is determined by 'account'
 
+    def save(self):
+        super(UserProfile, self).save()
+
+        if self.user:
+            self.user.first_name = self.first_name
+            self.user.last_name = self.last_name
+            self.user.email = self.email
+            self.user.save()
+
     # for profiles module
     def get_absolute_url(self):
         return ('profiles_profile_detail', (), { 'username': self.user.username })

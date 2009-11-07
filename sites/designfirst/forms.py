@@ -94,3 +94,17 @@ class RegistrationForm(forms.ModelForm):
         )
 
         return registration_profile
+
+
+class CompanyProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = models.DealerOrganization
+        exclude = ('status', 'credit_balance', '')
+
+
+class UserProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = models.UserProfile
+        exclude = ('user', 'notes', 'usertype', 'account')
