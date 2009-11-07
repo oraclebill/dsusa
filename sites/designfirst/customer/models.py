@@ -167,7 +167,7 @@ class InvoiceLine(models.Model):
     
     class Meta:
         verbose_name = _('invoice line')
-        verbose_name_meta = _('invoice lines')
+        verbose_name_plural = _('invoice lines')
         
     @property
     def unit_credit(self):
