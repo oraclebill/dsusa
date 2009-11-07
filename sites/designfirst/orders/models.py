@@ -43,16 +43,17 @@ class WorkingOrder(models.Model):
     when  user goes step to step in orders
     """
     #Basic stuff
-    DEALER_EDIT, SUBMITTED, ASSIGNED = range(1,4)
+    DEALER_EDIT, SUBMITTED, ASSIGNED, COMPLETED = range(1,5) #TODO: change from number to code
     STATUS_CHOICES = (
         (DEALER_EDIT, 'Dealer Editing'),
         (SUBMITTED, 'Submitted'),
         (ASSIGNED, 'Assigned'),
+        (COMPLETED, 'Completed'),
     )
     
     owner = models.ForeignKey(User)
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
-    submitted = models.DateTimeField(_('Submitted On'), auto_now=False, editable=False)
+    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
     
     #Submit options
@@ -193,6 +194,7 @@ class WorkingOrder(models.Model):
         verbose_name_plural = 'orders'
         
     def save(self, force_insert=False, force_update=False):
+        logger.debug('saving ... %s' % self)
         changed = False
         old_status = None
         new_status = self.status
@@ -203,7 +205,7 @@ class WorkingOrder(models.Model):
             changed = True                
         super(WorkingOrder,self).save(force_insert, force_update)
         if changed:
-            status_changed.send(self, old_status, self.status)
+            status_changed.send(self, old=old_status, new=new_status)
             
         
     def __unicode__(self):

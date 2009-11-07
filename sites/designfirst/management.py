@@ -1,14 +1,14 @@
-from django.conf import settings
-from django.core.mail import send_mail, mail_managers
-from django.db.models import signals as dbsignals
-from django.template import Template, Context
-from django.template.loader import get_template    
-from django.utils.translation import ugettext_noop as _
-
-from notification import models as notification
-
 from customer import models as customer
+from django.core.mail import mail_managers
+from django.db.models import signals as dbsignals
+from django.utils.translation import ugettext_noop as _
+from notification import models as notification
 from orders import models as orders, signals as order_signals
+import logging
+
+
+
+logger = logging.getLogger('management')
 
 class IllegalStateException(Exception):
     pass
@@ -58,8 +58,6 @@ dbsignals.post_syncdb.connect(create_notice_types, sender=notification)
  
 def new_dealer_notification(sender, **kwargs):
     "When a new dealer appears, send a 'thanks for registering' email"
-    from django.template import Template, Context
-    from django.template.loader import get_template
     created = kwargs.get('created')
     if not created:
         return        
@@ -96,10 +94,13 @@ dbsignals.post_save.connect(new_fax_notification, sender=orders.Attachment)
 
 def new_order_notification(sender, **kwargs):
     "When a new order appears, send a 'got it!' email"
-    order = kwargs.get('instance')
+    order = sender
     if not order:
         raise IllegalStateException()
-    if not order.status == WorkingOrder.SUBMITTED:
+    status = kwargs.get('new')
+    if not status:
+        raise IllegalStateException()
+    if status != orders.WorkingOrder.SUBMITTED:
         return
     # TODO: Don't send notices for events that have already been signaled
     #       I think we can extend the Notice framework to have a generic FK 
@@ -112,16 +113,16 @@ def new_order_notification(sender, **kwargs):
         return        
     notification.send([order.owner], 'order_submission_ack')
     mail_managers('Order Submission Notice - order #%s for %s' % (order, order.owner.get_profile().account.legal_name), '')
-order_signals.status_changed.connect(new_order_notification, sender=orders.WorkingOrder)        
+order_signals.status_changed.connect(new_order_notification)        
     
-def completed_order_notification(model, order, created, **kwargs):
+def completed_order_notification(sender, **kwargs):
     "When a new order appears, send a 'got it!' email"
-    order = kwargs.get('instance')
+    order = sender
     if not order:
-        raise IllegalStateException()
-    if not order.status == WorkingOrder.SUBMITTED:
+        raise IllegalStateException() 
+    if order.status != orders.WorkingOrder.COMPLETED:
         return
-    # TODO: Don't send notices for events that have already been signalled
+    # TODO: Don't send notices for events that have already been signaled
     #       I think we can extend the Notice framework to have a generic FK 
     #       - notice_subject. If we find a notice for 'this' thing, don't repeat notification.    
     if not order.owner:
@@ -132,7 +133,7 @@ def completed_order_notification(model, order, created, **kwargs):
         return        
     notification.send([order.owner], 'completed_order_waiting')
     mail_managers('Order Completion Notice - order #%s for %s' % (order, order.owner.get_profile().account.legal_name), '')
-order_signals.status_changed.connect(completed_order_notification, sender=orders.WorkingOrder)        
+order_signals.status_changed.connect(completed_order_notification)        
     
     
     
