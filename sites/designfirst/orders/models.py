@@ -13,6 +13,9 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 from utils.pdf import pdf2ppm
 from utils.fields import DimensionField
+from signals import status_changed
+
+logger = logging.getLogger('orders.models')
 
 PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
 PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
@@ -33,10 +36,6 @@ def preview_upload_location(preview_obj, filename):
         'previews',
         str(filename)
     )
-
-
-log = logging.getLogger('orders.models')
-log.addHandler(logging.StreamHandler())
 
 class WorkingOrder(models.Model):
     """
@@ -189,6 +188,24 @@ class WorkingOrder(models.Model):
     range_hood = models.BooleanField(_('Range Hood'), )
     posts = models.BooleanField(_('Posts'), )
     
+    class Meta:
+        verbose_name = 'order'
+        verbose_name_plural = 'orders'
+        
+    def save(self, force_insert=False, force_update=False):
+        changed = False
+        old_status = None
+        new_status = self.status
+        try:
+            old_status = self._base_manager.get(pk=self.id).status
+            changed = new_status != old_status
+        except self.DoesNotExist:
+            changed = True                
+        super(WorkingOrder,self).save(force_insert, force_update)
+        if changed:
+            status_changed.send(self, old_status, self.status)
+            
+        
     def __unicode__(self):
         return self.project_name
     
@@ -266,7 +283,7 @@ class Attachment(models.Model):
             (PHOTO, _('Photograph')),
             (OTHER, _('Other')),)
     UPLOADED, FAXED = ('U','F')
-    ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Upload')),(FAXED, _('Faxed')),)
+    ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Uploaded')),(FAXED, _('Faxed')),)
     
     order = models.ForeignKey(WorkingOrder, related_name='attachments')
     type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES, default=FLOORPLAN)
@@ -275,8 +292,8 @@ class Attachment(models.Model):
     timestamp = models.DateTimeField(_(''), auto_now_add=True)
     
     def __unicode__(self):
-        fname = self.file and os.path.basename(self.file.path) or '(no file)'
-        return '%s %s attachment: %s' % (self.get_source_display(), self.get_type_display(), fname)
+        return self.file and os.path.basename(self.file.path) or '(no file)'
+#        return '%s "%s" attachment: %s' % (self.get_source_display(), self.get_type_display(), fname)
             
             
     def first_preview(self):
@@ -303,7 +320,7 @@ class Attachment(models.Model):
         try:
             pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
         except OSError:
-            log.error('OSError: pdf generation failed for %s' % self.file.path)
+            logger.error('OSError: pdf generation failed for %s' % self.file.path)
             self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
 
     
