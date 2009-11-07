@@ -4,6 +4,20 @@
 {% block extra-head %}
 	{{block.super }}
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/field_images.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var fields = $('#id_soffit_width, #id_soffit_height, #id_soffit_depth'),
+                parents = fields.parents('.fs_row');
+
+            $("#id_has_soffits").change(function(){
+                if ($(this).attr('checked')) {
+                    parents.show();
+                } else {
+                    parents.hide();
+                }
+            }).change();
+        });
+    </script>
 {% endblock extra-head %}
 
 {% block wizard-content %}
