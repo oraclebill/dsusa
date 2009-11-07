@@ -56,19 +56,6 @@ class RegistrationForm(forms.ModelForm):
         model = models.DealerOrganization
         exclude = ('status', 'credit_balance', 'default_measure_units', 'company_email')
 
-    def clean_username(self):
-        try:
-            user = User.objects.get(username__iexact=self.cleaned_data['username'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
-
-    def clean(self):
-        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
-            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                raise forms.ValidationError(_(u'You must type the same password each time'))
-        return self.cleaned_data
-
     def save(self):
         organization = super(RegistrationForm, self).save()
 
