@@ -25,7 +25,7 @@ class RegistrationForm(forms.ModelForm):
                                                                maxlength=75)),
                              label=_(u'Email address'))
 
-    rush = forms.BooleanField(label=_('Rush My Signup!'))
+    rush = forms.BooleanField(label=_('Rush My Signup!'), required=False)
 
     product_type = forms.ChoiceField(
         label=_("Prefered design product type"),
