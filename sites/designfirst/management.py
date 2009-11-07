@@ -73,11 +73,13 @@ def new_dealer_notification(model, instance, created, **kwargs):
     notification.send([instance], 'registration_ack')
 signals.post_save.connect(new_dealer_notification, sender=customer.Dealer)        
         
-def new_fax_notification(model, attachment, created, **kwargs):
+def new_fax_notification(sender, **kwargs):
     "When a new fax appears, send a 'got it!' email"
+    created = kwargs.get('created')
     if not created:
-        return        
-    if not attachment.order:
+        return     
+    attachment = kwargs.get('instance')  
+    if attachment and not attachment.order:
         mail_managers(
             'New attachment %s requires manual validation - blank order' % attachment,
             'No associated order for attachment %s' % attachment.id

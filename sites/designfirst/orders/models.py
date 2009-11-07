@@ -275,7 +275,9 @@ class Attachment(models.Model):
     timestamp = models.DateTimeField(_(''), auto_now_add=True)
     
     def __unicode__(self):
-        return os.path.basename(self.file.path)
+        fname = self.file and os.path.basename(self.file.path) or '(no file)'
+        return '%s %s attachment: %s' % (self.get_source_display(), self.get_type_display(), fname)
+            
             
     def first_preview(self):
         if self.is_pdf() and self.attachpreview_set.all():
