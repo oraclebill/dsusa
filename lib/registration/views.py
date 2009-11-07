@@ -39,7 +39,7 @@ def activate_and_register(request, activation_key,
             user.last_name = profile.content_object.last_name
             user.save()
             RegistrationProfile.objects.activate(activation_key)
-            return redirect('dashboard')
+            return redirect('dealer-dashboard')
     else:
         form = form_class()
     return render_to_response(template_name,
