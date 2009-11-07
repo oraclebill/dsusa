@@ -111,8 +111,7 @@ class RegistrationManager(models.Manager):
          related object, and return the ``RegistrationProfile``.
 
         """
-        profile = self.create(user=user,
-                           content_object=related_object)
+        profile = self.create(content_object=related_object)
         return profile
 
     def authorize(self, profile):
