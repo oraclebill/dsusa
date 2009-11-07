@@ -19,7 +19,8 @@ from django.views.decorators.http import require_POST
 
 def activate_and_register(request, activation_key,
                           form_class=ActivateAndRegisterForm,
-                          template_name='registration/activate_and_register.html'):
+                          template_name='registration/activate_and_register.html',
+                          success_url=None):
     activation_key = activation_key.lower() # Normalize before trying anything with it.
     profile = RegistrationProfile.objects.key_valid(activation_key)
     if not profile:
@@ -42,7 +43,11 @@ def activate_and_register(request, activation_key,
             user_profile = profile.content_object
             user_profile.user = user
             user_profile.save()
-            return redirect('dealer-dashboard')
+
+            user.backend='django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+
+            return redirect(success_url or '/')
     else:
         form = form_class()
     return render_to_response(template_name,
