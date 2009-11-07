@@ -82,12 +82,17 @@ class SoffitsForm(forms.ModelForm, FieldsetForm):
     name = 'Soffits Information'
     class Meta:
         model = WorkingOrder
-        fields = [
-            'has_soffits',
-            'soffit_width',
-            'soffit_height',
-            'soffit_depth',
+        fieldsets = [
+            (None, {
+                'fields': ('has_soffits', ),
+            }),
+            (None, {
+                'fields': ('soffit_width', 'soffit_height', 'soffit_depth'),
+                'styles': 'toggled-fields',
+            }),
         ]
+        fields = fieldset_fields(fieldsets)
+    fieldsets = Meta.fieldsets
     fieldset_image = NONE_IMG
     clean_has_soffits = _soffit_clean('has_soffits')
     clean_soffit_width = _soffit_clean('soffit_width')
