@@ -30,7 +30,7 @@ class DealerProfileForm(forms.ModelForm):
                         zip4=self.cleaned_data['zip'], 
                         phone=self.cleaned_data['phone'], 
                         email=self.instance.email)
-                        # default_measure_units=INCH_DIMENSION)
+
         profile_org.save()
         profile = UserProfile(
                         user=profile_user, 
