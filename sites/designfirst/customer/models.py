@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from notification import models as notification
 
 class IllegalState(Exception):
     pass
@@ -46,7 +47,14 @@ class Dealer(models.Model):
     notes = models.TextField(_("Notes"), max_length=200, blank=True, null=True)
             
     credit_balance = models.DecimalField(_('Account Credit'), max_digits=10, decimal_places=2, default=0)
-    
+
+    class Meta:
+        verbose_name = _('dealer')
+        verbose_name_plural = _('dealers')
+        
+    def send_welcome(self):
+        notification.send([self.user], 'new_dealer_welcome')        
+
     def __unicode__(self):
         return self.legal_name
         
@@ -56,7 +64,9 @@ class Dealer(models.Model):
             return self.userprofile_set.get(primary=True)
         except UserProfile.DoesNotExist:
             return None
+            
     primary_contact = property(_primary_contact)
+        
         
 class UserProfile(models.Model):
     """
@@ -66,6 +76,10 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, primary_key=True, unique=True)
     account = models.ForeignKey(Dealer)
     primary = models.BooleanField(_('Primary Contact?'))
+
+    class Meta:
+        verbose_name = _("user profile")
+        verbose_name_plural = _("user profiles")
 
     def save(self, force_insert=False, force_update=False):
         """
@@ -93,9 +107,6 @@ class UserProfile(models.Model):
         else:
             return '[empty user profile]'
             
-    class Meta:
-        verbose_name = _("User Profile")
-        verbose_name_plural = _("User Profiles")
 
 def uuid_key():
     return uuid1().hex
@@ -112,6 +123,10 @@ class Invoice(models.Model):
     ## TODO
     # updated = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        verbose_name = _('invoice')
+        verbose_name_plural = _('invoices')
+        
     @property
     def total(self):
         return reduce(
@@ -150,6 +165,10 @@ class InvoiceLine(models.Model):
     unit_price  = models.DecimalField(max_digits=10, decimal_places=2)
     _unit_credit  = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     
+    class Meta:
+        verbose_name = _('invoice line')
+        verbose_name_meta = _('invoice lines')
+        
     @property
     def unit_credit(self):
         return self._unit_credit or self.unit_price

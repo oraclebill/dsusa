@@ -102,6 +102,7 @@ class WorkingOrder(models.Model):
         (BIRCH, 'Birch'), (MDF, 'MDF'), (STAINLESS, 'Stainless Steel'), (PERMAFOIL, 'Permafoil'), 
         (GLASS, 'Glass'),
     )
+    
     #Manufacturer page (cabinetry options)
     manufacturer    = models.CharField(_('Manufacturer'), max_length=150, blank=True, null=True)
     product_line    = models.CharField(_('Product Line'), max_length=150, blank=True, null=True)
@@ -309,6 +310,7 @@ class Attachment(models.Model):
         file = DjangoFile(open(filename, 'rb'))
         preview.file.save(file.name, file)
         preview.save()
+        
 
 
 class AttachPreview(models.Model):
