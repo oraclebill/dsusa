@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %} Account Registration {% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		<h1>Registration</h1>
+		<div class=box>
+			<h2>Registration Info</h2>
+			<div>
+				<form method='POST' action='.'>
+					<table>
+						{{ form }}
+					</table>
+					<input name='submit' type='submit' value='Complete registration'>
+				</form>
+			</div>
+		</div>
+	</div> 
+
+{% endblock %}

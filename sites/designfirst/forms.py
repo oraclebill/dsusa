@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_unicode
 import registration.forms
 from home import models
 
@@ -18,27 +19,42 @@ def value_as_key(choices):
 
 
 class RegistrationForm(forms.ModelForm):
-    username = forms.RegexField(regex=r'^\w+$',
-                                max_length=30,
-                                widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'username'))
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
-                                                               maxlength=75)),
-                             label=_(u'email address'))
     first_name = forms.CharField(label=('First name'), max_length=120)
     last_name = forms.CharField(label=('Last name'), max_length=120)
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'password'))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'password (again)'))
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
+                                                               maxlength=75)),
+                             label=_(u'Email address'))
 
-    redirect_to = forms.CharField(widget=forms.HiddenInput, required=False)
-    product_type = organization_field('product_type', widget=forms.widgets.RadioSelect)
-    revisions = organization_field('revisions', widget=forms.widgets.RadioSelect)
+    rush = forms.BooleanField(label=_('Rush My Signup!'))
+
+    product_type = forms.ChoiceField(
+        label=_("Prefered design product type"),
+        widget=forms.widgets.RadioSelect,
+        choices=value_as_key([
+            'Pro Design - 20/20 .KIT File plus cabinet quote report.',
+            'Presentation Pack - 20/20 file plus printable full-color perspective views, floorplan and cabinet elevations, and cabinet quote report (retail).',
+            'Not sure.',
+        ]),
+    )
+
+    revisions = forms.ChoiceField(
+        label=_('How many revisions do you typically produce for a customer?'),
+        widget=forms.widgets.RadioSelect,
+        choices=value_as_key([
+            'One - the first one usually does it',
+            'Two - the original plus a touch up',
+            'Three - the original and two updates',
+            'Four or more',
+        ]),
+    )
+
+    expected_orders = forms.DecimalField(required=False,
+        label=_('Expected orders per month'),
+    )
 
     class Meta:
         model = models.DealerOrganization
-        exclude = ('status', )
+        exclude = ('status', 'credit_balance', 'default_measure_units', 'company_email')
 
     def clean_username(self):
         try:
@@ -54,15 +70,10 @@ class RegistrationForm(forms.ModelForm):
         return self.cleaned_data
 
     def save(self):
-        new_user = registration.models.RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
-                                                                    password=self.cleaned_data['password1'],
-                                                                    email=self.cleaned_data['email'],
-                                                                    redirect_to=self.cleaned_data.get('redirect_to'))
         organization = super(RegistrationForm, self).save()
-        profile = models.UserProfile(user=new_user, account=organization)
 
         notes='\n'.join([
-            '%s: %s' % (self.fields[field].label, self.cleaned_data[field])
+            '%s: %s' % (force_unicode(self.fields[field].label), self.cleaned_data[field])
             for field in ('rush', 'product_type', 'revisions', 'expected_orders' )
         ])
 
@@ -74,8 +85,12 @@ class RegistrationForm(forms.ModelForm):
             account=organization)
         profile.save()
 
-        new_user.first_name = self.cleaned_data['first_name']
-        new_user.last_name = self.cleaned_data['last_name']
-        new_user.save()
+        registration_profile = registration.models.RegistrationProfile.objects.create_profile(
+            related_object=profile,
+        )
 
-        return new_user
+        registration.models.RegistrationProfile.objects.send_registered_email(
+            registration_profile
+        )
+
+        return registration_profile

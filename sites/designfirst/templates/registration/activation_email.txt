@@ -1,4 +1,4 @@
-{% url registration_activate activation_key=activation_key as activation_url %}
+{% url registration_activate_and_register activation_key=profile.activation_key as activation_url %}
 
 Hi,
 
