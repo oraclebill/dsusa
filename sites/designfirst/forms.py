@@ -1,18 +1,14 @@
+from customer import models
 from django import forms
-from django.db.models import ObjectDoesNotExist
-from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_unicode
-import registration.forms
-from home import models
+from django.utils.translation import ugettext_lazy as _
 
 
 attrs_dict = {'class': 'required'}
 
 
-def organization_field(name, **kwargs):
-    return models.DealerOrganization._meta.get_field(name).formfield(**kwargs)
-
+#def organization_field(name, **kwargs):
+#    return models.Dealer._meta.get_field(name).formfield(**kwargs)
 
 def value_as_key(choices):
     return tuple([(c, c) for c in choices])
@@ -53,7 +49,7 @@ class RegistrationForm(forms.ModelForm):
     )
 
     class Meta:
-        model = models.DealerOrganization
+        model = models.Dealer
         exclude = ('status', 'credit_balance', 'default_measure_units', 'company_email')
 
     def save(self):
@@ -86,7 +82,7 @@ class RegistrationForm(forms.ModelForm):
 class CompanyProfileForm(forms.ModelForm):
 
     class Meta:
-        model = models.DealerOrganization
+        model = models.Dealer
         exclude = ('status', 'credit_balance', '')
 
 

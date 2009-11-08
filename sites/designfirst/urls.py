@@ -5,7 +5,7 @@ import designfirst.menus
 from django.views.generic.list_detail import object_detail
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth import views as auth_views
-from registration import views
+from registration import views as registration
 from registration import models as reg_models
 import forms
 
@@ -24,7 +24,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'', include("customer.urls")),    
-    (r'', include("home.urls")),    
     url(r'^profile/$',
         'designfirst.views.profile_edit',
         name='profile_edit'),
@@ -43,17 +42,17 @@ urlpatterns += patterns('',
             'template_object_name': 'profile',
         }, name='registration_profile'),
    url(r'^activate/register/(?P<activation_key>\w+)/$',
-        views.activate_and_register,
+        registration.activate_and_register,
        {'success_url': 'profile_edit'},
         name='registration_activate_and_register'),
     url(r'^accounts/authorized/$',
-        views.authorized_profiles_list,
+        registration.authorized_profiles_list,
         name='registration_authorized'),
     url(r'^accounts/unauthorized/$',
-        views.unauthorized_profiles_list,
+        registration.unauthorized_profiles_list,
         name='registration_unauthorized'),
     url(r'^accounts/authorize/(?P<profile_id>\d+)/$',
-        views.authorize,
+        registration.authorize,
         name='registration_authorize'),
     url(r'^accounts/login/$',
         auth_views.login,
@@ -82,7 +81,7 @@ urlpatterns += patterns('',
         auth_views.password_reset_done,
         name='auth_password_reset_done'),
     url(r'^accounts/register/$',
-        views.register,
+        registration.register,
         {'form_class': forms.RegistrationForm},
         name='registration_register'),
     url(r'^accounts/register/complete/$',
