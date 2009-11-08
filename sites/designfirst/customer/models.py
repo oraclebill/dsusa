@@ -89,9 +89,12 @@ class UserProfile(models.Model):
         super(UserProfile, self).save(force_insert=force_insert, force_update=force_update)
 
         if self.user:
-            self.user.first_name = self.first_name
-            self.user.last_name = self.last_name
-            self.user.email = self.email
+            if self.first_name:
+                self.user.first_name = self.first_name
+            if self.last_name:
+                self.user.last_name = self.last_name
+            if self.email:
+                self.user.email = self.email
             self.user.save()
     
     # for profiles module
