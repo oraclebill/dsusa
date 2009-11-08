@@ -2,6 +2,7 @@ from customer import models
 from django import forms
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
+import registration
 
 
 attrs_dict = {'class': 'required'}
@@ -17,7 +18,7 @@ def value_as_key(choices):
 class RegistrationForm(forms.ModelForm):
     first_name = forms.CharField(label=('First name'), max_length=120)
     last_name = forms.CharField(label=('Last name'), max_length=120)
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
+    user_email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
                                                                maxlength=75)),
                              label=_(u'Email address'))
 
@@ -50,22 +51,23 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = models.Dealer
-        exclude = ('status', 'credit_balance', 'default_measure_units', 'company_email')
+        exclude = ('status', 'credit_balance', 'default_measure_units', 'email', 'internal_name')
 
     def save(self):
-        organization = super(RegistrationForm, self).save()
+        dealer = super(RegistrationForm, self).save(commit=False)
 
         notes='\n'.join([
             '%s: %s' % (force_unicode(self.fields[field].label), self.cleaned_data[field])
             for field in ('rush', 'product_type', 'revisions', 'expected_orders' )
         ])
+        dealer.notes = notes
+        dealer.save()
 
         profile = models.UserProfile(
             first_name = self.cleaned_data['first_name'],
             last_name = self.cleaned_data['last_name'],
-            email=self.cleaned_data['email'],
-            notes=notes,
-            account=organization)
+            email=self.cleaned_data['user_email'],
+            account=dealer)
         profile.save()
 
         registration_profile = registration.models.RegistrationProfile.objects.create_profile(
@@ -83,11 +85,11 @@ class CompanyProfileForm(forms.ModelForm):
 
     class Meta:
         model = models.Dealer
-        exclude = ('status', 'credit_balance', '')
+        exclude = ('status', 'credit_balance', 'internal_name')
 
 
 class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = models.UserProfile
-        exclude = ('user', 'notes', 'usertype', 'account')
+        exclude = ('user', 'notes', 'usertype', 'account', 'primary')

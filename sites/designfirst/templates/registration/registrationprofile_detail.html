@@ -14,51 +14,51 @@
             {% with profile.content_object.account as account %}
             <tr>
                 <th>{% trans "Legal name" %}</td>
-                <td>{{ account.company_name }}</td>
+                <td>{{ account.legal_name }}</td>
             </tr>
             <tr>
                 <th>{% trans "Company address" %}</td>
-                <td>{{ account.company_address_1 }}</td>
+                <td>{{ account.address_1 }}</td>
             </tr>
             <tr>
                 <th></td>
-                <td>{{ account.company_address_2 }}</td>
+                <td>{{ account.address_2 }}</td>
             </tr>
             <tr>
                 <th>{% trans "City" %}</td>
-                <td>{{ account.company_city }}</td>
+                <td>{{ account.city }}</td>
             </tr>
             <tr>
                 <th>{% trans "State" %}</td>
-                <td>{{ account.company_state }}</td>
+                <td>{{ account.state }}</td>
             </tr>
             <tr>
                 <th>{% trans "Zip" %}</td>
-                <td>{{ account.company_zip4 }}</td>
+                <td>{{ account.zip4 }}</td>
             </tr>
             <tr>
                 <th>{% trans "Phone" %}</td>
-                <td>{{ account.company_phone }}</td>
+                <td>{{ account.phone }}</td>
             </tr>
             <tr>
                 <th>{% trans "Fax" %}</td>
-                <td>{{ account.company_fax }}</td>
+                <td>{{ account.fax }}</td>
             </tr>
             <tr>
                 <th>{% trans "Company email" %}</td>
-                <td>{{ account.company_email }}</td>
+                <td>{{ account.email }}</td>
             </tr>
             <tr>
                 <th>{% trans "Account representative" %}</td>
-                <td>{{ account.account_repr }}</td>
+                <td>{{ account.account_rep_name }}</td>
             </tr>
             <tr>
                 <th>{% trans "Locations number" %}</td>
-                <td>{{ account.locations_num }}</td>
+                <td>{{ account.num_locations }}</td>
             </tr>
             <tr>
                 <th>{% trans "Notes" %}</td>
-                <td>{{ profile.content_object.notes|linebreaksbr }}</td>
+                <td>{{ account.notes|linebreaksbr }}</td>
             </tr>
             {% endwith %}
         </table>
