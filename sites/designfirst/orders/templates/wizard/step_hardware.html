@@ -4,6 +4,34 @@
 {% block extra-head %}
 	{{block.super}}
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/field_images.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+           function hide_on_radio_select(radio_groupname, trigger_selector, input_selector) {
+                var trigger = $(trigger_selector),
+                    field = $(input_selector).parents('.fs_row');
+
+                $("input[name=" + radio_groupname + "]").change(function(){
+                    if (trigger.attr('checked')) {
+                        field.hide();
+                    } else {
+                        field.show();
+                    }
+                }).change();
+            }
+
+            hide_on_radio_select(
+                'door_handle_type',
+                '#id_door_handle_type_0',
+                '#id_door_handle_model'
+            );
+
+            hide_on_radio_select(
+                'drawer_handle_type',
+                '#id_drawer_handle_type_0',
+                '#id_drawer_handle_model'
+            );
+        });
+    </script>
 {% endblock %}
 
 {% block wizard-content %}
