@@ -2,6 +2,13 @@
 <fieldset id="fields_{{fieldset.id}}"{% if fieldset.styles %} class="{{fieldset.styles}}"{% endif %}>
 	<!-- fieldset.name -->
 	{% if fieldset.name %}<legend>{{fieldset.name}}</legend>{% endif %}
+	<div class="fs_images">
+		<!-- start fieldset.image -->
+		{% if fieldset.image %}
+            <img id="fieldset_img_{{fieldset.id}}" src="{{fieldset.image}}" style="float: right;">
+        {% endif %}
+	     <!-- end fieldset.image -->
+	</div>
 
 	<!-- fieldset fields -->
 	{% for field in fieldset %}		
@@ -27,16 +34,10 @@
 				 {% if field.help_text %}{{field.help_text}}{% endif %}
 				 <!-- end field help text -->
 			</div>
-			<div class="fs_images">
-				<!-- start fieldset.image -->
-				{% if fieldset.image %}
-				<img id="fieldset_img_{{fieldset.id}}" src="{{fieldset.image}}" style="float: right;">
-				{% endif %}
-				<!-- end fieldset.image -->
-			</div>
 		</div>
 
 		<!-- end field {{field.name}} -->
 	{% endfor %}
+
 </fieldset>
 {% endfor %}
