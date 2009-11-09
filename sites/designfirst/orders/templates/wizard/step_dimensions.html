@@ -2,9 +2,14 @@
 
 {% block extra-head %}
 {{block.super}}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/field_images_hover.js"></script>
 <script>
+	var GROUPS = [
+       	['dimension_style']
+	];
 
- 
+
+
     var stack_images = {{stack_images|safe}};
 	var standard_sizes = {{standard_sizes|safe}};
 
@@ -59,6 +64,7 @@
 		// 		return false;
 		// 	}
 		// })
+        field_images_hover(GROUPS, "dimensions", "{{ MEDIA_URL }}");
 
 		//Stack/Staggering images
 		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/dimensions.png">'
