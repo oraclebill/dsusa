@@ -15,5 +15,9 @@ $(function(){
 		$('img#fieldset_img_'+fs_id).attr('src', img);
     }
 	$('#wizard_content input:visible').focus(set_image);
-	$('#wizard_content input[type=radio]:visible, #wizard_content input[type=checkbox]:visible').change(set_image);
+	$('#wizard_content input[type=radio]:visible, #wizard_content input[type=checkbox]:visible').change(function() {
+        if ($(this).attr('checked')) {
+            set_image(this);
+        }
+    });
 });
