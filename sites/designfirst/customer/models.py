@@ -29,7 +29,7 @@ class Dealer(models.Model):
         (CANCELLED, _('Cancelled')), (ARCHIVED, _('Archived') ),
     )
     status  = models.CharField(_('Account Status'), max_length=1, choices=ACCOUNT_STATUSES, default=PENDING)    
-    internal_name = models.SlugField(_('Account Code')) # e.g. 'dds-010-...'
+    internal_name = models.SlugField(_('Account Code'), blank=True) # e.g. 'dds-010-...'
     legal_name = models.CharField(_('Business Name'), max_length=50)
     address_1 = models.CharField(_('Address 1'), max_length=40, blank=True, null=True)
     address_2 = models.CharField(_('Address 2'), max_length=40, blank=True, null=True)
@@ -38,7 +38,7 @@ class Dealer(models.Model):
     zip4 = models.CharField(_('Zip Code'), max_length=10, blank=True, null=True)
     phone = models.CharField(_('Phone'), max_length=20, blank=True)
     fax = models.CharField(_('Fax'), max_length=20, blank=True)
-    email = models.EmailField(_('EMail'), blank=True)
+    email = models.EmailField(_('Email'), blank=True)
     
     account_rep_name = models.CharField(_('Account Rep Name'), max_length=30, blank=True, null=True)
     account_rep = models.ForeignKey(User, blank=True, null=True, editable=False, related_name='rep_for_dealers', verbose_name=_('Account Rep'))
@@ -57,15 +57,21 @@ class Dealer(models.Model):
         except UserProfile.DoesNotExist:
             return None
     primary_contact = property(_primary_contact)
-        
+
+
 class UserProfile(models.Model):
     """
     Site profile associating this user with either a customer account or designer profile.
     
     """    
-    user = models.ForeignKey(User, primary_key=True, unique=True)
+    user = models.ForeignKey(User, unique=True,
+                                                null=True, blank=True)
     account = models.ForeignKey(Dealer)
     primary = models.BooleanField(_('Primary Contact?'))
+
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    email = models.EmailField(_('e-mail address'), blank=True)
 
     def save(self, force_insert=False, force_update=False):
         """
@@ -80,7 +86,16 @@ class UserProfile(models.Model):
                 super(UserProfile, existing_primary).save()
         else:
             self.primary = True
-        super(UserProfile, self).save(force_insert=force_insert, force_update=force_update)        
+        super(UserProfile, self).save(force_insert=force_insert, force_update=force_update)
+
+        if self.user:
+            if self.first_name:
+                self.user.first_name = self.first_name
+            if self.last_name:
+                self.user.last_name = self.last_name
+            if self.email:
+                self.user.email = self.email
+            self.user.save()
     
     # for profiles module
     def get_absolute_url(self):

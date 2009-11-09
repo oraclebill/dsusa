@@ -2,6 +2,8 @@
 
 {% block extra-head %}
 {{block.super}}
+{{ form.media }}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/field_images_hover.js"></script>
 <script>
 $(function(){
 	//Fixed for tab navigation for 1st radiobutton (in last radio-button-group)
@@ -11,7 +13,7 @@ $(function(){
 			wizard_go_to('_next_')
 			return false;
 		}
-	})
+	});
 	
 	var GROUPS = [
        	['diagonal_corner_wall', 'diagonal_corner_wall_shelv'], 
@@ -20,65 +22,9 @@ $(function(){
        	['degree90_corner_base', 'degree90_corner_base_shelv']
 	];
 
-	function _group(name) {
-		for (var k = 0; k < GROUPS.length; k++)
-			for (var i = 0; i < GROUPS[k].length; i++)
-				if (GROUPS[k][i] == name)
-					return GROUPS[k]
-		alert('Field not found - ' + name)				
-	}
+    field_images_hover(GROUPS, "corner_cabinet", "{{ MEDIA_URL }}");
 
-	function image_for(element) {
-		group = _group(element.name)
-		var img_path = '';
-		for (var i = 0; i < group.length; i++) {
-			var value = false;
-			if (element.name == group[i])
-				value = $(element).val()
-			else
-				value = $("input[name='"+group[i]+"']:checked").val()
-			if (img_path.length > 0)
-				img_path += '_'
-			img_path += value
-		}
-		img_path = '{{MEDIA_URL}}wizard/corner_cabinet/' + group[0] + '/' + img_path + '.png'
-		return img_path;
-	}
-
-
-	function update_pic(input_el, temporary) {
-		var fs_id = get_fieldset_id(input_el)
-		var img = image_for(input_el)
-		var $image = $('img#fieldset_img_'+fs_id)
-		$image.attr('src', img)
-		if (!temporary)
-			$image.data('original', img)
-		
-	}
-
-	function reset_img(id) {
-		$image = $('img#fieldset_img_'+id)
-		$image.attr('src', $image.data('original'))
-	}
-
-	$('#wizard_content li label').hover(
-			function(){
-				update_pic($(this).find('input').get(0), true)
-			}, 
-			function(){
-				var fs_id = get_fieldset_id($(this).get(0))
-				reset_img(fs_id)
-			}
-	)
-
-	$('#wizard_content input:radio:checked').each(function(){
-		update_pic(this)
-	})
-
-	$('#wizard_content input:radio').click(function(){
-		update_pic(this)
-	})
-})
+});
 </script>
 {% endblock %}
 

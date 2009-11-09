@@ -29,7 +29,7 @@ class CheckedTextWidget(forms.widgets.MultiWidget):
         css = {
             'all': ('checkedtext.css',)
         }
-        js = ('jquery-1.3.2.min.js', 'checkedtext.js')
+        js = ('js/jquery-1.3.2.min.js', 'js/checkedtext.js')
         
     def __init__(self, attrs=None):
         widgets = [forms.fields.CheckboxInput, forms.fields.TextInput]
@@ -59,7 +59,7 @@ class CheckedTextWidget(forms.widgets.MultiWidget):
         if id_:
             final_attrs = dict(final_attrs, id='%s' % id_)
         if not value[0]:
-            final_attrs = dict(final_attrs, disabled='disabled')            
+            final_attrs = dict(final_attrs,  style='display: none;')
         output.append(charfield.render(name + '_txt', value[1], final_attrs))
         return mark_safe(self.format_output(output))
         

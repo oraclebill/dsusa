@@ -22,6 +22,10 @@
             <form id="form1" name="form1" class="wufoo topLabel page1" autocomplete="off"
 	              enctype="multipart/form-data" method="post" action=".">
 
+                <table>
+                    {{ form }}
+                </table>
+
                 <div class="info">
 	                <h2>DSUSA Dealer Design Service Registration</h2>
 	                <div>Dealers can use this form to begin the dealer registration process for DSUSA's Dealer Design Services. Once your contact information has been verified a sales rep will contact you to complete the process. <br />
@@ -59,8 +63,13 @@
                         </label>
                         <div>
                             <!-- <input id="Field21" name="email" type="text" class="field text medium" value="" maxlength="255" tabindex="4" />  -->
+<<<<<<< HEAD
                             {{ form.email }}
                             {{ form.email.errors }}
+=======
+                            {{ form.user_email }}
+                            {{ form.user_email.errors }}
+>>>>>>> wizard-ui-fixes
                         </div>
                         <p class="instruct" id="instruct21"><small>A valid email address.<br />
                                 <br />
@@ -81,8 +90,13 @@
                         </label>
                         <div>
                             <!-- <input id="Field4" name="company_name" type="text" class="field text medium" value="" maxlength="255" tabindex="5" /> -->
+<<<<<<< HEAD
                             {{ form.company_name }}
                             {{ form.company_name.errors }}
+=======
+                            {{ form.legal_name }}
+                            {{ form.legal_name.errors }}
+>>>>>>> wizard-ui-fixes
                         </div>
                         <p class="instruct" id="instruct4"><small>Your organizations legal business name. </small></p>
                     </li>
@@ -95,6 +109,7 @@
                         </label>
                         <div>
                             <span class="full">
+<<<<<<< HEAD
                                 <!-- <input id="Field12" name="company_address_2" type="text" class="field text addr" value="" tabindex="6" /> -->
                                 {{ form.company_address_1 }}
                                 {{ form.company_address_1.errors }}
@@ -122,6 +137,35 @@
                                 <!-- <input id="Field16" name="company_zip4" type="text" class="field text addr" value="" maxlength="15" tabindex="10" /> -->
                                 {{ form.company_zip4 }}
                                 {{ form.company_zip4.errors }}
+=======
+                                <!-- <input id="Field12" name="address_2" type="text" class="field text addr" value="" tabindex="6" /> -->
+                                {{ form.address_1 }}
+                                {{ form.address_1.errors }}
+                                <label for="Field12">Street Address</label>
+                            </span>
+                            <span class="full">
+                                <!-- <input id="Field13" name="address_2" type="text" class="field text addr" value="" tabindex="7" /> -->
+                                {{ form.address_2 }}
+                                {{ form.address_2.errors }}
+                                <label for="Field13">Address Line 2</label>
+                            </span>
+                            <span class="left">
+                                <!-- <input id="Field14" name="city" type="text" class="field text addr" value="" tabindex="8" /> -->
+                                {{ form.city }}
+                                {{ form.city.errors }}
+                                <label for="Field14">City</label>
+                            </span>
+                            <span class="right">
+                                <!-- <input id="Field15" name="state" type="text" class="field text addr" value="" tabindex="9" /> -->
+                                {{ form.state }}
+                                {{ form.state.errors }}
+                                <label for="Field15">State / Province / Region</label>
+                            </span>
+                            <span class="left">
+                                <!-- <input id="Field16" name="zip4" type="text" class="field text addr" value="" maxlength="15" tabindex="10" /> -->
+                                {{ form.zip4 }}
+                                {{ form.zip4.errors }}
+>>>>>>> wizard-ui-fixes
                                 <label for="Field16">Postal / Zip Code</label>
                             </span>
                             <span class="right">
@@ -138,8 +182,13 @@
                         </label>
                         <div>
                             <!-- <input id="Field150" name="account_repr" type="text" class="field text medium" value="" maxlength="255" tabindex="18" /> -->
+<<<<<<< HEAD
                             {{ form.account_repr }}
                             {{ form.account_repr.errors }}
+=======
+                            {{ form.account_rep_name }}
+                            {{ form.account_rep_name.errors }}
+>>>>>>> wizard-ui-fixes
                         </div>
                         <p class="instruct" id="instruct150"><small>Your account rep can help you get started, and provide detailed information about the service.</small></p>
                     </li>
@@ -151,7 +200,11 @@
                         </label>
                         <div>
                             <!-- <input id="Field38" name="locations_num" type="text" class="field text medium" value="" maxlength="255" tabindex="19" onkeyup="validateRange(38, 'digit');" /> -->
+<<<<<<< HEAD
                             {{ form.locations_num }}
+=======
+                            {{ form.num_locations }}
+>>>>>>> wizard-ui-fixes
                             {{ form.locations_num.errors }}
                             <label for="Field38">Maximum Allowed: <var id="rangeMaxMsg38">25</var> digits.&nbsp;&nbsp;&nbsp; <em class="currently">Currently Used: <var id="rangeUsedMsg38">0</var> digits.</em></label>
                         </div>

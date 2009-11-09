@@ -15,7 +15,7 @@ def fieldset_fields(fieldsets):
     for fset in fieldsets:
         fieldlist.extend( fset[1]['fields']) # dups possible..
     return fieldlist
-    
+
 class ManufacturerForm(forms.ModelForm, FieldsetForm):
     class Media:
         css = {'all': ('css/jquery.autocomplete.css',)}
@@ -109,7 +109,9 @@ class DimensionsForm(forms.ModelForm, FieldsetForm):
         model = WorkingOrder
         fieldsets = [
             ('Stacking and Staggering Options', {
-                'fields': ['dimension_style'] }),
+                'fields': ['dimension_style'],
+                'image': NONE_IMG,
+            }),
             ('Standard Sizes', {
                 'fields': ['standard_sizes'] }),
             ('Wall Cabinets', {
