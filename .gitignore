@@ -1,5 +1,5 @@
 .project
-.pydev
+.pydev*
 *.pyc
 *.*~
 sites/designfirst/settings_local.py
