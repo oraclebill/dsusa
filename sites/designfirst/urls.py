@@ -15,14 +15,6 @@ admin.autodiscover()
 # import customer.forms
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^designfirst/', include('designfirst.foo.urls')),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     (r'', include("customer.urls")),    
     url(r'^profile/$',
         'designfirst.views.profile_edit',
@@ -30,8 +22,9 @@ urlpatterns = patterns('',
     (r'^products/', include("product.urls")),    
     (r'^orders/',   include("orders.urls")),
     (r'^barcode/',  include("barcode.urls")),        
+    (r'^notification/',  include("notification.urls")),        
+    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/',    include(admin.site.urls)),
-    # (r'^60b9f188a8a27ce69fcba9ee63b74b4e2fad2b3d/', include('paypal.standard.ipn.urls')),
 )
 
 urlpatterns += patterns('',

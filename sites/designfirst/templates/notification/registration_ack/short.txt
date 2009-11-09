@@ -1,0 +1,1 @@
+Registration received for {{ name }}

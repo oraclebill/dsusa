@@ -1,0 +1,1 @@
+DSUSA has received a fax from {{ order.owner }} on {{ document.timestamp|date }} at {{ document.timestamp|time }} ({{ document.id }})

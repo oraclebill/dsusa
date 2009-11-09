@@ -29,8 +29,9 @@ DesignFirst Customer Dashboard
 				<td> {{ order.project_name }} </td> 
 				<td> {{ order.updated }} {{ order.updated|date:"T" }} </td>
 				<td>
-    	       		<a href="{% url customer.views.edit_order_detail order.id %}">Update</a> 
-    				<a href="{% url customer.views.dealer_submit_order order.id %}">Submit</a>
+    	       		{# <a href="{% url customer.views.edit_order_detail order.id %}">Update</a> #} 
+    	       		<a href="{% url order-wizard order.id %}">Update</a> 
+    				<a href="{% url order-wizard-step order.id, "order_review" %}">Submit</a>
 				</td>
 		     </tr>
 		     {% endfor %}

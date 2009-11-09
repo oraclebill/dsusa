@@ -22,12 +22,11 @@ from accounting.models import register_purchase
 from models import Product,CartItem
 from customer.models import Invoice 
     
-log = logging.getLogger('product.views')
-log.addHandler(logging.StreamHandler())
+logger = logging.getLogger('product.views')
 
 @transaction.commit_on_success
 def paypal_success_callback(sender, **kwargs):
-    log.debug('paypal_success_callback: sender=%s, kwargs=%s' % (sender, kwargs))
+    logger.debug('paypal_success_callback: sender=%s, kwargs=%s' % (sender, kwargs))
     invnum = sender['invnum']    
     invoice = Invoice.objects.get(pk=invnum)
     invoice.status = Invoice.PAID
@@ -37,7 +36,7 @@ payment_was_successful.connect(paypal_success_callback)
         
 @transaction.commit_on_success
 def paypal_failure_callback(sender, **kwargs):
-    log.debug('paypal_failure_callback: sender=%s, kwargs=%s' % (sender, kwargs))
+    logger.debug('paypal_failure_callback: sender=%s, kwargs=%s' % (sender, kwargs))
     invnum = sender['invnum']    
     invoice = Invoice.objects.get(pk=invnum)
     invoice.status = Invoice.CANCELLED
@@ -131,7 +130,7 @@ def review_and_process_payment_info(request):
         # if there's no NEW invoice, create one from current cart
         try:
             invoice = account.invoice_set.get(status=Invoice.NEW)
-            log.debug('review_and_process_payment_info: [%s] found pre-existing new invoice [%s]' % (request.session.session_key, invoice.id))
+            logger.debug('review_and_process_payment_info: [%s] found pre-existing new invoice [%s]' % (request.session.session_key, invoice.id))
         except Invoice.DoesNotExist:
             sig = sha1(repr(datetime.now())).hexdigest()
             invoice = Invoice(id=sig, customer=account, status=Invoice.NEW)
@@ -142,7 +141,7 @@ def review_and_process_payment_info(request):
                 item.delete()
             # note - we are in transaction context.. save probably has no effect...
             invoice.save()    
-            log.debug('review_and_process_payment_info: [%s] created new invoice [%s]' % (request.session.session_key, invoice.id))
+            logger.debug('review_and_process_payment_info: [%s] created new invoice [%s]' % (request.session.session_key, invoice.id))
         #
         # if this is a post, we try to process the invoice.
         if request.method == "POST" or (request.method == "GET" and 'express' in request.GET):        
@@ -165,7 +164,7 @@ def review_and_process_payment_info(request):
         transaction.commit()
     #    
     view_func.context = locals()
-    log.debug('review_and_process_payment_info: session #%s: payment request for invoice [%s] submitted to paypal with item=%s, context=%s' % (
+    logger.debug('review_and_process_payment_info: session #%s: payment request for invoice [%s] submitted to paypal with item=%s, context=%s' % (
         request.session.session_key, 
         invoice,
         view_func.item,

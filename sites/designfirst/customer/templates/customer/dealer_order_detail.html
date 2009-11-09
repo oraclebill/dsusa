@@ -181,7 +181,11 @@ DesignFirst - Design Order
     			     <tr>
     			         <td>{{ attachment.timestamp|date }} - {{ attachment.timestamp|time }}</td>
     			         <td>{{ attachment.order.id }}-{{ attachment.id }}</td>
+						 {% if file %}
     			         <td><a href="{{ attachment.file.url }}">{{ attachment }}</a></td>
+						 {% else %}
+    			         <td>(no file)</td>
+						 {% endif %}
     			         <td>{{ attachment.get_type_display }}</td>
     			         <td><a href="{% url order-wizard-step attachment.order.id,"diagrams" %}?delete={{attachment.id}}">delete</a></td>
 		            </tr>			         

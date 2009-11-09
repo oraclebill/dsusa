@@ -1,0 +1,128 @@
+<html>
+    <head>
+        <meta name="generator" content="HTML Tidy, see www.w3.org">
+        <meta http-equiv="Content-Type" content=
+        "text/html; charset=UTF-8">
+        <base target="_top">
+<style type="text/css">
+            body {
+                font-family: Times;
+                font-size: 10.0pt;
+                line-height: normal;
+                background-color: #ffffff;
+            }
+        
+</style>
+
+        <title>Faxed Document Reciept</title>
+    </head>
+
+    <body>
+        <h1>Dealers Design Service</h1>
+
+        <h2>Fax Confirmation</h2>
+
+        <div>
+            <p>Thank you for using Design Service USA's automated
+            fax document processor. We have recieved a new faxed
+            document that has been associated with your account.
+            Details are included below.</p>
+
+            <p>DSUSA's automated fax document processing system
+            uses barcode recognition to correlate the documents we
+            receive with customer orders and accounts. By using the
+            special coded fax cover sheet that we generate for you
+            when you create or submit your order, our system can
+            quickly and reliably attach your diagrams and other
+            documents to your design order.</p>
+
+            <p>However, re-using old cover sheets or sending
+            documents without the proper cover sheet can introduce
+            errors and/or delays in processing, so please review
+            the summary below carefully and contact support if
+            there are any issues or discrepancies.</p>
+
+            <p>Thanks for your business!<br>
+             The Design Service USA Staff</p>
+        </div>
+
+        <h3>Document Details</h3>
+
+        <div>
+            <table border="1" bordercolor="#000000" cellpadding=
+            "10" cellspacing="2" class="" id="nmnu" style=
+            "TEXT-ALIGN:right">
+                <tbody>
+                    <tr>
+                        <td><b>Document ID</b> </td>
+
+                        <td>{{ document.id }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Date Received</b> </td>
+
+                        <td>{{ document.timestamp }}<br>
+                         </td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Page Count</b> </td>
+
+                        <td>{{ document.pagecount }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Order Details</h3>
+
+            <table border="1" bordercolor="#000000" cellpadding=
+            "10" cellspacing="2" class="" id="nmnu" style=
+            "TEXT-ALIGN:right">
+                <tbody>
+                    <tr>
+                        <td><b>Order ID<br>
+                        </b> </td>
+
+                        <td>{{ order.id }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Project</b> </td>
+
+                        <td>{{ order.project_name }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Presentation Pack?</b> </td>
+
+                        <td>{{ order.color_views }}<br>
+                         </td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Rush?</b> </td>
+
+                        <td>{{ order.rush|yesno }}
+                         </td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Submitted By</b> </td>
+
+                        <td>{{ order.owner }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div>
+        	<br>
+            Thanks for using Design Service USA!<br>
+            The Dealers Design Service Team
+        </div>
+        
+    </body>
+</html>
+

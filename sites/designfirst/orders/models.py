@@ -14,6 +14,9 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 from utils.pdf import pdf2ppm
 from utils.fields import DimensionField
+from signals import status_changed
+
+logger = logging.getLogger('orders.models')
 
 PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
 PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
@@ -50,26 +53,23 @@ def preview_upload_location(preview_obj, filename):
         str(filename)
     )
 
-
-log = logging.getLogger('orders.models')
-log.addHandler(logging.StreamHandler())
-
 class WorkingOrder(models.Model):
     """
     This is a temporary object used for storing data 
     when  user goes step to step in orders
     """
     #Basic stuff
-    DEALER_EDIT, SUBMITTED, ASSIGNED = range(1,4)
+    DEALER_EDIT, SUBMITTED, ASSIGNED, COMPLETED = range(1,5) #TODO: change from number to code
     STATUS_CHOICES = (
         (DEALER_EDIT, 'Dealer Editing'),
         (SUBMITTED, 'Submitted'),
         (ASSIGNED, 'Assigned'),
+        (COMPLETED, 'Completed'),
     )
     
     owner = models.ForeignKey(User)
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
-    submitted = models.DateTimeField(_('Submitted On'), auto_now=False, editable=False)
+    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
     
     #Submit options
@@ -118,6 +118,7 @@ class WorkingOrder(models.Model):
         (BIRCH, 'Birch'), (MDF, 'MDF'), (STAINLESS, 'Stainless Steel'), (PERMAFOIL, 'Permafoil'), 
         (GLASS, 'Glass'),
     )
+    
     #Manufacturer page (cabinetry options)
     manufacturer    = models.CharField(_('Manufacturer'), max_length=150, blank=True, null=True)
     product_line    = models.CharField(_('Product Line'), max_length=150, blank=True, null=True)
@@ -204,6 +205,25 @@ class WorkingOrder(models.Model):
     range_hood = models.BooleanField(_('Range Hood'), )
     posts = models.BooleanField(_('Posts'), )
     
+    class Meta:
+        verbose_name = 'order'
+        verbose_name_plural = 'orders'
+        
+    def save(self, force_insert=False, force_update=False):
+        logger.debug('saving ... %s' % self)
+        changed = False
+        old_status = None
+        new_status = self.status
+        try:
+            old_status = self._base_manager.get(pk=self.id).status
+            changed = new_status != old_status
+        except self.DoesNotExist:
+            changed = True                
+        super(WorkingOrder,self).save(force_insert, force_update)
+        if changed:
+            status_changed.send(self, old=old_status, new=new_status)
+            
+        
     def __unicode__(self):
         return self.project_name
     
@@ -281,42 +301,52 @@ class Attachment(models.Model):
             (PHOTO, _('Photograph')),
             (OTHER, _('Other')),)
     UPLOADED, FAXED = ('U','F')
-    ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Upload')),(FAXED, _('Faxed')),)
+    ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Uploaded')),(FAXED, _('Faxed')),)
     
     order = models.ForeignKey(WorkingOrder, related_name='attachments')
-    type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES, default=FLOORPLAN)
-    file = models.FileField(_('File'), upload_to=attachment_upload_location, storage=APPSTORAGE)
-    source = models.CharField(_('Source'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=UPLOADED, editable=False)
+    type = models.PositiveSmallIntegerField(_('type'), choices=TYPE_CHOICES, default=FLOORPLAN)
+    file = models.FileField(_('file'), upload_to=attachment_upload_location, storage=APPSTORAGE)
+    source = models.CharField(_('attachment method'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=FAXED, editable=False)
     timestamp = models.DateTimeField(_(''), auto_now_add=True)
     
     def __unicode__(self):
-        return os.path.basename(self.file.path)
-            
-    def first_preview(self):
-        if self.is_pdf() and self.attachpreview_set.all():
-            return self.attachpreview_set.all()[0].file.url
-        return self.file.url
+        return self.file and os.path.basename(self.file.path) or '(no file)'
+
+
+    @property
+    def is_multipage(self):
+        if self.file:
+            filename = self.file.name.lower()
+            return filename.endswith('.pdf') or filename.endswith('.tif') or filename.endswith('.tiff')
+        return False
     
+    @property
+    def first_preview(self):
+        if self.is_multipage:
+            return self.attachpreview_set.all()[0].file.url
+        return self.file and self.file.url or None
+    
+    @property
     def previews(self):
-        if self.is_pdf():
+        if self.is_multipage:
             for f in self.attachpreview_set.count():
                 yield {'url':f.file.url, 'page': f.page}
         else:
-            yield {'url':self.file.url, 'page': 1}
+            yield {'url':self.file and self.file.url or None, 'page': 1}
     
+    @property
     def page_count(self):
-        if self.is_pdf():
+        if self.is_multipage:
             return self.attachpreview_set.all().count()
         return 1
     
-    def is_pdf(self):
-        return self.file.name.lower().endswith('.pdf')
-    
     def generate_pdf_previews(self):
+        if not self.file:
+            raise RuntimeError('Attempt to generate previews for empty attachment (null file )')
         try:
             pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
         except OSError:
-            log.error('OSError: pdf generation failed for %s' % self.file.path)
+            logger.error('OSError: pdf generation failed for %s' % self.file.path)
             self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
 
     
