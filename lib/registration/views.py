@@ -3,7 +3,6 @@ Views which allow users to create and activate accounts.
 
 """
 
-
 from django.conf import settings
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
@@ -12,77 +11,50 @@ from django.views.generic.list_detail import object_list
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 
-from registration.forms import RegistrationForm
+from registration.forms import RegistrationForm, ActivateAndRegisterForm
 from registration.models import RegistrationProfile
 
 from django.views.decorators.http import require_POST
 
 
-def activate(request, activation_key,
-             template_name='registration/activate.html',
-             extra_context=None):
-    """
-    Activate a ``User``'s account from an activation key, if their key
-    is valid and hasn't expired.
-    
-    By default, use the template ``registration/activate.html``; to
-    change this, pass the name of a template as the keyword argument
-    ``template_name``.
-    
-    **Required arguments**
-    
-    ``activation_key``
-       The activation key to validate and use for activating the
-       ``User``.
-    
-    **Optional arguments**
-       
-    ``extra_context``
-        A dictionary of variables to add to the template context. Any
-        callable object in this dictionary will be called to produce
-        the end result which appears in the context.
-    
-    ``template_name``
-        A custom template to use.
-    
-    **Context:**
-    
-    ``account``
-        The ``User`` object corresponding to the account, if the
-        activation was successful. ``False`` if the activation was not
-        successful.
-    
-    ``expiration_days``
-        The number of days for which activation keys stay valid after
-        registration.
-    
-    Any extra variables supplied in the ``extra_context`` argument
-    (see above).
-    
-    **Template:**
-    
-    registration/activate.html or ``template_name`` keyword argument.
-    
-    """
+def activate_and_register(request, activation_key,
+                          form_class=ActivateAndRegisterForm,
+                          template_name='registration/activate_and_register.html',
+                          success_url=None):
     activation_key = activation_key.lower() # Normalize before trying anything with it.
-    account, redirect_to = RegistrationProfile.objects.activate_user(activation_key)
+    profile = RegistrationProfile.objects.key_valid(activation_key)
+    if not profile:
+        return render_to_response('registration/key_expired.html',
+            context_instance=RequestContext(request)
+        )
 
-    if account and getattr(settings, 'REGISTRATION_AUTOLOGIN', False):
-        account.backend='django.contrib.auth.backends.ModelBackend'
-        login(request, account)
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=profile.content_object.email,
+                password=form.cleaned_data['password1'],
+            )
+            user.first_name = profile.content_object.first_name
+            user.last_name = profile.content_object.last_name
+            user.save()
+            RegistrationProfile.objects.activate(activation_key)
+            user_profile = profile.content_object
+            user_profile.user = user
+            user_profile.save()
 
-    if redirect_to:
-        return redirect(redirect_to)
+            user.backend='django.contrib.auth.backends.ModelBackend'
+            login(request, user)
 
-    if extra_context is None:
-        extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
+            return redirect(success_url or '/')
+    else:
+        form = form_class()
     return render_to_response(template_name,
-                              { 'account': account,
-                                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },
-                              context_instance=context)
+                              {  'form': form,
+                                 'profile': profile },
+                              context_instance=RequestContext(request)
+                              )
 
 
 def register(request, success_url=None,
@@ -183,7 +155,9 @@ def unauthorized_profiles_list(request):
 
 @require_POST
 @permission_required("registration.can_authorize")
-def authorize(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
-    RegistrationProfile.objects.authorize(user)
+def authorize(request, profile_id, email=lambda p: p.content_object.email):
+    profile = get_object_or_404(RegistrationProfile, pk=profile_id)
+    RegistrationProfile.objects.authorize(profile)
+    if email and callable(email):
+        RegistrationProfile.objects.send_activation_email(profile, email(profile))
     return redirect('registration_unauthorized')

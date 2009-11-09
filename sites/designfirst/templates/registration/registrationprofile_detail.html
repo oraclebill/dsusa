@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Registration profile details" %}{% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		<h1>{% trans "Registration profile of " %}{{ profile.user.first_name }} {{ profile.user.last_name }}</h1>
+        <table>
+            <tr>
+                <th>{% trans "Email" %}</td>
+                <td><a href="mailto:{{ profile.content_object.email }}">{{ profile.content_object.email }}</a></td>
+            </tr>
+            {% with profile.content_object.account as account %}
+            <tr>
+                <th>{% trans "Legal name" %}</td>
+                <td>{{ account.company_name }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Company address" %}</td>
+                <td>{{ account.company_address_1 }}</td>
+            </tr>
+            <tr>
+                <th></td>
+                <td>{{ account.company_address_2 }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "City" %}</td>
+                <td>{{ account.company_city }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "State" %}</td>
+                <td>{{ account.company_state }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Zip" %}</td>
+                <td>{{ account.company_zip4 }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Phone" %}</td>
+                <td>{{ account.company_phone }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Fax" %}</td>
+                <td>{{ account.company_fax }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Company email" %}</td>
+                <td>{{ account.company_email }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Account representative" %}</td>
+                <td>{{ account.account_repr }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Locations number" %}</td>
+                <td>{{ account.locations_num }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Notes" %}</td>
+                <td>{{ profile.content_object.notes|linebreaksbr }}</td>
+            </tr>
+            {% endwith %}
+        </table>
+        <form method="post" action="{% url registration_authorize profile.pk %}">
+            <input type="submit" value="{% trans "Authorize" %}" />
+        </form>
+	</div> 
+
+{% endblock %}
