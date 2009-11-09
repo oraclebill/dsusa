@@ -17,54 +17,57 @@
 		return '<input type="text" name="'+name+'" id="'+id+'" value="'+value+'">'
 	}
 
-	function select_html(id, name, value) {
+	function select_html(id, name, value, choices) {
+        if (!choices) {
+            choices = standard_sizes;
+        }
 		var options = '<option></option>'
-		for (var i=0; i<standard_sizes.length; i++) {
+		for (var i=0; i<choices.length; i++) {
 			var selected = ''
 			if (value=='' && i==0)
 				selected = ' selected="selected"'
-			else if (value == standard_sizes[i])
+			else if (value == choices[i])
 				selected = ' selected="selected"'
-			options += '<option value="'+standard_sizes[i]+'"'+selected+'> '+standard_sizes[i]+'&#148; </option>'
+			options += '<option value="'+choices[i]+'"'+selected+'> '+choices[i]+'&#148; </option>'
 		}
 		return '<select name="'+name+'" id="'+id+'">'+options+'</select>'
 	}
 
-	function replace_widget(id, name, standard) {
+	function replace_widget(id, name, standard, choices) {
 		var validation = $('#'+id).data('validation')//Validatoin fix
 		var value = $('#'+id).val()
 		if (standard)
-			html = select_html(id, name, value)
+			html = select_html(id, name, value, choices);
 		else
-			html = input_html(id, name, value)
+			html = input_html(id, name, value);
 		$('#'+id).replaceWith(html)
 		$('#'+id).data('validation', validation)
 	}
 
 	function toggle_fields(standard) {
-		// replace_widget('id_wall_cabinet_height', 'wall_cabinet_height', standard)
-		// replace_widget('id_wall_cabinet_depth', 'wall_cabinet_depth', ['12"','24"'])
-		// replace_widget('id_base_cabinet_height', 'base_cabinet_height', ['34.5"'])
-		// replace_widget('id_base_cabinet_depth', 'base_cabinet_depth', ['24"'])
-		// replace_widget('id_vanity_cabinet_height', 'vanity_cabinet_height', ['30"', '34.5"'])
-		// replace_widget('id_vanity_cabinet_depth', 'vanity_cabinet_depth', ['24.5"'])
+		replace_widget('id_wall_cabinet_height', 'wall_cabinet_height', standard);
+		replace_widget('id_wall_cabinet_depth', 'wall_cabinet_depth', standard, ['12','24']);
+		replace_widget('id_base_cabinet_height', 'base_cabinet_height', standard,['34.5']);
+		replace_widget('id_base_cabinet_depth', 'base_cabinet_depth', standard, ['24']);
+		replace_widget('id_vanity_cabinet_height', 'vanity_cabinet_height', standard, ['30', '34.5']);
+		replace_widget('id_vanity_cabinet_depth', 'vanity_cabinet_depth', standard, ['24.5']);
 	}
 	
 	$(function(){
-		// toggle_fields($('#id_standard_sizes').get(0).checked)
-		// 
-		// $('#id_standard_sizes').change(function() {
-		// 	toggle_fields(this.checked)
-		// })
-		// 
-		// //Fixing navigation
-		// $('#id_depth').keydown(function(event){
-		// 	if (event.keyCode == KEY_TAB && !event.shiftKey) {
-		// 		wizard_go_to('_next_');
-		// 		return false;
-		// 	}
-		// })
         field_images_hover(GROUPS, "dimensions", "{{ MEDIA_URL }}");
+		toggle_fields($('#id_standard_sizes').get(0).checked)
+		
+		$('#id_standard_sizes').change(function() {
+			toggle_fields(this.checked)
+		})
+		
+		//Fixing navigation
+		$('#id_depth').keydown(function(event){
+			if (event.keyCode == KEY_TAB && !event.shiftKey) {
+				wizard_go_to('_next_');
+				return false;
+			}
+		})
 
 		//Stack/Staggering images
 		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/dimensions.png">'
