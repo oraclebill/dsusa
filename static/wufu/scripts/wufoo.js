@@ -21,17 +21,28 @@ function disableSubmitButton() {
 // for radio and checkboxes, they have to be cleared manually, so they are added to the
 // global array highlight_array so we dont have to loop through the dom every time.
 function initializeFocus(){
-	fields = getElementsByClassName(document, "*", "field");
+	// fields = getElementsByClassName(document, "*", "field");
+	fields = document.getElementsByTagName("input"); // getElementsByClassName(document, "");
 	for(i = 0; i < fields.length; i++) {
-		if(fields[i].type == 'radio' || fields[i].type == 'checkbox') {
+		if(fields[i].type == 'checkbox') {
 			fields[i].onclick = function(){clearSafariRadios(); addClassName(this.parentNode.parentNode.parentNode, "focused", true)};
 			fields[i].onfocus = function(){clearSafariRadios(); addClassName(this.parentNode.parentNode.parentNode, "focused", true)};
 			highlight_array.splice(highlight_array.length,0,fields[i]);
 		}
-		else if(fields[i].className.match('addr')){
+		else if(fields[i].type == 'radio') {
+			fields[i].onclick = function(){clearSafariRadios(); addClassName(this.parentNode.parentNode.parentNode.parentNode.parentNode, "focused", true)};
+			fields[i].onfocus = function(){clearSafariRadios(); addClassName(this.parentNode.parentNode.parentNode.parentNode.parentNode, "focused", true)};
+			highlight_array.splice(highlight_array.length,0,fields[i]);
+		}
+		// else if(fields[i].className.match('addr')){
+		// 	fields[i].onfocus = function(){clearSafariRadios(); addClassName(this.parentNode.parentNode.parentNode, "focused", true)};
+		// 	fields[i].onblur = function(){removeClassName(this.parentNode.parentNode.parentNode, "focused")};
+		// }
+		else if(fields[i].parentNode.parentNode.parentNode.className.match('address-block')){
 			fields[i].onfocus = function(){clearSafariRadios(); addClassName(this.parentNode.parentNode.parentNode, "focused", true)};
 			fields[i].onblur = function(){removeClassName(this.parentNode.parentNode.parentNode, "focused")};
 		}
+
 		else if(fields[i].className.match('other')){
 			fields[i].onfocus = function(){clearSafariRadios(); addClassName(this.parentNode.parentNode.parentNode, "focused", true)};
 		}
@@ -58,9 +69,9 @@ function createTempCookie(name, value)
 	var expires = "; expires="+date.toGMTString();
 	document.cookie = name+"="+value+expires+"; domain=.wufoo.com; path=/";
 	if(readTempCookie(name) != value) {
-		var script = document.createElement("script");        
+		var script = document.createElement("script");
 	    script.setAttribute("src", "http://wufoo.com/forms/height.js?action=set&embedKey="+name+"&height="+value+"&timestamp = "+ new Date().getTime().toString());
-	    script.setAttribute("type","text/javascript");     
+	    script.setAttribute("type","text/javascript");
 	    document.body.appendChild(script);
 	}
 }
@@ -82,6 +93,7 @@ function clearSafariRadios() {
 	for(var i = 0; i < highlight_array.length; i++) {
 		if(highlight_array[i].parentNode) {
 			removeClassName(highlight_array[i].parentNode.parentNode.parentNode, 'focused');
+			removeClassName(highlight_array[i].parentNode.parentNode.parentNode.parentNode.parentNode, 'focused');
 		}
 	}
 }
@@ -151,7 +163,7 @@ function validateRange(ColumnId, RangeType) {
 			case 'character':
 				msg.innerHTML = field.value.length;
 				break;
-				
+
 			case 'word':
 				var val = field.value;
 				val = val.replace(/\n/g, " ");
@@ -162,7 +174,7 @@ function validateRange(ColumnId, RangeType) {
 				}
 				msg.innerHTML = used;
 				break;
-				
+
 			case 'digit':
 				msg.innerHTML = field.value.length;
 				break;
@@ -180,10 +192,10 @@ function getElementsByClassName(oElm, strTagName, strClassName){
 	var oRegExp = new RegExp("(^|\\s)" + strClassName + "(\\s|$)");
 	var oElement;
 	for(var i=0; i<arrElements.length; i++){
-		oElement = arrElements[i];		
+		oElement = arrElements[i];
 		if(oRegExp.test(oElement.className)){
 			arrReturnElements.push(oElement);
-		}	
+		}
 	}
 	return (arrReturnElements)
 }
@@ -204,7 +216,7 @@ function addClassName(objElement, strClass, blnMayAlreadyExist){
       arrList[arrList.length] = strClass;
       objElement.className = arrList.join(' ');
    }
-   else{  
+   else{
       objElement.className = strClass;
       }
 }
@@ -230,8 +242,8 @@ function addEvent( obj, type, fn ) {
     obj["e"+type+fn] = fn;
     obj[type+fn] = function() { obj["e"+type+fn]( window.event ) };
     obj.attachEvent( "on"+type, obj[type+fn] );
-  } 
+  }
   else{
-    obj.addEventListener( type, fn, false );	
+    obj.addEventListener( type, fn, false );
   }
 }
