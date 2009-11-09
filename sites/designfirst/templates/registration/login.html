@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %} Design First Login {% endblock %}
 
@@ -27,13 +28,17 @@
                   <input type="password" name="password" />
                 </p>
                  <input type="hidden" name="next" value="{{next}}"˝ />
-                <input class="login button" type="submit"
-                value="Login" /> or 
-		<a href="/register">Register</a>
-
-
+                <input class="login button" type="submit" value="Login" />
+                <br />
+		        {% trans "You can also " %}
+                <a href="{% url registration_register %}">{% trans "Register" %}</a>
+                {% trans "or" %}
+		        <a href="{% url auth_password_reset %}">{% trans "Recover password" %}</a>
               </fieldset>
+
             </form>
+
+
 	  </div> <!-- block -->
 	  </div> <!-- box -->
 

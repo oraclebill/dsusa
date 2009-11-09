@@ -5,3 +5,4 @@ sites/designfirst/settings_local.py
 var/*
 static/data/*
 .ropeproject
+.DS_Store

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Edit profile" %}{% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		<h1>{% trans "Edit profile" %}</h1>
+		<div class=box>
+			<form method='POST' action='.'>
+                <h2>{% trans "Personal info" %}</h2>
+				<table>
+                    {{ profile_form }}
+                </table>
+                <h2>{% trans "Company info" %}</h2>
+				<table>
+                    {{ company_form }}
+                </table>
+				<input name='submit' type='submit' value='Save'>
+			</form>
+		</div>
+	</div> 
+{% endblock %}
