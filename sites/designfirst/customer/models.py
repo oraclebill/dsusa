@@ -9,11 +9,16 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from notification import models as notification
+from django.core.mail import mail_managers
+
 
 class IllegalState(Exception):
     pass
 
-
+class ActiveDealerManager(models.Manager):
+    def get_query_set(self):
+        return super(ActiveDealerManager, self).get_query_set().filter(status__exact=Dealer.ACTIVE)
+        
 class Dealer(models.Model):
     """
     An individual or enterprise that purchases services from DesignFirst.
@@ -31,7 +36,7 @@ class Dealer(models.Model):
     )
     status  = models.CharField(_('Account Status'), max_length=1, choices=ACCOUNT_STATUSES, default=PENDING)    
     internal_name = models.SlugField(_('Account Code'), blank=True) # e.g. 'dds-010-...'
-    legal_name = models.CharField(_('Business Name'), max_length=50)
+    legal_name = models.CharField(_('Business Name'), max_length=50, unique=True)
     address_1 = models.CharField(_('Address 1'), max_length=40, blank=True, null=True)
     address_2 = models.CharField(_('Address 2'), max_length=40, blank=True, null=True)
     city = models.CharField(_('City'), max_length=20, blank=True, null=True)
@@ -53,15 +58,27 @@ class Dealer(models.Model):
         verbose_name_plural = _('dealers')
         
     def send_welcome(self):
-        notification.send([self.user], 'new_dealer_welcome')        
-
+        from django.contrib.sites.models import Site
+        from django.conf import settings
+        registration_key = self.primary_contact.registrationprofile_set.all()[0].activation_key
+        uri = reverse('registration_activate', kwargs={'activation_key': registration_key })
+        scheme = settings.SECURE and 'https' or 'http'
+        setup_url = '%s://%s%s' % (scheme, Site.objects.get_current().domain, uri)
+        notification.send([self.primary_contact], 'new_dealer_welcome', extra_context={'setup_url': setup_url})
+        
+    def approve(self):
+        self.status = Dealer.ACTIVE
+        self.save()
+        mail_managers('dealer approved - %s' % self.legal_name, 'approved')
+        self.send_welcome()
+        
     def __unicode__(self):
         return self.legal_name
         
     def _primary_contact(self):
         """Return the primary contact or None."""
         try:
-            return self.userprofile_set.get(primary=True)
+            return self.userprofile_set.get(primary=True).user
         except UserProfile.DoesNotExist:
             return None
             
@@ -69,7 +86,7 @@ class Dealer(models.Model):
 
 class UserProfile(models.Model):
     """
-    Site profile associating this user with either a customer account or designer profile.
+    Site profile associating this user with a dealer account and serving as a hook for site preferences.
     
     """    
     user = models.ForeignKey(User, unique=True,
@@ -116,7 +133,7 @@ class UserProfile(models.Model):
         
     def __unicode__(self):
         if hasattr(self,'user') and hasattr(self, 'account'):
-            return '%s @ %s' % (self.user, self.account) 
+            return '%s [%s]' % (self.user.username, self.account.legal_name) 
         else:
             return '[empty user profile]'
             

@@ -22,6 +22,7 @@
             <form id="form1" name="form1" class="wufoo topLabel page1" autocomplete="off"
 	              enctype="multipart/form-data" method="post" action=".">
 
+				{% csrf_token %}
                 <div class="info">
 	                <h2>DSUSA Dealer Design Service Registration</h2>
 	                <div>Dealers can use this form to begin the dealer registration process for DSUSA's Dealer Design Services. Once your contact information has been verified a sales rep will contact you to complete the process. <br />
@@ -59,8 +60,8 @@
                         </label>
                         <div>
                             <!-- <input id="Field21" name="email" type="text" class="field text medium" value="" maxlength="255" tabindex="4" />  -->
-                            {{ form.user_email }}
-                            {{ form.user_email.errors }}
+                            {{ form.email }}
+                            {{ form.email.errors }}
                         </div>
                         <p class="instruct" id="instruct21"><small>A valid email address.<br />
                                 <br />
@@ -125,6 +126,32 @@
                                 <label for="Field16">Postal / Zip Code</label>
                             </span>
                             <span class="right">
+                    </li>
+					
+                    <li id="foli4x" class=" ">
+                        <label class="desc" id="title4x" for="Field4x">
+                            Phone
+                            <span id="req_4" class="req">*</span>
+                        </label>
+                        <div>
+                            <!-- <input id="Field4" name="company_name" type="text" class="field text medium" value="" maxlength="255" tabindex="5" /> -->
+                            {{ form.phone }}
+                            {{ form.phone.errors }}
+                        </div>
+                        <p class="instruct" id="instruct4"><small>Your organizations legal business name. </small></p>
+                    </li>
+
+                    <li id="foli4xx" class=" ">
+                        <label class="desc" id="title4xx" for="Field4xx">
+                            Fax
+                            <span id="req_4" class="req">*</span>
+                        </label>
+                        <div>
+                            <!-- <input id="Field4" name="company_name" type="text" class="field text medium" value="" maxlength="255" tabindex="5" /> -->
+                            {{ form.fax }}
+                            {{ form.fax.errors }}
+                        </div>
+                        <p class="instruct" id="instruct4"><small>Your organizations legal business name. </small></p>
                     </li>
 
                     <li id="foli26" class="section ">

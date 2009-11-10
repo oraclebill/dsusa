@@ -20,12 +20,12 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
     notification.create_notice_type(
         "registration_ack", 
         _("Thanks for registering!"), 
-        _("Your registration has been recieved.")
+        _("Your registration has been received.")
     )
     notification.create_notice_type(
         "new_dealer_welcome", 
         _("Welcome to Design Service USA"), 
-        _("Your regisration has been processed.")
+        _("Your registration has been processed.")
     )
     notification.create_notice_type(
         "fax_document_ack", 
@@ -71,8 +71,10 @@ def new_dealer_notification(sender, **kwargs):
         )
         return            
     mail_managers('New dealer registration - %s' % dealer.legal_name, '/service/registrations/%s' % dealer.id  )
-    #    # the notification infrastructure needs a 'User'...
-    #    notification.send([dealer], 'registration_ack', locals())
+    # the notification infrastructure needs a 'User'...
+#    notification.send([dealer.primary_contact], 'registration_ack', locals())
+    # so we send mail manually, basd on email in dealer object..  
+    ## todo: use notifications!
     context = {'name': dealer.legal_name }
     subject = render_to_string( 'notification/registration_ack/short.txt', context)
     message = render_to_string( 'notification/registration_ack/full.txt', context)

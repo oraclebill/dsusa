@@ -7,7 +7,7 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 def rel(*x):
     return os.path.abspath(os.path.join(THIS_DIR, *x))
 
-sys.path.insert(0, rel('..', '..', 'lib'))#Adding lib to system path
+sys.path.insert(0, rel('..', '..', 'lib'))      #Adding lib to system path
 
 
 
@@ -15,15 +15,18 @@ DEBUG = True
 LOCAL = DEBUG
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ('127.0.0.1',)
+SECURE = False
 
 APP_FILES_ROOT = rel('..','..','var','application-data')
 APP_FILES_URL = '/files'
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+     ('Test Admins', 'admins@domain.com'),
 )
-MANAGERS = ADMINS
 
+MANAGERS =(
+     ('Test Managers', 'managers@domain.com'),
+)
 
 DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = rel('designfirst.db')             # Or path to database file if using sqlite3.

@@ -1,0 +1,42 @@
+Welcome to Design Service USA!
+
+Your registration has been approved and your account has been established.
+
+<a href="{{ setup_url }}">Click here to log in and create your online account</a> 
+{{ setup_url }}
+
+This document contains your account information and some resources to help 
+you get started.
+
+Your Account Information
+----------------------------------------------
+Account Number:          {{ account.id }}
+Account Name:            {{ account.name }}
+
+Primary Contact:         {{ account.contact.name }}
+Contact Email:           {{ account.contact.email }}
+
+Primary Business Address {{ account.primary_address }}
+Business Phone           {{ account.phone }}
+Business Fax             {{ account.fax }}
+
+Account Rep              {{ account.rep.name }}
+Account Rep Phone        {{ account.rep.phone }}
+ 
+
+Customer Service
+----------------------------------------------
+There are a number of ways to contact us if you have a problem or 
+question. Your first point of contact should be your account rep, 
+however if you have a specific issue we can be contacted by phone 
+or email.
+
+Contact Info:
+    email:              support@designserviceusa.com
+    phone:              (856) 556-0676
+    Customer Forum:     http://designserviceusa.getsatisfaction.com
+    Feedback Email:     feedback@designserviceusa.com
+
+
+Customer service is available during normal 
+business hours - from 9am to 7pm EST M-F.
