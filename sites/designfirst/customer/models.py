@@ -89,14 +89,9 @@ class UserProfile(models.Model):
     Site profile associating this user with a dealer account and serving as a hook for site preferences.
     
     """    
-    user = models.ForeignKey(User, unique=True,
-                                                null=True, blank=True)
+    user = models.ForeignKey(User, unique=True, primary_key=True)
     account = models.ForeignKey(Dealer)
     primary = models.BooleanField(_('Primary Contact?'))
-
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    email = models.EmailField(_('e-mail address'), blank=True)
 
     class Meta:
         verbose_name = _("user profile")
@@ -116,15 +111,6 @@ class UserProfile(models.Model):
         else:
             self.primary = True
         super(UserProfile, self).save(force_insert=force_insert, force_update=force_update)
-
-        if self.user:
-            if self.first_name:
-                self.user.first_name = self.first_name
-            if self.last_name:
-                self.user.last_name = self.last_name
-            if self.email:
-                self.user.email = self.email
-            self.user.save()
     
     # for profiles module
     def get_absolute_url(self):
