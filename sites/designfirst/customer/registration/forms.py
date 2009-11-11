@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.localflavor.us.forms import USPhoneNumberField, USStateField, USZipCodeField
-
+from customer.models import Dealer
 
 attrs_dict = { 'class': 'required' }
 
@@ -56,3 +56,11 @@ class DealerRegistrationForm(forms.Form):
                              label=_(u'I have read and agree to the Terms of Service'),
                              error_messages={ 'required': _("You must agree to the terms to register") })
     
+    def clean_legal_name(self):
+        legal_name = self.cleaned_data['legal_name']
+        try:
+            Dealer.objects.get(legal_name__exact=legal_name)
+        except:
+            return legal_name
+        raise forms.ValidationError(_("A company with that name already exists."))
+

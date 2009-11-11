@@ -22,6 +22,7 @@ from django.contrib.sites.models import Site, RequestSite
 from django.core.mail import mail_admins, mail_managers
 from django.utils.encoding import force_unicode
 from django.http import Http404
+from django.db import transaction
 
 from customer.models import Dealer, UserProfile
 from registration.backends.default import DefaultBackend
@@ -33,6 +34,7 @@ import signals
         
 class DealerRegistrationBackend(DefaultBackend):
     
+    @transaction.commit_manually
     def register(self, request, **kwargs):
         """
         Given core dealer information, create a new ``Dealer`` object 
@@ -68,21 +70,29 @@ class DealerRegistrationBackend(DefaultBackend):
         else:
             site = RequestSite(request)
 
-        temp_username = sha1(company_name+str(datetime.now())).hexdigest()
+        temp_username = sha1(company_name+str(datetime.now())).hexdigest()[:25]
         new_user = RegistrationProfile.objects.create_inactive_user(temp_username, email,
                                                                     None, site, send_email=False)
-        new_user.first_name = first_name
-        new_user.last_name = last_name
-        new_user.save()
-        
-        new_dealer = Dealer(**kwargs)
-        new_dealer.notes = '\n'.join(['%s: %s' % (k,v) for (k,v) in notes.items()])
-        new_dealer.status = Dealer.PENDING
-        new_dealer.save()
-        
-        new_profile = UserProfile(user=new_user, account=new_dealer)
-        new_profile.primary = True
-        new_profile.save()
+        try:
+            new_user.first_name = first_name
+            new_user.last_name = last_name
+            new_user.save()
+            
+            new_dealer = Dealer(**kwargs)
+            new_dealer.notes = '\n'.join(['%s: %s' % (k,v) for (k,v) in notes.items()])
+            new_dealer.status = Dealer.PENDING
+            new_dealer.save()
+            
+            new_profile = UserProfile(user=new_user, account=new_dealer)
+            new_profile.primary = True
+            new_profile.save()
+        except:
+            transaction.rollback()
+            new_user.delete()
+            transaction.commit()
+            return False
+        else:
+            transaction.commit()
         
         mail_managers('new registration', '%s' % new_dealer.legal_name ) 
         user_registered.send(sender=self.__class__,
