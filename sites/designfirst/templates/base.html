@@ -26,6 +26,7 @@
   </head>
   <body>
 	<div id="header" class="container_16 clearfix">
+	   {% block content-header %}
 		<!-- begin branding block -->
 		<div id="logo" class="grid_2">
 			<img src="{{MEDIA_URL}}images/dsusa-small-brn.png" height="50">
@@ -59,6 +60,7 @@
 			&nbsp;
 		</div>
 		{% endif %}
+		{% endblock %}
 	</div>		
 
     <div id="content" class="container_16 clearfix">

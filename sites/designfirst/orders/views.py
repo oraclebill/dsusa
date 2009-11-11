@@ -197,9 +197,9 @@ def is_existing_manufacturer(order):
 
 
 def _manufacturer_related(request, model):
-    "Retrun 'autocomplete' response of objects that matches manufacturer"
+    "Return 'autocomplete' response of objects that matches manufacturer"
     manufacturer = request.GET.get('manufacturer', '')
-    q = request.GET['q']
+    q = request.GET['q']    
     items = model.objects.filter(manufacturer__name=manufacturer, name__icontains=q)
     items = [i.name for i in items]
     return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in items]))
@@ -213,8 +213,11 @@ def ajax_attach_details(request, id):
 def ajax_door_style(request):
     return _manufacturer_related(request, DoorStyle)
 
+def ajax_product_line(request):
+    return _manufacturer_related(request, DoorStyle)
+
 def ajax_wood(request):
     return _manufacturer_related(request, WoodOption)
 
-def ajax_finish(request):
+def ajax_finish_color(request):
     return _manufacturer_related(request, FinishOption)

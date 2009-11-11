@@ -6,8 +6,13 @@ urlpatterns = patterns('orders.views',
     url(r'^complete/(\d+)/$', 'wizard', {'complete': True}, name='order-wizard-complete'),
     url(r'^print/(\d+)/$', 'print_order', name='print-order'),
     
-    url(r'^ajax/door/$', 'ajax_door_style', name='ajax-door-style'),
-    url(r'^ajax/wood/$', 'ajax_wood', name='ajax-wood'),
-    url(r'^ajax/finish_color/$', 'ajax_finish', name='ajax-finish_color'),
+#     url(r'^ajax/line/$', 'ajax_product_line',         name='ajax-product-line'),
+    url(r'^ajax/wood/$', 'ajax_wood',               name='ajax-door-material'),
+    url(r'^ajax/door/$', 'ajax_door_style',         name='ajax-door-style'),
+#     url(r'^ajax/drawer/$', 'ajax_drawer_style',       name='ajax-drawer-style'),
+#     url(r'^ajax/finish_type/$',  'ajax_finish_type',  name='ajax-finish-type'),
+    url(r'^ajax/finish_color/$', 'ajax_finish_color',     name='ajax-finish-color'),
+#     url(r'^ajax/finish_options/$', 'ajax_finish_options',     name='ajax-finish-options'),
+    
     url(r'ajax/attachment/(\d+)/$', 'ajax_attach_details', name='ajax-attachment-details')
 )

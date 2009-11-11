@@ -20,13 +20,13 @@ $(function(){
 
 
 	function clean_manuf_related() {
-		$('#id_cabinet_door_style').val('');
-    	$('#id_cabinet_wood').val('');
-    	$('#id_cabinet_finish').val('');
+		$('#id_door_style').val('');
+    	$('#id_cabinet_material').val('');
+    	$('#id_finish_color').val('');
 	}
 
     function update_manufacturer(newval) {
-        var $man = $("#id_cabinet_manufacturer");
+        var $man = $("#id_manufacturer");
         if (newval != $man.val())
         	clean_manuf_related()
         $man.val(newval); 
@@ -38,7 +38,7 @@ $(function(){
     })
 
 	//Manufacturere autocompleter
-	$("#id_cabinet_manufacturer").autocomplete(MANUFACTURERS, {
+	$("#id_manufacturer").autocomplete(MANUFACTURERS, {
 		formatItem: function (item) {
 			return item.name;
 		}
@@ -46,24 +46,25 @@ $(function(){
 		clean_manuf_related();
     })
 
+
+	//Door material autocompleter
+	$("#id_cabinet_material").autocomplete('{% url ajax-door-material %}', {
+		extraParams: {
+			manufacturer: function() { return $("#id_manufacturer").val(); }
+		}
+	})
+
 	//Door style autocompleter
-	$("#id_cabinet_door_style").autocomplete('{% url ajax-door-style %}', {
+	$("#id_door_style").autocomplete('{% url ajax-door-style %}', {
 		extraParams: {
-			manufacturer: function() { return $("#id_cabinet_manufacturer").val(); }
+			manufacturer: function() { return $("#id_manufacturer").val(); }
 		}
 	})
 
-	//Door wood autocompleter
-	$("#id_cabinet_wood").autocomplete('{% url ajax-wood %}', {
+	//Finish color autocompleter
+	$("#id_finish_color").autocomplete('{% url ajax-finish-color %}', {
 		extraParams: {
-			manufacturer: function() { return $("#id_cabinet_manufacturer").val(); }
-		}
-	})
-
-	//Finish autocompleter
-	$("#id_cabinet_finish").autocomplete('{% url ajax-finish_color %}', {
-		extraParams: {
-			manufacturer: function() { return $("#id_cabinet_manufacturer").val(); }
+			manufacturer: function() { return $("#id_manufacturer").val(); }
 		}
 	})
 })
@@ -78,7 +79,7 @@ $(function(){
 <div style="width: 35%; float: right;" id="manufact_icons">
 	{% for item in manufacturers %}
 		{% if item.small_logo %}
-		<img src="{{item.small_logo.url}}" alt="{{item.name}}">
+		<img src="{{item.small_logo.url}}" width="75" alt="{{item.name}}">
 		{% endif %}
 	{% endfor %}
 </div>

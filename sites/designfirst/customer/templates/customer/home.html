@@ -2,9 +2,11 @@
 
 {% block title %} Design First Home {% endblock %}
 
+{% block content-header %}{% endblock %}
+
 {% block content %}
 <div id="logo_block" class="grid_11">
-  <img src="/static/images/logo_large.png" alt="DesignFirst Logo"/>
+  <img src="{{ MEDIA_URL }}images/logo_large.png" width="940" alt="DesignFirst Logo" style="opacity:0.8;"/>
 </div>
 <div id="login_panel" class="grid_5">
          <div class="block" id="login-forms">
