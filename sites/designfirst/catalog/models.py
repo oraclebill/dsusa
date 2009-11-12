@@ -1,3 +1,28 @@
+"""
+A flexible generic data model for cabinet industry.
+
+   * provide for easy data entry from manufacturers catalogs   * present information in a way that minimizes erroneous selections
+      * enumerate types of options for a particular artifact
+      * enumerate all options of a particular type
+      * show valid options based on context of current selections
+   * validate selections
+      * rules for 
+      * constraints
+   * model relationships?
+Data Example
+      * the kingston door comes in maple, cherry and lyptus
+         * the cherry stain are chocolate, espresso and coffee
+         * the maple stains are coffe, taupe and olive
+         * the lyptus stains are all of the above
+         * also support paint options of red white or blue
+         * stained doors support glazes of X Y and Z
+         * special   finishoptions include speckling, distressing and dodging    
+
+
+
+
+
+"""
 import os.path
 import re
 from django.db import models
@@ -37,6 +62,9 @@ class Catalog(models.Model):
     
     
 class Type(models.Model):
+    """
+    A type identifier - e.g. 'Door' or 'Stain'
+    """
     catalog = models.ForeignKey(Catalog)
     name    = models.CharField(_("Attribute Type"), max_length=30)
     description = models.TextField(blank=True, null=True)
@@ -49,13 +77,13 @@ class Type(models.Model):
         return self.name
 
 
+
 class ItemType(Type):
     pass
 
 class AttributeType(Type):
     pass
             
-
 class Item(models.Model):
     catalog = models.ForeignKey(Catalog)
     type = models.ForeignKey(ItemType)
@@ -65,7 +93,6 @@ class Item(models.Model):
     
     class Meta:
         unique_together = ('name', 'type', 'catalog')
-        abstract = True
     
     def __unicode__(self):
         return self.name
@@ -91,3 +118,22 @@ class EntryAttributes(models.Model):
     catalog = models.ForeignKey(Catalog)
     attribute = models.ForeignKey(Attribute)
  
+ 
+class Manufacturer(models.Model):
+    pass
+#
+class DoorStyle(models.Model):
+    pass
+    
+##
+## 
+# 
+# class RelationshipType(Type):
+#     pass
+# 
+# class Relationship(models.Model):
+#     catalog = models.ForeignKey(Catalog)
+#     subject = models.ForeignKey(Item)
+#     verb = models.ForeignKey(ItemType)
+#     description = models.TextField(blank=True, null=True)
+

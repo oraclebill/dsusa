@@ -9,7 +9,7 @@ from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
 from base import WizardBase
-from validation.models import Manufacturer, DoorStyle, WoodOption, FinishOption
+#from catalog.models import Manufacturer, DoorStyle, WoodOption, FinishOption
 from utils.views import render_to
 from models import Attachment, Appliance
 from forms import *

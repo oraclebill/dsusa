@@ -121,7 +121,7 @@ INSTALLED_APPS = (
     'designfirst.product',
     'designfirst.orders',
     'designfirst.accounting',
-    'designfirst.validation',
+    'designfirst.catalog',
     'designfirst.barcode',
 )
 
