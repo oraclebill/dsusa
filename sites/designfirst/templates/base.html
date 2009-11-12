@@ -64,6 +64,12 @@
 	</div>		
 
     <div id="content" class="container_16 clearfix">
+		<div id="messages">
+	        {% if messages %}
+	        <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+	        {% endif %}
+		</div>
+			
         <!-- begin main content block -->
         {% block content %} {% endblock %}
         <!-- end main content block -->
@@ -84,8 +90,8 @@
         		{% block footer %}
         		<p>
         		    &copy; 2009 Design Service USA LLC, all rights reserved</p><p>
-            		<span><a href="/terms">Terms and Conditions</a></span>
-            		<span style="text-align:right;"><a href="/privacy">Privacy Policy</a></span>
+            		<span><a href="/terms/">Terms and Conditions</a></span>
+            		<span style="text-align:right;"><a href="/privacy/">Privacy Policy</a></span>
         		</p>        		
         		{% endblock %}
               </div>

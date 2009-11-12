@@ -130,7 +130,7 @@ class Wizard(WizardBase):
                 obj = form.save(commit=False)
                 obj.order = self.order
                 obj.save()
-                if obj.is_pdf():
+                if obj.is_multipage:
                     obj.generate_pdf_previews()
                 context['confirm_attach'] = obj.id
                 

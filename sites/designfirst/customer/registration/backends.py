@@ -124,6 +124,9 @@ class DealerRegistrationBackend(DefaultBackend):
         """
         Given an an activation key, look up and activate the dealer
         account corresponding to that key (if possible).
+        
+        Presumes the account has been approved already. If the account
+        of the user is in an inactive status we throw an error.
 
         After successful activation, the signal
         ``registration.signals.user_activated`` will be sent, with the
