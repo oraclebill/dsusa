@@ -4,6 +4,11 @@ product_lines = [
         'biltmore',
         #'impact'  # no data...
     ]
+
+class Executive(object):
+    def get_product_lines(self):
+        return product_lines;
+    
 #
 wood_species = [
         'maple',
@@ -13,7 +18,7 @@ wood_species = [
         'mdf',
     ]
 #    
-stains = {
+stains_by_species = {
     'maple': [
 		'Amaretto', 
 		'Autumn', 
@@ -96,7 +101,7 @@ stains = {
         ]
     }
 #    
-paints = {
+paints_by_species = {
     'mdf': [
         'antique', 
         'basil', 
@@ -126,7 +131,7 @@ paints = {
         'washboard',
     ]}    
 #
-glazes = {
+glazes_by_species = {
     'maple': [
         'chocolate', 
         'coffee', 
@@ -177,7 +182,7 @@ standard_finish_options = [
     'wormhole',
     ]
 #
-specialty_finish_options = {
+extra_specialty_finish_options = {
     'all': [
         'biltmore finishes',
         'brushed glaze',
@@ -232,7 +237,7 @@ door_styles = {
         'villa', 
         'williamsburg', 
         'wood veneer', 
-    ]    
+    ],    
     'thermafoil_or_metal': [
         'allegro', 
         'alpha', 

@@ -44,6 +44,8 @@ form p.error {
 
 #wizard_steps {
     background: #fff;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 
 
@@ -78,7 +80,7 @@ form p.error {
     border-width: 1px;
     background-color: #C7CBC2;
     border-color: #A8A799;
-    vertical-align: center;    
+    vertical-align: middle;    
     position:relative;
     float: left;    
     margin-right: .2em;
