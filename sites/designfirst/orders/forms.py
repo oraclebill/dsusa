@@ -164,7 +164,7 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
 
 class CheckedCharField(forms.CharField):
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
-        nargs = kwargs and dict(kwargs, widget=CheckedTextWidget) or {'widget':widget}
+        nargs = kwargs and dict(kwargs, widget=CheckedTextWidget) or {'widget':CheckedTextWidget}
         return super(CheckedCharField, self).__init__(max_length, min_length, *args, **nargs)
         
 def make_checked_textfield(f):

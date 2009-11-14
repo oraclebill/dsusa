@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.db import models, transaction
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -58,8 +59,6 @@ class Dealer(models.Model):
         verbose_name_plural = _('dealers')
         
     def send_welcome(self):
-        from django.contrib.sites.models import Site
-        from django.conf import settings
         registration_key = self.primary_contact.registrationprofile_set.all()[0].activation_key
         uri = reverse('registration_activate', kwargs={'activation_key': registration_key })
         scheme = settings.SECURE and 'https' or 'http'

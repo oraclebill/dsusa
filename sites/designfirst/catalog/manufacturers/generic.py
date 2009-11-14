@@ -15,4 +15,4 @@ class Manufacturer(object):
         pass
     
     def get_door_finish_types(self, product_line, material, door_style):
-        
+        pass

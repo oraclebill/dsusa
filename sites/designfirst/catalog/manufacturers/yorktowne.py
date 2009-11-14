@@ -1,3 +1,5 @@
+catalog = 'yorktowne'
+
 product_lines = [
     'yorktowne',
     ]

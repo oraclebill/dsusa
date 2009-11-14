@@ -155,7 +155,7 @@ def dealer_dashboard(request):
     
     working_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
     submitted_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )
-       ## TODO: fixme!
+        ## TODO: fixme!
     archived_orders = orders.exclude( status__in = [ WorkingOrder.DEALER_EDIT, WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] ) 
         
     return render_to_response( 'customer/dealer_dashboard.html', locals(),                                
@@ -259,7 +259,7 @@ def edit_order_detail(request, order_id):
         try:
             form_name = request.POST['_formname']
         except:
-            raise IllegalStateException('Invalid form: missing required data!')   
+            raise Exception('Invalid form: missing required data!')   
                      
     formlist = []
     context = RequestContext(request)  
@@ -383,35 +383,6 @@ def dealer_reject_order(request, orderid):
         context_instance=RequestContext(request) )
     
 @login_required
-def generate_floorplan_template(request, orderid):
-    """
-    Generate a floorplan template, customized to the current user (dealer) and order.
-    
-    
-    """    
-    return _generate_floorplan_template(get_current_order(request, orderid))
-    
-
-def _generate_floorplan_template(order):    
-    response = HttpResponse(mimetype='application/pdf')    
-
-    response['Pragma'] = 'no-cache'    
-    #response['Content-Disposition'] = 'inline; filename=ft-%04d.pdf' % order.id 
-    
-    print '++++++++++++++++++++++'
-    import sys 
-    print 'client = %s' % order.client_account.id
-    print 'order = %s' % order.id
-    print '++++++++++++++++++++++'
-    
-    from pdfGen import KitchenTemplatePdfPage
-    template = KitchenTemplatePdfPage(str(order.client_account.id),str(order.id))
-    template.save()
-    response.write( template.pdfBuffer.getvalue() )
-    
-    return response
-    
-@login_required
 def remove_order_appliance(request, orderid, appliance_key):
     order = get_current_order(request, orderid)
     # verify appliance is child of order
@@ -421,6 +392,6 @@ def remove_order_appliance(request, orderid, appliance_key):
             appliance.delete()
             appliance.save()
         except Appliance.DoesNotExist:
-            raise RuntimeException('Appliance does not exist!')
+            raise RuntimeError('Appliance does not exist!')
     return HttpResponseRedirect( reverse('edit_order', args=[orderid]) )
     

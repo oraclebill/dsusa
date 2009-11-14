@@ -1,6 +1,8 @@
 "Data and helper for diplaying summary information"
 from django.utils.text import capfirst
 from datetime import datetime
+
+#from models import WorkingOrder
 import forms;
 
 TIMETYPE = type(datetime.now())

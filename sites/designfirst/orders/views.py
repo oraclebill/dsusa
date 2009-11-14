@@ -8,11 +8,15 @@ from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
-from base import WizardBase
-#from catalog.models import Manufacturer, DoorStyle, WoodOption, FinishOption
+from catalog.models import Catalog
 from utils.views import render_to
-from models import Attachment, Appliance
-from forms import *
+
+from base import WizardBase
+from models import WorkingOrder, Attachment, Appliance, Moulding
+from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
+from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
+from forms import SoffitsForm, SubmitForm, MouldingForm
+#from forms import * 
 import summary 
 
 
@@ -24,10 +28,12 @@ class Wizard(WizardBase):
              'appliances', 'diagrams', 'order_review']
     
     def step_manufacturer(self, request):
-        manufacturers = list(Manufacturer.objects.all())
-        manufacturers_json = simplejson.dumps([m.json_dict() for m in manufacturers])
-        return self.handle_form(request, ManufacturerForm
-                                , {'manufacturers': manufacturers,
+        manufacturers = {}
+        manufacturers_json = {}
+        # manufacturers = list(Manufacturer.objects.all())
+        # manufacturers_json = simplejson.dumps([m.json_dict() for m in manufacturers])
+        return self.handle_form(request, ManufacturerForm,
+                                 {'manufacturers': manufacturers,
                                    'manufacturers_json':manufacturers_json})
     
     
@@ -190,19 +196,18 @@ def print_order(request, id):
 def is_existing_manufacturer(order):
     #TODO: move to Manufacturer model
     try:
-        Manufacturer.objects.get(name=order.manufacturer)
+        Catalog.objects.search(name=order.manufacturer)
         return True
-    except Manufacturer.DoesNotExist:
+    except Catalog.DoesNotExist:
         return False
 
 
 def _manufacturer_related(request, model):
     "Return 'autocomplete' response of objects that matches manufacturer"
-    manufacturer = request.GET.get('manufacturer', '')
-    q = request.GET['q']    
-    items = model.objects.filter(manufacturer__name=manufacturer, name__icontains=q)
-    items = [i.name for i in items]
-    return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in items]))
+    filter = request.GET.pop('q')
+    domain = request.GET.items()    
+    
+    return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in Catalog.objects.search(filter, domain) ]))
 
 
 @render_to('wizard/attachment_details.html')
@@ -211,13 +216,13 @@ def ajax_attach_details(request, id):
     return {'attachment': attachment}
 
 def ajax_door_style(request):
-    return _manufacturer_related(request, DoorStyle)
+    return _manufacturer_related(request)# , DoorStyle)
 
 def ajax_product_line(request):
-    return _manufacturer_related(request, DoorStyle)
+    return _manufacturer_related(request) #, DoorStyle)
 
 def ajax_wood(request):
-    return _manufacturer_related(request, WoodOption)
+    return _manufacturer_related(request) #, WoodOption)
 
 def ajax_finish_color(request):
-    return _manufacturer_related(request, FinishOption)
+    return _manufacturer_related(request) # , FinishOption)

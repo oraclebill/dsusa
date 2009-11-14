@@ -8,7 +8,7 @@ from django.views.generic.simple import direct_to_template
 #from registration import models as reg_models
 #import forms
 
-import designfirst.menus  # remove this import and any page with a {% menu ... %} tag fails.. pretty damn random.. 
+import menus  # remove this import and any page with a {% menu ... %} tag fails.. pretty damn random.. 
 
 from django.contrib import admin
 admin.autodiscover()

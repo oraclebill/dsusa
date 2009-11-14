@@ -40,7 +40,8 @@ class Selections(object):
         return True
         
     def is_complete(self):
-         required = [item for item in selection_]
+        required = [item for item in self.selection]
+        #TODO #FIXME
                         
 class SelectionGroup(object):
     def __init__(self, name, required=False):
@@ -48,6 +49,7 @@ class SelectionGroup(object):
         self.items = []
         
     def add(self, item):
+        pass
         
         
 class SelectionItem(object):
