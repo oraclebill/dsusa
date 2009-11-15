@@ -1,12 +1,21 @@
+##
 
+## TEST
+
+## TEST
+
+## TEST
+
+##
 class CabinetLine(object):
     
     def __init__(self, module):
         self.module = module
+        self.door_info = module.door_info
         self.primary_finish_types = module.primary_finish_types
         self.finish_option_types = module.finish_option_types
-        self.finish_options = module.finish_options
-        self.door_info = module.door_info
+        self.primary_finish_set = set(reduce(list.__add__, [self.get_primary_finishes(ftype) for ftype in self.primary_finish_types]))
+        self.finish_options_set = set(reduce(list.__add__, [self.get_finish_option(otype) for otype in self.get_finish_option_types()]))
         
     def _get_options_for_attribute(self, attr, species=None, style=None):
         """ 
@@ -21,15 +30,16 @@ class CabinetLine(object):
         >>> cl._all_materials('third') 
         [] 
         """
-        return species and self.door_info[species].get(attr,[]) or \
-            list(set(reduce(list.__add__, [d.get(attr,[]) for d in self.door_info.values()]))) 
+        ret = species and self.door_info[species].get(attr,[]) or \
+            list(set(reduce(list.__add__, [d.get(attr,[]) for d in self.door_info.values()])))
+        return sorted(ret) 
             
     def get_door_materials(self, style=None):
         if style:
             return [key for key in self.door_info.keys() if style in self.door_info[key]['style']]
         else:
-            return self.door_info.keys()
-    
+            return self.door_info.keys() #
+      
     def get_primary_finish_types(self, species=None, style=None):
         if style:
             raise NotImplementedError('style query not supported')
@@ -58,5 +68,5 @@ class CabinetLine(object):
         
     def get_finish_options(self, option_type=None, species=None, style=None):
         return option_type and self._get_options_for_attribute(option_type, species) or \
-                list(set(reduce(list.__add__, [self._get_options_for_attribute(key, species) for key in self.finish_options])))
+                list(set(reduce(list.__add__, [self._get_options_for_attribute(key, species) for key in self.finish_options_set])))
 

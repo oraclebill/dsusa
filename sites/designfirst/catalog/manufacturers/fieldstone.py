@@ -32,8 +32,6 @@ product_lines = [
 #    # 'miscellaneous': [],
 #    }
 #
-
-
 _oak_stains = ['Capuccino', 'Champagne', 'Harvest', 'Honey', 'Natural', 'Nutmeg', 'Oregano', 'Paprika', 'Toffee', 'Unfinished']
 _cherry_stains = ['Brittany', 'Burgundy', 'Butterscotch', 'Capuccino', 'Chateaux', 'Chestnut', 'Harvest', 'Java', 'Meridian', 'Natural', 'Nutmeg', 'Oregano', 'Paprika', 'Rattan', 'Toffee', 'Unfinished']
 _hickory_stains = ['Capuccino', 'Champagne', 'Harvest', 'Honey', 'Natural', 'Nutmeg', 'Oregano', 'Paprika', 'Toffee', 'Unfinished']
@@ -55,12 +53,12 @@ door_info = {
         'style': ['Aero', 'Aledo', 'Arcata', 'Arden', 'Ashford', 'Bainbridge', 'Brighton', 'Bristol', 'Carlisle', 'Charleston', 'Concord', 'Farmington', 'Hampton', 'Hanover', 'Harbor', 'Hartford', 'Heritage', 'Hudson', 'Madison', 'Manchester', 'Milan', 'Monroe', 'Monte Carlo', 'Monterey', 'Portland', 'Raleigh', 'Shelburne', 'Sheyenne', 'Somerset', 'Stratford', 'Sycamore', 'Tempe', 'Tremont', 'Waldorf', 'Winlsow'] ,
         'stain': _cherry_stains,
         'old world distressed': _alder_cherry_old_world_stains,
-        'glaze': ['chocolate', 'ebony'],
+        'glaze': ['Chocolate', 'Ebony'],
         'standard finish option':  finish_options,
         'special finish option':  [],
     },
     'cherry': { 
-        'style': ['Gulfport', 'Bristol', 'Farmington', 'Hudson', 'Monroe', 'Athens', 'Romance', 'Shelburne', 'Ashford', 'Bainbridge', 'Heritage', 'Westport', 'Somerset', 'Seville', 'Winslow', 'Versailles', 'Monte Carlo', 'Glen Cove', 'Arden', 'Aero', 'Wakefield', 'Recina', 'Lacrosse', 'Stratford', 'Brighton', 'Hanover', 'Princeton', 'Harbor', 'Woodfield', 'Sycamore', 'Madison', 'Bellmonte', 'Waldorf', 'Arcata', 'Raleigh', 'Cannes', 'Tremont', 'Prescott', 'Charleston', 'Lagrange', 'Carmelo', 'Monterey', 'Hampton', 'Sheyenne', 'Augustine', 'Concord', 'Lasalle', 'Cologne', 'Fairfield', 'Milan', 'Manchester', 'Aledo', 'Tempe', 'Portland', 'Griffith', 'Breton', 'Carlisle'].sort() ,
+        'style': ['Gulfport', 'Bristol', 'Farmington', 'Hudson', 'Monroe', 'Athens', 'Romance', 'Shelburne', 'Ashford', 'Bainbridge', 'Heritage', 'Westport', 'Somerset', 'Seville', 'Winslow', 'Versailles', 'Monte Carlo', 'Glen Cove', 'Arden', 'Aero', 'Wakefield', 'Recina', 'Lacrosse', 'Stratford', 'Brighton', 'Hanover', 'Princeton', 'Harbor', 'Woodfield', 'Sycamore', 'Madison', 'Bellmonte', 'Waldorf', 'Arcata', 'Raleigh', 'Cannes', 'Tremont', 'Prescott', 'Charleston', 'Lagrange', 'Carmelo', 'Monterey', 'Hampton', 'Sheyenne', 'Augustine', 'Concord', 'Lasalle', 'Cologne', 'Fairfield', 'Milan', 'Manchester', 'Aledo', 'Tempe', 'Portland', 'Griffith', 'Breton', 'Carlisle'] ,
         'stain': _cherry_stains, 
         'glaze': _cherry_glazes, 
         'old world distressed': _alder_cherry_old_world_stains,
