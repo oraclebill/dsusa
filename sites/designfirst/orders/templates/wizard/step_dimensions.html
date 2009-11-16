@@ -34,7 +34,7 @@
 	}
 
 	function replace_widget(id, name, standard, choices) {
-		var validation = $('#'+id).data('validation')//Validatoin fix
+		var validation = $('#'+id).data('validation') //Validatoin fix
 		var value = $('#'+id).val()
 		if (standard)
 			html = select_html(id, name, value, choices);

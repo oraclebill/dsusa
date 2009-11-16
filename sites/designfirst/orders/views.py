@@ -219,14 +219,15 @@ def ajax_door_style(request):
     if not mfg:
         return HttpResponse()    
     styles = Catalog().cabinet_line(mfg).get_door_styles(species=request.GET.get('dm', None))
-    return HttpResponse(['%s|%s' %s for s in styles]) # if q in style])
+#    return HttpResponse(['%s|%s' % (s,s) for s in styles]) # if q in style])
+    return HttpResponse(simplejson.dumps(styles)) # if q in style])
  
 def ajax_wood(request):
     mfg = request.GET.get('m', None)
     if not mfg:
         return HttpResponse()
     species = Catalog().cabinet_line(mfg).get_door_materials(style=request.GET.get('ds', None))
-    return HttpResponse('\n'.join(['%s|%s' % (a,a) for a in species])) # if q in style])
+    #return HttpResponse('\n'.join(['%s|%s' % (a,a) for a in species])) # if q in style])
     return HttpResponse(simplejson.dumps(species)) # if q in style])
 
 def ajax_finish_color(request):

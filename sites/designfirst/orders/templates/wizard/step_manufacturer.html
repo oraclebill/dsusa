@@ -26,7 +26,7 @@ function select_html(id, name, value, choices) {
 			selected = ' selected="selected"'
 		else if (value == choices[i])
 			selected = ' selected="selected"'
-		options += '<option value="'+choices[i]+'"'+selected+'> '+choices[i]+'&#148; </option>'
+		options += '<option value="'+choices[i]+'"'+selected+'> '+choices[i]+'</option>'
 	}
 	return '<select name="'+name+'" id="'+id+'">'+options+'</select>'
 }
@@ -53,10 +53,12 @@ $(function(){
 	function clean_manuf_related(manufacturer) {
 		$('#id_product_line').val(manufacturer)
 		//$('#id_door_style').val('');
-		styles = $.getJSON('{% url ajax-door-style %}?mf='+manufacturer)
-		replace_widget('id_door_style', 'door_style', true, styles)
-    	$('#id_cabinet_material').val('');
-    	$('#id_finish_color').val('');
+		$.getJSON('{% url ajax-door-style %}?m='+manufacturer,
+			function(data) { replace_widget('id_door_style', 'door_style', true, data); })
+		$.getJSON('{% url ajax-door-material %}?m='+manufacturer,
+			function(data) { replace_widget('id_cabinet_material', 'cabinet_material', true, data); })
+		$.getJSON('{% url ajax-finish-color %}?m='+manufacturer,
+			function(data) { replace_widget('id_finish_color', 'finish_color', true, data); })				
 	}
 
     function update_manufacturer(newval) {
