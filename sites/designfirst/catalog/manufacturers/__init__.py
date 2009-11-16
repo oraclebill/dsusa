@@ -1,21 +1,21 @@
-##
+_all_manufacturers = [ 'executive', 'fieldstone' ]
+_cabinet_lines = {}
 
-## TEST
-
-## TEST
-
-## TEST
-
-##
+                
 class CabinetLine(object):
     
     def __init__(self, module):
+        if type(module) == str:
+            module = __import__('catalog.manufacturers.%s'%module, fromlist=[''])
         self.module = module
+        self.keyname = module.keyname
+        self.catalog_name = module.catalog_name
+        self.line_name = module.line_name
         self.door_info = module.door_info
         self.primary_finish_types = module.primary_finish_types
         self.finish_option_types = module.finish_option_types
         self.primary_finish_set = set(reduce(list.__add__, [self.get_primary_finishes(ftype) for ftype in self.primary_finish_types]))
-        self.finish_options_set = set(reduce(list.__add__, [self.get_finish_option(otype) for otype in self.get_finish_option_types()]))
+        self.finish_options_set = set(reduce(list.__add__, [self.get_finish_options(otype) for otype in self.get_finish_option_types()]))
         
     def _get_options_for_attribute(self, attr, species=None, style=None):
         """ 
@@ -69,4 +69,20 @@ class CabinetLine(object):
     def get_finish_options(self, option_type=None, species=None, style=None):
         return option_type and self._get_options_for_attribute(option_type, species) or \
                 list(set(reduce(list.__add__, [self._get_options_for_attribute(key, species) for key in self.finish_options_set])))
+
+class Catalog(dict):
+    def __init__(self):
+        for name in _all_manufacturers:
+            cabinet_line = CabinetLine(name)
+            self[cabinet_line.catalog_name] = cabinet_line 
+            
+    def manufacturers(self):
+        return self.keys()
+    
+    def cabinet_line(self, name):
+        return self[name]
+    
+def get_manufacturers():
+    c = Catalog()
+    return [(n,m.catalog_name) for n,m in c.items()]
 

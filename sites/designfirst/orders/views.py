@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
-from catalog.models import Catalog
+from catalog.manufacturers import CabinetLine, Catalog
 from utils.views import render_to
 
 from base import WizardBase
@@ -29,12 +29,11 @@ class Wizard(WizardBase):
     
     def step_manufacturer(self, request):
         manufacturers = {}
-        manufacturers_json = {}
-        # manufacturers = list(Manufacturer.objects.all())
+        manufacturers = Catalog().manufacturers()
         # manufacturers_json = simplejson.dumps([m.json_dict() for m in manufacturers])
         return self.handle_form(request, ManufacturerForm,
-                                 {'manufacturers': manufacturers,
-                                   'manufacturers_json':manufacturers_json})
+                                 {'manufacturers_json': simplejson.dumps(manufacturers),
+                                   'manufacturers':manufacturers})
     
     
     def step_hardware(self, request):
@@ -194,35 +193,47 @@ def print_order(request, id):
     return {'order': order, 'summary': summary}
 
 def is_existing_manufacturer(order):
-    #TODO: move to Manufacturer model
-    try:
-        Catalog.objects.search(name=order.manufacturer)
-        return True
-    except Catalog.DoesNotExist:
-        return False
-
-
-def _manufacturer_related(request, model):
-    "Return 'autocomplete' response of objects that matches manufacturer"
-    filter = request.GET.pop('q')
-    domain = request.GET.items()    
-    
-    return HttpResponse('\n'.join(['%s|%s' % (i,i) for i in Catalog.objects.search(filter, domain) ]))
-
+    return order.manufacturer in get_manufacturers()
 
 @render_to('wizard/attachment_details.html')
 def ajax_attach_details(request, id):
     attachment = get_object_or_404(Attachment, id=id)
     return {'attachment': attachment}
 
-def ajax_door_style(request):
-    return _manufacturer_related(request)# , DoorStyle)
+def _make_kwargs(request, keys=['ds', 'dm', 'ft']):
+    kwargs = {}
+    keymap = {'ds': 'style', 'dm': 'species', 'ft': 'finish_type'}
+    for key in keys:
+        if key in request.GET: kwargs[keymap[key]] = request.GET[key]
+    return kwargs
 
 def ajax_product_line(request):
-    return _manufacturer_related(request) #, DoorStyle)
+    mfg = request.GET.get('m', None)
+    if not mfg:
+        return HttpResponse()    
+    lines = [mfg]
+    return HttpResponse(simplejson.dumps(lines))
 
+def ajax_door_style(request):
+    mfg = request.GET.get('m', None)
+    if not mfg:
+        return HttpResponse()    
+    styles = Catalog().cabinet_line(mfg).get_door_styles(species=request.GET.get('dm', None))
+    return HttpResponse(['%s|%s' %s for s in styles]) # if q in style])
+ 
 def ajax_wood(request):
-    return _manufacturer_related(request) #, WoodOption)
+    mfg = request.GET.get('m', None)
+    if not mfg:
+        return HttpResponse()
+    species = Catalog().cabinet_line(mfg).get_door_materials(style=request.GET.get('ds', None))
+    return HttpResponse('\n'.join(['%s|%s' % (a,a) for a in species])) # if q in style])
+    return HttpResponse(simplejson.dumps(species)) # if q in style])
 
 def ajax_finish_color(request):
-    return _manufacturer_related(request) # , FinishOption)
+    mfg = request.GET.get('m', None)
+    if not mfg:
+        return HttpResponse()
+    finish = Catalog().cabinet_line(mfg).get_primary_finishes(species=request.GET.get('dm', None), 
+                                                               finish_type=request.GET.get('ft', None), 
+                                                               style=request.GET.get('ds', None))
+    return HttpResponse(simplejson.dumps(finish)) # if q in style])

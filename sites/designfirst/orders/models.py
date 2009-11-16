@@ -124,7 +124,7 @@ class WorkingOrder(models.Model):
     product_line    = models.CharField(_('Product Line'), max_length=150, blank=True, null=True)
     door_style      = models.CharField(_('Door Style'), max_length=150, blank=True, null=True)
     drawer_front_style = models.CharField(_('Drawer Front Style'), max_length=150, blank=True, null=True)
-    cabinet_material= models.CharField(_('Cabinet Material'), max_length=10, blank=True, null=True, choices=DOOR_MATERIAL_CHOICES)
+    cabinet_material= models.CharField(_('Door Material'), max_length=10, blank=True, null=True, choices=DOOR_MATERIAL_CHOICES)
     finish_type     = models.CharField(_('Finish Type'), max_length=150, blank=True, null=True, choices=FINISH_CHOICES, default=FINISH_CHOICES[0][0])
     finish_color    = models.CharField(_('Paint/Stain Color'), max_length=150, blank=True, null=True) # maybe 'color'?
     finish_options  =  models.CharField(_('Finish Options'), max_length=150, blank=True, null=True)

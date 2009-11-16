@@ -1,3 +1,6 @@
+keyname = 'executive'
+catalog_name = 'Executive Kitchens'
+line_name = 'Executive Kitchens'
 
 product_lines = ['Executive', 'Bellini', 'Biltmore'] # , 'Impact']   
 #

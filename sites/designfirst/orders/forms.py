@@ -24,7 +24,7 @@ class ManufacturerForm(forms.ModelForm, FieldsetForm):
         model = WorkingOrder
         fieldsets = [
             (None, {
-                'fields': ['manufacturer','product_line','cabinet_material','door_style','drawer_front_style','finish_type','finish_color','finish_options']}),
+                'fields': ['manufacturer','product_line','door_style','cabinet_material','finish_type','finish_color','finish_options','drawer_front_style']}),
             # ('Notes', {
             #     'fields': ['cabinetry_notes'], 
             #     'styles': 'collapse'}),

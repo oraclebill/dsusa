@@ -1,4 +1,6 @@
-catalog = 'yorktowne'
+catalog_name = 'Yorktowne Cabinetry'
+line_name = 'Yorktowne'
+keyname = 'yorktowne'
 
 product_lines = [
     'yorktowne',
@@ -82,7 +84,7 @@ accent_finishes = [
 door_styles = [
     'arch', 
     'asbury square', 
-    'avondale cathedral*', 
+    'avondale cathedral', 
     'avondale square*', 
     'bellaire', 
     'belmonte', 

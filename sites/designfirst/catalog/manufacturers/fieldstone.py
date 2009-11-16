@@ -11,7 +11,9 @@ Definitions for FieldStone Cabinetry
 """
 
 #
-catalog = 'Fieldstone'
+catalog_name = 'Fieldstone Cabinetry'
+line_name = 'Fieldstone'
+keyname = 'fieldstone'
 #
 product_lines = [ 
         'FieldStone',

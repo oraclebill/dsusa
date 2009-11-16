@@ -11,6 +11,37 @@
 </style>
 <script>
 
+function input_html(id, name, value) {
+	return '<input type="text" name="'+name+'" id="'+id+'" value="'+value+'">'
+}
+
+function select_html(id, name, value, choices) {
+    if (!choices) {
+        return input_html(id, name, value);
+    }
+	var options = '<option></option>'
+	for (var i=0; i<choices.length; i++) {
+		var selected = ''
+		if (value=='' && i==0)
+			selected = ' selected="selected"'
+		else if (value == choices[i])
+			selected = ' selected="selected"'
+		options += '<option value="'+choices[i]+'"'+selected+'> '+choices[i]+'&#148; </option>'
+	}
+	return '<select name="'+name+'" id="'+id+'">'+options+'</select>'
+}
+
+function replace_widget(id, name, select, choices) {
+	var validation = $('#'+id).data('validation') //Validatoin fix
+	var value = $('#'+id).val()
+	if (select)
+		html = select_html(id, name, value, choices);
+	else
+		html = input_html(id, name, value);
+	$('#'+id).replaceWith(html)
+	$('#'+id).data('validation', validation)
+}
+
 $(function(){
 	var MANUFACTURERS = {{manufacturers_json|safe}};
 
@@ -19,8 +50,11 @@ $(function(){
 	}
 
 
-	function clean_manuf_related() {
-		$('#id_door_style').val('');
+	function clean_manuf_related(manufacturer) {
+		$('#id_product_line').val(manufacturer)
+		//$('#id_door_style').val('');
+		styles = $.getJSON('{% url ajax-door-style %}?mf='+manufacturer)
+		replace_widget('id_door_style', 'door_style', true, styles)
     	$('#id_cabinet_material').val('');
     	$('#id_finish_color').val('');
 	}
@@ -39,32 +73,43 @@ $(function(){
 
 	//Manufacturere autocompleter
 	$("#id_manufacturer").autocomplete(MANUFACTURERS, {
-		formatItem: function (item) {
-			return item.name;
-		}
+//		formatItem: function (item) {
+//			return item.catalog_name;
+//		}
 	}).result(function(event, item){
-		clean_manuf_related();
+		clean_manuf_related(item);
     })
 
 
 	//Door material autocompleter
 	$("#id_cabinet_material").autocomplete('{% url ajax-door-material %}', {
 		extraParams: {
-			manufacturer: function() { return $("#id_manufacturer").val(); }
+			m: function() { return $("#id_manufacturer").val(); },
+			cl: function() { return $("#id_product_line").val(); },
+			ds: function() { return $("#id_door_style").val(); },
+			ft: function() { return $("#id_finish_type").val(); },
+			fc: function() { return $("#id_finish_color").val(); }
 		}
 	})
-
 	//Door style autocompleter
 	$("#id_door_style").autocomplete('{% url ajax-door-style %}', {
 		extraParams: {
-			manufacturer: function() { return $("#id_manufacturer").val(); }
+			m: function() { return $("#id_manufacturer").val(); },
+			cl: function() { return $("#id_product_line").val(); },
+			ft: function() { return $("#id_finish_type").val(); },
+			fc: function() { return $("#id_finish_color").val(); },
+			dm: function() { return $("#id_cabinet_material").val(); }
 		}
 	})
 
 	//Finish color autocompleter
 	$("#id_finish_color").autocomplete('{% url ajax-finish-color %}', {
 		extraParams: {
-			manufacturer: function() { return $("#id_manufacturer").val(); }
+			m: function() { return $("#id_manufacturer").val(); },
+			cl: function() { return $("#id_product_line").val(); },
+			ds: function() { return $("#id_door_style").val(); },
+			ft: function() { return $("#id_finish_type").val(); },
+			dm: function() { return $("#id_cabinet_material").val(); }
 		}
 	})
 })
