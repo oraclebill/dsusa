@@ -170,4 +170,4 @@ class DealerRegistrationBackend(DefaultBackend):
         return ('registration_complete', [], {})
 
     def post_activation_redirect(self, request, user):
-        return ('setup_new_user', [],{ 'slug': user.username })
+        return ('setup_new_user', [],{ 'username': user.username })

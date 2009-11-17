@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 from registration.views import activate
 from registration.views import register
+from views import setup_new_user
 
 
 urlpatterns = patterns('',
@@ -19,13 +20,7 @@ urlpatterns = patterns('',
            activate,
            { 'backend': 'customer.registration.DealerRegistrationBackend' },
            name='registration_activate'),
-       url(r'^activate/new_user/(?P<slug>\w+)/$',
-           'django.views.generic.create_update.update_object',
-           { 'form_class': UserCreationForm, 
-             'slug_field': 'username',
-             'template_name': 'registration/password_reset_form.html', 
-             'post_save_redirect': '/dealer/', 
-             },
+       url(r'^activate/new_user/(?P<username>\w+)/$', setup_new_user,
            name='setup_new_user'),
        url(r'^register/$',
            register,
