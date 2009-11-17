@@ -2,9 +2,8 @@ from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth.forms import UserCreationForm
 
-from registration.views import activate
 from registration.views import register
-from views import setup_new_user
+from views import setup_and_activate
 
 
 urlpatterns = patterns('',
@@ -17,11 +16,9 @@ urlpatterns = patterns('',
        # that way it can return a sensible "invalid key" message instead of a
        # confusing 404.
        url(r'^activate/(?P<activation_key>\w+)/$',
-           activate,
+           setup_and_activate,
            { 'backend': 'customer.registration.DealerRegistrationBackend' },
            name='registration_activate'),
-       url(r'^activate/new_user/(?P<username>\w+)/$', setup_new_user,
-           name='setup_new_user'),
        url(r'^register/$',
            register,
            { 'backend': 'customer.registration.DealerRegistrationBackend' },

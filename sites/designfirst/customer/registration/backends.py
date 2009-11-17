@@ -27,7 +27,7 @@ from django.db import transaction
 
 from customer.models import Dealer, UserProfile
 from registration.backends.default import DefaultBackend
-from registration.models import RegistrationProfile
+from registration.models import RegistrationProfile, SHA1_RE
 from registration.signals import user_registered, user_activated
 
 from forms import DealerRegistrationForm
@@ -163,6 +163,16 @@ class DealerRegistrationBackend(DefaultBackend):
         
         return False
 
+    def can_activate(self, activation_key):
+        if SHA1_RE.search(activation_key):
+            try:
+                profile = RegistrationProfile.objects.get(activation_key=activation_key)
+            except RegistrationProfile.DoesNotExist:
+                return False
+            if not profile.activation_key_expired():
+                return True
+        return False
+
     def get_form_class(self, request):
         return DealerRegistrationForm
     
@@ -170,4 +180,5 @@ class DealerRegistrationBackend(DefaultBackend):
         return ('registration_complete', [], {})
 
     def post_activation_redirect(self, request, user):
-        return ('setup_new_user', [],{ 'username': user.username })
+        return ('dealer-dashboard', [],{})
+
