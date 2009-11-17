@@ -1,14 +1,32 @@
-#Production settings
-#Use:
-# cp settings_local.py settings_local.py.production
+#DEBUG = False
+SECURE = True
 
-DEBUG = False
-TEMPLATE_DEBUG = DEBUG
+APPL_FILE_ROOT='/var/www/com_designserviceusa_stage/var/application-data'
 
+EMAIL_HOST='m0.designserviceusa.com'   		# bull
+SERVER_EMAIL='stage@designserviceusa.com'   	# from address for system mails (to admins and manager)
 
 ADMINS = (
-    ('Bill Jones', 'bill@averline.com'),
-    ('DSUSA System Admin', 'admin@designserviceusa.com'),
-    ('DSUSA System', 'system@designserviceusa.com'),
+    ('DSUSA Support', 	'support@designserviceusa.com'),
 )
-MANAGERS = ADMINS
+
+MANAGERS = (
+    ('DSUSA Support', 	'support@designserviceusa.com'),
+)
+
+DATABASE_ENGINE = 'postgresql_psycopg2'
+DATABASE_NAME 	= 'designfirst_stage'
+DATABASE_USER 	= 'designfirst_stage'
+DATABASE_PASSWORD = 'congo'
+DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
+# postgres needs 'New_York'
+TIME_ZONE = 'America/New_York'
+
+MEDIA_URL = '/'
+ADMIN_MEDIA_PREFIX = '/media/admin/'
+
+LOCAL = False
+DEBUG = True
+DEBUG_TEMPLATES = True

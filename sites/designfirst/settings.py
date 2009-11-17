@@ -9,8 +9,6 @@ def rel(*x):
 
 sys.path.insert(0, rel('..', '..', 'lib'))      #Adding lib to system path
 
-
-
 DEBUG = True
 LOCAL = DEBUG
 TEMPLATE_DEBUG = DEBUG
