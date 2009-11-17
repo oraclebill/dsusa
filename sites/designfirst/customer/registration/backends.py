@@ -19,6 +19,7 @@ from hashlib import sha1
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site, RequestSite
+from django.template.loader import render_to_string
 from django.core.mail import mail_admins, mail_managers
 from django.utils.encoding import force_unicode
 from django.http import Http404
@@ -93,8 +94,15 @@ class DealerRegistrationBackend(DefaultBackend):
             return False
         else:
             transaction.commit()
-        
-        mail_managers('new registration', '%s' % new_dealer.legal_name ) 
+
+
+        context = { 'dealer': new_dealer, 'site': site }
+        subject = render_to_string( 'registration/admin_email_subject.txt', context)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        message = render_to_string('registration/admin_email.txt', context)
+
+        mail_managers(subject, message)
         user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=request)
