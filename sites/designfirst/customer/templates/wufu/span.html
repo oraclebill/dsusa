@@ -1,0 +1,6 @@
+{% load wufu_tags %}
+<span class="{{ classes }}">
+        {{ field }}
+        <label {% if field|is_checkbox %}class="choice"{% endif %}>{{ field.label }}</label>
+    {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+</span>
