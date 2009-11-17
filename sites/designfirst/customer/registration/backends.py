@@ -167,7 +167,7 @@ class DealerRegistrationBackend(DefaultBackend):
         return DealerRegistrationForm
     
     def post_registration_redirect(self, request, user):
-        return ('http://www.designserviceusa.com', [], {})
+        return ('registration_complete', [], {})
 
     def post_activation_redirect(self, request, user):
         return ('setup_new_user', [],{ 'slug': user.username })
