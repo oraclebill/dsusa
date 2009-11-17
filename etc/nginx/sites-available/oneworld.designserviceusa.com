@@ -1,15 +1,15 @@
 server {
 	listen 80;
-	server_name designserviceusa.com alias www.designserviceusa.com;
+	server_name oneworld.designserviceusa.com;
 
-        access_log /var/log/nginx/com_designserviceusa_www-access.log;
-        error_log /var/log/nginx/com_designserviceusa_www-error.log error;
+        access_log /var/log/nginx/com_designserviceusa_oneworld-access.log;
+        error_log /var/log/nginx/com_designserviceusa_oneworld-error.log error;
 
-	location ~ /(css|img|js|pic)/ {
-		root /var/www/com_designserviceusa_www/static;
+	location ~ /(wufu|css|img|js|pic)/ {
+		root /var/www/com_designserviceusa_oneworld/static;
 	}
 	location / {
-		fastcgi_pass unix:/var/www/com_designserviceusa_www/var/website-fcgi.sock;
+		fastcgi_pass unix:/var/www/com_designserviceusa_oneworld/var/dsprovider-fcgi.sock;
 		fastcgi_param PATH_INFO $fastcgi_script_name;
 		fastcgi_param REQUEST_METHOD $request_method;
 		fastcgi_param QUERY_STRING $query_string;

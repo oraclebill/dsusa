@@ -1,6 +1,6 @@
 server {
- 	listen 443;
 	server_name secure.designserviceusa.com;
+ 	listen 443 default;
 	
 	# ssl params
 	keepalive_timeout 70;
@@ -11,16 +11,23 @@ server {
 	#ssl_session_timeout 10m;
 	# end ssl params
 
+	client_max_body_size 10m;
+
+	location ~ /(data|wufu|css|images|js|pic)/ {
+		root /var/www/com_designserviceusa_oneworld/static;
+	}
+
+	location ~ /favicon.* {
+		root /var/www/com_designserviceusa_oneworld/static;
+	}
+
+	location /files/ {
+		alias /var/www/com_designserviceusa_oneworld/var/application-data/;
+	}
+
         location / {
-                fastcgi_pass unix:/var/www/com_designserviceusa_beta/var/designfirst.sock;
-                fastcgi_param PATH_INFO $fastcgi_script_name;
-                fastcgi_param REQUEST_METHOD $request_method;
-                fastcgi_param QUERY_STRING $query_string;
-                fastcgi_param CONTENT_TYPE $content_type;
-                fastcgi_param CONTENT_LENGTH $content_length;
-                fastcgi_param  SERVER_PROTOCOL    $server_protocol;
-                fastcgi_param  SERVER_NAME $server_name;
-                fastcgi_param  SERVER_PORT        $server_port;
+		include /etc/nginx/fastcgi_params;
+                fastcgi_pass unix:/var/www/com_designserviceusa_oneworld/var/designfirst-fcgi.sock;
                 fastcgi_param  HTTPS        on;
                 fastcgi_pass_header Authorization;
                 fastcgi_intercept_errors off;

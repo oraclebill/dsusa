@@ -6,11 +6,11 @@ server {
         error_log /var/log/nginx/com_designserviceusa_stage-error.log error;
 
 	location ~ /(css|img|js|pic)/ {
-		root /var/www/com_designserviceusa_www/static;
+		root /var/www/com_designserviceusa_stage/static;
 	}
 
 	location / {
-		fastcgi_pass unix:/var/www/com_designserviceusa_www/var/website-fcgi.sock;
+		fastcgi_pass unix:/var/www/com_designserviceusa_stage/var/website-fcgi.sock;
 		fastcgi_param PATH_INFO $fastcgi_script_name;
 		fastcgi_param REQUEST_METHOD $request_method;
 		fastcgi_param QUERY_STRING $query_string;
