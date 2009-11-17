@@ -1,0 +1,13 @@
+Dealer Design Service - Order submited
+
+	-------  Order Information -------  
+
+Order #:            {{ order.id }}
+Project:            {{ order.project_name }}
+Presentation Pack?: {{ order.color_views }}
+Rush:               {{ order.rush|yesno }}
+Submitted By:       {{ order.owner }}
+
+Thanks for using Design Service USA!
+
+The Dealers Design Service Team
