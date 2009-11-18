@@ -3,13 +3,23 @@
 import sys
 import subprocess
 import os.path as path
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option('-k', '--kill', action='store_const', const='kill', dest='action', help='kill a running appserver')
+parser.add_option('-r', '--restart', action='store_const', const='restart', dest='action', help='restart a running appserver')
+
+opts, a = parser.parse_args(sys.argv[1:])
+if a:
+  site = a[0]
+else: 
+  site = 'website'
+
+if not opts.action:
+  opts.action = 'start'
 
 (root, dir) = path.split(path.dirname(path.abspath(__file__)))
 project = path.basename(root)
-if len(sys.argv) > 1:
-  site = sys.argv[1]
-else:
-  site = None
 
 if not 'bin' == dir:  
   print 'Error: script directory "%s" instead of "bin"' % dir
@@ -18,40 +28,44 @@ if not path.exists(path.join(root,'var')):
   print 'Error: no "var" directory found as child of "%s"' % root
   exit(-1)
 
-if path.exists(path.join(root,'website')):
+if site == 'website':
   site_path=path.join(root,'website', 'manage.py')
-  socket=path.join(root,'var','website-fcgi.sock')
-  pidfile=path.join(root,'var','website-fcgi.pid')
-  errlog=path.join(root,'var', 'website-log.err')
-elif path.exists(path.join(root,'sites')) and len(sys.argv) > 1:
-  if not path.exists(path.join(root,'sites',site,'manage.py')):
-    print 'Error: site not found: %s' % path.join(root,'sites',site,'manage.py')
-    exit(-1)
-  site_path=path.join(root,'sites', sys.argv[1], 'manage.py')
-  socket=path.join(root,'var','%s-fcgi.sock' % sys.argv[1])
-  pidfile=path.join(root,'var','%s-fcgi.pid' % sys.argv[1])
-  errlog=path.join(root,'var', '%s-log.err' % sys.argv[1])
 else:
-  print 'Error: no sites found. or passed on comand lne'
+  site_path=path.join(root,'sites', site, 'manage.py')
+
+if not path.exists(path.join(site_path)):
+  print 'Error: site not found: %s' % site_path
   exit(-1)
 
-print 'testing server'
-if path.exists(pidfile):
-   raise Error, "server running at %s" % pidfile
+socket=path.join(root,'var',site, 'run', '%s.sock' % site)
+pidfile=path.join(root,'var',site, 'run', '%s.pid' % site)
+errlog=path.join(root,'var',site, 'log', '%s-errors.log' % site)
 
-# two possibilities for app locations
-if site_path:
-  # we're in a single site domain
+print '*** Executing %s for app %s at %s' % (opts.action, site, socket)
+if path.exists(pidfile):
+   print 'found process file %s' % pidfile
+   if opts.action in ['kill', 'restart']:
+      print '...shutting down %s' % site
+      pid=open(pidfile).read().strip()
+      subprocess.call(['kill', pid])
+      subprocess.call(['rm', pidfile])
+   else:
+      print "server already running at %s - try --restart" % pidfile
+      exit(-3)
+
+elif opts.action in ['kill', 'restart']:
+  print 'no process file found!'
+
+if opts.action in ['start', 'restart']:
+  print 'Starting %s' % site
   params=[ site_path,
-	   'runfcgi', 
-	   'method=prefork',
-	   'socket=%s' % socket,
-	   'pidfile=%s' % pidfile,
-	   'errlog=%s' % errlog,
-	   'maxchildren=4']
-  print 'running %s' % params
+     'runfcgi', 
+     'method=prefork',
+     'socket=%s' % socket,
+     'pidfile=%s' % pidfile,
+     'errlog=%s' % errlog,
+     'maxchildren=4']
+  #print 'running %s' % params
   subprocess.call(params)
-  print 'running chmod'
   subprocess.call(['chmod', '666', socket])
-else:
-  print 'Error finding file %s' % site_path
+  print 'process running on local socket %s, process id %s' % (socket, open(pidfile).read().strip())
