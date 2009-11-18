@@ -229,7 +229,7 @@ class WorkingOrder(models.Model):
     
     def attachment_previews(self):
         "Return urls of all attachment previews"
-        return [a.first_preview() for a in self.attachments.all()]
+        return [a.first_preview for a in self.attachments.all()]
     
     
     
