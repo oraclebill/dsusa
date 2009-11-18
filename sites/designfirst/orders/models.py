@@ -67,10 +67,24 @@ class WorkingOrder(models.Model):
         (COMPLETED, 'Completed'),
     )
     
+    KITCHEN_DESIGN, BATH_DESIGN, CLOSET_DESIGN, GENERAL_DESIGN = ('K', 'B', 'C', '*')  #TODO: change from number to code
+    DESIGN_TYPE_CHOICES = (
+        (KITCHEN_DESIGN, _('Kitchen')),
+        (BATH_DESIGN, _('Bath')),
+        (CLOSET_DESIGN, _('Closet')),
+        (GENERAL_DESIGN, _('Other (Generic)')),
+    )
+    
     owner = models.ForeignKey(User)
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
     submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
+
+    #whj:  new fields 11/18/09 to support tracking and fax correlation
+    type = models.CharField(_('Design Type'), max_length=1, choices=DESIGN_TYPE_CHOICES, default=KITCHEN_DESIGN)
+    created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
+    account_code = models.CharField(_('Customer Account Code'), max_length=40, null=True, blank=True)
+    tracking_code = models.CharField(_('Tracking Code'), max_length=20, null=True, blank=True)
     
     #Submit options
     project_name = models.CharField(_('Project Name'), max_length=150)

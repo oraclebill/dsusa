@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('orders.views',
+    url(r'^new/$', 'create_order', name='new_order'),
     url(r'^(\d+)/$', 'wizard', name='order-wizard'),
     url(r'^(\d+)/(.*?)/$', 'wizard', name='order-wizard-step'),
     url(r'^complete/(\d+)/$', 'wizard', {'complete': True}, name='order-wizard-complete'),

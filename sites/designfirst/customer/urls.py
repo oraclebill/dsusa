@@ -12,7 +12,7 @@ urlpatterns = patterns('customer.views',
     url(r'^dealer/$', 'dealer_dashboard', name='dealer-dashboard'),
     
     # (r'^dealer/order/$', 'dealer_dashboard'),                       
-    url(r'^dealer/order/new/$', 'create_order', name='new_order'),
+    # url(r'^dealer/order/new/$', 'create_order', name='new_order'),
     (r'^dealer/order/(\d+)/edit/$', 'edit_order_detail'),
     (r'^dealer/order/(\d+)/submit/$', 'dealer_submit_order'),
     (r'^dealer/order/(\d+)/review/$', 'dealer_review_order'),
