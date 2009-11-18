@@ -75,7 +75,7 @@ def home(request):
     """    
     if request.session:
         request.session.flush()
-    return render_to_response( 'customer/home.html',context_instance=RequestContext(request) )
+    return render_to_response( 'registration/login.html',context_instance=RequestContext(request) )
 
 
 def do_login(request, next=None):
