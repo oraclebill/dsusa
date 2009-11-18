@@ -17,7 +17,7 @@ TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ('127.0.0.1',)
 SECURE = False
 
-APP_FILES_ROOT = rel('..','..','var','application-data')
+APP_FILES_ROOT = rel('..','..','var','designfirst','files')
 APP_FILES_URL = '/files'
 
 ADMINS = (
@@ -169,13 +169,12 @@ MAIL_SYSTEM_NOTIFY_ADDRESS = 'system@designserviceusa.com'
 DEMO_MAIL_DESIGNER_ADDRESS = 'designer-notify@designserviceusa.com'
 #DEMO_MAIL_DEALER_ADDRESS = 'dealer-notify@designserviceusa.com'
 
-
-#This is used for pdf2ppm output
-PPM_TMP_ROOT = '/tmp/designfirst/'
-
 ACCOUNT_ACTIVATION_DAYS=2
 REGISTRATION_AUTHORIZATION = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+
+PPM_TMP_ROOT = os.path.join(APP_FILES_ROOT, 'tmp')
+
 
 try:
     from settings_local import *

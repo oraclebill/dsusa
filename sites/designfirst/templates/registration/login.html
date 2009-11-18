@@ -4,10 +4,15 @@
 {% block title %} Design First Login {% endblock %}
 
 {% block content %}
-<div id="logo_block" class="grid_11">
-  <img src="/static/images/logo_large.png" alt="DesignFirst Logo"/>
+<div id="logo_block" class="grid_7 suffix_2 prefix_1">
+<p></p>
+  <h1>{% trans "Welcome to Design Service USA" %}</h1>
+<p></p>
+  <h4>{% trans "Your source for professional 20/20 designs in 48 hours or less." %}</h4> 
+<p></p>
+  <h5><em>{% trans "Sign in and get started now!" %} </em></h5>
 </div>
-<div id="login_panel" class="grid_5">
+<div id="login_panel" class="grid_5 suffix_1">
          <div class="block" id="login-forms">
             <form action="/login/" method="post">
               <fieldset class="login">

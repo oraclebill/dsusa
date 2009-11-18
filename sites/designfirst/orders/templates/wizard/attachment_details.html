@@ -3,6 +3,20 @@ img#preview {
 	max-width: 600px;
 	max-height: 600px;
 }
+
+a.diagram { 
+    display: block; 
+    float: left; 
+    width: 5em; 
+    margin-left: auto; 
+    margin-right: auto;
+    padding: 5px; 
+    border: 1px solid #252525; 
+    background: #C7CBC2; 
+}
+img#preview {
+    width=600;
+}
 </style>
 <script>
 $(function(){
@@ -23,7 +37,7 @@ $(function(){
 	</td>
 	<td>
 		{% for preview in attachment.previews %}
-		<a href="{{preview.url}}" class="imgpage">{{preview.page}}</a>
+		<a href="{{preview.url}}" class="diagram">{{preview.page}}</a>
 		{% endfor %}
 		<br>
 		<img src="" id="preview">

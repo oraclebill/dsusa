@@ -1,3 +1,4 @@
+{% load wufu_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -29,161 +30,60 @@
                         <br />
                         DSUSA's Dealer Design Service is a subscription service. </div>
                 </div>
+
                 <ul>
-                    <li id="foli25" class="section ">
+                    {% if form.errors %}
+                    <li id="errorLi">
+                        <h3 id="errorMsgLbl">There was a problem with your submission.</h3>
+                        <p id="errorMsg">
+                            Errors have been <strong>highlighted</strong> below.
+                        </p>
+                    </li>
+                    {% endif %}
+                    <li class="section ">
                         <h3 id="title25">Primary Contact Information</h3>
                         <div id="instruct25">Enter the personal information for the primary contact for your organization.</div>
                     </li>
-                    <li id="foli19" class=" ">
+                    <li class="{% if form|errors_in:"first_name,last_name" %}error{% endif %} ">
                         <label class="desc" id="title19" for="Field19">
                             Name<br />
                             <span id="req_19" class="req">*</span>
                         </label>
-                        <span>
-                            {{ form.first_name }}
-                            {{ form.first_name.errors }}
-                            <!-- <input id="Field19" name="first_name" type="text" class="field text" value="" size="8" tabindex="2" /> -->
-                            <label for="Field19">First</label>
-                        </span>
-                        <span>
-                            <!-- <input id="Field20" name="last_name" type="text" class="field text" value="" size="14" tabindex="3" /> -->
-                            {{ form.last_name }}
-                            {{ form.last_name.errors }}
-                            <label for="Field20">Last</label>
-                        </span>
+                        {% wufu_span form.first_name %}
+                        {% wufu_span form.last_name %}
                         <p class="instruct" id="instruct19"><small>The name of the primary contact for your account.</small></p>
                     </li>
-                    <li id="foli21" class=" ">
-                        <label class="desc" id="title21" for="Field21">
-                            Email
-                            <span id="req_21" class="req">*</span>
-                        </label>
-                        <div>
-                            <!-- <input id="Field21" name="email" type="text" class="field text medium" value="" maxlength="255" tabindex="4" />  -->
-                            {{ form.email }}
-                            {{ form.email.errors }}
-                        </div>
-                        <p class="instruct" id="instruct21"><small>A valid email address.<br />
-                                <br />
-                                We will use this email to verify your registration.</small></p>
-                    </li>
-
+                    {% wufu_li form.email "" "<small>A valid email address.<br /><br />We will use this email to verify your registration.</small>" %}
                     <li id="foli23" class="section ">
                         <h3 id="title23">Business Information<br />
                         </h3>
                         <div id="instruct23">Enter primary accont information.</div>
                     </li>
 
-
-                    <li id="foli4" class=" ">
-                        <label class="desc" id="title4" for="Field4">
-                            Legal Name
-                            <span id="req_4" class="req">*</span>
-                        </label>
-                        <div>
-                            <!-- <input id="Field4" name="company_name" type="text" class="field text medium" value="" maxlength="255" tabindex="5" /> -->
-                            {{ form.legal_name }}
-                            {{ form.legal_name.errors }}
-                        </div>
-                        <p class="instruct" id="instruct4"><small>Your organizations legal business name. </small></p>
-                    </li>
-
-
-                    <li id="foli12" class="complex address-block">
+                    {% wufu_li form.legal_name "" "<small>Your organizations legal business name. </small>" %}
+                    <li id="foli12" class="complex address-block {% if form|errors_in:"address_1,address_2,city,state,zip4,phone,fax" %}error{% endif %}">
                         <label class="desc" id="title12" for="Field12">
                             Primary Address
                             <span id="req_12" class="req">*</span>
                         </label>
                         <div>
-                            <span class="full">
-                                <!-- <input id="Field12" name="address_2" type="text" class="field text addr" value="" tabindex="6" /> -->
-                                {{ form.address_1 }}
-                                {{ form.address_1.errors }}
-                                <label for="Field12">Street Address</label>
-                            </span>
-                            <span class="full">
-                                <!-- <input id="Field13" name="address_2" type="text" class="field text addr" value="" tabindex="7" /> -->
-                                {{ form.address_2 }}
-                                {{ form.address_2.errors }}
-                                <label for="Field13">Address Line 2</label>
-                            </span>
-                            <span class="left">
-                                <!-- <input id="Field14" name="city" type="text" class="field text addr" value="" tabindex="8" /> -->
-                                {{ form.city }}
-                                {{ form.city.errors }}
-                                <label for="Field14">City</label>
-                            </span>
-                            <span class="right">
-                                <!-- <input id="Field15" name="state" type="text" class="field text addr" value="" tabindex="9" /> -->
-                                {{ form.state }}
-                                {{ form.state.errors }}
-                                <label for="Field15">State / Province / Region</label>
-                            </span>
-                            <span class="left">
-                                <!-- <input id="Field16" name="zip4" type="text" class="field text addr" value="" maxlength="15" tabindex="10" /> -->
-                                {{ form.zip4 }}
-                                {{ form.zip4.errors }}
-                                <label for="Field16">Postal / Zip Code</label>
-                            </span>
-                            <span class="right">
+                            {% wufu_span form.address_1 "full" %}
+                            {% wufu_span form.address_2 "full" %}
+                            {% wufu_span form.city "left" %}
+                            {% wufu_span form.state "right" %}
+                            {% wufu_span form.zip4 "full" %}
+
+                            {% wufu_span form.phone "left" %}
+                            {% wufu_span form.fax "right" %}
+                        </div>
                     </li>
 					
-                    <li id="foli4x" class=" ">
-                        <label class="desc" id="title4x" for="Field4x">
-                            Phone
-                            <span id="req_4" class="req">*</span>
-                        </label>
-                        <div>
-                            <!-- <input id="Field4" name="company_name" type="text" class="field text medium" value="" maxlength="255" tabindex="5" /> -->
-                            {{ form.phone }}
-                            {{ form.phone.errors }}
-                        </div>
-                        <p class="instruct" id="instruct4"><small>Your organizations legal business name. </small></p>
-                    </li>
-
-                    <li id="foli4xx" class=" ">
-                        <label class="desc" id="title4xx" for="Field4xx">
-                            Fax
-                            <span id="req_4" class="req">*</span>
-                        </label>
-                        <div>
-                            <!-- <input id="Field4" name="company_name" type="text" class="field text medium" value="" maxlength="255" tabindex="5" /> -->
-                            {{ form.fax }}
-                            {{ form.fax.errors }}
-                        </div>
-                        <p class="instruct" id="instruct4"><small>Your organizations legal business name. </small></p>
-                    </li>
-
                     <li id="foli26" class="section ">
                         <h3 id="title26">Account Information</h3>
                     </li>
 
-
-                    <li id="foli150" class=" ">
-                        <label class="desc" id="title150" for="Field150">
-                            Account Representative
-                        </label>
-                        <div>
-                            <!-- <input id="Field150" name="account_repr" type="text" class="field text medium" value="" maxlength="255" tabindex="18" /> -->
-                            {{ form.account_rep_name }}
-                            {{ form.account_rep_name.errors }}
-                        </div>
-                        <p class="instruct" id="instruct150"><small>Your account rep can help you get started, and provide detailed information about the service.</small></p>
-                    </li>
-
-
-                    <li id="foli38" class=" ">
-                        <label class="desc" id="title38" for="Field38">
-                            Number of Locations
-                        </label>
-                        <div>
-                            <!-- <input id="Field38" name="locations_num" type="text" class="field text medium" value="" maxlength="255" tabindex="19" onkeyup="validateRange(38, 'digit');" /> -->
-                            {{ form.num_locations }}
-                            {{ form.locations_num.errors }}
-                            <label for="Field38">Maximum Allowed: <var id="rangeMaxMsg38">25</var> digits.&nbsp;&nbsp;&nbsp; <em class="currently">Currently Used: <var id="rangeUsedMsg38">0</var> digits.</em></label>
-                        </div>
-                        <p class="instruct" id="instruct38"><small>If you have more than one location, please indicate how many.</small></p>
-                    </li>
+                    {% wufu_li form.account_rep_name "" "<small>Your account rep can help you get started, and provide detailed information about the service.</small>" %}
+                    {% wufu_li form.num_locations "" "<small>If you have more than one location, please indicate how many.</small>" %}
 
                     <li id="foli30" class="section ">
                         <h3 id="title30">Expected Service Usage</h3>
@@ -195,17 +95,9 @@
                         <label class="desc" id="title40" for="Field40">
                             Are you ready to get started now? 
                         </label>
-                        <div class="col">
-                            <span>
-                                <!-- <input id="Field40" name="rush" type="checkbox" class="field checkbox" value="Rush My Signup!" tabindex="20" /> -->
-                                {{ form.rush }}
-                                {{ form.rush.errors }}
-                                <label class="choice" for="Field40">Rush My Signup!</label>
-                            </span>
-                        </div>
+                        {% wufu_span form.rush %}
                         <p class="instruct" id="instruct40"><small>Check this box if you have designs to submit within the next week and would like accelerated processing on your registration.</small></p>
                     </li>
-
 
                     <li id="foli142" class=" ">
                         <label class="desc" id="title142" for="Field142">
@@ -246,7 +138,7 @@
                     </li>
 
 
-                    <li id="foli153" class=" ">
+                    <li id="foli153" class="{% if form.tos.errors %}error{% endif %} ">
                         <label class="desc" id="title153" for="Field153">
                             Acceptance statement
                             <span id="req_153" class="req">*</span>
@@ -256,6 +148,7 @@
                                 <input id="Field153" name="tos" type="checkbox" class="field checkbox" value="I agree to the &lt;a target=&quot;_blank&quot; href=&quot;http://docs.google.com/View?id=dd9hkswj_0ckcz43hp&quot;&gt;DSUSA Terms and Conditions&lt;/a&gt;."/>
                                 <label class="choice" for="Field153">I agree to the <a target="_blank" href="http://docs.google.com/View?id=dd9hkswj_0ckcz43hp">DSUSA Terms and Conditions</a>.</label>
                             </span>
+                            {% for error in form.tos.errors %}<p class="error">{{ error }}</p>{% endfor %}
                         </div>
                     </li>
 
@@ -269,7 +162,6 @@
                             
 
                         </li>
-
                     <li style="display:none">
                         <label for="comment">Do Not Fill This Out</label>
                         <textarea name="comment" id="comment" rows="1" cols="1"></textarea>

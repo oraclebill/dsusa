@@ -190,11 +190,11 @@ class WorkingOrder(models.Model):
     degree90_corner_base_shelv = models.PositiveSmallIntegerField(_('Shelving Option'), choices=SHELVING_CHOICES, default=SHELF)
     
     #Interiors page
-    slide_out_trays = models.CharField(_('Slide Out Trays'), max_length=15 )
-    waste_bin = models.CharField(_('Waste Bin'), max_length=15  )
-    wine_rack = models.CharField(_('Wine Rack'), max_length=15  )
-    plate_rack = models.CharField(_('Plate Rack'), max_length=15  )
-    appliance_garage = models.CharField(_('Appliance Garage'), max_length=15 )
+    slide_out_trays = models.CharField(_('Slide Out Trays'), max_length=15, blank=True)
+    waste_bin = models.CharField(_('Waste Bin'), max_length=15, blank=True)
+    wine_rack = models.CharField(_('Wine Rack'), max_length=15, blank=True)
+    plate_rack = models.CharField(_('Plate Rack'), max_length=15, blank=True)
+    appliance_garage = models.CharField(_('Appliance Garage'), max_length=15, blank=True)
     
     #Miscellaneous page
     corbels = models.BooleanField(_('Corbels') )
@@ -229,7 +229,7 @@ class WorkingOrder(models.Model):
     
     def attachment_previews(self):
         "Return urls of all attachment previews"
-        return [a.first_preview() for a in self.attachments.all()]
+        return [a.first_preview for a in self.attachments.all()]
     
     
     
@@ -329,7 +329,7 @@ class Attachment(models.Model):
     @property
     def previews(self):
         if self.is_multipage:
-            for f in self.attachpreview_set.count():
+            for f in self.attachpreview_set.all():
                 yield {'url':f.file.url, 'page': f.page}
         else:
             yield {'url':self.file and self.file.url or None, 'page': 1}
@@ -345,9 +345,9 @@ class Attachment(models.Model):
             raise RuntimeError('Attempt to generate previews for empty attachment (null file )')
         try:
             pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
-        except OSError:
-            logger.error('OSError: pdf generation failed for %s' % self.file.path)
-            self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
+        except OSError as ex:
+            logger.error('OSError: %s error during pdf generation for %s' % (ex, self.file.path))
+            #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
 
     
     def _pdf_callback(self, filename, page, size):
@@ -365,7 +365,7 @@ class AttachPreview(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
     page = models.PositiveIntegerField(_('page'), )
-    file = models.ImageField(_('file'), upload_to=preview_upload_location, storage=APPSTORAGE)
+    file = models.ImageField(_('file'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
     
     class Meta:
         verbose_name = _('attachment preview')

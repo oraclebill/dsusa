@@ -197,7 +197,8 @@ def print_order(request, id):
     return {'order': order, 'summary': summary}
 
 def is_existing_manufacturer(order):
-    return order.manufacturer in get_manufacturers()
+#     return order.manufacturer in get_manufacturers()
+    return False
 
 @render_to('wizard/attachment_details.html')
 def ajax_attach_details(request, id):

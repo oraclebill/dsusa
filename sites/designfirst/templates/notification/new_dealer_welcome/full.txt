@@ -11,17 +11,21 @@ you get started.
 Your Account Information
 ----------------------------------------------
 Account Number:          {{ account.id }}
-Account Name:            {{ account.name }}
+Account Name:            {{ account.legal_name }}
 
-Primary Contact:         {{ account.contact.name }}
-Contact Email:           {{ account.contact.email }}
+{% with account.primary_contact as contact %}
+Primary Contact:         {{ contact.first_name }} {{ contact.last_name }}
+Contact Email:           {{ contact.email }}
+{% endwith %}
 
-Primary Business Address {{ account.primary_address }}
+Primary Business Address {{ account.address_1 }}
 Business Phone           {{ account.phone }}
 Business Fax             {{ account.fax }}
 
+{% if account.rep %}
 Account Rep              {{ account.rep.name }}
 Account Rep Phone        {{ account.rep.phone }}
+{% endif %}
  
 
 Customer Service
