@@ -20,7 +20,7 @@
   </tr>
   <tr>
     <td>Account Name</td>
-    <td>{{ account.name }}</td>
+    <td>{{ account.legal_name }}</td>
   </tr>
   <tr>
     <td>&nbsp;</td>
@@ -28,11 +28,11 @@
   </tr>
   <tr>
     <td>Primary Contact</td>
-    <td> {{ account.contact.name }}</td>
+    <td>{{ account.primary_contact.first_name }} {{ account.primary_contact.last_name }}</td>
   </tr>
   <tr>
     <td>Contact Email</td>
-    <td>{{ account.contact.email }}</td>
+    <td>{{ account.primary_contact.email }}</td>
   </tr>
   <tr>
     <td>&nbsp;</td>
@@ -40,7 +40,7 @@
   </tr>
   <tr>
     <td>Primary Business Address</td>
-    <td>{{ account.primary_address }}</td>
+    <td>{{ account.address_1 }}</td>
   </tr>
   <tr>
     <td>Business Phone</td>
@@ -54,6 +54,7 @@
     <td>&nbsp;</td>
     <td>&nbsp;</td>
   </tr>
+  {% if account.rep_id %}
   <tr>
     <td>Account Rep</td>
     <td>{{ account.rep.name }}</td>
@@ -62,6 +63,7 @@
     <td>Account Rep Phone</td>
     <td>{{ account.rep.phone }}</td>
   </tr>
+  {% endif %}
 </table>
 <p>&nbsp;</p>
 <h2>Getting Started</h2>

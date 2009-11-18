@@ -1,0 +1,4 @@
+New registration:
+    {{ dealer.legal_name }}
+
+You can view it in admin: http://{{ site.domain }}{% url admin:customer_dealer_change dealer.pk %}

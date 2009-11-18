@@ -24,45 +24,40 @@ class DimensionFormField(forms.RegexField):
                             **kwargs)
 
 
-class CheckedTextWidget(forms.widgets.MultiWidget):
+class CheckedTextWidget(forms.widgets.TextInput):
     class Media:
-        css = {
-            'all': ('checkedtext.css',)
-        }
         js = ('js/jquery-1.3.2.min.js', 'js/checkedtext.js')
-        
+
     def __init__(self, attrs=None):
-        widgets = [forms.fields.CheckboxInput, forms.fields.TextInput]
-        super(CheckedTextWidget, self).__init__(widgets, attrs)
-        
-    def decompress(self, value):
-        if value:
-            return (True, value)
-        return (False, value)
-        
+        self.widgets = [forms.fields.CheckboxInput(), forms.fields.TextInput()]
+        super(CheckedTextWidget, self).__init__(attrs)
+
     def render(self, name, value, attrs=None):
         # value is a list of values, each corresponding to a widget
         # in self.widgets.
-        if not isinstance(value, list):
-            value = self.decompress(value)
         output = []
         final_attrs = self.build_attrs(attrs)
         id_ = final_attrs.get('id', None)
         cl = final_attrs.get('class', '')
-        cl += ' cktxt'        
+        cl += ' cktxt'
         final_attrs['class']=cl
         checkbox = self.widgets[0]
         if id_:
             final_attrs = dict(final_attrs, id='%s_ck' % id_)
-        output.append(checkbox.render(name + '_ck', value[0], final_attrs))
+        output.append(checkbox.render(name + '_ck', bool(value), final_attrs))
         charfield = self.widgets[1]
         if id_:
             final_attrs = dict(final_attrs, id='%s' % id_)
-        if not value[0]:
+        if not value:
             final_attrs = dict(final_attrs,  style='display: none;')
-        output.append(charfield.render(name + '_txt', value[1], final_attrs))
-        return mark_safe(self.format_output(output))
-        
+        output.append(charfield.render(name + '_txt', value, final_attrs))
+        return mark_safe(''.join(output))
+
+    def value_from_datadict(self, data, files, name):
+        checked, text = [widget.value_from_datadict(data, files, name + '_%s' % i)
+                for i, widget in zip(('ck', 'txt'), self.widgets)]
+        return text if checked else ''
+
 
 class DimensionField(models.CharField):
     def __init__(self, *args, **kwargs):

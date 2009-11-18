@@ -16,6 +16,7 @@ from models import WorkingOrder, Attachment, Appliance, Moulding
 from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
 from forms import SoffitsForm, SubmitForm, MouldingForm
+from accounting.models import register_design_order
 #from forms import * 
 import summary 
 
@@ -164,9 +165,12 @@ def wizard(request, id, step=None, complete=False):
 @render_to('wizard/order_review.html')
 def _order_review(request, wizard):
     order = wizard.order
+    user = request.user
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
         if form.is_valid():
+            register_design_order(user, user.get_profile().account,
+                                  order, order.cost)
             order = form.save(commit=False)
             order.status = WorkingOrder.SUBMITTED
             order.save()

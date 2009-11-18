@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <meta name="generator" content="HTML Tidy, see www.w3.org">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <base target="_top">
+        <style type="text/css">
+            body {
+                font-family: Times;
+                font-size: 10.0pt;
+                line-height: normal;
+                background-color: #ffffff;
+            }
+        
+        </style>
+        <title>Order completed</title>
+    </head>
+
+    <body>
+        <h1>Order completed</h1>
+
+
+            <h3>Order Details</h3>
+
+            <table border="1" bordercolor="#000000" cellpadding=
+            "10" cellspacing="2" class="" id="nmnu" style=
+            "TEXT-ALIGN:right">
+                <tbody>
+                    <tr>
+                        <td><b>Order ID<br>
+                        </b> </td>
+
+                        <td>{{ order.id }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Project</b> </td>
+
+                        <td>{{ order.project_name }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Presentation Pack?</b> </td>
+
+                        <td>{{ order.color_views }}<br>
+                         </td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Rush?</b> </td>
+
+                        <td>{{ order.rush|yesno }}
+                         </td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Submitted By</b> </td>
+
+                        <td>{{ order.owner }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div>
+        	<br>
+            Thanks for using Design Service USA!<br>
+            The Dealers Design Service Team
+        </div>
+        
+    </body>
+</html>
+

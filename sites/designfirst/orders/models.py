@@ -190,11 +190,11 @@ class WorkingOrder(models.Model):
     degree90_corner_base_shelv = models.PositiveSmallIntegerField(_('Shelving Option'), choices=SHELVING_CHOICES, default=SHELF)
     
     #Interiors page
-    slide_out_trays = models.CharField(_('Slide Out Trays'), max_length=15 )
-    waste_bin = models.CharField(_('Waste Bin'), max_length=15  )
-    wine_rack = models.CharField(_('Wine Rack'), max_length=15  )
-    plate_rack = models.CharField(_('Plate Rack'), max_length=15  )
-    appliance_garage = models.CharField(_('Appliance Garage'), max_length=15 )
+    slide_out_trays = models.CharField(_('Slide Out Trays'), max_length=15, blank=True)
+    waste_bin = models.CharField(_('Waste Bin'), max_length=15, blank=True)
+    wine_rack = models.CharField(_('Wine Rack'), max_length=15, blank=True)
+    plate_rack = models.CharField(_('Plate Rack'), max_length=15, blank=True)
+    appliance_garage = models.CharField(_('Appliance Garage'), max_length=15, blank=True)
     
     #Miscellaneous page
     corbels = models.BooleanField(_('Corbels') )
