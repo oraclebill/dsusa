@@ -39,14 +39,6 @@ class DealerProfileForm(forms.ModelForm):
         profile.save()    
         return profile_user
     
-class NewDesignOrderForm(forms.ModelForm):
-    class Meta: 
-        model = WorkingOrder
-        fields = ['project_name', 'design_product', 'rush', 'client_notes']
-    
-    design_product = forms.ModelChoiceField(queryset=Product.objects.filter(debitable=True))
-    
-
 class DesignOrderAcceptanceForm(forms.Form):
     rating = forms.IntegerField()
     comments = forms.CharField(widget=forms.Textarea)

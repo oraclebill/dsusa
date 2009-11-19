@@ -1,0 +1,15 @@
+{% load wufu_tags %}
+<li class="{{ classes }} {% if field.errors %}error{% endif %}">
+    <label class="desc">
+        {{ field.label }}
+        {% if field.field.required %}<span id="req_4" class="req">*</span>{% endif %}
+    </label>
+    <div>
+        {{ field }}
+        {{ form.legal_name.errors }}
+    </div>
+    {% if instructions %}
+        <p class="instruct" id="instruct4">{{ instructions }}</p>
+    {% endif %}
+    {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+</li>

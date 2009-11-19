@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Initial user setup" %} {% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		<h1>{% trans "Please think out a username and password for yourself" %}</h1>
+		<div class=box>
+			<div>
+				<form method='POST' action='.'>
+					{% csrf_token %}
+					<table>
+						{{ form }}
+					</table>
+					<input name='submit' type='submit' value='{% trans "Submit" %}'>
+				</form>
+			</div>
+		</div>
+	</div> 
+
+{% endblock %}

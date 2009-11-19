@@ -67,10 +67,24 @@ class WorkingOrder(models.Model):
         (COMPLETED, 'Completed'),
     )
     
+    KITCHEN_DESIGN, BATH_DESIGN, CLOSET_DESIGN, GENERAL_DESIGN = ('K', 'B', 'C', '*')  #TODO: change from number to code
+    DESIGN_TYPE_CHOICES = (
+        (KITCHEN_DESIGN, _('Kitchen')),
+        (BATH_DESIGN, _('Bath')),
+        (CLOSET_DESIGN, _('Closet')),
+        (GENERAL_DESIGN, _('Other (Generic)')),
+    )
+    
     owner = models.ForeignKey(User)
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
     submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
+
+    #whj:  new fields 11/18/09 to support tracking and fax correlation
+    type = models.CharField(_('Design Type'), max_length=1, choices=DESIGN_TYPE_CHOICES, default=KITCHEN_DESIGN)
+    created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
+    account_code = models.CharField(_('Customer Account Code'), max_length=40, null=True, blank=True)
+    tracking_code = models.CharField(_('Tracking Code'), max_length=20, null=True, blank=True)
     
     #Submit options
     project_name = models.CharField(_('Project Name'), max_length=150)
@@ -190,11 +204,11 @@ class WorkingOrder(models.Model):
     degree90_corner_base_shelv = models.PositiveSmallIntegerField(_('Shelving Option'), choices=SHELVING_CHOICES, default=SHELF)
     
     #Interiors page
-    slide_out_trays = models.CharField(_('Slide Out Trays'), max_length=15 )
-    waste_bin = models.CharField(_('Waste Bin'), max_length=15  )
-    wine_rack = models.CharField(_('Wine Rack'), max_length=15  )
-    plate_rack = models.CharField(_('Plate Rack'), max_length=15  )
-    appliance_garage = models.CharField(_('Appliance Garage'), max_length=15 )
+    slide_out_trays = models.CharField(_('Slide Out Trays'), max_length=15, blank=True)
+    waste_bin = models.CharField(_('Waste Bin'), max_length=15, blank=True)
+    wine_rack = models.CharField(_('Wine Rack'), max_length=15, blank=True)
+    plate_rack = models.CharField(_('Plate Rack'), max_length=15, blank=True)
+    appliance_garage = models.CharField(_('Appliance Garage'), max_length=15, blank=True)
     
     #Miscellaneous page
     corbels = models.BooleanField(_('Corbels') )
@@ -229,7 +243,7 @@ class WorkingOrder(models.Model):
     
     def attachment_previews(self):
         "Return urls of all attachment previews"
-        return [a.first_preview() for a in self.attachments.all()]
+        return [a.first_preview for a in self.attachments.all()]
     
     
     
@@ -329,7 +343,7 @@ class Attachment(models.Model):
     @property
     def previews(self):
         if self.is_multipage:
-            for f in self.attachpreview_set.count():
+            for f in self.attachpreview_set.all():
                 yield {'url':f.file.url, 'page': f.page}
         else:
             yield {'url':self.file and self.file.url or None, 'page': 1}
@@ -345,9 +359,9 @@ class Attachment(models.Model):
             raise RuntimeError('Attempt to generate previews for empty attachment (null file )')
         try:
             pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
-        except OSError:
-            logger.error('OSError: pdf generation failed for %s' % self.file.path)
-            self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
+        except OSError as ex:
+            logger.error('OSError: %s error during pdf generation for %s' % (ex, self.file.path))
+            #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
 
     
     def _pdf_callback(self, filename, page, size):
@@ -365,7 +379,7 @@ class AttachPreview(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
     page = models.PositiveIntegerField(_('page'), )
-    file = models.ImageField(_('file'), upload_to=preview_upload_location, storage=APPSTORAGE)
+    file = models.ImageField(_('file'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
     
     class Meta:
         verbose_name = _('attachment preview')

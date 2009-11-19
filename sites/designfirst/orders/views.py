@@ -1,4 +1,8 @@
+from datetime import datetime
+import string
+import random
 
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect,\
@@ -15,9 +19,34 @@ from base import WizardBase
 from models import WorkingOrder, Attachment, Appliance, Moulding
 from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
-from forms import SoffitsForm, SubmitForm, MouldingForm
+from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
+from accounting.models import register_design_order
 #from forms import * 
 import summary 
+
+LETTERS_AND_DIGITS = string.letters + string.digits
+
+@login_required
+@render_to('orders/create_order.html')
+def create_order(request, *args):
+    """
+    Create a new order.
+    """
+    account = request.user.get_profile().account  
+    tracking_code = "".join([random.choice(LETTERS_AND_DIGITS) for x in xrange(15)])
+             
+    if request.method == 'POST':
+        form = NewDesignOrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.client_account = account #TODO: there is actually no client_account in working order
+            order.owner = request.user
+            order.save()                        
+            return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
+    else:
+        form = NewDesignOrderForm(initial=dict(tracking_code=tracking_code))
+    
+    return dict(account=account, form=form, tracking_code=tracking_code)
 
 
 
@@ -164,9 +193,12 @@ def wizard(request, id, step=None, complete=False):
 @render_to('wizard/order_review.html')
 def _order_review(request, wizard):
     order = wizard.order
+    user = request.user
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
         if form.is_valid():
+            register_design_order(user, user.get_profile().account,
+                                  order, order.cost)
             order = form.save(commit=False)
             order.status = WorkingOrder.SUBMITTED
             order.save()

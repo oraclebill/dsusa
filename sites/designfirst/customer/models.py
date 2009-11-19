@@ -63,8 +63,13 @@ class Dealer(models.Model):
         uri = reverse('registration_activate', kwargs={'activation_key': registration_key })
         scheme = settings.SECURE and 'https' or 'http'
         setup_url = '%s://%s%s' % (scheme, Site.objects.get_current().domain, uri)
-        notification.send([self.primary_contact], 'new_dealer_welcome', extra_context={'setup_url': setup_url})
-        
+        notification.send([self.primary_contact], 'new_dealer_welcome',
+            extra_context={
+                'setup_url': setup_url,
+                'account': self,
+            }
+        )
+
     def approve(self):
         self.status = Dealer.ACTIVE
         self.save()

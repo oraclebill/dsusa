@@ -1,14 +1,27 @@
-from django.conf import settings
 import os
 from decimal import Decimal
+
+from django.conf import settings
 from django import forms
 import django.db.models as dj_models
+
 from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
 from utils.fields import CheckedTextWidget
 
 
 NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
+
+
+class NewDesignOrderForm(forms.ModelForm):    
+    class Meta: 
+        model = WorkingOrder
+        fields = ['tracking_code', 'project_name', 'type', ]
+    tracking_code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    type = forms.ChoiceField(choices=WorkingOrder.DESIGN_TYPE_CHOICES)
+    floorplan = forms.FileField(label='Floorplan File', required=False)
+    
+    
 
 def fieldset_fields(fieldsets):
     fieldlist = []

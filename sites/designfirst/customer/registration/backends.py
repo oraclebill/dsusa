@@ -19,6 +19,7 @@ from hashlib import sha1
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site, RequestSite
+from django.template.loader import render_to_string
 from django.core.mail import mail_admins, mail_managers
 from django.utils.encoding import force_unicode
 from django.http import Http404
@@ -26,7 +27,7 @@ from django.db import transaction
 
 from customer.models import Dealer, UserProfile
 from registration.backends.default import DefaultBackend
-from registration.models import RegistrationProfile
+from registration.models import RegistrationProfile, SHA1_RE
 from registration.signals import user_registered, user_activated
 
 from forms import DealerRegistrationForm
@@ -93,8 +94,15 @@ class DealerRegistrationBackend(DefaultBackend):
             return False
         else:
             transaction.commit()
-        
-        mail_managers('new registration', '%s' % new_dealer.legal_name ) 
+
+
+        context = { 'dealer': new_dealer, 'site': site }
+        subject = render_to_string( 'registration/admin_email_subject.txt', context)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        message = render_to_string('registration/admin_email.txt', context)
+
+        mail_managers(subject, message)
         user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=request)
@@ -155,11 +163,22 @@ class DealerRegistrationBackend(DefaultBackend):
         
         return False
 
+    def can_activate(self, activation_key):
+        if SHA1_RE.search(activation_key):
+            try:
+                profile = RegistrationProfile.objects.get(activation_key=activation_key)
+            except RegistrationProfile.DoesNotExist:
+                return False
+            if not profile.activation_key_expired():
+                return True
+        return False
+
     def get_form_class(self, request):
         return DealerRegistrationForm
     
     def post_registration_redirect(self, request, user):
-        return ('http://www.designserviceusa.com', [], {})
+        return ('registration_complete', [], {})
 
     def post_activation_redirect(self, request, user):
-        return ('setup_new_user', [],{ 'slug': user.username })
+        return ('dealer-dashboard', [],{})
+

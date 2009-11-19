@@ -19,6 +19,16 @@ div.summary-row span {
 	font-weight: bolder;
 }
 
+a.diagram { 
+    display: block; 
+    float: left; 
+    width: 5em; 
+    margin-left: auto; 
+    margin-right: auto;
+    padding: 5px; 
+    border: 1px solid #252525; 
+    background: #C7CBC2; 
+}
 </style>
 <script>
 $(function(){
@@ -105,13 +115,13 @@ function show_details(type, caption) {
 		</div>
 		
 		<div id="diagrams" class="details" style="display: none;">
-		{% if  order.attachement_previews %}			
-		{% for url in order.attachement_previews %}
-			<a href="{{url}}" class="diagram">{{forloop.counter}}</a>
+		{% if  order.attachment_previews %}			
+		{% for url in order.attachment_previews %}
+			<a href="{{url}}" class="diagram">Page {{forloop.counter}}</a>
 		{% endfor %}
 		{% endif %}
 		<br>
-		<img src="{{order.attachement_previews.0}}" id="diagram">
+		<img src="{{order.attachment_previews.0}}" id="diagram">
 		</div>
 		
 		<input type="button" value="Options" onclick="show_details('options', 'Options')">

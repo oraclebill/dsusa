@@ -1,0 +1,1 @@
+New registration on {{ site.name }}: {{ dealer.legal_name }}

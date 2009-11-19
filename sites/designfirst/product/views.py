@@ -41,7 +41,6 @@ def paypal_failure_callback(sender, **kwargs):
     invoice = Invoice.objects.get(pk=invnum)
     invoice.status = Invoice.CANCELLED
     invoice.save()
-    register_purchase(invoice.id, invoice.customer, invoice.total, invoice.total_credit)        
 payment_was_flagged.connect(paypal_failure_callback)
 
 

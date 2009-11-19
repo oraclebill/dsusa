@@ -1,0 +1,96 @@
+{% extends "customer/dealer_base.html" %}
+
+{% block title %}New order{% endblock %}
+
+
+{% block extrastyle %}
+<script>
+	$(function(){
+		$('#id_desired').datepicker({ format: 'yyyy-mm-dd' });		
+	})
+</script> 
+
+<style type="text/css" media="screen">
+form p label {
+    display: block;
+    float: left;
+    width: 12em;
+    font-weight: bolder;
+}
+form p.buttons {
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class='prefix_4 suffix_4 grid_8' >
+	<h1>Create New Design Request</h1>
+</div>
+
+<div class="grid_8 prefix_1">
+	<div class="block">
+		<h2>Creating a design request</h2>
+		<p>To order a design you must create a design request. A design request must contain all of the information 
+			our designers will need to create your 20/20 Design. The most important piece of information 
+			we need is your floorplan sketch. 
+		</p>
+		<p>There are a couple of ways you can send us your floorplan sketch -
+			<ul>
+				<li>Scan and upload
+					<p>If you have access to a scanner this is the best option. We accept most common image formats, 
+					including GIF, JPG, PNG and PDF. Files must be smaller than 2 megabytes, however - this should
+					not be a problem if you set your scanner to scan as a black and white image, at less than 150 dpi (dots per inch)
+					75 dpi usually works fine.</p>
+					<p>Once you've uploaded your file we will show it to you so you can verify it's readable. If you need to make changes and  upload again, 
+					press 'No' when asked if you accept this image, and you can try again, or perform this step later.</p>
+					</li>
+				<li>Fax using our coded fax cover sheet
+					<p>Design Service USA has automated fax servers that process documents sent to us. 
+					If you fax us your floorplan using a coversheet coded with your new request id, we will
+					automatically associate your faxed diagram with your order. This process usually only takes minutes
+					so if you fax it now before starting the design request wizard, your diagram will attached to while
+					you enter data and you can review it online before submitting your order.
+					</p>
+					<p><a href="{# % url generate_fax_cover "floorplan" account order % #}">Click here to download a fax cover sheet for this order here.</a></p>
+					<p>In some cases we can't automatically identify your document due to errors introduced by the faxing process.
+					If your fax is not attached to your order when you complete the wizard, you should 
+					<a href="{# % url generate_fax_cover account order % #}">download a new cover sheet</a>
+					and resend the fax. If this fails, <a href="{# % url contact_support account order % #}">contact support</a>
+					and we can manually attach your fax to your order.
+					</p>
+				</li>
+			</ul>
+		</p> 
+			If you have your floorplan sketch please take the time to fax that to us now.
+		   	In order to ensure timely processing make sure you use the 
+			{# <a href="{% url fax_cover order %}">special fax cover sheet</a>. #}
+			
+			This cover sheet has all of your account and order information plus barcodes that
+			we use to automatically attach your diagram to your order.
+		</p>
+		<p>
+		 	Your fax order submission number is - {{ account.fax_submission_number }}.
+		</p>
+		<p>
+			Once your sketch is received and you complete the web form your order can be submitted.
+		</p
+	</div>
+</div>
+<div class="grid_6 suffix_1">
+	<div class="block">
+		<h2>New Request Info</h2>
+	    <form method="POST">
+	    	<fieldset>
+	    		<table>
+			        {{ form }}					
+				</table>
+				<p class="buttons">
+			        <input type="submit" value="Create Request" >
+				</p>
+			</fieldset>        
+	    </form>
+	</div>
+</div>
+
+{% endblock %}
