@@ -111,20 +111,21 @@ $(function(){
 	
 	<div id="summary_content">
 	{% for section, values in wizard.get_summary %}
-	<fieldset>
-		<legend>{{section}}</legend>
-		<dl>
-		{% for name, value in values %}
-		    <dt>{{name}}</dt><dd>{{value|default:"Not Specified"}}</dd>
-		{% endfor %}
-		</dl>
-	</fieldset>
+		<div class="block">
+		<fieldset>
+			<legend>{{section}}</legend>
+			<table>
+			{% for name, value in values %}
+			    <tr><th>{{name}}</th><td>{{value|default:"Not Specified"}}</td></tr>
+			{% endfor %}
+			</table>
+		</fieldset>
+		</div>
 	{% endfor %}
 	</div>	
 	{% endblock %}
 </fieldset>
 </div>
-
 
 {% endblock wizard-base-content %}
 

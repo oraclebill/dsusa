@@ -11,6 +11,15 @@
 </script> 
 
 <style type="text/css" media="screen">
+table.form { margin-left: 0px;}
+table.form,
+table.form tr,
+table.form td,
+table.form th
+{
+	border-style: none;	
+}
+
 form p label {
     display: block;
     float: left;
@@ -28,7 +37,7 @@ form p.buttons {
 	<h1>Create New Design Request</h1>
 </div>
 
-<div class="grid_8 prefix_1">
+<div class="grid_8 prefix_1 alpha">
 	<div class="block">
 		<h2>Creating a design request</h2>
 		<p>To order a design you must create a design request. A design request must contain all of the information 
@@ -62,6 +71,7 @@ form p.buttons {
 				</li>
 			</ul>
 		</p> 
+		<p>
 			If you have your floorplan sketch please take the time to fax that to us now.
 		   	In order to ensure timely processing make sure you use the 
 			{# <a href="{% url fax_cover order %}">special fax cover sheet</a>. #}
@@ -74,15 +84,15 @@ form p.buttons {
 		</p>
 		<p>
 			Once your sketch is received and you complete the web form your order can be submitted.
-		</p
+		</p>
 	</div>
 </div>
-<div class="grid_6 suffix_1">
+<div class="grid_6 suffix_1 omega">
 	<div class="block">
 		<h2>New Request Info</h2>
 	    <form method="POST">
 	    	<fieldset>
-	    		<table>
+	    		<table class="form">
 			        {{ form }}					
 				</table>
 				<p class="buttons">

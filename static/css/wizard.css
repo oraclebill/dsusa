@@ -142,6 +142,28 @@ form p.error {
   font-weight: bolder;
 }
 
+#summary_content table {
+  border: none;
+}
+
+#summary_content table tr
+{
+/*   border-bottom: 1px dotted #bbbbbb; */
+  border-top: 1px dotted #bbbbbb;
+}
+
+#summary_content table tr:first-child
+{
+  border: none;
+}
+
+#summary_content table th,
+#summary_content table td
+{
+  border: none;
+  background: inherit;
+}
+
 #summary_content dl {
   margin-bottom: 0;
 }
