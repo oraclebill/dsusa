@@ -34,7 +34,7 @@ from orders import forms as wf
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
 from models import Dealer, UserProfile  
-from forms import DesignOrderAcceptanceForm, NewDesignOrderForm, DealerProfileForm
+from forms import DesignOrderAcceptanceForm, DealerProfileForm
 
 
 
@@ -161,29 +161,6 @@ def dealer_dashboard(request):
     return render_to_response( 'customer/dealer_dashboard.html', locals(),                                
                                 context_instance=RequestContext(request) ) 
  
-
-@login_required
-def create_order(request, *args):
-    """
-    Create a new order.
-    """
-    account = request.user.get_profile().account              
-    if request.method == 'POST':
-        form = NewDesignOrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.client_account = account#TODO: there is actually no client_account in working order
-            order.owner = request.user
-            order.submitted = datetime.now()
-            order.save()                        
-            return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
-    else:
-        form = NewDesignOrderForm()
-    
-    return render_to_response('customer/create_order.html', locals(),                                
-                              context_instance=RequestContext(request) ) 
-
-
 
 # ORDER_SUBFORMS = [ dof.OrderInfo, dof.Cabinetry, dof.Hardware, dof.Mouldings, dof.CabinetBoxes, 
 #                     dof.CornerCabinetOptions, dof.IslandAndPeninsula, dof.OtherConsiderations,
