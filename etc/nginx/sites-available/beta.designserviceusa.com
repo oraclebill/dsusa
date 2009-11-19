@@ -1,11 +1,11 @@
 server {
 	listen 80;
-#	server_name beta.designserviceusa.com;
+	server_name beta.designserviceusa.com;
 
-	access_log /var/log/nginx/beta-access.log;
-	error_log /var/log/nginx/beta-error.log error;
+	access_log /var/www/com_designserviceusa_beta/var/nginx-access.log;
+	error_log /var/www/com_designserviceusa_beta/var/nginx-error.log error;
 
-	location ~ /(media|css|images|js)/ {
+	location ~ /(admin|css|images|js)/ {
 		root /var/www/com_designserviceusa_beta/static;
 	}
 	location / {
