@@ -50,14 +50,13 @@ class CheckedTextWidget(forms.widgets.TextInput):
             final_attrs = dict(final_attrs, id='%s' % id_)
         if not value:
             final_attrs = dict(final_attrs,  style='display: none;')
-        output.append(charfield.render(name + '_txt', value, final_attrs))
+        output.append(charfield.render(name, value, final_attrs))
         return mark_safe(''.join(output))
 
     def value_from_datadict(self, data, files, name):
-        checked, text = [widget.value_from_datadict(data, files, name + '_%s' % i)
-                for i, widget in zip(('ck', 'txt'), self.widgets)]
+        checked, text = [widget.value_from_datadict(data, files, name + '%s' % i)
+                for i, widget in zip(('_ck', ''), self.widgets)]
         return text if checked else ''
-
 
 class DimensionField(models.CharField):
     def __init__(self, *args, **kwargs):
