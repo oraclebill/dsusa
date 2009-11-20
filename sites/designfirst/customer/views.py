@@ -302,7 +302,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
         def __init__(self, order):
             self.order = order
             
-    return render_to_response('wizard/order_review.html',
+    return render_to_response('orders/order_review.html',
                 dict(order=order, form=form, orders=FakeWizard(order)),
                 context_instance=RequestContext(request))
     

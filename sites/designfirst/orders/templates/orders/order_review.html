@@ -4,32 +4,6 @@
 
 {% block extra-head %}
 {{ block.super }}
-<style>
-.details {
-	height: 400px;
-	overflow: auto;
-}
-
-div.summary-row * {
-	display: inline-block;
-}
-
-div.summary-row span {
-	width: 20em;
-	font-weight: bolder;
-}
-
-a.diagram { 
-    display: block; 
-    float: left; 
-    width: 5em; 
-    margin-left: auto; 
-    margin-right: auto;
-    padding: 5px; 
-    border: 1px solid #252525; 
-    background: #C7CBC2; 
-}
-</style>
 <script>
 $(function(){
 	$('a.diagram').click(function(){

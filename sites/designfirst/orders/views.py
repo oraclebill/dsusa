@@ -190,7 +190,7 @@ class Wizard(WizardBase):
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
-@render_to('wizard/order_review.html')
+@render_to('orders/order_review.html')
 def _order_review(request, wizard):
     order = wizard.order
     user = request.user
