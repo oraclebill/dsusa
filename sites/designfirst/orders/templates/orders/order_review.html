@@ -4,7 +4,12 @@
 
 {% block extra-head %}
 {{ block.super }}
-<script>
+<style type=text/css>
+	#sketch img { border: 1px solid #aaa; padding: 1px; margin: 5px; }
+	.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
+	.border { border-bottom: 1px solid #ababab; margin 5px; padding: 3px;}
+</style>
+<script type="text/javascript">
 $(function(){
 	$('a.diagram').click(function(){
 		$('img#diagram').attr('src', this.href);
@@ -22,89 +27,86 @@ function show_details(type, caption) {
 
 
 {% block wizard-base-content %}
-<form method="POST">
-    <div class="grid_8 alpha">
-    	<div class="box"> 
-    	    <h2>Order Processing Options</h2>
-    	    <div>
-        		<table>{{form}}</table>
-        	</div>
-    	</div>
-    	<div class="box">
-        	<a href="{% url print-order order.id %}">Print</a>
-    		<input type="submit" value="Submit">
+<form method="POST">	
+    <div class="grid_10">
+    	<div id="sketch" class="block">
+    		<h3>Floorplan</h3>
+			{% if sketch %}
+			<a href="{{sketch.file.url}}" class="diagram"><img src="{{sketch.thumbnail.url}}" alt="primary floorplan sketch"/></a>
+			{% else %}
+			<a href="#" class="diagram"><img width="580" height="700" src="{{ MEDIA_URL }}/images/preview-failed.png" alt="missing primary floorplan sketch"/></a>
+			{% endif %}
     	</div>
     </div>
 
-<div class="grid_8 omega">
-	<div class="box"> 
-	    <h2>Design Selections</h2>
-	&nbsp;
-       	{% for section, values in data.items %}
-	    <div>
-			{% ifequal section "Options" %}
-			{% else %}
-			<fieldset>
-				<legend>{{section}}</legend>
-				{% for name, value in values %}
-				<div class="summary-row">
-					<span>{{name}}</span> {{value}}
-				</div>
+	<div class="grid_6 ">
+		<div class="block"> 
+			<h3>Design Selections</h3>
+			&nbsp;
+	       	{% for section, values in data.items %}
+		    <div class="block border">
+				{% ifequal section "Options" %}
+				{% else %}
+					<h4>{{section}}</h4>
+					{% for name, value in values %}
+					<div class="summary-row row{% cycle "1" "2" %}">
+						<label>{{name}}</label> <span>{{value}}</span>
+					</div>
+					{% endfor %}
+				{% endifequal %}
+	    	</div>
+	       	{% endfor %}
+		</div>
+		<div class="block">
+    		<h4>Other Options</h4>
+			<div id="options" class="details">
+				{% for name, value in data.Options %}
+					<div class="summary-row row{% cycle "1" "2" %}">
+						<label>{{name}}</label><span>{{value}}</span> 
+					</div>
 				{% endfor %}
-			</fieldset>
-			{% endifequal %}
-    	</div>
-       	{% endfor %}
-    <fieldset>
-	<legend id="caption">Options</legend>
-		<div id="options" class="details">
-			{% for name, value in data.Options %}
-				<div class="summary-row row{% cycle "1" "2" %}">
-					<span>{{name}}</span> {{value}}
-				</div>
-			{% endfor %}
-		</div>
-		
-		<div id="applicances" class="details" style="display: none;">
-		<table>
-			<tr>
-				<th>Type</th>
-				<th>Description</th>
-				<th>Width</th>
-				<th>Height</th>
-				<th>Depth</th>
-				<th> </th>
-			</tr>
-			{% for item in order.appliances.all %}
-			<tr class="row{% cycle "1" "2"%}">
-				<td>{{item.type}}</td>
-				<td>{{item.description|default:"N/A"}}</td>
-				<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
-				<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
-				<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
-				<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
-			</tr>
-			{% endfor %}
-		</table>
-		</div>
-		
-		<div id="diagrams" class="details" style="display: none;">
-		{% if  order.attachment_previews %}			
-		{% for url in order.attachment_previews %}
-			<a href="{{url}}" class="diagram">Page {{forloop.counter}}</a>
-		{% endfor %}
-		{% endif %}
-		<br>
-		<img src="{{order.attachment_previews.0}}" id="diagram">
-		</div>
-		
-		<input type="button" value="Options" onclick="show_details('options', 'Options')">
-		<input type="button" value="Applicances" onclick="show_details('applicances', 'Applicances')">
-		<input type="button" value="Diagrams" onclick="show_details('diagrams', 'Diagrams')">
-</fieldset>
+			</div>
+			
+			<div id="applicances" class="details" style="display: none;">
+				<table>
+					<tr>
+						<th>Type</th>
+						<th>Description</th>
+						<th>Width</th>
+						<th>Height</th>
+						<th>Depth</th>
+						<th> </th>
+					</tr>
+					{% for item in order.appliances.all %}
+					<tr class="row{% cycle "1" "2"%}">
+						<td>{{item.type}}</td>
+						<td>{{item.description|default:"N/A"}}</td>
+						<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+						<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+						<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+						<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			
+			<div id="diagrams" class="details" style="display: none;">
+				{#% if  order.attachment_previews %#}			
+				{#% for url in order.attachment_previews %#}
+					<a href="{{url}}" class="diagram">Page {{forloop.counter}}</a>
+				{#% endfor %#}
+				{#% endif %#}
+				<br>
+				<img src="{order.attachment_previews.0}" id="diagram" alt="first preview"/>
+				<div class="clear">x</div>
+			</div>
+			<div class="grid_16">
+				<input type="button" value="Options" onclick="show_details('options', 'Options')">
+				<input type="button" value="Applicances" onclick="show_details('applicances', 'Applicances')">
+				<input type="button" value="Diagrams" onclick="show_details('diagrams', 'Diagrams')">
+			    <a href="{% url print-order order.id %}">Print</a>
+			</div>
+	</div>
 </form>
-
-</div>
-
 
 {% endblock %}

@@ -87,45 +87,45 @@ $(function(){
 
 
 
-</div> <!-- end container -->
-<div class="container_16 clearfix">
-
-{% block wizard-base-content %}
-	<form method="post"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
-	<div id="wizard_content" class="grid_11 ">
-		<input type="hidden" name="next_step_" id="next_step" value="_next_">
-		<fieldset>
-			<legend>{{wizard.step_title}}</legend>
-			{% block wizard-content %}
-			{% endblock %}
-		</fieldset>
-	</div>
+	</div> <!-- end container -->
+	<div class="container_16 clearfix">
 	
-	
-	<div id="wizard_summary"  class="grid_5 ">
-		<fieldset>
-			<legend>Order summary</legend>
-			{% block wizard-summary %}
-<!-- 			Project Name: <strong>{{wizard.order}}</strong> -->
-			
-			<div id="summary_content">
-			{% for section, values in wizard.get_summary %}
-				<div class="box">
-					<h2>{{section}}</h2>
-					<table>
-					{% for name, value in values %}
-						{% if value|length %}
-					    <tr><th>{{name}}</th><td>{{value|default:"Not Specified"}}</td></tr>
-					    {% endif %}
-					{% endfor %}
-					</table>
-				</div>
-			{% endfor %}
-			</div>	
-			{% endblock %}
-		</fieldset>
-	</div>
-{% endblock wizard-base-content %}
+	{% block wizard-base-content %}
+		<form method="post"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
+		<div id="wizard_content" class="grid_11 ">
+			<input type="hidden" name="next_step_" id="next_step" value="_next_">
+			<fieldset>
+				<legend>{{wizard.step_title}}</legend>
+				{% block wizard-content %}
+				{% endblock %}
+			</fieldset>
+		</div>
+		
+		
+		<div id="wizard_summary"  class="grid_5 ">
+			<fieldset>
+				<legend>Order summary</legend>
+				{% block wizard-summary %}
+	<!-- 			Project Name: <strong>{{wizard.order}}</strong> -->
+				
+				<div id="summary_content">
+				{% for section, values in wizard.get_summary %}
+					<div class="box">
+						<h2>{{section}}</h2>
+						<table>
+						{% for name, value in values %}
+							{% if value|length %}
+						    <tr><th>{{name}}</th><td>{{value|default:"Not Specified"}}</td></tr>
+						    {% endif %}
+						{% endfor %}
+						</table>
+					</div>
+				{% endfor %}
+				</div>	
+				{% endblock %}
+			</fieldset>
+		</div>
+	{% endblock wizard-base-content %}
 
 	<div class="grid_3 ">
 		<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
