@@ -126,7 +126,10 @@ $(function(){
 		</fieldset>
 	</div>
 {% endblock wizard-base-content %}
+</div> <!-- end container -->
+<div class="container_16 clearfix">
 
+{% block wizard-base-navigation %}
 	<div class="grid_3 ">
 		<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
 		<a href="/dealer/"><em>Continue later</em></a>
@@ -135,6 +138,8 @@ $(function(){
 		<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 		<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
 	</div>
+{% endblock wizard-base-navigation %}
+	
 	</form>
 
 <div class="clear"></div>
