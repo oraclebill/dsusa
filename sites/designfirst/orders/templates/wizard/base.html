@@ -8,11 +8,12 @@
 
 
 {% block extra-head %}
-	<link rel="stylesheet" href="{{MEDIA_URL}}css/wizard.css" type="text/css" media="screen" title="wizard css" charset="utf-8">
+	<link rel="stylesheet" href="{{MEDIA_URL}}css/wizard.css" type="text/css" media="screen" title="wizard css" charset="utf-8"/>
 	{{form.media}}
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
-<script>
+	
+<script type="text/javascript">
 var STEP = '{{wizard.step}}'
 var MEDIA_URL = '{{ MEDIA_URL }}'
 var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
@@ -71,20 +72,18 @@ $(function(){
 
 
 {% block content %}
-</div> <!-- end container -->
-<div class="container_16 clearfix">
-<div id="wizard_steps" class="grid_16">
-{% block wizard-steps%}
-	{% for step in wizard.get_tabs %}
-		<div class="step_icon{% if step.selected %} selected{% endif %}">
-			<a href="{{ step.url }}" step="{{step.slug}}">
-				<img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png">
-				<span>{{step.title}}</span>
-			</a>
-		</div>
-	{% endfor %}
-{% endblock %}
-</div>
+	<div id="wizard_steps" class="grid_16">
+	{% block wizard-steps%}
+		{% for step in wizard.get_tabs %}
+			<div class="step_icon{% if step.selected %} selected{% endif %}">
+				<a href="{{ step.url }}" step="{{step.slug}}">
+					<img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png" alt="{{step.slug}}"/>
+					<span>{{step.title}}</span>
+				</a>
+			</div>
+		{% endfor %}
+	{% endblock %}
+	</div>
 
 
 
@@ -92,45 +91,42 @@ $(function(){
 <div class="container_16 clearfix">
 
 {% block wizard-base-content %}
-<div id="wizard_content" class="grid_11 ">
-<form method="POST"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
-<input type="hidden" name="next_step_" id="next_step" value="_next_">
-<fieldset>
-	<legend>{{wizard.step_title}}</legend>
-	{% block wizard-content %}
-	{% endblock %}
-</fieldset>
-</div>
-
-
-<div id="wizard_summary"  class="grid_5 ">
-<fieldset>
-	<legend>Order summary</legend>
-	{% block wizard-summary%}
-	Project Name: <strong>{{wizard.order}}</strong>
-	
-	<div id="summary_content">
-	{% for section, values in wizard.get_summary %}
-		<div class="block">
+	<form method="post"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} id="wizard_form">
+	<div id="wizard_content" class="grid_11 ">
+		<input type="hidden" name="next_step_" id="next_step" value="_next_">
 		<fieldset>
-			<legend>{{section}}</legend>
-			<table>
-			{% for name, value in values %}
-			    <tr><th>{{name}}</th><td>{{value|default:"Not Specified"}}</td></tr>
-			{% endfor %}
-			</table>
+			<legend>{{wizard.step_title}}</legend>
+			{% block wizard-content %}
+			{% endblock %}
 		</fieldset>
-		</div>
-	{% endfor %}
-	</div>	
-	{% endblock %}
-</fieldset>
-</div>
-
+	</div>
+	
+	
+	<div id="wizard_summary"  class="grid_5 ">
+		<fieldset>
+			<legend>Order summary</legend>
+			{% block wizard-summary %}
+<!-- 			Project Name: <strong>{{wizard.order}}</strong> -->
+			
+			<div id="summary_content">
+			{% for section, values in wizard.get_summary %}
+				<div class="box">
+					<h2>{{section}}</h2>
+					<table>
+					{% for name, value in values %}
+						{% if value|length %}
+					    <tr><th>{{name}}</th><td>{{value|default:"Not Specified"}}</td></tr>
+					    {% endif %}
+					{% endfor %}
+					</table>
+				</div>
+			{% endfor %}
+			</div>	
+			{% endblock %}
+		</fieldset>
+	</div>
 {% endblock wizard-base-content %}
 
-</div> <!-- end container -->
-<div id="wizard-steps-nav"  class="container_16">
 	<div class="grid_3 ">
 		<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
 		<a href="/dealer/"><em>Continue later</em></a>
@@ -138,8 +134,8 @@ $(function(){
 	<div class="grid_4 prefix_9">
 		<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 		<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
-		</form>
 	</div>
+	</form>
 
 <div class="clear"></div>
 

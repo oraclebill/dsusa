@@ -146,7 +146,7 @@ ul.nav li.secondary span.status a {
 	display:inline;
 	padding:0;
 	height:auto;
-	line-height:auto;
+	/* line-height:auto; */
 	color:#cde;
 	background:transparent;
 }

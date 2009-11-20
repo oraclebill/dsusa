@@ -81,7 +81,7 @@ span.invalid {
     padding: 1em 1.5em;
     position:relative;
     text-align: center;    
-    vertical-align: center;    
+    /* vertical-align: center; */    
 }
 
 #payment_info input[type=submit] {
@@ -98,7 +98,7 @@ span.invalid {
 #payment_info input[type=cancel]:hover,
 #payment_info input[type=submit]:hover
 {
-    opacity: 0.7;
+    opacity: 0.7; /* invalid 2.1, valid 3 */
 }
 
 #payment_info a {
