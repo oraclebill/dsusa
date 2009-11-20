@@ -1,4 +1,21 @@
 New registration:
-    {{ dealer.legal_name }}
+----------------------------------------------
+
+Dealer Number:          {{ dealer.id }}
+Dealer Name:            {{ dealer.legal_name }}
+
+{% with dealer.primary_contact as contact %}
+Primary Contact:         {{ contact.first_name }} {{ contact.last_name }}
+Contact Email:           {{ contact.email }}
+{% endwith %}
+
+Primary Business Address {{ dealer.address_1 }}
+Business Phone           {{ dealer.phone }}
+Business Fax             {{ dealer.fax }}
+
+{% if dealer.rep %}
+Dealer Rep              {{ dealer.rep.name }}
+Dealer Rep Phone        {{ dealer.rep.phone }}
+{% endif %}
 
 You can view it in admin: http://{{ site.domain }}{% url admin:customer_dealer_change dealer.pk %}
