@@ -59,5 +59,5 @@ def pdf2ppm(pdf_file_path, sizes, callback):
             logger.debug('executing callback %s with args=(%s, %s, %s)', callback, filename, page, size)
             callback(filename, page, size)
 
-    logger.debug('removing directory %s', ppm_dir)
+    logger.debug('removing tempdir %s', ppm_dir)
     subprocess.call('rm -r ' + ppm_dir, shell=True)

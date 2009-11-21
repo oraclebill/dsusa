@@ -165,7 +165,7 @@ class Wizard(WizardBase):
                 obj.order = self.order
                 obj.save()
                 if obj.is_multipage:
-                    obj.generate_pdf_previews()
+                    obj.split_pages()
                 context['confirm_attach'] = obj.id
                 
         else:

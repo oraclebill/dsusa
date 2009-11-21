@@ -49,7 +49,7 @@ def preview_upload_location(preview_obj, filename):
         str(preview_obj.attachment.order.owner.get_profile().account.id), 
         'order-data',
         str(preview_obj.attachment.order.id), 
-        'previews',
+        'pages',
         str(filename)
     )
 
@@ -242,8 +242,8 @@ class WorkingOrder(models.Model):
         return self.project_name
     
     def attachment_previews(self):
-        "Return urls of all attachment previews"
-        return [a.first_preview for a in self.attachments.all()]
+        "Return urls of all attachment pages"
+        return [a.preview for a in self.attachments.all()]
     
     
     
@@ -321,51 +321,37 @@ class Attachment(models.Model):
     type = models.PositiveSmallIntegerField(_('type'), choices=TYPE_CHOICES, default=FLOORPLAN)
     file = models.FileField(_('file'), upload_to=attachment_upload_location, storage=APPSTORAGE)
     source = models.CharField(_('attachment method'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=FAXED, editable=False)
-    timestamp = models.DateTimeField(_(''), auto_now_add=True)
+    timestamp = models.DateTimeField(_('uploaded on'), auto_now_add=True)
+    page_count = models.PositiveSmallIntegerField(_('page count'), default=1)
     
     def __unicode__(self):
         return self.file and os.path.basename(self.file.path) or '(no file)'
 
-
     @property
-    def is_multipage(self):
-        if self.file:
-            filename = self.file.name.lower()
-            return filename.endswith('.pdf') or filename.endswith('.tif') or filename.endswith('.tiff')
-        return False
+    def preview(self):
+        if self.pages_count > 1:
+            return self.attachmentpage_set.all()[0].file
+        return self.file 
     
     @property
-    def first_preview(self):
-        if self.is_multipage:
-            return self.attachpreview_set.all()[0].file.url
-        return self.file and self.file.url or None
-    
-    @property
-    def previews(self):
-        if self.is_multipage:
-            for f in self.attachpreview_set.all():
-                yield {'url':f.file.url, 'page': f.page}
+    def pages(self):
+        if self.page_count > 1:
+            for f in self.attachmentpage_set.all():
+                yield {'file':f.file, 'page': f.page}
         else:
-            yield {'url':self.file and self.file.url or None, 'page': 1}
-    
-    @property
-    def page_count(self):
-        if self.is_multipage:
-            return self.attachpreview_set.all().count()
-        return 1
-    
-    def generate_pdf_previews(self):
+            yield {'file':self.file, 'page': 1}
+        
+    def split_pages(self):
         if not self.file:
-            raise RuntimeError('Attempt to generate previews for empty attachment (null file )')
+            raise RuntimeError('Attempt to generate pages for empty attachment (null file )')
         try:
             pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
         except OSError as ex:
             logger.error('OSError: %s error during pdf generation for %s' % (ex, self.file.path))
             #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
-
     
     def _pdf_callback(self, filename, page, size):
-        preview = AttachPreview(page=page, attachment=self)
+        preview = AttachmentPage(page=page, attachment=self)
         file = DjangoFile(open(filename, 'rb'))
         preview.file.save(file.name, file)
         preview.save()
@@ -375,7 +361,7 @@ class Attachment(models.Model):
         verbose_name_plural = _('attachments')
 
 
-class AttachPreview(models.Model):
+class AttachmentPage(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
     page = models.PositiveIntegerField(_('page'), )
@@ -383,7 +369,7 @@ class AttachPreview(models.Model):
     
     class Meta:
         verbose_name = _('attachment preview')
-        verbose_name_plural = _('attachment previews')
+        verbose_name_plural = _('attachment pages')
 #         ordering = ['page']
     
 
