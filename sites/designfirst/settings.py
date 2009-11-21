@@ -98,6 +98,10 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'customer.auth.DealerBackend',
+)
+
 ROOT_URLCONF = 'designfirst.urls'
 AUTH_PROFILE_MODULE = "customer.UserProfile"
 INSTALLED_APPS = (

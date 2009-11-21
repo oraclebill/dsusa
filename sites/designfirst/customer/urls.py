@@ -7,6 +7,7 @@ urlpatterns = patterns('customer.views',
     
     (r'^login/$', 'do_login'),
     url(r'^logout/$', 'do_logout', name='do-logout'),
+
     url(r'^dealer/profile/complete$', 'create_profile', name='dealer-complete-profile'),
     
     url(r'^dealer/$', 'dealer_dashboard', name='dealer-dashboard'),
@@ -26,7 +27,11 @@ urlpatterns = patterns('customer.views',
     (r'^dealer/order/(\w+)/fax-cover/', 'current_order_info', {},
         'fax_cover')
 )
-
+urlpatterns += patterns('',
+    url(r'access-denied/$', 'django.views.generic.simple.direct_to_template', {
+        'template': 'customer/access_denied.html',
+    }, name='customer_access_denied'),
+)
 
 ##
 ## /dealer/{userid}
