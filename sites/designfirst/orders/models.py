@@ -262,7 +262,7 @@ class Moulding(models.Model):
     name = models.CharField(_('Moulding Style/Model'), max_length=255)
     
     class Meta:
-        ordering = [_('type'), _('num')]
+        ordering = ['order', 'type', 'num']
     
     def __unicode__(self):
         return '#%d %s %s' % (self.num, self.get_type_display(), self.name)
@@ -323,6 +323,11 @@ class Attachment(models.Model):
     source = models.CharField(_('attachment method'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=FAXED, editable=False)
     timestamp = models.DateTimeField(_('uploaded on'), auto_now_add=True)
     page_count = models.PositiveSmallIntegerField(_('page count'), default=1)
+
+    class Meta:
+        verbose_name = _('attachment')
+        verbose_name_plural = _('attachments')
+        ordering = ['-order', '-timestamp']
     
     def __unicode__(self):
         return self.file and os.path.basename(self.file.path) or '(no file)'
@@ -345,20 +350,23 @@ class Attachment(models.Model):
         if not self.file:
             raise RuntimeError('Attempt to generate pages for empty attachment (null file )')
         try:
-            pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
+            pdf2ppm(self.file.path, self._pdf_callback)
         except OSError as ex:
-            logger.error('OSError: %s error during pdf generation for %s' % (ex, self.file.path))
+            logger.error('%s error during pdf generation for %s' % (ex, self))
             #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
     
-    def _pdf_callback(self, filename, page, size):
-        preview = AttachmentPage(page=page, attachment=self)
-        file = DjangoFile(open(filename, 'rb'))
-        preview.file.save(file.name, file)
-        preview.save()
-        
-    class Meta:
-        verbose_name = _('attachment')
-        verbose_name_plural = _('attachments')
+    def _pdf_callback(self, image, name, page):
+        logger.debug('enter: _pdf_callback(%s, %s, %s, %s)' % (self, image, name, page))
+        page_obj = self.attachmentpage_set.create(page=page, 
+                                file=attachment_upload_location("%s-page-%d.png" % (name, page)))
+        try:
+            file = open(page_obj.file.path, 'wb')
+            image.save(file)
+            file.close()
+        except Exception as ex:
+            logger.error('_pdf_callback (%s): %s' % (self, ex))
+        else:
+            page_obj.save()        
 
 
 class AttachmentPage(models.Model):
@@ -370,7 +378,10 @@ class AttachmentPage(models.Model):
     class Meta:
         verbose_name = _('attachment preview')
         verbose_name_plural = _('attachment pages')
-#         ordering = ['page']
+        ordering = ['attachment', 'page']
+    
+    def __unicode__(self):
+        return '%s#%d' % (self.attachment, self.page)
     
 
 class Appliance(models.Model):

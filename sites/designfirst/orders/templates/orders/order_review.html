@@ -29,18 +29,53 @@ function show_details(type, caption) {
 {% block wizard-base-content %}
 <form method="POST">	
     <div class="grid_10">
-    	<div id="sketch" class="block">
-    		<h3>Floorplan</h3>
-			{% if sketch %}
-			<a href="{{sketch.file.url}}" class="diagram"><img src="{{sketch.thumbnail.url}}" alt="primary floorplan sketch"/></a>
-			{% else %}
-			<a href="#" class="diagram"><img width="580" height="700" src="{{ MEDIA_URL }}/images/preview-failed.png" alt="missing primary floorplan sketch"/></a>
-			{% endif %}
-    	</div>
+		<div id="diagrams" class="details">
+	    	<div id="sketch" class="block">
+	    		<h3>Floorplan Images</h3>
+				{% if sketch %}
+				{% for pic in order.attachment_set.all %}
+				<a href="{{sketch.file.url}}" class="diagram"><img src="{{sketch.preview.url}}" alt="primary floorplan sketch"/></a>
+				{% else %}
+				<a href="#" class="diagram"><img width="580" height="700" src="{{ MEDIA_URL }}/images/preview-failed.png" alt="missing primary floorplan sketch"/></a>
+				{% endif %}
+	    	</div>
+			<div style="display: none;">
+			{#% if  order.attachment_previews %#}			
+			{#% for file in order.attachment_previews %#}
+				<a href="{{file.url}}" class="diagram">Page {{forloop.counter}}</a>
+			{#% endfor %#}
+			{#% endif %#}
+			<br>
+			<img src="{order.attachment_previews.0}" id="diagram" alt="first preview"/>
+			</div>
+		</div>
+		<div id="applicances" class="details">
+	    	<h3>Appliances</h3>
+			<table>
+				<tr>
+					<th>Type</th>
+					<th>Description</th>
+					<th>Width</th>
+					<th>Height</th>
+					<th>Depth</th>
+					<th> </th>
+				</tr>
+				{% for item in order.appliances.all %}
+				<tr class="row{% cycle "1" "2"%}">
+					<td>{{item.type}}</td>
+					<td>{{item.description|default:"N/A"}}</td>
+					<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+					<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+					<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+					<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
     </div>
 
 	<div class="grid_6 ">
-		<div class="block"> 
+		<div id="selections" class="block"> 
 			<h3>Design Selections</h3>
 			&nbsp;
 	       	{% for section, values in data.items %}
@@ -57,7 +92,7 @@ function show_details(type, caption) {
 	    	</div>
 	       	{% endfor %}
 		</div>
-		<div class="block">
+		<div id="options" class="block">
     		<h4>Other Options</h4>
 			<div id="options" class="details">
 				{% for name, value in data.Options %}
@@ -65,47 +100,11 @@ function show_details(type, caption) {
 						<label>{{name}}</label><span>{{value}}</span> 
 					</div>
 				{% endfor %}
-			</div>
-			
-			<div id="applicances" class="details" style="display: none;">
-				<table>
-					<tr>
-						<th>Type</th>
-						<th>Description</th>
-						<th>Width</th>
-						<th>Height</th>
-						<th>Depth</th>
-						<th> </th>
-					</tr>
-					{% for item in order.appliances.all %}
-					<tr class="row{% cycle "1" "2"%}">
-						<td>{{item.type}}</td>
-						<td>{{item.description|default:"N/A"}}</td>
-						<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
-						<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
-						<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
-						<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
-					</tr>
-					{% endfor %}
-				</table>
-			</div>
-			
-			<div id="diagrams" class="details" style="display: none;">
-				{#% if  order.attachment_previews %#}			
-				{#% for url in order.attachment_previews %#}
-					<a href="{{url}}" class="diagram">Page {{forloop.counter}}</a>
-				{#% endfor %#}
-				{#% endif %#}
-				<br>
-				<img src="{order.attachment_previews.0}" id="diagram" alt="first preview"/>
-				<div class="clear">x</div>
-			</div>
+			</div>						
 			<div class="grid_16">
-				<input type="button" value="Options" onclick="show_details('options', 'Options')">
-				<input type="button" value="Applicances" onclick="show_details('applicances', 'Applicances')">
-				<input type="button" value="Diagrams" onclick="show_details('diagrams', 'Diagrams')">
 			    <a href="{% url print-order order.id %}">Print</a>
 			</div>
+		</div>
 	</div>
 </form>
 
