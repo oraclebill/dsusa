@@ -16,6 +16,11 @@ menus['dealer'] = lambda: (
     #     ))
 )
 
+menus['limited'] = lambda: (
+    (_('Dashboard'), reverse('dealer-dashboard')),
+    (_('Profile'), reverse('dealer-complete-profile')),
+)
+
 
 menus['admin'] = lambda: (
     (_('Dashboard'), reverse('dealer-dashboard')),

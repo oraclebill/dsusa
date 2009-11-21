@@ -40,7 +40,9 @@
 		<div class="grid_11">
 			<p>&nbsp;</p>
 			{% block menu %}
-				{% menu "dealer" %}
+                {% with request.user|menu_type as menu_name %}
+    				{% menu menu_name %}
+                {% endwith %}
 			{% endblock %}
 		</div>
     	<div class="grid_3">
