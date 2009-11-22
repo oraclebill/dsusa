@@ -57,9 +57,6 @@ function show_details(type, caption) {
 					</div>
 				{% endfor %}
 			</div>						
-			<div class="grid_16">
-			    <a href="{% url print-order order.id %}">Print</a>
-			</div>
 		</div>
 	</div>
 
@@ -110,6 +107,22 @@ function show_details(type, caption) {
 			</table>
 		</div>
     </div>
-
-
 {% endblock %}
+
+{% block wizard-base-navigation %}
+<div id="wizard-base-navigation" class="container_16 clearfix">
+	<div id="wizard-base-nav" >
+	<div class="grid_16">
+		<div class="buttonbar left">
+			<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+			<a href="/dealer/"><em>Continue later</em></a>
+		</div>
+		<div class="buttonbar right">
+			 <a class="button" href="{% url print-order order.id %}">Print Summary</a>
+			 <a class="button" href="{# url submit-order order.id #}">Checkout</a>
+		</div>
+	</div>
+	</div>
+</div>	<!-- end container wizard-base-navigation -->
+{% endblock wizard-base-navigation %}
+

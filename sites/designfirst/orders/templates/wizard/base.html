@@ -127,9 +127,9 @@ $(function(){
 	</div>
 	{% endblock wizard-base-content %}
 </div> <!-- end container -->
+{% block wizard-base-navigation %}
 <div id="wizard-base-navigation" class="container_16 clearfix">
 	<div id="wizard-base-nav" >
-		{% block wizard-base-navigation %}
 		<div class="grid_16">
 			<div class="buttonbar left">
 				<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
@@ -140,9 +140,9 @@ $(function(){
 				<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
 			</div>
 		</div>
-		{% endblock wizard-base-navigation %}
 	</div>
 </div>	<!-- end container wizard-base-navigation -->
+{% endblock wizard-base-navigation %}
 </form>
 
 <div class="clear"></div>

@@ -295,11 +295,14 @@ div#wizard-base-nav div.buttonbar > *
     width: 10em;
 }
 
-div#wizard-base-nav div.buttonbar input
+div#wizard-base-nav div.buttonbar input,
+div#wizard-base-nav div.buttonbar .button
 {
 	border: 1px solid #555555; 
     background: #cbcbcb;
     float: left;
+    text-align: center;
+    margin-right: .5em;
 }
 
 div#wizard-base-nav div.buttonbar a
