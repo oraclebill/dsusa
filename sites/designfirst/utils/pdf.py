@@ -60,3 +60,5 @@ def pdf2ppm(pdf_file_path, callback, sizes=[]):
 
     logger.debug('removing tempdir %s', ppm_dir)
     subprocess.call('rm -r ' + ppm_dir, shell=True)
+    
+    return pages

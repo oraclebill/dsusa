@@ -164,7 +164,7 @@ class Wizard(WizardBase):
                 obj = form.save(commit=False)
                 obj.order = self.order
                 obj.save()
-                if obj.is_multipage:
+                if obj.file.path.lower().endswith('pdf'):
                     obj.split_pages()
                 context['confirm_attach'] = obj.id
                 

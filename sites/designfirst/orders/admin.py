@@ -14,8 +14,16 @@ class WorkingOrderAdmin(admin.ModelAdmin):
 #        AttachmentPageInline  # causes hangs..
     ]
 
+class AttachmentAdmin(admin.ModelAdmin):
+    list_display = ['order', 'type', 'file', 'source', 'timestamp']
+    inlines = [
+        AttachmentPageInline, 
+#        AttachmentPageInline  # causes hangs..
+    ]
+    
 class AttachmentPageAdmin(admin.ModelAdmin):
     list_display = ['page', 'file']
     
 admin.site.register(WorkingOrder, WorkingOrderAdmin)
+admin.site.register(Attachment, AttachmentAdmin)
 admin.site.register(AttachmentPage, AttachmentPageAdmin)

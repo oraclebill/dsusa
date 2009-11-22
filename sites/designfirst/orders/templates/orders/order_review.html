@@ -4,17 +4,19 @@
 
 {% block extra-head %}
 {{ block.super }}
-<style type=text/css>
-	#sketch img { border: 1px solid #aaa; padding: 1px; margin: 5px; }
+<style type="text/css">
 	.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
 	.border { border-bottom: 1px solid #ababab; margin 5px; padding: 3px;}
 </style>
+<link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}css/pikastyle.css" />
+<script type="text/javascript" src="{{MEDIA_URL}}js/pikachoose-min.js" ></script>
 <script type="text/javascript">
 $(function(){
 	$('a.diagram').click(function(){
 		$('img#diagram').attr('src', this.href);
 		return false;
 	})
+	$('#pages').PikaChoose();
 })
 
 function show_details(type, caption) {
@@ -27,17 +29,56 @@ function show_details(type, caption) {
 
 
 {% block wizard-base-content %}
-<form method="POST">	
-    <div class="grid_10">
-		<div id="diagrams" class="details">
-	    	<div id="sketch" class="block">
-	    		<h3>Floorplan Images</h3>
-				{% if sketch %}
-				{% for pic in order.attachment_set.all %}
-				<a href="{{sketch.file.url}}" class="diagram"><img src="{{sketch.preview.url}}" alt="primary floorplan sketch"/></a>
+	<div class="grid_7 ">
+		<div id="selections" class="block"> 
+			<h3>Design Selections</h3>
+			&nbsp;
+	       	{% for section, values in data.items %}
+		    <div class="block border">
+				{% ifequal section "Options" %}
 				{% else %}
+					<h4>{{section}}</h4>
+					{% for name, value in values %}
+					<div class="summary-row row{% cycle "1" "2" %}">
+						<label>{{name}}</label> <span>{{value}}</span>
+					</div>
+					{% endfor %}
+				{% endifequal %}
+	    	</div>
+	       	{% endfor %}
+		</div>
+		<div id="options" class="block">
+    		<h4>Other Options</h4>
+			<div id="options_details" class="details">
+				{% for name, value in data.Options %}
+					<div class="summary-row row{% cycle "1" "2" %}">
+						<label>{{name}}</label><span>{{value}}</span> 
+					</div>
+				{% endfor %}
+			</div>						
+			<div class="grid_16">
+			    <a href="{% url print-order order.id %}">Print</a>
+			</div>
+		</div>
+	</div>
+
+    <div class="grid_9">
+		<div id="diagrams" class="details">
+	    	<div id="sketch" class="block pikachoose">
+	    		<h3>Floorplan Images</h3>
+				<ul id="pages">
+				{% for att in order.attachments.all %}
+					{% for page in att.attachmentpage_set.all %}
+					<li><img width="500" height="650" src="{{page.file.url}}" alt="{{att.name}}, page {{ page.page }}"/>
+					<span>{{att.file.name}}, received on {{att.timestamp|date}} via {{att.get_source_display - page #{{page.page}}</span>
+					</li>
+					{% empty %}
+					<li><img width="500" height="650" src="{{att.file.url}}" alt="primary floorplan sketch"/></li>				
+					{% endfor %}
+				{% empty %}
 				<a href="#" class="diagram"><img width="580" height="700" src="{{ MEDIA_URL }}/images/preview-failed.png" alt="missing primary floorplan sketch"/></a>
-				{% endif %}
+				{% endfor %}
+				</ul>
 	    	</div>
 			<div style="display: none;">
 			{#% if  order.attachment_previews %#}			
@@ -45,11 +86,11 @@ function show_details(type, caption) {
 				<a href="{{file.url}}" class="diagram">Page {{forloop.counter}}</a>
 			{#% endfor %#}
 			{#% endif %#}
-			<br>
+			<br/>
 			<img src="{order.attachment_previews.0}" id="diagram" alt="first preview"/>
 			</div>
 		</div>
-		<div id="applicances" class="details">
+		<div id="appliances" class="details">
 	    	<h3>Appliances</h3>
 			<table>
 				<tr>
@@ -74,38 +115,5 @@ function show_details(type, caption) {
 		</div>
     </div>
 
-	<div class="grid_6 ">
-		<div id="selections" class="block"> 
-			<h3>Design Selections</h3>
-			&nbsp;
-	       	{% for section, values in data.items %}
-		    <div class="block border">
-				{% ifequal section "Options" %}
-				{% else %}
-					<h4>{{section}}</h4>
-					{% for name, value in values %}
-					<div class="summary-row row{% cycle "1" "2" %}">
-						<label>{{name}}</label> <span>{{value}}</span>
-					</div>
-					{% endfor %}
-				{% endifequal %}
-	    	</div>
-	       	{% endfor %}
-		</div>
-		<div id="options" class="block">
-    		<h4>Other Options</h4>
-			<div id="options" class="details">
-				{% for name, value in data.Options %}
-					<div class="summary-row row{% cycle "1" "2" %}">
-						<label>{{name}}</label><span>{{value}}</span> 
-					</div>
-				{% endfor %}
-			</div>						
-			<div class="grid_16">
-			    <a href="{% url print-order order.id %}">Print</a>
-			</div>
-		</div>
-	</div>
-</form>
 
 {% endblock %}

@@ -345,22 +345,27 @@ class Attachment(models.Model):
                 yield {'file':f.file, 'page': f.page}
         else:
             yield {'file':self.file, 'page': 1}
-        
+                
     def split_pages(self):
-        if not self.file:
-            raise RuntimeError('Attempt to generate pages for empty attachment (null file )')
+        self.attachmentpage_set.all().delete()
         try:
-            pdf2ppm(self.file.path, self._pdf_callback)
+            self.page_count = pdf2ppm(self.file.path, self._pdf_callback)
+            self.save()
         except OSError as ex:
-            logger.error('%s error during pdf generation for %s' % (ex, self))
+            logger.error('%s error during page generation for %s' % (ex, self))
             #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
     
     def _pdf_callback(self, image, name, page):
         logger.debug('enter: _pdf_callback(%s, %s, %s, %s)' % (self, image, name, page))
         page_obj = self.attachmentpage_set.create(page=page, 
-                                file=attachment_upload_location("%s-page-%d.png" % (name, page)))
+                                file=attachment_upload_location(self, "%s-page-%d.png" % (name, page)),
+                                thumb=attachment_upload_location(self, "%s-page-%d-thumb.png" % (name, page)))
         try:
             file = open(page_obj.file.path, 'wb')
+            image.copy().save(file)
+            file.close()
+            file = open(page_obj.thumb.path, 'wb')
+            image.thumbnail((50,70))
             image.save(file)
             file.close()
         except Exception as ex:
@@ -372,8 +377,9 @@ class Attachment(models.Model):
 class AttachmentPage(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
-    page = models.PositiveIntegerField(_('page'), )
-    file = models.ImageField(_('file'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
+    page = models.PositiveIntegerField(_('page number'), )
+    file = models.ImageField(_('page'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
+    thumb = models.ImageField(_('thumbnail'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE, null=True)
     
     class Meta:
         verbose_name = _('attachment preview')
