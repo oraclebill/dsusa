@@ -72,7 +72,7 @@ function show_details(type, caption) {
 					{% for att in order.attachments.all %}
 						{% for page in att.attachmentpage_set.all %}
 						<li><img width="500" height="650" src="{{page.file.url}}" alt="{{att.name}}, page {{ page.page }}"/>
-						<span>{{att.file.name}}, received on {{att.timestamp|date}} via {{att.get_source_display}} - page #{{page.page}}</span>
+						<span>{{att.file.name}}, {{att.get_source_display|lower}} on {{att.timestamp|date}}  - page #{{page.page}}</span>
 						</li>
 						{% empty %}
 						<li><img width="500" height="650" src="{{att.file.url}}" alt="primary floorplan sketch"/></li>				
