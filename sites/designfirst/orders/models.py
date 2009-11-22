@@ -5,6 +5,7 @@ import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.text import get_valid_filename
 from django.core.files.base import File as DjangoFile
 from django.core.files.storage import FileSystemStorage
 from django.db.transaction import commit_on_success
@@ -53,7 +54,7 @@ def preview_upload_location(preview_obj, filename):
         str(filename)
     )
 
-class WorkingOrder(models.Model):
+class OrderBase(models.Model):
     """
     This is a temporary object used for storing data 
     when  user goes step to step in orders
@@ -81,13 +82,13 @@ class WorkingOrder(models.Model):
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
 
     #whj:  new fields 11/18/09 to support tracking and fax correlation
-    project_type = models.CharField(_('Project Type'), max_length=1, choices=PROJECT_TYPE_CHOICES, default=KITCHEN_DESIGN)
-    created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
     account_code = models.CharField(_('Customer Account Code'), max_length=40, null=True, blank=True)
     tracking_code = models.CharField(_('Tracking Code'), max_length=20, null=True, blank=True)
+    project_name = models.CharField(_('Project Name'), max_length=150)
+    project_type = models.CharField(_('Project Type'), max_length=1, choices=PROJECT_TYPE_CHOICES, default=KITCHEN_DESIGN)
+    created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
     
     #Submit options
-    project_name = models.CharField(_('Project Name'), max_length=150)
     rush = models.BooleanField(_('Rush Processing'), default=False)
     color_views = models.BooleanField(_('Include Color Perspectives'), default=False)
     elevations = models.BooleanField(_('Include Elevations'), default=False)
@@ -96,6 +97,11 @@ class WorkingOrder(models.Model):
     cost = models.DecimalField(_('Total Design Cost'), max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes for the Designer', null=True, blank=True)
 
+    class Meta:
+        abstract = True
+        verbose_name = 'order'
+        verbose_name_plural = 'orders'
+        
     @property
     def expected(self):
         "Expected completion time"
@@ -119,7 +125,42 @@ class WorkingOrder(models.Model):
             flags.append('RUSH')
         return ', '.join(flags)
 
+    def save(self, force_insert=False, force_update=False):
+        logger.debug('saving ... %s' % self)        
+        changed, old_status = self._check_status_change()
+        super(WorkingOrder,self).save(force_insert, force_update)
+        if None == old_status: # new order
+            self._init_tracking_fields()
+        if changed:
+            status_changed.send(self, old=old_status, new=self.status)
 
+    def _check_status_change(self):
+        changed = False
+        old_status = None
+        new_status = self.status
+        try:
+            old_status = self._base_manager.get(pk=self.id).status
+            changed = new_status != old_status
+        except self.DoesNotExist:
+            changed = True                
+        return (changed, old_status)
+        
+    def _init_tracking_fields(self):
+        if self.owner:            
+            self.customer_code = 'DDS-0001-%04d' % self.owner.get_profile().account.id 
+        else: 
+            self.customer_code = 'DDS-INTERNAL'
+        if not self.tracking_code:
+            self.tracking_code = get_valid_filename('%s-%02d' % (self.customer_code, self.project_name))
+        
+        
+    def __unicode__(self):
+        return self.project_name
+
+
+
+class WorkingOrder(OrderBase):
+    
     PAINT, STAIN, NATURAL, GLAZE = ('P', 'S', 'N', 'G')
     FINISH_CHOICES = (
         (STAIN, 'Stain'), (PAINT, 'Paint'), (NATURAL, 'Natural'), (GLAZE, 'Glaze'),
@@ -219,27 +260,6 @@ class WorkingOrder(models.Model):
     range_hood = models.BooleanField(_('Range Hood'), )
     posts = models.BooleanField(_('Posts'), )
     
-    class Meta:
-        verbose_name = 'order'
-        verbose_name_plural = 'orders'
-        
-    def save(self, force_insert=False, force_update=False):
-        logger.debug('saving ... %s' % self)
-        changed = False
-        old_status = None
-        new_status = self.status
-        try:
-            old_status = self._base_manager.get(pk=self.id).status
-            changed = new_status != old_status
-        except self.DoesNotExist:
-            changed = True                
-        super(WorkingOrder,self).save(force_insert, force_update)
-        if changed:
-            status_changed.send(self, old=old_status, new=new_status)
-            
-        
-    def __unicode__(self):
-        return self.project_name
     
     def attachment_previews(self):
         "Return urls of all attachment pages"
