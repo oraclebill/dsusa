@@ -7,6 +7,7 @@
 <style type="text/css">
 	.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
 	.border { border-bottom: 1px solid #ababab; margin 5px; padding: 3px;}
+	#attachment-frame { width:500px; height:650px; border: 1px solid #ababab; }
 </style>
 <link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}css/pikastyle.css" />
 <script type="text/javascript" src="{{MEDIA_URL}}js/pikachoose-min.js" ></script>
@@ -65,30 +66,25 @@ function show_details(type, caption) {
     <div class="grid_9">
 		<div id="diagrams" class="details">
 	    	<div id="sketch" class="block pikachoose">
-	    		<h3>Floorplan Images</h3>
-				<ul id="pages">
-				{% for att in order.attachments.all %}
-					{% for page in att.attachmentpage_set.all %}
-					<li><img width="500" height="650" src="{{page.file.url}}" alt="{{att.name}}, page {{ page.page }}"/>
-					<span>{{att.file.name}}, received on {{att.timestamp|date}} via {{att.get_source_display - page #{{page.page}}</span>
-					</li>
-					{% empty %}
-					<li><img width="500" height="650" src="{{att.file.url}}" alt="primary floorplan sketch"/></li>				
+	    		<h3>Attachments</h3>
+				{% if order.attachments.count %}
+					<ul id="pages">
+					{% for att in order.attachments.all %}
+						{% for page in att.attachmentpage_set.all %}
+						<li><img width="500" height="650" src="{{page.file.url}}" alt="{{att.name}}, page {{ page.page }}"/>
+						<span>{{att.file.name}}, received on {{att.timestamp|date}} via {{att.get_source_display}} - page #{{page.page}}</span>
+						</li>
+						{% empty %}
+						<li><img width="500" height="650" src="{{att.file.url}}" alt="primary floorplan sketch"/></li>				
+						{% endfor %}
 					{% endfor %}
-				{% empty %}
-				<a href="#" class="diagram"><img width="580" height="700" src="{{ MEDIA_URL }}/images/preview-failed.png" alt="missing primary floorplan sketch"/></a>
-				{% endfor %}
-				</ul>
+					</ul>
+				{% else %}
+					<div id="attachment-frame">
+						<img width="500" height="650" src="#" alt="No attachments yet..."/>
+					</div>
+				{% endif %}
 	    	</div>
-			<div style="display: none;">
-			{#% if  order.attachment_previews %#}			
-			{#% for file in order.attachment_previews %#}
-				<a href="{{file.url}}" class="diagram">Page {{forloop.counter}}</a>
-			{#% endfor %#}
-			{#% endif %#}
-			<br/>
-			<img src="{order.attachment_previews.0}" id="diagram" alt="first preview"/>
-			</div>
 		</div>
 		<div id="appliances" class="details">
 	    	<h3>Appliances</h3>
