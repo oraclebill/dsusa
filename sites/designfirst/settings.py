@@ -95,7 +95,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'designfirst.urls'
@@ -123,7 +122,10 @@ INSTALLED_APPS = (
     'designfirst.barcode',
 )
 
-if DEBUG:
+if DEBUG and False:
+    MIDDLEWARE_CLASSES += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ) 
     INSTALLED_APPS += ( 
         'debug_toolbar',
     )
