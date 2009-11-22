@@ -213,16 +213,16 @@ def _order_review(request, wizard):
     result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
     return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 
-@render_to('print_order.html')
+@render_to('orders/print_order.html')
 def print_order(request, id):
     order = get_object_or_404(WorkingOrder, id=id)
     if order.owner.id != request.user.id:
         return HttpResponseForbidden("Not allowed to view this order")
-    summary = summary.order_summary(order, summary.STEPS_SUMMARY)
+    s = summary.order_summary(order, summary.STEPS_SUMMARY)
     #making two columns display
-    l = len(summary)/2
-    summary = summary[:l], summary[l:]
-    return {'order': order, 'summary': summary}
+    l = len(s)/2
+    s = s[:l], s[l:]
+    return {'order': order, 'summary': s}
 
 def is_existing_manufacturer(order):
 #     return order.manufacturer in get_manufacturers()

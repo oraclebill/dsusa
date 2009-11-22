@@ -7,6 +7,7 @@
 <style type="text/css">
 	.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
 	.border { border-bottom: 1px solid #ababab; margin 5px; padding: 3px;}
+	.details { border: 1px dotted #ababab; padding: 2px; margin: 2px;}
 	#attachment-frame { width:500px; height:650px; border: 1px solid #ababab; }
 </style>
 <link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}css/pikastyle.css" />
@@ -31,11 +32,11 @@ function show_details(type, caption) {
 
 {% block wizard-base-content %}
 	<div class="grid_7 ">
-		<div id="selections" class="block"> 
+		<div id="selections" class="details"> 
 			<h3>Design Selections</h3>
 			&nbsp;
 	       	{% for section, values in data.items %}
-		    <div class="block border">
+		    <div class="details border">
 				{% ifequal section "Options" %}
 				{% else %}
 					<h4>{{section}}</h4>
@@ -48,7 +49,7 @@ function show_details(type, caption) {
 	    	</div>
 	       	{% endfor %}
 		</div>
-		<div id="options" class="block">
+		<div id="options" class="details">
     		<h4>Other Options</h4>
 			<div id="options_details" class="details">
 				{% for name, value in data.Options %}
@@ -83,6 +84,10 @@ function show_details(type, caption) {
 				{% endif %}
 	    	</div>
 		</div>
+    </div>
+</div>
+<div class="container_16 clearfix">
+	<div class="grid_9">
 		<div id="appliances" class="details">
 	    	<h3>Appliances</h3>
 			<table>
@@ -106,7 +111,15 @@ function show_details(type, caption) {
 				{% endfor %}
 			</table>
 		</div>
-    </div>
+	</div>
+	<div class="grid_7">
+		<div id="notes" class="details">
+	    	<h3>Design Notes</h3>
+			<div>
+			<p>TBD</p>
+			</div>
+		</div>
+	</div>
 {% endblock %}
 
 {% block wizard-base-navigation %}
