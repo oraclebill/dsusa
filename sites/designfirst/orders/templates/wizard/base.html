@@ -128,16 +128,20 @@ $(function(){
 	{% endblock wizard-base-content %}
 </div> <!-- end container -->
 <div id="wizard-base-navigation" class="container_16 clearfix">
-	{% block wizard-base-navigation %}
-	<div class="grid_3 ">
-		<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
-		<a href="/dealer/"><em>Continue later</em></a>
+	<div id="wizard-base-nav" >
+		{% block wizard-base-navigation %}
+		<div class="grid_16">
+			<div class="buttonbar left">
+				<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+				<a href="/dealer/"><em>Continue later</em></a>
+			</div>
+			<div class="buttonbar right">
+				<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
+				<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
+			</div>
+		</div>
+		{% endblock wizard-base-navigation %}
 	</div>
-	<div class="grid_4 prefix_9">
-		<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
-		<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
-	</div>
-	{% endblock wizard-base-navigation %}
 </div>	<!-- end container wizard-base-navigation -->
 </form>
 
