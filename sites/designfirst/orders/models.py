@@ -49,7 +49,7 @@ def preview_upload_location(preview_obj, filename):
         str(preview_obj.attachment.order.owner.get_profile().account.id), 
         'order-data',
         str(preview_obj.attachment.order.id), 
-        'previews',
+        'pages',
         str(filename)
     )
 
@@ -242,8 +242,8 @@ class WorkingOrder(models.Model):
         return self.project_name
     
     def attachment_previews(self):
-        "Return urls of all attachment previews"
-        return [a.first_preview for a in self.attachments.all()]
+        "Return urls of all attachment pages"
+        return [a.preview for a in self.attachments.all()]
     
     
     
@@ -262,7 +262,7 @@ class Moulding(models.Model):
     name = models.CharField(_('Moulding Style/Model'), max_length=255)
     
     class Meta:
-        ordering = [_('type'), _('num')]
+        ordering = ['order', 'type', 'num']
     
     def __unicode__(self):
         return '#%d %s %s' % (self.num, self.get_type_display(), self.name)
@@ -321,70 +321,73 @@ class Attachment(models.Model):
     type = models.PositiveSmallIntegerField(_('type'), choices=TYPE_CHOICES, default=FLOORPLAN)
     file = models.FileField(_('file'), upload_to=attachment_upload_location, storage=APPSTORAGE)
     source = models.CharField(_('attachment method'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=FAXED, editable=False)
-    timestamp = models.DateTimeField(_(''), auto_now_add=True)
+    timestamp = models.DateTimeField(_('uploaded on'), auto_now_add=True)
+    page_count = models.PositiveSmallIntegerField(_('page count'), default=1)
+
+    class Meta:
+        verbose_name = _('attachment')
+        verbose_name_plural = _('attachments')
+        ordering = ['-order', '-timestamp']
     
     def __unicode__(self):
         return self.file and os.path.basename(self.file.path) or '(no file)'
 
-
     @property
-    def is_multipage(self):
-        if self.file:
-            filename = self.file.name.lower()
-            return filename.endswith('.pdf') or filename.endswith('.tif') or filename.endswith('.tiff')
-        return False
+    def preview(self):
+        if self.pages_count > 1:
+            return self.attachmentpage_set.all()[0].file
+        return self.file 
     
     @property
-    def first_preview(self):
-        if self.is_multipage:
-            return self.attachpreview_set.all()[0].file.url
-        return self.file and self.file.url or None
-    
-    @property
-    def previews(self):
-        if self.is_multipage:
-            for f in self.attachpreview_set.all():
-                yield {'url':f.file.url, 'page': f.page}
+    def pages(self):
+        if self.page_count > 1:
+            for f in self.attachmentpage_set.all():
+                yield {'file':f.file, 'page': f.page}
         else:
-            yield {'url':self.file and self.file.url or None, 'page': 1}
-    
-    @property
-    def page_count(self):
-        if self.is_multipage:
-            return self.attachpreview_set.all().count()
-        return 1
-    
-    def generate_pdf_previews(self):
-        if not self.file:
-            raise RuntimeError('Attempt to generate previews for empty attachment (null file )')
+            yield {'file':self.file, 'page': 1}
+                
+    def split_pages(self):
+        self.attachmentpage_set.all().delete()
         try:
-            pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
+            self.page_count = pdf2ppm(self.file.path, self._pdf_callback)
+            self.save()
         except OSError as ex:
-            logger.error('OSError: %s error during pdf generation for %s' % (ex, self.file.path))
+            logger.error('%s error during page generation for %s' % (ex, self))
             #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
-
     
-    def _pdf_callback(self, filename, page, size):
-        preview = AttachPreview(page=page, attachment=self)
-        file = DjangoFile(open(filename, 'rb'))
-        preview.file.save(file.name, file)
-        preview.save()
-        
-    class Meta:
-        verbose_name = _('attachment')
-        verbose_name_plural = _('attachments')
+    def _pdf_callback(self, image, name, page):
+        logger.debug('enter: _pdf_callback(%s, %s, %s, %s)' % (self, image, name, page))
+        page_obj = self.attachmentpage_set.create(page=page, 
+                                file=attachment_upload_location(self, "%s-page-%d.png" % (name, page)),
+                                thumb=attachment_upload_location(self, "%s-page-%d-thumb.png" % (name, page)))
+        try:
+            file = open(page_obj.file.path, 'wb')
+            image.copy().save(file)
+            file.close()
+            file = open(page_obj.thumb.path, 'wb')
+            image.thumbnail((50,70))
+            image.save(file)
+            file.close()
+        except Exception as ex:
+            logger.error('_pdf_callback (%s): %s' % (self, ex))
+        else:
+            page_obj.save()        
 
 
-class AttachPreview(models.Model):
+class AttachmentPage(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
-    page = models.PositiveIntegerField(_('page'), )
-    file = models.ImageField(_('file'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
+    page = models.PositiveIntegerField(_('page number'), )
+    file = models.ImageField(_('page'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
+    thumb = models.ImageField(_('thumbnail'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE, null=True)
     
     class Meta:
         verbose_name = _('attachment preview')
-        verbose_name_plural = _('attachment previews')
-#         ordering = ['page']
+        verbose_name_plural = _('attachment pages')
+        ordering = ['attachment', 'page']
+    
+    def __unicode__(self):
+        return '%s#%d' % (self.attachment, self.page)
     
 
 class Appliance(models.Model):

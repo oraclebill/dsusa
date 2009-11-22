@@ -3,7 +3,7 @@
 	<title>{{order}}</title>
 </head>
 <body>
-<table style="width: 100%;">
+<table style="width: 100%; margin-bottom: 15px;">
 <tr>
 	<th style="background-color: lightgray;">Order information</th>
 	<th style="background-color: lightgray;">Design information</th>
@@ -75,8 +75,11 @@
 <h2>Diagrams</h2>
 		
 <div id="diagrams" class="details">
-{% for url in order.attachement_previews %}
-	<img src="{{url}}" id="diagram"><br>
+{% for att in order.attachments.all %}
+	<h3>{{att}}</h3>
+	{% for page in att.attachmentpage_set.all %}
+	<img src="{{page.file.url}}" alt="{{page.file.name}} - {{page.page}}""><br>
+	{% endfor %}
 {% endfor %}
 <br>
 

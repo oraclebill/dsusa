@@ -262,7 +262,7 @@ class AttachmentForm(forms.ModelForm):
     name = 'Client Attachments'
     class Meta:
         model = Attachment
-        exclude = ('order',)
+        exclude = ('order','page_count')
     
     def clean_file(self):
         file = self.cleaned_data.get('file')

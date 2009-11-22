@@ -4,17 +4,21 @@
 
 {% block extra-head %}
 {{ block.super }}
-<style type=text/css>
-	#sketch img { border: 1px solid #aaa; padding: 1px; margin: 5px; }
+<style type="text/css">
 	.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
 	.border { border-bottom: 1px solid #ababab; margin 5px; padding: 3px;}
+	.details { border: 1px dotted #ababab; padding: 2px; margin: 2px;}
+	#attachment-frame { width:500px; height:650px; border: 1px solid #ababab; }
 </style>
+<link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}css/pikastyle.css" />
+<script type="text/javascript" src="{{MEDIA_URL}}js/pikachoose-min.js" ></script>
 <script type="text/javascript">
 $(function(){
 	$('a.diagram').click(function(){
 		$('img#diagram').attr('src', this.href);
 		return false;
 	})
+	$('#pages').PikaChoose();
 })
 
 function show_details(type, caption) {
@@ -27,24 +31,12 @@ function show_details(type, caption) {
 
 
 {% block wizard-base-content %}
-<form method="POST">	
-    <div class="grid_10">
-    	<div id="sketch" class="block">
-    		<h3>Floorplan</h3>
-			{% if sketch %}
-			<a href="{{sketch.file.url}}" class="diagram"><img src="{{sketch.thumbnail.url}}" alt="primary floorplan sketch"/></a>
-			{% else %}
-			<a href="#" class="diagram"><img width="580" height="700" src="{{ MEDIA_URL }}/images/preview-failed.png" alt="missing primary floorplan sketch"/></a>
-			{% endif %}
-    	</div>
-    </div>
-
-	<div class="grid_6 ">
-		<div class="block"> 
+	<div class="grid_7 ">
+		<div id="selections" class="details"> 
 			<h3>Design Selections</h3>
 			&nbsp;
 	       	{% for section, values in data.items %}
-		    <div class="block border">
+		    <div class="details border">
 				{% ifequal section "Options" %}
 				{% else %}
 					<h4>{{section}}</h4>
@@ -57,56 +49,93 @@ function show_details(type, caption) {
 	    	</div>
 	       	{% endfor %}
 		</div>
-		<div class="block">
+		<div id="options" class="details">
     		<h4>Other Options</h4>
-			<div id="options" class="details">
+			<div id="options_details" class="details">
 				{% for name, value in data.Options %}
 					<div class="summary-row row{% cycle "1" "2" %}">
 						<label>{{name}}</label><span>{{value}}</span> 
 					</div>
 				{% endfor %}
-			</div>
-			
-			<div id="applicances" class="details" style="display: none;">
-				<table>
-					<tr>
-						<th>Type</th>
-						<th>Description</th>
-						<th>Width</th>
-						<th>Height</th>
-						<th>Depth</th>
-						<th> </th>
-					</tr>
-					{% for item in order.appliances.all %}
-					<tr class="row{% cycle "1" "2"%}">
-						<td>{{item.type}}</td>
-						<td>{{item.description|default:"N/A"}}</td>
-						<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
-						<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
-						<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
-						<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
-					</tr>
-					{% endfor %}
-				</table>
-			</div>
-			
-			<div id="diagrams" class="details" style="display: none;">
-				{#% if  order.attachment_previews %#}			
-				{#% for url in order.attachment_previews %#}
-					<a href="{{url}}" class="diagram">Page {{forloop.counter}}</a>
-				{#% endfor %#}
-				{#% endif %#}
-				<br>
-				<img src="{order.attachment_previews.0}" id="diagram" alt="first preview"/>
-				<div class="clear">x</div>
-			</div>
-			<div class="grid_16">
-				<input type="button" value="Options" onclick="show_details('options', 'Options')">
-				<input type="button" value="Applicances" onclick="show_details('applicances', 'Applicances')">
-				<input type="button" value="Diagrams" onclick="show_details('diagrams', 'Diagrams')">
-			    <a href="{% url print-order order.id %}">Print</a>
-			</div>
+			</div>						
+		</div>
 	</div>
-</form>
 
+    <div class="grid_9">
+		<div id="diagrams" class="details">
+	    	<div id="sketch" class="block pikachoose">
+	    		<h3>Attachments</h3>
+				{% if order.attachments.count %}
+					<ul id="pages">
+					{% for att in order.attachments.all %}
+						{% for page in att.attachmentpage_set.all %}
+						<li><img width="500" height="650" src="{{page.file.url}}" alt="{{att.name}}, page {{ page.page }}"/>
+						<span>{{att.file.name}}, {{att.get_source_display|lower}} on {{att.timestamp|date}}  - page #{{page.page}}</span>
+						</li>
+						{% empty %}
+						<li><img width="500" height="650" src="{{att.file.url}}" alt="primary floorplan sketch"/></li>				
+						{% endfor %}
+					{% endfor %}
+					</ul>
+				{% else %}
+					<div id="attachment-frame">
+						<img width="500" height="650" src="#" alt="No attachments yet..."/>
+					</div>
+				{% endif %}
+	    	</div>
+		</div>
+    </div>
+</div>
+<div class="container_16 clearfix">
+	<div class="grid_9">
+		<div id="appliances" class="details">
+	    	<h3>Appliances</h3>
+			<table>
+				<tr>
+					<th>Type</th>
+					<th>Description</th>
+					<th>Width</th>
+					<th>Height</th>
+					<th>Depth</th>
+					<th> </th>
+				</tr>
+				{% for item in order.appliances.all %}
+				<tr class="row{% cycle "1" "2"%}">
+					<td>{{item.type}}</td>
+					<td>{{item.description|default:"N/A"}}</td>
+					<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+					<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+					<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+					<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+	<div class="grid_7">
+		<div id="notes" class="details">
+	    	<h3>Design Notes</h3>
+			<div>
+			<p>TBD</p>
+			</div>
+		</div>
+	</div>
 {% endblock %}
+
+{% block wizard-base-navigation %}
+<div id="wizard-base-navigation" class="container_16 clearfix">
+	<div id="wizard-base-nav" >
+	<div class="grid_16">
+		<div class="buttonbar left">
+			<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+			<a href="/dealer/"><em>Continue later</em></a>
+		</div>
+		<div class="buttonbar right">
+			 <a class="button" href="{% url print-order order.id %}">Print Summary</a>
+			 <a class="button" href="{# url submit-order order.id #}">Checkout</a>
+		</div>
+	</div>
+	</div>
+</div>	<!-- end container wizard-base-navigation -->
+{% endblock wizard-base-navigation %}
+

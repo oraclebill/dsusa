@@ -1,21 +1,29 @@
-from models import WorkingOrder, Attachment, AttachPreview
+from models import WorkingOrder, Attachment, AttachmentPage
 from django.contrib import admin
 
 class AttachmentInline(admin.TabularInline):
     model = Attachment
 
-class AttachPreviewInline(admin.TabularInline):
-    model = AttachPreview
+class AttachmentPageInline(admin.TabularInline):
+    model = AttachmentPage
 
 class WorkingOrderAdmin(admin.ModelAdmin):
     list_display = ['updated', 'id', 'owner', 'status', 'project_name']
     inlines = [
         AttachmentInline, 
-#        AttachPreviewInline  # causes hangs..
+#        AttachmentPageInline  # causes hangs..
     ]
 
-class AttachPreviewAdmin(admin.ModelAdmin):
+class AttachmentAdmin(admin.ModelAdmin):
+    list_display = ['order', 'type', 'file', 'source', 'timestamp']
+    inlines = [
+        AttachmentPageInline, 
+#        AttachmentPageInline  # causes hangs..
+    ]
+    
+class AttachmentPageAdmin(admin.ModelAdmin):
     list_display = ['page', 'file']
     
 admin.site.register(WorkingOrder, WorkingOrderAdmin)
-admin.site.register(AttachPreview, AttachPreviewAdmin)
+admin.site.register(Attachment, AttachmentAdmin)
+admin.site.register(AttachmentPage, AttachmentPageAdmin)

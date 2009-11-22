@@ -41,7 +41,6 @@ form p.error {
 
 /* Wizard ------------------------- */
 
-
 #wizard_steps {
     background: #fff;
 	margin-top: 10px;
@@ -125,6 +124,8 @@ form p.error {
 #wizard_steps .selected {
 	font-weight: bold;
 }
+
+/* Wizard Summary ------------------------- */
 
 #summary_content {
   height: 500px;
@@ -269,4 +270,54 @@ fieldset.collapse legend {
 fieldset.collapse div {
 	display: none;
 } 
+
+/* Wizard Bottom Nav ------------------------- */
+
+#wizard-base-nav {
+    height: 50px;
+    padding-top: 2em;
+    border-top: 2px solid #222222;
+    background: #C7CBC2;
+}
+
+
+div#wizard-base-nav div.buttonbar
+{
+    position: relative;
+}
+
+div#wizard-base-nav div.buttonbar > *
+{
+    display: block;
+    position: relative;
+    padding: 5px;
+    font-size: 1.2em;
+    width: 10em;
+}
+
+div#wizard-base-nav div.buttonbar input,
+div#wizard-base-nav div.buttonbar .button
+{
+	border: 1px solid #555555; 
+    background: #cbcbcb;
+    float: left;
+    text-align: center;
+    margin-right: .5em;
+}
+
+div#wizard-base-nav div.buttonbar a
+{
+}
+
+div#wizard-base-nav .right 
+{
+    float: right;
+    margin-right: 20px;
+}
+
+div#wizard-base-nav .left 
+{
+    float: left;
+}
+
 

@@ -27,6 +27,8 @@ $(function(){
 	$('#preview').attr('src', $('a.imgpage').get(0).href);
 })
 </script>
+
+
 <table>
 <tr>
 	<td valign="top">
@@ -36,11 +38,11 @@ $(function(){
 		Type: <strong>{{attachment.get_type_display}}</strong><br>
 	</td>
 	<td>
-		{% for preview in attachment.previews %}
-		<a href="{{preview.url}}" class="diagram">{{preview.page}}</a>
+		{% for page in attachment.pages %}
+		<a href="{{page.file.url}}" class="imgpage">[Page {{page.page}}]</a>
 		{% endfor %}
 		<br>
-		<img src="" id="preview">
+		<img src="" id="preview" alt="{{attachment}}">
 	</td>
 </tr>
 </table>

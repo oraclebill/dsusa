@@ -95,7 +95,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'designfirst.urls'
@@ -123,7 +122,10 @@ INSTALLED_APPS = (
     'designfirst.barcode',
 )
 
-if DEBUG:
+if DEBUG and False:
+    MIDDLEWARE_CLASSES += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ) 
     INSTALLED_APPS += ( 
         'debug_toolbar',
     )
@@ -171,10 +173,16 @@ ACCOUNT_ACTIVATION_DAYS=2
 REGISTRATION_AUTHORIZATION = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True
 
-PPM_TMP_ROOT = os.path.join(APP_FILES_ROOT, 'tmp')
+##
+## Settings to control image processing module
+##
 
+#PPM_TMP_ROOT = os.path.join(APP_FILES_ROOT, 'tmp')
+import tempfile
+PPM_TMP_ROOT = tempfile.mkdtemp(suffix='-imgtmp')
 
 try:
     from settings_local import *
 except ImportError:
     pass
+
