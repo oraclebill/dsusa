@@ -12,8 +12,8 @@
 			if (!confirm('Delete this attachment?')) return false;
 		})
 		$('a[rel*=facebox]').facebox({
-			loadingImage : '{{MEDIA_URL}}facebox/loading.gif',
-			closeImage   : '{{MEDIA_URL}}facebox/closelabel.gif'
+			loadingImage : '{{MEDIA_URL}}images/loading.gif',
+			closeImage   : '{{MEDIA_URL}}images/closelabel.gif'
 		}) 
 {% if confirm_attach %}
 		$.facebox({ ajax: '{% url ajax-attachment-details confirm_attach %}' })
