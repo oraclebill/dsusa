@@ -68,7 +68,7 @@ class WorkingOrder(models.Model):
     )
     
     KITCHEN_DESIGN, BATH_DESIGN, CLOSET_DESIGN, GENERAL_DESIGN = ('K', 'B', 'C', '*')  #TODO: change from number to code
-    DESIGN_TYPE_CHOICES = (
+    PROJECT_TYPE_CHOICES = (
         (KITCHEN_DESIGN, _('Kitchen')),
         (BATH_DESIGN, _('Bath')),
         (CLOSET_DESIGN, _('Closet')),
@@ -81,7 +81,7 @@ class WorkingOrder(models.Model):
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
 
     #whj:  new fields 11/18/09 to support tracking and fax correlation
-    type = models.CharField(_('Design Type'), max_length=1, choices=DESIGN_TYPE_CHOICES, default=KITCHEN_DESIGN)
+    project_type = models.CharField(_('Project Type'), max_length=1, choices=PROJECT_TYPE_CHOICES, default=KITCHEN_DESIGN)
     created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
     account_code = models.CharField(_('Customer Account Code'), max_length=40, null=True, blank=True)
     tracking_code = models.CharField(_('Tracking Code'), max_length=20, null=True, blank=True)

@@ -16,9 +16,9 @@ NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
 class NewDesignOrderForm(forms.ModelForm):    
     class Meta: 
         model = WorkingOrder
-        fields = ['tracking_code', 'project_name', 'type', ]
+        fields = ['tracking_code', 'project_name', 'project_type', ]
     tracking_code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    type = forms.ChoiceField(choices=WorkingOrder.DESIGN_TYPE_CHOICES)
+    project_type = forms.ChoiceField(choices=WorkingOrder.PROJECT_TYPE_CHOICES)
     floorplan = forms.FileField(label='Floorplan File', required=False)
     
     
