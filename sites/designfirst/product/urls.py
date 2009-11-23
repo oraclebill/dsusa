@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 from product.models import Product
 
-products_dict = { 'queryset': Product.objects.filter(purchaseable=True) }
+products_dict = { 'queryset': Product.objects.filter(product_type=Product.Const.BASE) }
 
 urlpatterns = patterns('product.views', 
 

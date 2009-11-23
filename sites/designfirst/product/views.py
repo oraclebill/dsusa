@@ -96,7 +96,8 @@ def select_products(request, template):
     pricelist = [ ( product, 
                     product.base_price, 
                     product.cartitem_set.aggregate(Sum('quantity')).get('quantity__sum') or 0
-                  ) for product in Product.objects.filter(purchaseable=True) ]
+                  ) for product in Product.objects.all() ]
+    
     cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)
     cart_total = sum([i.extended_price for i in cart_items])
     # the following won't work, since extended_price is not a database field...

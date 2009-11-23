@@ -3,7 +3,7 @@ from uuid import uuid1
 
 from django.contrib.sessions.models import Session
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 DECIMAL_ZERO = Decimal()
@@ -42,23 +42,38 @@ class Product(models.Model):
         Package: 10 Standard Designs w/views and elevations
         Package: 10 Standard Designs w/views, elevations and cabinetry price report
     """
-    
-    PRODUCT_TYPES = enumerate(('Base Product', 'Package Product', 'Option Product'))
-            
-    name            = models.CharField(max_length=120)
-    description     = models.TextField()    
-    sort_order      = models.IntegerField(default=100)
-    base_price      = models.DecimalField(max_digits=10, decimal_places=2)
-    credit_value    = models.SmallIntegerField() 
-    purchaseable    = models.BooleanField(default=True)
-    debitable       = models.BooleanField()
-    is_revision     = models.NullBooleanField(null=True)
+    class Const:
+        SUBSCRIPTION, BASE, PACKAGE, OPTION = 'S', 'B', 'P', 'O'
+        PRODUCT_TYPE_CHOICES = zip([SUBSCRIPTION, BASE, PACKAGE, OPTION, BASE+PACKAGE, OPTION+PACKAGE], 
+                                   ['Subscription', 'Base', 'Package', 'Option', 'Base Package', 'Option Package'])
+                    
+    name            = models.CharField(_('name'), max_length=120)
+    description     = models.TextField(_('description'))    
+    product_type    = models.CharField(_('type'), max_length=2, choices=Const.PRODUCT_TYPE_CHOICES, default=Const.BASE)
+    base_price      = models.DecimalField(_('price'), max_digits=10, decimal_places=2)
+    credit_value    = models.SmallIntegerField(_('credit amount') ) 
     
     class Meta:
-        ordering = ('sort_order',)
+        ordering = ('product_type', 'base_price')
 
     def __unicode__(self):
         return self.name
+
+class ProductRelationship(models.Model):
+    """
+    Provides a way to express simple relationships between products
+    """
+    class Const:
+        REQUIRES, COMPOSED_OF, EXCLUDES = 'R', 'C', 'E'
+        DEPENDENCY_CHOICES = zip([REQUIRES, COMPOSED_OF, EXCLUDES], ['requires', 'composed of', 'not valid with']) 
+           
+    source = models.ForeignKey(Product, related_name='source_set', verbose_name='dependency source')
+    target = models.ForeignKey(Product, related_name='target_set', verbose_name='dependency target')
+    deptype = models.CharField(_('dependency type'), max_length=1, choices=Const.DEPENDENCY_CHOICES,default=Const.REQUIRES)
+    description = models.TextField(blank=True, null=True)
+    
+    class Meta:
+        unique_together = [('source', 'target', 'deptype'), ]
     
     
 class CartItem(models.Model):    

@@ -5,9 +5,11 @@ from django.conf import settings
 from django import forms
 import django.db.models as dj_models
 
-from models import WorkingOrder,  Attachment, Appliance, Moulding
 from utils.forms import FieldsetForm
 from utils.fields import CheckedTextWidget
+from product.models import Product
+
+from models import WorkingOrder,  Attachment, Appliance, Moulding
 
 
 NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
@@ -22,6 +24,48 @@ class NewDesignOrderForm(forms.ModelForm):
     floorplan = forms.FileField(label='Floorplan File', required=False)
     
     
+## TODO: do this right..
+def price_order(order):
+    price = Decimal('85')
+    if order.color_views:
+        price += 40
+        if order.rush:
+            price += 50
+    else:
+        if order.rush:
+            price += 40
+    return price    
+
+base_product_choices = Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')
+#product_option_choices = Product.objects.filter(product_type=Product.OPTION).values_list('id', 'name')
+
+class SubmitForm(forms.ModelForm):
+    name = 'Order Submission Info'
+    design_product = forms.ChoiceField(choices=base_product_choices)
+                                       
+    class Meta:
+        model = WorkingOrder
+        fields = [
+            'tracking_code',
+            'project_name',
+            'project_type',
+            'rush',
+            'client_notes',
+        ]
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        order = self.instance
+        if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
+            raise forms.ValidationError('Valid orders must include at least one floorplan diagram. This one has none.')        
+        try:
+            order.cost = price_order(order)
+        except Exception, exc_info:
+            raise forms.ValidationError('Unable to price order. - %s' % exc_info)
+        balance = order.owner.get_profile().account.credit_balance
+        if balance < order.cost:
+            raise forms.ValidationError('Insufficient funds in account - %s' % balance)    
+        return cleaned_data        
 
 def fieldset_fields(fieldsets):
     fieldlist = []
@@ -218,45 +262,6 @@ class MiscellaneousForm(forms.ModelForm, FieldsetForm):
     fieldset_image = NONE_IMG
 
 
-## TODO: do this right..
-def price_order(order):
-    price = Decimal('85')
-    if order.color_views:
-        price += 40
-        if order.rush:
-            price += 50
-    else:
-        if order.rush:
-            price += 40
-    return price
-    
-
-class SubmitForm(forms.ModelForm):
-    name = 'Order Processing Options'
-    class Meta:
-        model = WorkingOrder
-        fields = [
-            'project_name',
-            'rush',
-            'color_views',
-            'elevations',
-            'quoted_cabinet_list',
-            'client_notes',
-        ]
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        order = self.instance
-        if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
-            raise forms.ValidationError('Valid orders must include at least one floorplan diagram. This one has none.')        
-        try:
-            order.cost = price_order(order)
-        except Exception, exc_info:
-            raise forms.ValidationError('Unable to price order. - %s' % exc_info)
-        balance = order.owner.get_profile().account.credit_balance
-        if balance < order.cost:
-            raise forms.ValidationError('Insufficient funds in account - %s' % balance)    
-        return cleaned_data        
         
 class AttachmentForm(forms.ModelForm):
     name = 'Client Attachments'
