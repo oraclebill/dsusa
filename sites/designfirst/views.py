@@ -23,7 +23,7 @@ def profile_edit(request):
         if company_form.is_valid() and profile_form.is_valid():
             profile = profile_form.save()
             account = company_form.save()
-            return redirect('dealer-dashboard')
+            return redirect('home')
     else:
         company_form = forms.CompanyProfileForm(
             instance=request.user.get_profile().account,

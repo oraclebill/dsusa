@@ -82,12 +82,16 @@ class SubmitForm(forms.ModelForm):
         if balance < order.cost:
             raise forms.ValidationError('Insufficient funds in account - %s' % balance)    
         #
-        premium_selected = (cleaned_data['design_product'] == PRESENTATION_PACK_PROD_ID)
-        cleaned_data['color_views'] = cleaned_data['quoted_cabinet_list'] = cleaned_data['elevations'] = premium_selected
-        order.color_view = order.quoted_cabinet_list  = order.elevations = premium_selected
-        #
         return cleaned_data        
 
+    def save(self, commit=True):
+        #
+        order = self.instance
+        premium_selected = (self.cleaned_data['design_product'] == PRESENTATION_PACK_PROD_ID)
+        order.color_view = order.quoted_cabinet_list  = order.elevations = premium_selected
+        return super(SubmitForm, self).save(commit)
+             
+             
 def fieldset_fields(fieldsets):
     fieldlist = []
     for fset in fieldsets:
@@ -305,3 +309,4 @@ class ApplianceForm(forms.ModelForm):
     class Meta:
         model = Appliance
         # exclude = ('order',)
+

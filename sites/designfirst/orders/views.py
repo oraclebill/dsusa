@@ -1,6 +1,7 @@
 from datetime import datetime
 import string
 import random
+import decimal
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -12,17 +13,16 @@ from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
+from accounting.models import register_design_order
 from catalog.manufacturers import CabinetLine, Catalog
 from utils.views import render_to
+import summary 
 
 from base import WizardBase
 from models import WorkingOrder, Attachment, Appliance, Moulding
 from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
 from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
-from accounting.models import register_design_order
-#from forms import * 
-import summary 
 
 LETTERS_AND_DIGITS = string.letters + string.digits
 
@@ -54,6 +54,41 @@ def create_order(request, *args):
     return dict(account=account, form=form, tracking_code=tracking_code)
 
 
+@login_required
+@transaction.commit_on_success
+@render_to('orders/order_complete.html')
+def submit_order(request, orderid, form_class=SubmitForm, success_url=lambda:reverse('home')):
+    """
+    Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
+    
+    TODO - error handling, logging, 
+    """
+    user = request.user
+    if user is None or not user.is_authenticated():
+        return HttpResponseRedirect('/')
+ 
+    profile = user.get_profile()
+    account = profile.account
+    order = user.workingorder_set.get(id=orderid) 
+    
+    if request.method == 'GET':
+        form = form_class(instance=order)
+    else:
+        form = form_class(request.POST, instance=order)
+        if form.is_valid():
+            order = form.save()                    
+            cost = order.cost or decimal.Decimal()  
+            register_design_order(order.owner, order.owner.get_profile().account, order, cost)
+            
+            # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
+            return HttpResponseRedirect(callable(success_url) and success_url() or success_url)              
+              
+    class FakeWizard(object):
+        def __init__(self, order):
+            self.order = order
+            
+    return dict(order=order, form=form, orders=FakeWizard(order))
+    
 
 class Wizard(WizardBase):
     
@@ -185,11 +220,17 @@ class Wizard(WizardBase):
         return context
     
     def step_order_review(self, request):
+        from django.forms import Form
+        class NullForm(Form): 
+            def save(*args, **kwargs):
+                pass
+        return self.handle_form(request, MiscellaneousForm)
         return _order_review(request, self)
+        
+# not called
+#    def get_summary(self):
+#        return summary.order_summary(self.order, summary.STEPS_SUMMARY)
     
-    def get_summary(self):
-        return summary.order_summary(self.order, summary.STEPS_SUMMARY)
-
 
 @login_required
 def wizard(request, id, step=None, complete=False):
@@ -198,18 +239,19 @@ def wizard(request, id, step=None, complete=False):
 @render_to('orders/order_review.html')
 def _order_review(request, wizard):
     order = wizard.order
-    user = request.user
+#    user = request.user
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
-        if form.is_valid():
-            register_design_order(user, user.get_profile().account,
-                                  order, order.cost)
-            order = form.save(commit=False)
-            order.status = WorkingOrder.SUBMITTED
-            order.save()
-            return HttpResponseRedirect('/dealer/')
+#        if form.is_valid():
+#            register_design_order(user, user.get_profile().account,
+#                                  order, order.cost)
+#            order = form.save(commit=False)
+#            order.status = WorkingOrder.SUBMITTED
+#            order.save()
+#            return HttpResponseRedirect('/dealer/')
     else:
         form = SubmitForm(instance=order)
+        
     result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
     exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
     for title, excl in summary.SUBMIT_SUMMARY:

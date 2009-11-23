@@ -9,13 +9,13 @@ urlpatterns = patterns('customer.views',
     url(r'^logout/$', 'do_logout', name='do-logout'),
     url(r'^dealer/profile/complete$', 'create_profile', name='dealer-complete-profile'),
     
-    url(r'^dealer/$', 'dealer_dashboard', name='dealer-dashboard'),
+    url(r'^dealer/$', 'dealer_dashboard', name='home'),
     
     # (r'^dealer/order/$', 'dealer_dashboard'),                       
     # url(r'^dealer/order/new/$', 'create_order', name='new_order'),
     (r'^dealer/order/(\d+)/edit/$', 'edit_order_detail'),
     (r'^dealer/order/(\d+)/submit/$', 'dealer_submit_order'),
-    (r'^dealer/order/(\d+)/review/$', 'dealer_review_order'),
+#    (r'^dealer/order/(\d+)/review/$', 'dealer_review_order'),
     (r'^dealer/order/(\d+)/accept/$', 'dealer_accept_order'),
     (r'^dealer/order/(\d+)/reject/$', 'dealer_reject_order'),                       
                        

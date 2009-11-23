@@ -12,6 +12,11 @@ from django.http import HttpRequest
 from models import WorkingOrder
 from forms import SubmitForm
 
+
+PRO_PRICE = 85
+PPACK_PRICE = 125
+RUSH_FEE = 20
+
 class SubmitFormTest(TestCase):
     "Verify Order Submission Form"
     fixtures = ['test_userdata', 'test_orderdata']
@@ -44,22 +49,40 @@ class SubmitFormTest(TestCase):
     def test_submitform_broke_user(self):
         self.fail()
         
-    def test_submitform_calculate_cost(self):
+    def test_submitform_pro(self):
+        request = HttpRequest()
+        data = dict(rush=False, client_notes="this is a test", design_product="1" , tracking_code='1', project_name='foo', project_type='K' )
+        form = SubmitForm(data, instance=WorkingOrder.objects.get(pk=13))
+        self.failUnless(form.is_valid(), form.errors)
+        
+        order=form.save()
+        self.failUnlessEqual(order.cost, PRO_PRICE)
+        self.failUnlessEqual(order.rush, False)
+        self.failUnlessEqual(order.color_views, False)
+        self.failUnlessEqual(order.elevations, False)
+        self.failUnlessEqual(order.quoted_cabinet_list, False)
+        
+
+    def test_submitform_presentation_options(self):
         request = HttpRequest()
         data = dict(rush=False, client_notes="this is a test", design_product="2" , tracking_code='1', project_name='foo', project_type='K' )
         form = SubmitForm(data, instance=WorkingOrder.objects.get(pk=13))
         self.failUnless(form.is_valid(), form.errors)
         
         order=form.save()
-        self.failUnlessEqual(order.cost, 125)
+        self.failUnlessEqual(order.cost, PPACK_PRICE)
+        self.failUnlessEqual(order.rush, False)
+        self.failUnlessEqual(order.color_views, True)
+        self.failUnlessEqual(order.elevations, True)
+        self.failUnlessEqual(order.quoted_cabinet_list, True)
         
-    def test_submitform_calculate_rushcost(self):
+    def test_submitform_rush(self):
         request = HttpRequest()
         data = dict(rush=True, client_notes="this is a test", design_product="2" , tracking_code='1', project_name='foo', project_type='K' )
         form = SubmitForm(data, instance=WorkingOrder.objects.get(pk=13))
         self.failUnless(form.is_valid(), form.errors)
         
         order=form.save()
-        self.failUnlessEqual(order.cost, 145)
+        self.failUnlessEqual(order.cost, RUSH_FEE+PPACK_PRICE)
         
         pass        

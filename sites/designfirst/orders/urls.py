@@ -4,6 +4,7 @@ urlpatterns = patterns('orders.views',
     url(r'^new/$', 'create_order', name='new_order'),
     url(r'^(\d+)/$', 'wizard', name='order-wizard'),
     url(r'^(\d+)/(.*?)/$', 'wizard', name='order-wizard-step'),
+    url(r'^submit/(\d+)/$', 'submit_order', name='dealer_submit_order'),
     url(r'^complete/(\d+)/$', 'wizard', {'complete': True}, name='order-wizard-complete'),
     url(r'^print/(\d+)/$', 'print_order', name='print-order'),
     

@@ -124,7 +124,7 @@ def review_and_process_payment_info(request):
     # we're basically a wrapper around this view func... so lets configure it.
     view_func = PayPalPro(payment_template="product/payment_info_review.html",     
                     confirm_template="paypal/express_confirmation.html",
-                    success_url=reverse('dealer-dashboard')
+                    success_url=reverse('home')
     )    
     try:        
         # if there's no NEW invoice, create one from current cart
@@ -154,7 +154,7 @@ def review_and_process_payment_info(request):
                 "custom":       request.session.session_key,    # for debugging
                 "desc":         invoice.description,
                 "cancelurl":    make_site_url(request, reverse('select_products')),     # Express checkout cancel url
-                "returnurl":    make_site_url(request, reverse('dealer-dashboard'))     # Express checkout return url
+                "returnurl":    make_site_url(request, reverse('home'))     # Express checkout return url
             }        
             request.user.message_set.create(message='Thanks for your order!')
     except:
