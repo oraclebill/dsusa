@@ -101,6 +101,7 @@ class OrderBase(models.Model):
         abstract = True
         verbose_name = 'order'
         verbose_name_plural = 'orders'
+#        unique_together = (('owner', 'project_name'),)  # TODO: integrity *does* matter..
         
     @property
     def expected(self):
@@ -115,7 +116,7 @@ class OrderBase(models.Model):
             
     @property
     def flags(self):
-        "Processiong flags"
+        "Processing flags"
         flags = []
         if self.color_views:
             flags.append('PRSNTR')
@@ -128,7 +129,7 @@ class OrderBase(models.Model):
     def save(self, force_insert=False, force_update=False):
         logger.debug('saving ... %s' % self)        
         changed, old_status = self._check_status_change()
-        super(WorkingOrder,self).save(force_insert, force_update)
+        super(OrderBase,self).save(force_insert, force_update)
         if None == old_status: # new order
             self._init_tracking_fields()
         if changed:
@@ -367,13 +368,14 @@ class Attachment(models.Model):
             yield {'file':self.file, 'page': 1}
                 
     def split_pages(self):
-        self.attachmentpage_set.all().delete()
-        try:
-            self.page_count = pdf2ppm(self.file.path, self._pdf_callback)
-            self.save()
-        except OSError as ex:
-            logger.error('%s error during page generation for %s' % (ex, self))
-            #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
+        if self.file.name.lower().endswith('.pdf'):
+            self.attachmentpage_set.all().delete()
+            try:
+                self.page_count = pdf2ppm(self.file.path, self._pdf_callback)
+                self.save()
+            except OSError as ex:
+                logger.error('%s error during page generation for %s' % (ex, self))
+                #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
     
     def _pdf_callback(self, image, name, page):
         logger.debug('enter: _pdf_callback(%s, %s, %s, %s)' % (self, image, name, page))

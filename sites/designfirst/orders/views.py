@@ -36,12 +36,17 @@ def create_order(request, *args):
     tracking_code = "".join([random.choice(LETTERS_AND_DIGITS) for x in xrange(15)])
              
     if request.method == 'POST':
-        form = NewDesignOrderForm(request.POST)
+        form = NewDesignOrderForm(request.POST, request.FILES)
         if form.is_valid():
             order = form.save(commit=False)
             order.client_account = account #TODO: there is actually no client_account in working order
             order.owner = request.user
-            order.save()                        
+            order.save()                     
+            floorplanfile = request.FILES.get('floorplan', None)   
+            if floorplanfile:
+                att = order.attachments.create(type=Attachment.FLOORPLAN, file=floorplanfile, source=Attachment.UPLOADED)
+                att.save()
+                att.split_pages()
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
     else:
         form = NewDesignOrderForm(initial=dict(tracking_code=tracking_code))
