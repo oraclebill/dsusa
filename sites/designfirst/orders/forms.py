@@ -28,15 +28,16 @@ class NewDesignOrderForm(forms.ModelForm):
     floorplan = forms.FileField(label='Floorplan File', required=False)
     
 ## TODO: do this right..
-def price_order(order):
-    price = Decimal('85')
-    if order.color_views:
-        price += 40
-        if order.rush:
-            price += 50
+def price_order(dealer, product, options={}):
+    product = int(product)
+    if product == 1:
+        price = Decimal('85')
+    elif product == 2:
+        price = Decimal('125')
     else:
-        if order.rush:
-            price += 40
+        raise forms.ValidationError('Invalid product "%d"' % product)
+    if options.get('rush', None):
+       price = price + 20
     return price    
 
 base_product_choices = Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')
