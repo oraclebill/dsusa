@@ -8,7 +8,6 @@ class ProductRelationshipInline(admin.TabularInline):
     extra = 1
 
 class ProductAdmin(admin.ModelAdmin):
-    ordering = ['sort_order', ]
     list_display = ['name', 'product_type', 'base_price', 'description']
     list_filter = ['product_type', ]
     inlines = [ ProductRelationshipInline, ]

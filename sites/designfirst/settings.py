@@ -120,6 +120,7 @@ INSTALLED_APPS = (
     'designfirst.accounting',
     'designfirst.catalog',
     'designfirst.barcode',
+    'test',
 )
 
 if DEBUG and False:

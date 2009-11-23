@@ -14,6 +14,10 @@ from models import WorkingOrder,  Attachment, Appliance, Moulding
 
 NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
 
+PRO_DESIGN_PROD_ID = 1          ## Yes, very ugly..
+PRESENTATION_PACK_PROD_ID = 2
+
+
 
 class NewDesignOrderForm(forms.ModelForm):    
     class Meta: 
@@ -22,7 +26,6 @@ class NewDesignOrderForm(forms.ModelForm):
     tracking_code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
     project_type = forms.ChoiceField(choices=WorkingOrder.PROJECT_TYPE_CHOICES)
     floorplan = forms.FileField(label='Floorplan File', required=False)
-    
     
 ## TODO: do this right..
 def price_order(order):
@@ -38,33 +41,50 @@ def price_order(order):
 
 base_product_choices = Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')
 #product_option_choices = Product.objects.filter(product_type=Product.OPTION).values_list('id', 'name')
+#TODO: support for revisions..
 
 class SubmitForm(forms.ModelForm):
     name = 'Order Submission Info'
-    design_product = forms.ChoiceField(choices=base_product_choices)
                                        
     class Meta:
         model = WorkingOrder
         fields = [
             'tracking_code',
             'project_name',
-            'project_type',
             'rush',
             'client_notes',
         ]
 
+    # widget overrides ...
+    tracking_code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    project_type = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    
+    # will determine 'quoted_cabinet_list, color_views, etc ...
+    design_product = forms.ChoiceField(choices=base_product_choices)
+
     def clean(self):
         cleaned_data = self.cleaned_data
         order = self.instance
+        #
         if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
-            raise forms.ValidationError('Valid orders must include at least one floorplan diagram. This one has none.')        
+            raise forms.ValidationError('Your order has no attachments! We at least need a flooplan image to continue...')        
+        #
+        dealer = order.owner.get_profile().account
         try:
-            order.cost = price_order(order)
+            order.cost = price_order(dealer, 
+                                     cleaned_data['design_product'], 
+                                     options={'rush': cleaned_data['rush']} )
         except Exception, exc_info:
-            raise forms.ValidationError('Unable to price order. - %s' % exc_info)
-        balance = order.owner.get_profile().account.credit_balance
+            raise forms.ValidationError('Error: Unable to price order: %s' % exc_info)
+        #
+        balance = dealer.credit_balance
         if balance < order.cost:
             raise forms.ValidationError('Insufficient funds in account - %s' % balance)    
+        #
+        premium_selected = (cleaned_data['design_product'] == PRESENTATION_PACK_PROD_ID)
+        cleaned_data['color_views'] = cleaned_data['quoted_cabinet_list'] = cleaned_data['elevations'] = premium_selected
+        order.color_view = order.quoted_cabinet_list  = order.elevations = premium_selected
+        #
         return cleaned_data        
 
 def fieldset_fields(fieldsets):

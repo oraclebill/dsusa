@@ -77,8 +77,6 @@ class OrderBase(models.Model):
     )
     
     owner = models.ForeignKey(User)
-    updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
-    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
 
     #whj:  new fields 11/18/09 to support tracking and fax correlation
@@ -93,9 +91,12 @@ class OrderBase(models.Model):
     color_views = models.BooleanField(_('Include Color Perspectives'), default=False)
     elevations = models.BooleanField(_('Include Elevations'), default=False)
     quoted_cabinet_list = models.BooleanField(_('Include Cabinetry Quote'), default=False)
-    desired = models.DateTimeField('Desired Delivered Date', null=True)
+    desired = models.DateTimeField('Desired Delivered Date', null=True, blank=True)
     cost = models.DecimalField(_('Total Design Cost'), max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes for the Designer', null=True, blank=True)
+
+    updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
+    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
 
     class Meta:
         abstract = True

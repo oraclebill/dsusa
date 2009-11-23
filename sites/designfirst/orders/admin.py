@@ -8,7 +8,7 @@ class AttachmentPageInline(admin.TabularInline):
     model = AttachmentPage
 
 class WorkingOrderAdmin(admin.ModelAdmin):
-    list_display = ['updated', 'id', 'owner', 'status', 'project_name']
+    list_display = ['id', 'project_name', 'status', 'updated', 'owner', ]
     inlines = [
         AttachmentInline, 
 #        AttachmentPageInline  # causes hangs..

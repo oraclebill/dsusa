@@ -290,7 +290,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
     else:
         form = form_class(request.POST, instance=order)
         if form.is_valid():
-            order = form.save()
+            order = form.save()            
             account = request.user.get_profile().account
             cost = order.cost or Decimal()  
             register_design_order(user, account, order, cost)
