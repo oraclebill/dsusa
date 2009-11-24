@@ -89,11 +89,11 @@ $(function(){
 
 </div> <!-- end container -->
 <form method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} id="wizard_form" action=".">
+	<input type="hidden" name="next_step_" id="next_step" value="_next_">
 <div class="container_16 clearfix">
 
 	{% block wizard-base-content %}
 	<div id="wizard_content" class="grid_11 ">
-		<input type="hidden" name="next_step_" id="next_step" value="_next_">
 		<fieldset>
 			<legend>{{wizard.step_title}}</legend>
 			{% block wizard-content %}

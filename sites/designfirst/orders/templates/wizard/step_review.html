@@ -1,0 +1,22 @@
+{% extends "wizard/base.html" %}
+
+{% block ajax-validation %} <!-- turned off --> {% endblock %}
+
+
+{% block wizard-base-content %}
+
+	<script type="text/javascript">
+	$(function() {
+	    $.get("{% url generic-order-review wizard.order.id %}", function(data) {
+	        $("#order_review_content").append(data);
+	    });
+	})
+	</script>
+	
+	<div id="order_review_content">
+		
+	</div>
+	
+	<table style="display:none;">{{form}}</table>
+
+{% endblock %}

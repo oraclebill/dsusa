@@ -137,5 +137,10 @@ span.invalid {
     font-weight: bolder;
 }
  
-
+/* order review 
+------------------------------------------------ */
+.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
+.border { border-bottom: 1px solid #ababab; margin: 5px; padding: 3px;}
+.details { border: 1px dotted #ababab; padding: 2px; margin: 2px;}
+#attachment-frame { width:500px; height:650px; border: 1px solid #ababab; }
  

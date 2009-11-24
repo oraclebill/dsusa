@@ -1,15 +1,4 @@
-{% extends "wizard/base.html" %}
 
-{% block title %}{{order}} | Submit{% endblock %}
-
-{% block extra-head %}
-{{ block.super }}
-<style type="text/css">
-	.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
-	.border { border-bottom: 1px solid #ababab; margin 5px; padding: 3px;}
-	.details { border: 1px dotted #ababab; padding: 2px; margin: 2px;}
-	#attachment-frame { width:500px; height:650px; border: 1px solid #ababab; }
-</style>
 <link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}css/pikastyle.css" />
 <script type="text/javascript" src="{{MEDIA_URL}}js/pikachoose-min.js" ></script>
 <script type="text/javascript">
@@ -20,17 +9,9 @@ $(function(){
 	})
 	$('#pages').PikaChoose();
 })
-
-function show_details(type, caption) {
-	$('.details').hide();
-	$('#'+type).show()
-	$('legend#caption').html(caption);
-}
 </script>
-{% endblock %}
 
-
-{% block wizard-base-content %}
+<div class="container_16 clearfix">
 	<div class="grid_7 ">
 		<div id="selections" class="details"> 
 			<h3>Design Selections</h3>
@@ -112,6 +93,7 @@ function show_details(type, caption) {
 			</table>
 		</div>
 	</div>
+	
 	<div class="grid_7">
 		<div id="notes" class="details">
 	    	<h3>Design Notes</h3>
@@ -120,22 +102,3 @@ function show_details(type, caption) {
 			</div>
 		</div>
 	</div>
-{% endblock %}
-
-{% block wizard-base-navigation %}
-<div id="wizard-base-navigation" class="container_16 clearfix">
-	<div id="wizard-base-nav" >
-	<div class="grid_16">
-		<div class="buttonbar left">
-			<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
-			<a href="/dealer/"><em>Continue later</em></a>
-		</div>
-		<div class="buttonbar right">
-			 <a class="button" href="{% url print-order order.id %}">Print Summary</a>
-			 <a class="button" href="{# url submit-order order.id #}">Checkout</a>
-		</div>
-	</div>
-	</div>
-</div>	<!-- end container wizard-base-navigation -->
-{% endblock wizard-base-navigation %}
-

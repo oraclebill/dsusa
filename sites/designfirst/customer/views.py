@@ -306,24 +306,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
                 dict(order=order, form=form, orders=FakeWizard(order)),
                 context_instance=RequestContext(request))
     
-    
-@login_required
-def dealer_review_order(request, orderid):
-    ##FIXME dup
-    order = get_current_order(request, orderid)
-    if request.method == "GET":
-        form = DesignOrderAcceptanceForm(instance=order)
-    elif request.method == "POST":
-        form = DesignOrderAcceptanceForm(request.POST,instance=order)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect( reverse('customer.views.dealer_dashboard') )
-    else:
-        raise Exception, 'Invalid HTTP operation %s' % request.method        
         
-    return render_to_response( "customer/design_rating_form.html", locals(),
-        context_instance=RequestContext(request) )
-    
 @login_required
 def dealer_accept_order(request, orderid):
     order = get_current_order(request, orderid)

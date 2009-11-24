@@ -53,6 +53,43 @@ def create_order(request, *args):
     
     return dict(account=account, form=form, tracking_code=tracking_code)
 
+@login_required
+@render_to('orders/order_review.html')
+def review_order(request, orderid):
+    account = request.user.get_profile().account  
+    order = request.user.workingorder_set.get(pk=orderid)
+#    user = request.user
+    if request.method == 'POST':
+        form = SubmitForm(request.POST, instance=order)
+#        if form.is_valid():
+#            register_design_order(user, user.get_profile().account,
+#                                  order, order.cost)
+#            order = form.save(commit=False)
+#            order.status = WorkingOrder.SUBMITTED
+#            order.save()
+#            return HttpResponseRedirect('/dealer/')
+    else:
+        form = SubmitForm(instance=order)
+        
+    result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
+    exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
+    for title, excl in summary.SUBMIT_SUMMARY:
+        exclude += excl
+    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude and f.editable]
+    result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
+    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
+
+@login_required
+@render_to('orders/print_order.html')
+def print_order(request, id):
+    order = get_object_or_404(WorkingOrder, id=id)
+    if order.owner.id != request.user.id:
+        return HttpResponseForbidden("Not allowed to view this order")
+    s = summary.order_summary(order, summary.STEPS_SUMMARY)
+    #making two columns display
+    l = len(s)/2
+    s = s[:l], s[l:]
+    return {'order': order, 'summary': s}
 
 @login_required
 @transaction.commit_on_success
@@ -94,7 +131,7 @@ class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
-             'appliances', 'diagrams', 'order_review']
+             'appliances', 'diagrams', 'review']
     
     def step_manufacturer(self, request):
         manufacturers = {}
@@ -219,57 +256,22 @@ class Wizard(WizardBase):
         context.update({'form': form, 'attachments': attachments})
         return context
     
-    def step_order_review(self, request):
-        from django.forms import Form
-        class NullForm(Form): 
-            def save(*args, **kwargs):
-                pass
-        return self.handle_form(request, MiscellaneousForm)
-        return _order_review(request, self)
+    def step_review(self, request):
+        if request.method == 'POST':
+            #TODO: check if the order is complete!
+            return self.dispatch_next_step()
+        return dict(form=SubmitForm())
         
-# not called
-#    def get_summary(self):
-#        return summary.order_summary(self.order, summary.STEPS_SUMMARY)
-    
+    def get_summary(self):
+        return summary.order_summary(self.order, summary.STEPS_SUMMARY)
+
+    def complete(self, request):
+        raise Exception
 
 @login_required
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
-@render_to('orders/order_review.html')
-def _order_review(request, wizard):
-    order = wizard.order
-#    user = request.user
-    if request.method == 'POST':
-        form = SubmitForm(request.POST, instance=order)
-#        if form.is_valid():
-#            register_design_order(user, user.get_profile().account,
-#                                  order, order.cost)
-#            order = form.save(commit=False)
-#            order.status = WorkingOrder.SUBMITTED
-#            order.save()
-#            return HttpResponseRedirect('/dealer/')
-    else:
-        form = SubmitForm(instance=order)
-        
-    result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
-    exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
-    for title, excl in summary.SUBMIT_SUMMARY:
-        exclude += excl
-    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude and f.editable]
-    result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
-    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
-
-@render_to('orders/print_order.html')
-def print_order(request, id):
-    order = get_object_or_404(WorkingOrder, id=id)
-    if order.owner.id != request.user.id:
-        return HttpResponseForbidden("Not allowed to view this order")
-    s = summary.order_summary(order, summary.STEPS_SUMMARY)
-    #making two columns display
-    l = len(s)/2
-    s = s[:l], s[l:]
-    return {'order': order, 'summary': s}
 
 def is_existing_manufacturer(order):
 #     return order.manufacturer in get_manufacturers()

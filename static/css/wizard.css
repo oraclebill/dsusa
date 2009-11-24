@@ -172,7 +172,7 @@ form p.error {
 }
 
 #summary_content dt {
-  display: run-in;
+  display: inline;
   font-weight: bolder;
   padding: .25em .5em;
   background: #C7CBC2;
