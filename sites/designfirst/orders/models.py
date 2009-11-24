@@ -267,6 +267,8 @@ class WorkingOrder(OrderBase):
         "Return urls of all attachment pages"
         return [a.preview for a in self.attachments.all()]
     
+    def is_complete(self):
+        return self.attachments.filter(type=Attachment.FLOORPLAN)
     
     
 class Moulding(models.Model):

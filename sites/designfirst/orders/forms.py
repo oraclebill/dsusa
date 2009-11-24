@@ -41,6 +41,7 @@ def price_order(dealer, product, options={}):
     return price    
 
 base_product_choices = Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')
+#base_product_choices = [(id, '%.30s - $%.2f USD' % (name, price)) for (id, name, price) in Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name', 'base_price')]
 #product_option_choices = Product.objects.filter(product_type=Product.OPTION).values_list('id', 'name')
 #TODO: support for revisions..
 
@@ -52,13 +53,15 @@ class SubmitForm(forms.ModelForm):
         fields = [
             'tracking_code',
             'project_name',
+            'project_type',
+            'design_product',
             'rush',
             'client_notes',
         ]
 
     # widget overrides ...
     tracking_code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    project_type = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+#    project_type = forms.ChoiceField(widget=forms.Select(attrs={'readonly':'readonly'}))
     
     # will determine 'quoted_cabinet_list, color_views, etc ...
     design_product = forms.ChoiceField(choices=base_product_choices)
@@ -77,10 +80,6 @@ class SubmitForm(forms.ModelForm):
                                      options={'rush': cleaned_data['rush']} )
         except Exception, exc_info:
             raise forms.ValidationError('Error: Unable to price order: %s' % exc_info)
-        #
-        balance = dealer.credit_balance
-        if balance < order.cost:
-            raise forms.ValidationError('Insufficient funds in account - %s' % balance)    
         #
         return cleaned_data        
 

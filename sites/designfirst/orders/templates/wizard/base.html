@@ -137,7 +137,15 @@ $(function(){
 			</div>
 			<div class="buttonbar right">
 				<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
+				{% if wizard.is_last_step %}
+					{% if wizard.is_valid_order %}
+					<input type="submit" name="{{BTN_SAVENEXT}}" value="Complete Order">
+					{% else %}
+					<input type="submit" name="{{BTN_SAVENEXT}}" value="Order Incomplete" disabled="disabled">
+					{% endif %}
+				{% else %}
 				<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
+				{% endif %}
 			</div>
 		</div>
 	</div>

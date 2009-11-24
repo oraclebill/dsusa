@@ -121,7 +121,7 @@ INSTALLED_APPS = (
     'test',
 )
 
-if DEBUG and False:
+if DEBUG:
     MIDDLEWARE_CLASSES += (
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     ) 

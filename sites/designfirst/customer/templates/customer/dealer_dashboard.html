@@ -31,7 +31,7 @@ DesignFirst Customer Dashboard
 				<td>
     	       		{# <a href="{% url customer.views.edit_order_detail order.id %}">Update</a> #} 
     	       		<a href="{% url order-wizard order.id %}">Update</a> 
-    				<a href="{% url order-wizard-step order.id, "order_review" %}">Submit</a>
+    				<a href="{% url order-wizard-step order.id, "review" %}">Submit</a>
 				</td>
 		     </tr>
 		     {% endfor %}

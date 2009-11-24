@@ -93,7 +93,7 @@ def print_order(request, id):
 
 @login_required
 @transaction.commit_on_success
-@render_to('orders/order_complete.html')
+@render_to('orders/simple_submit.html')
 def submit_order(request, orderid, form_class=SubmitForm, success_url=lambda:reverse('home')):
     """
     Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
@@ -114,17 +114,13 @@ def submit_order(request, orderid, form_class=SubmitForm, success_url=lambda:rev
         form = form_class(request.POST, instance=order)
         if form.is_valid():
             order = form.save()                    
-            cost = order.cost or decimal.Decimal()  
+            cost = order.cost or decimal.Decimal()              
             register_design_order(order.owner, order.owner.get_profile().account, order, cost)
             
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
             return HttpResponseRedirect(callable(success_url) and success_url() or success_url)              
-              
-    class FakeWizard(object):
-        def __init__(self, order):
-            self.order = order
-            
-    return dict(order=order, form=form, orders=FakeWizard(order))
+                          
+    return dict(order=order, form=form)
     
 
 class Wizard(WizardBase):
@@ -262,11 +258,15 @@ class Wizard(WizardBase):
             return self.dispatch_next_step()
         return dict(form=SubmitForm())
         
+    def complete(self, request):
+        order = self.order
+        if order.is_complete():
+            return HttpResponseRedirect(reverse('simple-submit-order', args=[order.id]))
+        else:
+            return dict()
+
     def get_summary(self):
         return summary.order_summary(self.order, summary.STEPS_SUMMARY)
-
-    def complete(self, request):
-        raise Exception
 
 @login_required
 def wizard(request, id, step=None, complete=False):

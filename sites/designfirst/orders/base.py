@@ -87,11 +87,10 @@ class WizardBase(object):
         assert step is not None
         if step == GO_NEXT:
             step = self.next_step()
-        elif step == GO_PREVIOUS:
+        elif step == GO_PREVIOUS:       # TODO: broken
             step = self.previous_step()
         if step is None:
-            return HttpResponseRedirect(reverse(
-                        'order-wizard-complete', args=[self.order.id]))
+            return self.complete(self.request)
         return self.go_to_step(step)
     
     
@@ -103,12 +102,19 @@ class WizardBase(object):
     
     def previous_step(self):
         previous = self.steps.index(self.step) - 1
+        print 2, 'previous step = %d' % previous
         if previous < 0:
             return None
         return self.steps[previous]
     
     def is_first_step(self):
         return self.steps.index(self.step) == 0
+    
+    def is_last_step(self):
+        return self.steps.index(self.step) == len(self.steps)-1
+    
+    def is_valid_order(self):
+        return self.order.is_complete()
     
     def go_to_step(self, step):
         return HttpResponseRedirect(reverse('order-wizard-step', args=[self.order.id, step]))
