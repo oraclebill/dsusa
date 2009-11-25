@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 
 from accounting.models import register_design_order
 from catalog.manufacturers import CabinetLine, Catalog
+from product.models import Product, CartItem
+from product.views import review_and_process_payment_info
 from utils.views import render_to
 import summary 
 
@@ -25,6 +27,7 @@ from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousFo
 from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
 
 LETTERS_AND_DIGITS = string.letters + string.digits
+RUSH_PROD_ID = 20
 
 @login_required
 @render_to('orders/create_order.html')
@@ -94,7 +97,7 @@ def print_order(request, id):
 @login_required
 @transaction.commit_on_success
 @render_to('orders/simple_submit.html')
-def submit_order(request, orderid, form_class=SubmitForm, success_url=lambda:reverse('home')):
+def submit_order(request, orderid):
     """
     Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
     
@@ -109,20 +112,52 @@ def submit_order(request, orderid, form_class=SubmitForm, success_url=lambda:rev
     order = user.workingorder_set.get(id=orderid) 
     
     if request.method == 'GET':
-        form = form_class(instance=order)
+        form = SubmitForm(instance=order)
     else:
-        form = form_class(request.POST, instance=order)
+        form = SubmitForm(request.POST, instance=order)
         if form.is_valid():
-            order = form.save()                    
-            cost = order.cost or decimal.Decimal()              
-            register_design_order(order.owner, order.owner.get_profile().account, order, cost)
-            
+            order = form.save(commit=False)
+            cost = order.cost or decimal.Decimal()      
+            if cost > account.credit_balance:
+                ## users account doesn't have enough juice.. send then to the ecom engine 
+                ## to pay, then get them back here ...
+                order.save()
+                products = [form.cleaned_data['design_product']]
+                if form.cleaned_data['rush']:
+                    products.append(RUSH_PROD_ID)
+                return purchase_order(request, orderid, products, success_url=reverse('submit-order', args=[orderid]))
+            else:           
+                register_design_order(order.owner, order.owner.get_profile().account, order, cost)
+                order.status = WorkingOrder.SUBMITTED
+                order.save()
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
-            return HttpResponseRedirect(callable(success_url) and success_url() or success_url)              
-                          
+            return HttpResponseRedirect(reverse('submit-order-completed', args=[order.id]))              
     return dict(order=order, form=form)
     
+def purchase_order(request, orderid, product_ids=[], success_url=None):
+    """
+    Initiate a purchase using the selected product and processing options.
+    """    
+    assert(len(product_ids))
+    CartItem.objects.filter(session_key=request.session.session_key).delete()   
+    item_count = 1
+    for prodid in product_ids: 
+        item = CartItem(
+            number = item_count,
+            session_key = request.session.session_key,
+            product = Product.objects.get(pk=prodid),
+            quantity = 1
+        )
+        item.save()
+        item_count += 1
+    return review_and_process_payment_info(request, success_url)
+#    return HttpResponseRedirect(isinstance(next, tuple) and reverse(*next) 
 
+@login_required
+@render_to('orders/confirm_submission.html')
+def post_submission_details(request, orderid):
+    return dict(order=get_object_or_404(WorkingOrder, id=orderid))    
+    
 class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
@@ -261,7 +296,7 @@ class Wizard(WizardBase):
     def complete(self, request):
         order = self.order
         if order.is_complete():
-            return HttpResponseRedirect(reverse('simple-submit-order', args=[order.id]))
+            return HttpResponseRedirect(reverse('submit-order', args=[order.id]))
         else:
             return dict()
 

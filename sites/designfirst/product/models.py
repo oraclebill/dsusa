@@ -78,6 +78,7 @@ class ProductRelationship(models.Model):
     
 class CartItem(models.Model):    
     session_key     = models.CharField(max_length=40)
+    number          = models.SmallIntegerField(null=True);
     product         = models.ForeignKey(Product)
     quantity        = models.IntegerField()
 

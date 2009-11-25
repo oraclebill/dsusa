@@ -61,7 +61,7 @@ def product_detail(request, prodid):
         
     return render_to_response( "product/product_detail.html", 
         locals(), context_instance=RequestContext(request) )
-    
+        
 def select_products(request, template):
     "Display the product list and collect product id's for users purchase."
     user = request.user
@@ -116,7 +116,7 @@ def confirm_selections(request):
         context_instance=RequestContext(request) )
     
 @transaction.commit_on_success
-def review_and_process_payment_info(request):
+def review_and_process_payment_info(request, success_url=None):
     "Display and/or collect payment information while displaying a summary of products to be purchased."    
     #
     account = request.user.get_profile().account
@@ -124,7 +124,7 @@ def review_and_process_payment_info(request):
     # we're basically a wrapper around this view func... so lets configure it.
     view_func = PayPalPro(payment_template="product/payment_info_review.html",     
                     confirm_template="paypal/express_confirmation.html",
-                    success_url=reverse('home')
+                    success_url=success_url
     )    
     try:        
         # if there's no NEW invoice, create one from current cart

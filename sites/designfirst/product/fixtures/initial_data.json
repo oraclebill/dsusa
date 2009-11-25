@@ -24,6 +24,17 @@
   }
  }, 
  {
+  "pk": 20, 
+  "model": "product.product", 
+  "fields": {
+   "product_type": "O", 
+   "name": "Rush Service", 
+   "description": "Next Business Day delivery for orders placed before 2pm EST", 
+   "credit_value": 20, 
+   "base_price": "20.00"
+  }
+ }, 
+ {
   "pk": 12, 
   "model": "product.product", 
   "fields": {
