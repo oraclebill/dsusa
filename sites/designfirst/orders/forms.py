@@ -29,7 +29,28 @@ def fieldset_fields(fieldsets):
         fieldlist.extend( fset[1]['fields']) # dups possible..
     return fieldlist
 
+
+DOOR_MATERIALS = (
+    'Maple', 'Cherry', 'Alder', 'Lyptus','Birch', 'MDF',
+    'Stainless Steel', 'Permafoil' 'Glass'
+)
+DOOR_MATERIAL_CHOICES =  [(item, item) for item in DOOR_MATERIALS]
+
+FINISHES = ('Stain', 'Paint', 'Natural', 'Glaze')
+FINISH_CHOICES = [(item, item) for item in FINISHES]
+
 class ManufacturerForm(forms.ModelForm, FieldsetForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ManufacturerForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            print 'ManufacturerForm, ', self.instance.cabinet_material, DOOR_MATERIALS
+            if self.instance.cabinet_material in DOOR_MATERIALS:
+                self.fields['cabinet_material'].widget = forms.Select(choices=DOOR_MATERIAL_CHOICES)
+            print 'ManufacturerForm, ', self.instance.finish_type, FINISH_CHOICES
+            if self.instance.finish_type in FINISHES:
+                self.fields['finish_type'].widget = forms.Select(choices=FINISH_CHOICES)
+
     class Media:
         css = {'all': ('css/jquery.autocomplete.css',)}
         js = ('js/jquery.autocomplete.js', )

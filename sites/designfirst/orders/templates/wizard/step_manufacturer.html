@@ -1,4 +1,8 @@
 {% extends "wizard/base.html" %}
+{% load ajax_form_utils %}
+
+
+{% block ajax-validation %}{% endblock %}
 
 {% block extra-head %}
 {{block.super}}
@@ -41,6 +45,7 @@ $(function(){
             console.log(choices);
             $("#id_" + dependent_inputs[i]).update_choices(choices, default_selects);
         });
+    	$('form').validation({% render_ajax_fields form %});
     }
 
     function manufacturer_change() {
@@ -72,6 +77,7 @@ $(function(){
     }
 
 	$("#id_manufacturer").autocomplete(MANUFACTURERS).result(manufacturer_change).change(manufacturer_change);
+    manufacturer_change();
 
 	//Manufacturere icon click handler
     $('#manufact_icons img').click(function() {
