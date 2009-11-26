@@ -2,6 +2,7 @@
 
 {% block extra-head %}
 {{block.super}}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/autocomplete_combobox.js"></script>
 <style>
 #manufact_icons img {
 	margin: 10px;
@@ -11,127 +12,65 @@
 </style>
 <script>
 
-function input_html(id, name, value) {
-	return '<input type="text" name="'+name+'" id="'+id+'" value="'+value+'">'
-}
-
-function select_html(id, name, value, choices) {
-    if (!choices) {
-        return input_html(id, name, value);
-    }
-	var options = '<option></option>'
-	for (var i=0; i<choices.length; i++) {
-		var selected = ''
-		if (value=='' && i==0)
-			selected = ' selected="selected"'
-		else if (value == choices[i])
-			selected = ' selected="selected"'
-		options += '<option value="'+choices[i]+'"'+selected+'> '+choices[i]+'</option>'
-	}
-	return '<select name="'+name+'" id="'+id+'">'+options+'</select>'
-}
-
-function replace_widget(id, name, select, choices) {
-	var validation = $('#'+id).data('validation') //Validatoin fix
-	var value = $('#'+id).val()
-	if (select)
-		html = select_html(id, name, value, choices);
-	else
-		html = input_html(id, name, value);
-	$('#'+id).replaceWith(html)
-	$('#'+id).data('validation', validation)
-}
-
 $(function(){
-	var MANUFACTURERS = {{manufacturers_json|safe}};
+	var MANUFACTURERS = {{ manufacturers_json|safe }};
+    var AUTOCOMPLETE_TREE = {{ autocomplete_tree|safe }};
+    var default_selects = {};
 
-	function item_name(item) {
-		return item.name;
-	}
+    // prepare dictionry with options for default selects
+    $("#wizard_form select").each(function() {
+        var $$ = $(this);
+        default_selects[$$.attr("id")] = $.map($$.find("option"), function(option) {
+            return $(option).text()
+        });
+    });
 
+    function update_all_choices() {
+        var manufacturer_input = $("#id_manufacturer"),
+            manufacturer_val = manufacturer_input.val();
+            manufacturer = null,
+            dependent_inputs = [ "product_line", "cabinet_material", "door_style",
+                                 "finish_color", "finish_type", "finish_options"];
 
-	function clean_manuf_related(manufacturer) {
-		$('#id_product_line').val(manufacturer)
-		//$('#id_door_style').val('');
-		$.getJSON('{% url ajax-door-style %}?m='+manufacturer,
-			function(data) { replace_widget('id_door_style', 'door_style', true, data); })
-		$.getJSON('{% url ajax-door-material %}?m='+manufacturer,
-			function(data) { replace_widget('id_cabinet_material', 'cabinet_material', true, data); })
-		$.getJSON('{% url ajax-finish-color %}?m='+manufacturer,
-			function(data) { replace_widget('id_finish_color', 'finish_color', true, data); })				
-	}
+        // this is to prevent change on both `result` and `change` events
+        if (manufacturer_input.data("last_choice_update_on") == manufacturer_val) {
+            return;
+        }
 
-    function update_manufacturer(newval) {
-        var $man = $("#id_manufacturer");
-        if (newval != $man.val())
-        	clean_manuf_related()
-        $man.val(newval); 
+        $.each(dependent_inputs, function(i) {
+            var name = dependent_inputs[i],
+                input = $("#id_" + name),
+                choices = [];
+
+            if (manufacturer_val in AUTOCOMPLETE_TREE) {
+                choices = AUTOCOMPLETE_TREE[manufacturer_val][name + "s"];
+            }
+            input.update_choices(choices, default_selects);
+        });
+
+        manufacturer_input.data("last_choice_update_on", manufacturer_val);
     }
+	$("#id_manufacturer").autocomplete(MANUFACTURERS).result(update_all_choices).change(update_all_choices);
 
 	//Manufacturere icon click handler
     $('#manufact_icons img').click(function() {
-    	update_manufacturer(this.alt);
-    })
-
-	//Manufacturere autocompleter
-	$("#id_manufacturer").autocomplete(MANUFACTURERS, {
-//		formatItem: function (item) {
-//			return item.catalog_name;
-//		}
-	}).result(function(event, item){
-		clean_manuf_related(item);
-    })
-
-
-	//Door material autocompleter
-	$("#id_cabinet_material").autocomplete('{% url ajax-door-material %}', {
-		extraParams: {
-			m: function() { return $("#id_manufacturer").val(); },
-			cl: function() { return $("#id_product_line").val(); },
-			ds: function() { return $("#id_door_style").val(); },
-			ft: function() { return $("#id_finish_type").val(); },
-			fc: function() { return $("#id_finish_color").val(); }
-		}
-	})
-	//Door style autocompleter
-	$("#id_door_style").autocomplete('{% url ajax-door-style %}', {
-		extraParams: {
-			m: function() { return $("#id_manufacturer").val(); },
-			cl: function() { return $("#id_product_line").val(); },
-			ft: function() { return $("#id_finish_type").val(); },
-			fc: function() { return $("#id_finish_color").val(); },
-			dm: function() { return $("#id_cabinet_material").val(); }
-		}
-	})
-
-	//Finish color autocompleter
-	$("#id_finish_color").autocomplete('{% url ajax-finish-color %}', {
-		extraParams: {
-			m: function() { return $("#id_manufacturer").val(); },
-			cl: function() { return $("#id_product_line").val(); },
-			ds: function() { return $("#id_door_style").val(); },
-			ft: function() { return $("#id_finish_type").val(); },
-			dm: function() { return $("#id_cabinet_material").val(); }
-		}
-	})
-})
+        $("#id_manufacturer").val(this.alt).change();
+    });
+});
 
 
 </script>
-{% endblock extra-head %}
-
+{% endblock %}
 
 {% block wizard-content %}
 
 <div style="width: 35%; float: right;" id="manufact_icons">
-	{% for item in manufacturers %}
-		{% if item.small_logo %}
-		<img src="{{item.small_logo.url}}" width="75" alt="{{item.name}}">
-		{% endif %}
+	{% for line in cabinet_lines %}
+        {% if line.logo_path %}
+            <img src="{{ MEDIA_URL }}{{ line.logo_path }}" width="75" alt="{{ line.catalog_name }}">
+        {% endif %}
 	{% endfor %}
 </div>
 
 {% include "fieldsets_form.html" %}
-
-
 {% endblock %}

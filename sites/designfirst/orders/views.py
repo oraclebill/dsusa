@@ -57,14 +57,33 @@ class Wizard(WizardBase):
              'appliances', 'diagrams', 'order_review']
     
     def step_manufacturer(self, request):
-        manufacturers = {}
-        manufacturers = Catalog().manufacturers()
-        # manufacturers_json = simplejson.dumps([m.json_dict() for m in manufacturers])
-        return self.handle_form(request, ManufacturerForm,
-                                 {'manufacturers_json': simplejson.dumps(manufacturers),
-                                   'manufacturers':manufacturers})
-    
-    
+        catalog = Catalog()
+        manufacturers = catalog.manufacturers()
+
+        def manufacturer_data(manufacturer):
+            cabinet_line = catalog.cabinet_line(manufacturer)
+            return {
+                'name': manufacturer,
+                'product_lines': cabinet_line.product_lines,
+                'cabinet_materials': cabinet_line.get_door_materials(),
+                'door_styles': cabinet_line.get_door_styles(),
+                'finish_optionss': cabinet_line.get_finish_option_types(),
+                'finish_types': cabinet_line.get_primary_finish_types(),
+                'finish_colors': cabinet_line.get_primary_finishes(),
+            }
+
+        autocomplete_tree = dict([
+            (manufacturer, manufacturer_data(manufacturer))
+            for manufacturer in manufacturers
+        ])
+
+        return self.handle_form(request, ManufacturerForm, {
+            'manufacturers_json': simplejson.dumps(manufacturers),
+            'autocomplete_tree':  simplejson.dumps(autocomplete_tree, indent=4),
+            'cabinet_lines': catalog.values(),
+            'manufacturers':manufacturers,
+        })
+
     def step_hardware(self, request):
         return self.handle_form(request, HardwareForm)
     

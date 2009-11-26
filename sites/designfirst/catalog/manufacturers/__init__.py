@@ -11,6 +11,7 @@ class CabinetLine(object):
         self.keyname = module.keyname
         self.catalog_name = module.catalog_name
         self.line_name = module.line_name
+        self.product_lines = module.product_lines
         self.door_info = module.door_info
         self.primary_finish_types = module.primary_finish_types
         self.finish_option_types = module.finish_option_types
@@ -69,6 +70,10 @@ class CabinetLine(object):
     def get_finish_options(self, option_type=None, species=None, style=None):
         return option_type and self._get_options_for_attribute(option_type, species) or \
                 list(set(reduce(list.__add__, [self._get_options_for_attribute(key, species) for key in self.finish_options_set])))
+
+    def logo_path(self):
+        # relative to MEDIA_URL
+        return getattr(self.module, 'logo_path', None)
 
 class Catalog(dict):
     def __init__(self):
