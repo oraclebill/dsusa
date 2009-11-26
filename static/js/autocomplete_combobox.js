@@ -1,55 +1,110 @@
 (function($) {
-	function select_html(id, name, value, choices) {
-		var options = '',
+    $.fn.update_choices = (function(){
+	    function select_html(id, name, value, choices) {
+		        var options = '',
             selected = '',
             option = '';
 
-		for (var i=0; i<choices.length; i++) {
-            option = choices[i];
-            selected = value == option ? ' selected="selected"' : '';
-			options += '<option value="'+ option +'"'+selected+'> '+ option +'</option>';
-		}
-		return '<select name="'+name+'" id="'+id+'">'+options+'</select>';
-	}
+		    for (var i=0; i<choices.length; i++) {
+                option = choices[i];
+                selected = value == option ? ' selected="selected"' : '';
+			    options += '<option value="'+ option +'"'+selected+'> '+ option +'</option>';
+		    }
+		    return '<select name="'+name+'" id="'+id+'">'+options+'</select>';
+	    }
 
 
-	function input_html(id, name, value) {
-		return '<input type="text" name="'+name+'" id="'+id+'" value="'+value+'">';
-	}
+	    function input_html(id, name, value) {
+		    return '<input type="text" name="'+name+'" id="'+id+'" value="'+value+'">';
+	    }
 
-    $.fn.update_choices = function(choices, default_selects) {
-        var $$ = this,
+        return function(choices, default_selects) {
+                var $$ = this,
             val = $$.val(),
             id = $$.attr('id'),
             name = $$.attr('name'),
-            default_choices = (id in default_selects) ? default_selects[id] : null;
+                default_choices = (id in default_selects) ? default_selects[id] : null;
 
-        if (!choices.length) {
-            if (!default_choices) {
-                $$.replaceWith(input_html(id, name, val));
-                return $("#" + id);
+            if (!choices.length) {
+                if (!default_choices) {
+                    $$.replaceWith(input_html(id, name, val));
+                    return $("#" + id);
+                }
+                choices = default_choices;
             }
-            choices = default_choices;
+
+            $$.replaceWith(select_html(id, name, val, choices, default_choices));
+            $$ = $("#" + id);
+
+            function clear_error(item) {
+                $(item).parent().parent().removeClass("invalid").find("ul").remove();
+            }
+
+            if (val && $.inArray(val, choices) == -1) {
+                $$.parent().parent().addClass("invalid").removeClass("valid");
+                $$.before(
+                    '<ul class="errorlist" style="display: block;"><li>'+
+                        val +
+                        ' is invalid now. Choose something else</li></ul>'
+                );
+                $$.change(clear_error);
+            } else {
+                clear_error($$);
+            }
+            return $$;
+        };
+    })();
+
+    $.fn.manufacturerHandle = function(options) {
+        var default_selects = {};
+
+        // prepare dictionry with options for default selects
+        $("#wizard_form select").each(function() {
+            var $$ = $(this);
+            default_selects[$$.attr("id")] = $.map($$.find("option"), function(option) {
+                return $(option).text()
+            });
+        });
+
+        function material_change() {
+            var dependent_inputs = [ "door_style", "finish_color", "finish_type", "finish_options"],
+                material = $("#id_cabinet_material").val(),
+                manufacturer_data = $("#id_manufacturer").data("json_data"),
+                material_data = manufacturer_data ? manufacturer_data.material[material] : null,
+                choices = null;
+
+            $.each(dependent_inputs, function(i) {
+                choices = material_data ? material_data[dependent_inputs[i]] : [];
+                $("#id_" + dependent_inputs[i]).update_choices(choices, default_selects);
+            });
+    	    $('form').validation(options.validation_json);
         }
 
-        $$.replaceWith(select_html(id, name, val, choices, default_choices));
-        $$ = $("#" + id);
+        function manufacturer_change() {
+            var manufacturer_input = $("#id_manufacturer"),
+            manufacturer_val = manufacturer_input.val();
 
-        function clear_error(item) {
-            $(item).parent().parent().removeClass("invalid").find("ul").remove();
+            // this is to prevent change on both `result` and `change` events
+            if (manufacturer_input.data("last_choice_update_on") == manufacturer_val) {
+                return;
+            }
+
+            $.getJSON(options.manufacturer_ajax_url, {manufacturer: manufacturer_val},
+                      function(data) {
+                          manufacturer_input.data("json_data", "error" in data ? null : data);
+                          if ("error" in data) {
+                              $("#id_product_line").update_choices([], default_selects);
+                              $("#id_cabinet_material").update_choices([], default_selects).change(material_change).change();
+                          } else {
+                              $("#id_product_line").update_choices(data.product_line, default_selects);
+                              $("#id_cabinet_material").update_choices(data.materials_list, default_selects).change(material_change).change();
+                          }
+                      });
+            manufacturer_input.data("last_choice_update_on", manufacturer_val);
         }
 
-        if (val && $.inArray(val, choices) == -1) {
-            $$.parent().parent().addClass("invalid").removeClass("valid");
-            $$.before(
-                '<ul class="errorlist" style="display: block;"><li>'+
-                    val +
-                    ' is invalid now. Choose something else</li></ul>'
-            );
-            $$.change(clear_error);
-        } else {
-            clear_error($$);
-        }
-        return $$;
+	    $(this).autocomplete(options.manufacturers).result(manufacturer_change).change(manufacturer_change);
+        manufacturer_change();
     };
+
 })(jQuery);

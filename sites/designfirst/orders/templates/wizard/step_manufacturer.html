@@ -18,66 +18,12 @@
 
 $(function(){
 	var MANUFACTURERS = {{ manufacturers_json|safe }};
-    var default_selects = {};
 
-    // prepare dictionry with options for default selects
-    $("#wizard_form select").each(function() {
-        var $$ = $(this);
-        default_selects[$$.attr("id")] = $.map($$.find("option"), function(option) {
-            return $(option).text()
-        });
+    $("#id_manufacturer").manufacturerHandle({
+        manufacturers: MANUFACTURERS,
+        validation_json: {% render_ajax_fields form %},
+        manufacturer_ajax_url: "{% url ajax-manufacturer %}"
     });
-
-    function material_change() {
-        console.log("material_change");
-        var dependent_inputs = [ "door_style", "finish_color", "finish_type", "finish_options"],
-            material = $("#id_cabinet_material").val(),
-            manufacturer_data = $("#id_manufacturer").data("json_data"),
-            material_data = manufacturer_data ? manufacturer_data.material[material] : null,
-            choices = null;
-        console.log("manufacturer_data: ", manufacturer_data);
-        console.log("material_data: ", material_data);
-        console.log("material: ", material);
-
-        $.each(dependent_inputs, function(i) {
-            console.log("dependent_input: ", dependent_inputs[i]);
-            choices = material_data ? material_data[dependent_inputs[i]] : [];
-            console.log(choices);
-            $("#id_" + dependent_inputs[i]).update_choices(choices, default_selects);
-        });
-    	$('form').validation({% render_ajax_fields form %});
-    }
-
-    function manufacturer_change() {
-        var manufacturer_input = $("#id_manufacturer"),
-            manufacturer_val = manufacturer_input.val();
-
-        // this is to prevent change on both `result` and `change` events
-        if (manufacturer_input.data("last_choice_update_on") == manufacturer_val) {
-            return;
-        }
-        console.log("manufacturer change, no cache");
-
-        $.getJSON("{% url ajax-manufacturer %}", {manufacturer: manufacturer_val},
-            function(data) {
-                manufacturer_input.data("json_data", "error" in data ? null : data);
-                if ("error" in data) {
-                    $("#id_product_line").update_choices([], default_selects);
-                    input = $("#id_cabinet_material");
-                    new_input = input.update_choices([], default_selects);
-                    new_input.change(material_change);
-                    $("#id_cabinet_material").update_choices([], default_selects).change(material_change).change();
-                } else {
-                    $("#id_product_line").update_choices(data.product_line, default_selects);
-                    $("#id_cabinet_material").update_choices(data.materials_list, default_selects).change(material_change).change();
-                }
-        });
-
-        manufacturer_input.data("last_choice_update_on", manufacturer_val);
-    }
-
-	$("#id_manufacturer").autocomplete(MANUFACTURERS).result(manufacturer_change).change(manufacturer_change);
-    manufacturer_change();
 
 	//Manufacturere icon click handler
     $('#manufact_icons img').click(function() {
