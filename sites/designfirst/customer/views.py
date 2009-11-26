@@ -151,7 +151,7 @@ def dealer_dashboard(request):
     
     # orders = account.created_orders.all()
     orders = user.workingorder_set.all()
-    transactions = account.transaction_set.all()
+    invoices = account.invoice_set.order_by('-created')[:5]
     
     working_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
     submitted_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )

@@ -129,18 +129,16 @@ DesignFirst Customer Dashboard
     <caption>Transactions</caption>
    <thead>
      <tr>
-       <th>timestamp</th>
-       <th>type</th>
-       <th>+/-</th>
-       <th>amount</th>
+       <th>Date</th>
+       <th>Status</th>
+       <th>Amount</th>
        <th>description</th>
      </tr>
    </thead>
    <tbody>
-     {% for tx in transactions %}
+     {% for tx in invoices %}
      <tr class="{% cycle 'even' 'odd' %}">
-       <td> {{ tx.timestamp }}</td> <td> {{ tx.trans_type }} </td> <td> {{ tx.debit_or_credit }} </td> 
-       <td> {{ tx.amount }} </td><td> {{ tx.description|ljust:20 }} </td>
+       <td> {{ tx.created|date }}</td> <td> {{ tx.get_status_display }} </td> <td>{{ tx.total_credit }}</td><td> {{ tx.description|ljust:20 }} </td>
      </tr>
      {% endfor %}
    </tbody>
