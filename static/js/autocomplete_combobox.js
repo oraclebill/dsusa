@@ -1,23 +1,4 @@
 (function($) {
-	// function select_html(id, name, value, choices, default_choices) {
-	// 	var options = '<option value="">---------</option>',
-    //         selected = '',
-    //         option_value = '',
-    //         option_text = '';
-
-	// 	for (var i=0; i<choices.length; i++) {
-    //         option_text = choices[i];
-    //         if (default_choices && option_text.toLowerCase() in default_choices) {
-    //             option_value = default_choices[option_text.toLowerCase()].value;
-    //         } else {
-    //             option_value = option_text;
-    //         }
-    //         selected = value == option_value ? ' selected="selected"' : '';
-	// 		options += '<option value="'+ option_value +'"'+selected+'> '+ option_text +'</option>';
-	// 	}
-	// 	return '<select name="'+name+'" id="'+id+'">'+options+'</select>';
-	// }
-
 	function select_html(id, name, value, choices) {
 		var options = '',
             selected = '',
@@ -46,21 +27,17 @@
         if (!choices.length) {
             if (!default_choices) {
                 $$.replaceWith(input_html(id, name, val));
-                return;
+                return $("#" + id);
             }
             choices = default_choices;
-            // for (key in default_choices) {
-            //     choices.push(default_choices[key].text);
-            // }
-            // console.log('default_choices', default_choices);
-            // console.log(choices);
         }
 
         $$.replaceWith(select_html(id, name, val, choices, default_choices));
         $$ = $("#" + id);
 
-        if (val && !$$.find("option[selected=selected]").length) {
+        if (val && $.inArray(val, choices) == -1) {
             $$.css({background: "red"});
         }
+        return $$;
     };
 })(jQuery);

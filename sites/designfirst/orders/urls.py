@@ -9,6 +9,7 @@ urlpatterns = patterns('orders.views',
     
 #     url(r'^ajax/line/$', 'ajax_product_line',         name='ajax-product-line'),
     url(r'^ajax/wood/$', 'ajax_wood',               name='ajax-door-material'),
+    url(r'^ajax/manufacturer/$', 'ajax_manufacturer',               name='ajax-manufacturer'),
     url(r'^ajax/door/$', 'ajax_door_style',         name='ajax-door-style'),
 #     url(r'^ajax/drawer/$', 'ajax_drawer_style',       name='ajax-drawer-style'),
 #     url(r'^ajax/finish_type/$',  'ajax_finish_type',  name='ajax-finish-type'),
