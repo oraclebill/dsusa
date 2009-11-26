@@ -35,8 +35,20 @@
         $$.replaceWith(select_html(id, name, val, choices, default_choices));
         $$ = $("#" + id);
 
+        function clear_error(item) {
+            $(item).parent().parent().removeClass("invalid").find("ul").remove();
+        }
+
         if (val && $.inArray(val, choices) == -1) {
-            $$.css({background: "red"});
+            $$.parent().parent().addClass("invalid").removeClass("valid");
+            $$.before(
+                '<ul class="errorlist" style="display: block;"><li>'+
+                    val +
+                    ' is invalid now. Choose something else</li></ul>'
+            );
+            $$.change(clear_error);
+        } else {
+            clear_error($$);
         }
         return $$;
     };
