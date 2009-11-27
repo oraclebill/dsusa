@@ -63,7 +63,11 @@ class Wizard(WizardBase):
         return self.handle_form(request, ManufacturerForm, {
             'manufacturers_json': simplejson.dumps(manufacturers),
             'cabinet_lines': catalog.values(),
-            'manufacturers':manufacturers,
+            'manufacturers': manufacturers,
+            'default_selects': simplejson.dumps({
+                'id_cabinet_material': ManufacturerForm.DOOR_MATERIALS,
+                'id_finish_type': ManufacturerForm.FINISHES,
+             })
         })
 
     def step_hardware(self, request):

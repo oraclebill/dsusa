@@ -56,13 +56,13 @@
     })();
 
     $.fn.manufacturerHandle = function(options) {
-        var default_selects = {};
+        var default_selects = options.default_selects;
 
         // prepare dictionry with options for default selects
         $("#wizard_form select").each(function() {
             var $$ = $(this);
             default_selects[$$.attr("id")] = $.map($$.find("option"), function(option) {
-                return $(option).text()
+                return $(option).text();
             });
         });
 
