@@ -21,6 +21,7 @@ from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsFo
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
 from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
 from accounting.models import register_design_order
+from customer.auth import active_dealer_only
 #from forms import * 
 import summary 
 
@@ -187,6 +188,7 @@ class Wizard(WizardBase):
 
 
 @login_required
+@active_dealer_only
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 

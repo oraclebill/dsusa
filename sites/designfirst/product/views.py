@@ -17,10 +17,12 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 from accounting.models import register_purchase
 from models import Product,CartItem
-from customer.models import Invoice 
+from customer.models import Invoice
+from customer.auth import active_dealer_only
     
 logger = logging.getLogger('product.views')
 
@@ -62,6 +64,8 @@ def product_detail(request, prodid):
     return render_to_response( "product/product_detail.html", 
         locals(), context_instance=RequestContext(request) )
     
+@login_required
+@active_dealer_only
 def select_products(request, template):
     "Display the product list and collect product id's for users purchase."
     user = request.user
@@ -104,6 +108,8 @@ def select_products(request, template):
         
     return render_to_response( template, locals(), context_instance=RequestContext(request) )
                 
+@login_required
+@active_dealer_only
 def confirm_selections(request):
     "Display the selected products and pricing info and identify payment mechanism."
     account = request.user.get_profile().account
@@ -114,6 +120,8 @@ def confirm_selections(request):
     return render_to_response( "product/product_selection_review.html", locals(), 
         context_instance=RequestContext(request) )
     
+@login_required
+@active_dealer_only
 @transaction.commit_on_success
 def review_and_process_payment_info(request):
     "Display and/or collect payment information while displaying a summary of products to be purchased."    

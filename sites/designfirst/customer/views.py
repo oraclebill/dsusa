@@ -35,7 +35,7 @@ from orders import forms as wf
 from constants import ACCOUNT_ID, ORDER_ID
 from models import Dealer, UserProfile  
 from forms import DesignOrderAcceptanceForm, DealerProfileForm
-
+from auth import active_dealer_only
 
 
 
@@ -162,10 +162,6 @@ def dealer_dashboard(request):
                                 context_instance=RequestContext(request) ) 
  
 
-# ORDER_SUBFORMS = [ dof.OrderInfo, dof.Cabinetry, dof.Hardware, dof.Mouldings, dof.CabinetBoxes, 
-#                     dof.CornerCabinetOptions, dof.IslandAndPeninsula, dof.OtherConsiderations,
-#                     dof.SpaceManagement, dof.Miscellaneous, dof.FloorPlanDiagram ]
-# #                    dof.SpaceManagement, dof.Miscellaneous, dof.Appliances  ]
 ORDER_SUBFORMS = [ wf.ManufacturerForm, wf.HardwareForm, wf.MouldingForm, wf.SoffitsForm, 
                     wf.DimensionsForm, wf.CornerCabinetForm, wf.InteriorsForm, 
                     wf.MiscellaneousForm, wf.ApplianceForm, wf.AttachmentForm ]
@@ -207,6 +203,7 @@ def current_order_info(request, orderid, template='notifications/fax-cover.html'
     return render_to_response(template, locals(), context_instance=RequestContext(request))
     
 @login_required
+@active_dealer_only
 def edit_order_detail(request, order_id):
     """
     Editable detailed design order display. 
@@ -270,6 +267,7 @@ def accept_floorplan_template_fax(request, orderid):
     
     
 @login_required
+@active_dealer_only
 @transaction.commit_on_success
 def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
     """
@@ -325,6 +323,7 @@ def dealer_review_order(request, orderid):
         context_instance=RequestContext(request) )
     
 @login_required
+@active_dealer_only
 def dealer_accept_order(request, orderid):
     order = get_current_order(request, orderid)
     if request.method == "GET":
@@ -343,6 +342,7 @@ def dealer_accept_order(request, orderid):
         context_instance=RequestContext(request) )
     
 @login_required
+@active_dealer_only
 def dealer_reject_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
@@ -360,6 +360,7 @@ def dealer_reject_order(request, orderid):
         context_instance=RequestContext(request) )
     
 @login_required
+@active_dealer_only
 def remove_order_appliance(request, orderid, appliance_key):
     order = get_current_order(request, orderid)
     # verify appliance is child of order
