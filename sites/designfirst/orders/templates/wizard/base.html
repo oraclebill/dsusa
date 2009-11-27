@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load ajax_form_utils %}
+{% load ajax_form_utils wizard_tags %}
 
 
 {% block title %}{{wizard.order}} | {{wizard.step_title}}{% endblock %}
@@ -76,7 +76,7 @@ $(function(){
 <div id="wizard_steps" class="grid_16">
 {% block wizard-steps%}
 	{% for step in wizard.get_tabs %}
-		<div class="step_icon{% if step.selected %} selected{% endif %}">
+		<div class="step_icon{% if step.selected %} selected{% endif %} {% if wizard|step_finished:step %}finished{% endif %}">
 			<a href="{{ step.url }}" step="{{step.slug}}">
 				<img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png">
 				<span>{{step.title}}</span>

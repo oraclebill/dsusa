@@ -96,6 +96,19 @@ class WorkingOrder(models.Model):
     cost = models.DecimalField(_('Total Design Cost'), max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes for the Designer', null=True, blank=True)
 
+    finished_steps = models.CharField(max_length=100, editable=False, default='')
+
+    def is_step_finished(self, name):
+        return name in self.finished_steps
+
+    def finish_step(self, name, commit=False):
+        if not name in self.finished_steps:
+            if self.finished_steps:
+                self.finished_steps += ','
+            self.finished_steps += name
+            if commit:
+                self.save()
+
     @property
     def expected(self):
         "Expected completion time"
