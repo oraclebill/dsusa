@@ -144,37 +144,37 @@ def create_profile(request):
                 
 @login_required
 def edit_profile(request):
-    if request.method == 'POST':
-        company_form = forms.CompanyProfileForm(
-            request.POST, request.FILES,
-            instance=request.user.get_profile().account,
-            prefix='company'
-        )
-        profile_form = forms.UserProfileForm(
-            request.POST, request.FILES,
-            instance=request.user.get_profile(),
-            prefix='profile'
-        )
-
-        if company_form.is_valid() and profile_form.is_valid():
-            profile = profile_form.save()
-            account = company_form.save()
-            return redirect('home')
-    else:
-        company_form = forms.CompanyProfileForm(
-            instance=request.user.get_profile().account,
-            prefix='company'
-        )
-        profile_form = forms.UserProfileForm(
-            instance=request.user.get_profile(),
-            prefix='profile'
-        )
-
-    return render_to_response( 'profiles/edit_profile.html', {
-        'profile_form': profile_form,
-        'company_form': company_form,
-    }, context_instance=RequestContext(request))
-    
+#    if request.method == 'POST':
+#        company_form = forms.CompanyProfileForm(
+#            request.POST, request.FILES,
+#            instance=request.user.get_profile().account,
+#            prefix='company'
+#        )
+#        profile_form = forms.UserProfileForm(
+#            request.POST, request.FILES,
+#            instance=request.user.get_profile(),
+#            prefix='profile'
+#        )
+#
+#        if company_form.is_valid() and profile_form.is_valid():
+#            profile = profile_form.save()
+#            account = company_form.save()
+#            return redirect('home')
+#    else:
+#        company_form = forms.CompanyProfileForm(
+#            instance=request.user.get_profile().account,
+#            prefix='company'
+#        )
+#        profile_form = forms.UserProfileForm(
+#            instance=request.user.get_profile(),
+#            prefix='profile'
+#        )
+#
+#    return render_to_response( 'profiles/edit_profile.html', {
+#        'profile_form': profile_form,
+#        'company_form': company_form,
+#    }, context_instance=RequestContext(request))
+    return create_profile(request)    
     
 @login_required
 def dealer_dashboard(request):
