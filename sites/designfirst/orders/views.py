@@ -21,7 +21,7 @@ from utils.views import render_to
 import summary 
 
 from base import WizardBase
-from models import WorkingOrder, Attachment, Appliance, Moulding
+from models import OrderBase, WorkingOrder, Attachment, Appliance, Moulding
 from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
 from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
@@ -127,11 +127,13 @@ def submit_order(request, orderid):
                 order.save()
                 products = [form.cleaned_data['design_product']]
                 if form.cleaned_data['rush']:
-                    products.append(RUSH_PROD_ID)
+                    products.append(RUSH_PROD_ID)                    
+                request.method = 'GET'  # 
+                
                 return purchase_order(request, orderid, products, success_url=reverse('submit-order', args=[orderid]))
             else:           
                 register_design_order(order.owner, order.owner.get_profile().account, order, cost)
-                order.status = WorkingOrder.SUBMITTED
+                order.status = OrderBase.Const.SUBMITTED
                 order.save()
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
             return HttpResponseRedirect(reverse('submit-order-completed', args=[order.id]))              

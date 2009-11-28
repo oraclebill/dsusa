@@ -59,31 +59,32 @@ class OrderBase(models.Model):
     This is a temporary object used for storing data 
     when  user goes step to step in orders
     """
-    #Basic stuff
-    DEALER_EDIT, SUBMITTED, ASSIGNED, COMPLETED = range(1,5) #TODO: change from number to code
-    STATUS_CHOICES = (
-        (DEALER_EDIT, 'Dealer Editing'),
-        (SUBMITTED, 'Submitted'),
-        (ASSIGNED, 'Assigned'),
-        (COMPLETED, 'Completed'),
-    )
-    
-    KITCHEN_DESIGN, BATH_DESIGN, CLOSET_DESIGN, GENERAL_DESIGN = ('K', 'B', 'C', '*')  #TODO: change from number to code
-    PROJECT_TYPE_CHOICES = (
-        (KITCHEN_DESIGN, _('Kitchen')),
-        (BATH_DESIGN, _('Bath')),
-        (CLOSET_DESIGN, _('Closet')),
-        (GENERAL_DESIGN, _('Other (Generic)')),
-    )
+    class Const:
+        #Basic stuff
+        DEALER_EDIT, SUBMITTED, ASSIGNED, COMPLETED = range(1,5) #TODO: change from number to code
+        STATUS_CHOICES = (
+            (DEALER_EDIT, 'Dealer Editing'),
+            (SUBMITTED, 'Submitted'),
+            (ASSIGNED, 'Assigned'),
+            (COMPLETED, 'Completed'),
+        )
+        
+        KITCHEN_DESIGN, BATH_DESIGN, CLOSET_DESIGN, GENERAL_DESIGN = ('K', 'B', 'C', '*')  #TODO: change from number to code
+        PROJECT_TYPE_CHOICES = (
+            (KITCHEN_DESIGN, _('Kitchen')),
+            (BATH_DESIGN, _('Bath')),
+            (CLOSET_DESIGN, _('Closet')),
+            (GENERAL_DESIGN, _('Other (Generic)')),
+        )
     
     owner = models.ForeignKey(User)
-    status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
+    status = models.PositiveSmallIntegerField(_('Status'), choices=Const.STATUS_CHOICES, default=Const.DEALER_EDIT)
 
     #whj:  new fields 11/18/09 to support tracking and fax correlation
     account_code = models.CharField(_('Customer Account Code'), max_length=40, null=True, blank=True)
     tracking_code = models.CharField(_('Tracking Code'), max_length=20, null=True, blank=True)
     project_name = models.CharField(_('Project Name'), max_length=150)
-    project_type = models.CharField(_('Project Type'), max_length=1, choices=PROJECT_TYPE_CHOICES, default=KITCHEN_DESIGN)
+    project_type = models.CharField(_('Project Type'), max_length=1, choices=Const.PROJECT_TYPE_CHOICES, default=Const.KITCHEN_DESIGN)
     created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
     
     #Submit options

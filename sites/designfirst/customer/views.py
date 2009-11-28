@@ -28,7 +28,7 @@ from django.contrib.auth.decorators import login_required
 ## imports from other apps
 from accounting.models import register_design_order
 from product.models import Product
-from orders.models  import WorkingOrder, Appliance, Moulding, Attachment
+from orders.models  import OrderBase, WorkingOrder, Appliance, Moulding, Attachment
 from orders import forms as wf
 ##
 ## local imports 
@@ -39,6 +39,7 @@ from forms import DesignOrderAcceptanceForm, DealerProfileForm
 from auth import active_dealer_only
 
 
+#TODO: need to be able to delete orders in dashboard
 
 ##
 ## UTILITY FUNCTIONS
@@ -114,8 +115,7 @@ def do_logout(request):
     Log user out and direct them to the home page.
     
     TODO
-    """
-    
+    """    
     try:
         request.session.flush()
     except:
@@ -191,10 +191,10 @@ def dealer_dashboard(request):
     orders = user.workingorder_set.all()
     invoices = account.invoice_set.order_by('-created')[:5]
     
-    working_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
-    submitted_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )
+    working_orders = orders.filter( status__exact = OrderBase.Const.DEALER_EDIT )
+    submitted_orders = orders.filter( status__in = [ OrderBase.Const.SUBMITTED, OrderBase.Const.ASSIGNED ] )
         ## TODO: fixme!
-    archived_orders = orders.exclude( status__in = [ WorkingOrder.DEALER_EDIT, WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] ) 
+    archived_orders = orders.exclude( status__in = [ OrderBase.Const.DEALER_EDIT, OrderBase.Const.SUBMITTED, OrderBase.Const.ASSIGNED ] ) 
         
     return render_to_response( 'customer/dealer_dashboard.html', locals(),                                
                                 context_instance=RequestContext(request) ) 
