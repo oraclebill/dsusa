@@ -166,20 +166,23 @@ class Wizard(WizardBase):
     steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
              'appliances', 'diagrams', 'review']
-    
     def step_manufacturer(self, request):
-        manufacturers = {}
-        manufacturers = Catalog().manufacturers()
-        # manufacturers_json = simplejson.dumps([m.json_dict() for m in manufacturers])
-        return self.handle_form(request, ManufacturerForm,
-                                 {'manufacturers_json': simplejson.dumps(manufacturers),
-                                   'manufacturers':manufacturers})
-    
-    
+        catalog = Catalog()
+        manufacturers = catalog.manufacturers()
+
+        return self.handle_form(request, ManufacturerForm, {
+            'manufacturers_json': simplejson.dumps(manufacturers),
+            'cabinet_lines': catalog.values(),
+            'manufacturers': manufacturers,
+            'default_selects': simplejson.dumps({
+                'id_cabinet_material': ManufacturerForm.DOOR_MATERIALS,
+                'id_finish_type': ManufacturerForm.FINISHES,
+             })
+        })
+
     def step_hardware(self, request):
         return self.handle_form(request, HardwareForm)
-    
-    
+
     def step_moulding(self, request):
         if request.method == 'POST': # Ajax submit of new moulding
             if 'add_moulding' in request.POST:
@@ -331,8 +334,8 @@ def _make_kwargs(request, keys=['ds', 'dm', 'ft']):
 def ajax_product_line(request):
     mfg = request.GET.get('m', None)
     if not mfg:
-        return HttpResponse()    
-    lines = [mfg]
+        return HttpResponse()
+    lines = Catalog().cabinet_line(mfg).product_lines
     return HttpResponse(simplejson.dumps(lines))
 
 def ajax_door_style(request):
@@ -359,3 +362,43 @@ def ajax_finish_color(request):
                                                                finish_type=request.GET.get('ft', None), 
                                                                style=request.GET.get('ds', None))
     return HttpResponse(simplejson.dumps(finish)) # if q in style])
+
+
+def ajax_manufacturer(request):
+    catalog = Catalog()
+
+    def material_data(material, cabinet_line):
+        finish_types = cabinet_line.get_primary_finish_types(material)
+        finish_types_data = {}
+        for finish_type in finish_types:
+            colors = cabinet_line.get_primary_finishes(species=material)
+            finish_types_data[finish_type] = {'colors': colors}
+
+        return {
+            'name': material,
+            'door_style': cabinet_line.get_door_styles(material),
+            'finish_type': finish_types_data,
+            'finish_options': cabinet_line.get_finish_option_types(material),
+            'finish_color': cabinet_line.get_primary_finishes(species=material),
+        }
+
+    def manufacturer_data(cabinet_line):
+        return {
+            'name': manufacturer,
+            'product_line': cabinet_line.product_lines,
+            'material': dict((
+                (material, material_data(material, cabinet_line))
+                for material in cabinet_line.get_door_materials()
+             )),
+            'materials_list': cabinet_line.get_door_materials(),
+        }
+
+    manufacturer = request.GET.get('manufacturer', None)
+    try:
+        cabinet_line = catalog.cabinet_line(manufacturer)
+    except KeyError:
+        res = {'error': 'DoesNotExist'}
+    else:
+        res = manufacturer_data(cabinet_line)
+
+    return HttpResponse(simplejson.dumps(res), mimetype="application/javascript")

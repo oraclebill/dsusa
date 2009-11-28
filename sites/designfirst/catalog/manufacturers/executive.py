@@ -1,6 +1,8 @@
 keyname = 'executive'
 catalog_name = 'Executive Kitchens'
 line_name = 'Executive Kitchens'
+logo_path = 'images/manufacturers/test.jpg'
+
 
 product_lines = ['Executive', 'Bellini', 'Biltmore'] # , 'Impact']   
 #

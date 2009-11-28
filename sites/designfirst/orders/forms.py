@@ -98,7 +98,14 @@ def fieldset_fields(fieldsets):
         fieldlist.extend( fset[1]['fields']) # dups possible..
     return fieldlist
 
+
 class ManufacturerForm(forms.ModelForm, FieldsetForm):
+    DOOR_MATERIALS = (
+        'Maple', 'Cherry', 'Alder', 'Lyptus','Birch', 'MDF',
+        'Stainless Steel', 'Permafoil' 'Glass'
+        )
+    FINISHES = ('Stain', 'Paint', 'Natural', 'Glaze')
+
     class Media:
         css = {'all': ('css/jquery.autocomplete.css',)}
         js = ('js/jquery.autocomplete.js', )
@@ -106,7 +113,7 @@ class ManufacturerForm(forms.ModelForm, FieldsetForm):
         model = WorkingOrder
         fieldsets = [
             (None, {
-                'fields': ['manufacturer','product_line','door_style','cabinet_material','finish_type','finish_color','finish_options','drawer_front_style']}),
+                'fields': ['manufacturer','product_line','cabinet_material', 'door_style', 'finish_type','finish_color','finish_options','drawer_front_style']}),
             # ('Notes', {
             #     'fields': ['cabinetry_notes'], 
             #     'styles': 'collapse'}),
