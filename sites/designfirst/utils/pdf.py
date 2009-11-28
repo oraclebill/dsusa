@@ -12,7 +12,7 @@ from django.conf import settings
 logger = logging.getLogger('util.pdf')
 
 PPM_TMP_ROOT = settings.PPM_TMP_ROOT
-logger.debug('pdf module initialized with PPM_TMP_ROOT at %s', PPM_TMP_ROOT)
+#logger.debug('pdf module initialized with PPM_TMP_ROOT at %s', PPM_TMP_ROOT)
 
 
 pages_pattern = re.compile(r'^Pages:\s+(?P<pages>\d+)$', re.MULTILINE)
