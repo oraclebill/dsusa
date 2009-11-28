@@ -14,7 +14,7 @@ class DesignRequest(object):
     
     def __init__(self, id, type=DesignRequest.SILVER, project=None):
         self.id = id
-        self.type = type
+        self.project_type = type
         self.project = project
         self.selections = []
             

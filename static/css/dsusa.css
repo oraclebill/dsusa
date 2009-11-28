@@ -21,7 +21,7 @@ body {
     border-top-style: solid;
     border-top-color: #000000;
     border-top-width: 5px;
-    margin-top: 5px;
+    xmargin-top: 5px;
     background-color: #A8A799;
 }
 
@@ -81,7 +81,7 @@ span.invalid {
     padding: 1em 1.5em;
     position:relative;
     text-align: center;    
-    vertical-align: center;    
+    /* vertical-align: center; */    
 }
 
 #payment_info input[type=submit] {
@@ -98,7 +98,7 @@ span.invalid {
 #payment_info input[type=cancel]:hover,
 #payment_info input[type=submit]:hover
 {
-    opacity: 0.7;
+    opacity: 0.7; /* invalid 2.1, valid 3 */
 }
 
 #payment_info a {
@@ -137,5 +137,10 @@ span.invalid {
     font-weight: bolder;
 }
  
-
+/* order review 
+------------------------------------------------ */
+.summary-row label { display: block; float: left; width: 16em; font-weight: bolder;}
+.border { border-bottom: 1px solid #ababab; margin: 5px; padding: 3px;}
+.details { border: 1px dotted #ababab; padding: 2px; margin: 2px;}
+#attachment-frame { width:500px; height:650px; border: 1px solid #ababab; }
  

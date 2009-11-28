@@ -180,5 +180,5 @@ class DealerRegistrationBackend(DefaultBackend):
         return ('registration_complete', [], {})
 
     def post_activation_redirect(self, request, user):
-        return ('dealer-dashboard', [],{})
+        return ('home', [],{})
 

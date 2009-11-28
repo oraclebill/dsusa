@@ -5,6 +5,7 @@ import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.text import get_valid_filename
 from django.core.files.base import File as DjangoFile
 from django.core.files.storage import FileSystemStorage
 from django.db.transaction import commit_on_success
@@ -49,11 +50,11 @@ def preview_upload_location(preview_obj, filename):
         str(preview_obj.attachment.order.owner.get_profile().account.id), 
         'order-data',
         str(preview_obj.attachment.order.id), 
-        'previews',
+        'pages',
         str(filename)
     )
 
-class WorkingOrder(models.Model):
+class OrderBase(models.Model):
     """
     This is a temporary object used for storing data 
     when  user goes step to step in orders
@@ -68,7 +69,7 @@ class WorkingOrder(models.Model):
     )
     
     KITCHEN_DESIGN, BATH_DESIGN, CLOSET_DESIGN, GENERAL_DESIGN = ('K', 'B', 'C', '*')  #TODO: change from number to code
-    DESIGN_TYPE_CHOICES = (
+    PROJECT_TYPE_CHOICES = (
         (KITCHEN_DESIGN, _('Kitchen')),
         (BATH_DESIGN, _('Bath')),
         (CLOSET_DESIGN, _('Closet')),
@@ -76,27 +77,32 @@ class WorkingOrder(models.Model):
     )
     
     owner = models.ForeignKey(User)
-    updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
-    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
     status = models.PositiveSmallIntegerField(_('Status'), choices=STATUS_CHOICES, default=DEALER_EDIT)
 
     #whj:  new fields 11/18/09 to support tracking and fax correlation
-    type = models.CharField(_('Design Type'), max_length=1, choices=DESIGN_TYPE_CHOICES, default=KITCHEN_DESIGN)
-    created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
     account_code = models.CharField(_('Customer Account Code'), max_length=40, null=True, blank=True)
     tracking_code = models.CharField(_('Tracking Code'), max_length=20, null=True, blank=True)
+    project_name = models.CharField(_('Project Name'), max_length=150)
+    project_type = models.CharField(_('Project Type'), max_length=1, choices=PROJECT_TYPE_CHOICES, default=KITCHEN_DESIGN)
+    created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
     
     #Submit options
-    project_name = models.CharField(_('Project Name'), max_length=150)
     rush = models.BooleanField(_('Rush Processing'), default=False)
     color_views = models.BooleanField(_('Include Color Perspectives'), default=False)
     elevations = models.BooleanField(_('Include Elevations'), default=False)
     quoted_cabinet_list = models.BooleanField(_('Include Cabinetry Quote'), default=False)
-    desired = models.DateTimeField('Desired Delivered Date', null=True)
+    desired = models.DateTimeField('Desired Delivered Date', null=True, blank=True)
     cost = models.DecimalField(_('Total Design Cost'), max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes for the Designer', null=True, blank=True)
-
     finished_steps = models.CharField(max_length=100, editable=False, default='')
+    updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
+    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
+
+    class Meta:
+        abstract = True
+        verbose_name = 'order'
+        verbose_name_plural = 'orders'
+#        unique_together = (('owner', 'project_name'),)  # TODO: integrity *does* matter..        
 
     def is_step_finished(self, name):
         return name in self.finished_steps
@@ -122,7 +128,7 @@ class WorkingOrder(models.Model):
             
     @property
     def flags(self):
-        "Processiong flags"
+        "Processing flags"
         flags = []
         if self.color_views:
             flags.append('PRSNTR')
@@ -132,7 +138,42 @@ class WorkingOrder(models.Model):
             flags.append('RUSH')
         return ', '.join(flags)
 
+    def save(self, force_insert=False, force_update=False):
+        logger.debug('saving ... %s' % self)        
+        changed, old_status = self._check_status_change()
+        super(OrderBase,self).save(force_insert, force_update)
+        if None == old_status: # new order
+            self._init_tracking_fields()
+        if changed:
+            status_changed.send(self, old=old_status, new=self.status)
 
+    def _check_status_change(self):
+        changed = False
+        old_status = None
+        new_status = self.status
+        try:
+            old_status = self._base_manager.get(pk=self.id).status
+            changed = new_status != old_status
+        except self.DoesNotExist:
+            changed = True                
+        return (changed, old_status)
+        
+    def _init_tracking_fields(self):
+        if self.owner:            
+            self.customer_code = 'DDS-0001-%04d' % self.owner.get_profile().account.id 
+        else: 
+            self.customer_code = 'DDS-INTERNAL'
+        if not self.tracking_code:
+            self.tracking_code = get_valid_filename('%s-%02d' % (self.customer_code, self.project_name))
+        
+        
+    def __unicode__(self):
+        return self.project_name
+
+
+
+class WorkingOrder(OrderBase):
+    
     PAINT, STAIN, NATURAL, GLAZE = ('P', 'S', 'N', 'G')
     FINISH_CHOICES = (
         (STAIN, 'Stain'), (PAINT, 'Paint'), (NATURAL, 'Natural'), (GLAZE, 'Glaze'),
@@ -232,32 +273,13 @@ class WorkingOrder(models.Model):
     range_hood = models.BooleanField(_('Range Hood'), )
     posts = models.BooleanField(_('Posts'), )
     
-    class Meta:
-        verbose_name = 'order'
-        verbose_name_plural = 'orders'
-        
-    def save(self, force_insert=False, force_update=False):
-        logger.debug('saving ... %s' % self)
-        changed = False
-        old_status = None
-        new_status = self.status
-        try:
-            old_status = self._base_manager.get(pk=self.id).status
-            changed = new_status != old_status
-        except self.DoesNotExist:
-            changed = True                
-        super(WorkingOrder,self).save(force_insert, force_update)
-        if changed:
-            status_changed.send(self, old=old_status, new=new_status)
-            
-        
-    def __unicode__(self):
-        return self.project_name
     
     def attachment_previews(self):
-        "Return urls of all attachment previews"
-        return [a.first_preview for a in self.attachments.all()]
+        "Return urls of all attachment pages"
+        return [a.preview for a in self.attachments.all()]
     
+    def is_complete(self):
+        return self.attachments.filter(type=Attachment.FLOORPLAN)
     
     
 class Moulding(models.Model):
@@ -275,7 +297,7 @@ class Moulding(models.Model):
     name = models.CharField(_('Moulding Style/Model'), max_length=255)
     
     class Meta:
-        ordering = [_('type'), _('num')]
+        ordering = ['order', 'type', 'num']
     
     def __unicode__(self):
         return '#%d %s %s' % (self.num, self.get_type_display(), self.name)
@@ -334,70 +356,74 @@ class Attachment(models.Model):
     type = models.PositiveSmallIntegerField(_('type'), choices=TYPE_CHOICES, default=FLOORPLAN)
     file = models.FileField(_('file'), upload_to=attachment_upload_location, storage=APPSTORAGE)
     source = models.CharField(_('attachment method'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=FAXED, editable=False)
-    timestamp = models.DateTimeField(_(''), auto_now_add=True)
+    timestamp = models.DateTimeField(_('uploaded on'), auto_now_add=True)
+    page_count = models.PositiveSmallIntegerField(_('page count'), default=1)
+
+    class Meta:
+        verbose_name = _('attachment')
+        verbose_name_plural = _('attachments')
+        ordering = ['-order', '-timestamp']
     
     def __unicode__(self):
         return self.file and os.path.basename(self.file.path) or '(no file)'
 
-
     @property
-    def is_multipage(self):
-        if self.file:
-            filename = self.file.name.lower()
-            return filename.endswith('.pdf') or filename.endswith('.tif') or filename.endswith('.tiff')
-        return False
+    def preview(self):
+        if self.pages_count > 1:
+            return self.attachmentpage_set.all()[0].file
+        return self.file 
     
     @property
-    def first_preview(self):
-        if self.is_multipage:
-            return self.attachpreview_set.all()[0].file.url
-        return self.file and self.file.url or None
-    
-    @property
-    def previews(self):
-        if self.is_multipage:
-            for f in self.attachpreview_set.all():
-                yield {'url':f.file.url, 'page': f.page}
+    def pages(self):
+        if self.page_count > 1:
+            for f in self.attachmentpage_set.all():
+                yield {'file':f.file, 'page': f.page}
         else:
-            yield {'url':self.file and self.file.url or None, 'page': 1}
+            yield {'file':self.file, 'page': 1}
+                
+    def split_pages(self):
+        if self.file.name.lower().endswith('.pdf'):
+            self.attachmentpage_set.all().delete()
+            try:
+                self.page_count = pdf2ppm(self.file.path, self._pdf_callback)
+                self.save()
+            except OSError as ex:
+                logger.error('%s error during page generation for %s' % (ex, self))
+                #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
     
-    @property
-    def page_count(self):
-        if self.is_multipage:
-            return self.attachpreview_set.all().count()
-        return 1
-    
-    def generate_pdf_previews(self):
-        if not self.file:
-            raise RuntimeError('Attempt to generate previews for empty attachment (null file )')
+    def _pdf_callback(self, image, name, page):
+        logger.debug('enter: _pdf_callback(%s, %s, %s, %s)' % (self, image, name, page))
+        page_obj = self.attachmentpage_set.create(page=page, 
+                                file=attachment_upload_location(self, "%s-page-%d.png" % (name, page)),
+                                thumb=attachment_upload_location(self, "%s-page-%d-thumb.png" % (name, page)))
         try:
-            pdf2ppm(self.file.path, [(300, 600)], self._pdf_callback)
-        except OSError as ex:
-            logger.error('OSError: %s error during pdf generation for %s' % (ex, self.file.path))
-            #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
-
-    
-    def _pdf_callback(self, filename, page, size):
-        preview = AttachPreview(page=page, attachment=self)
-        file = DjangoFile(open(filename, 'rb'))
-        preview.file.save(file.name, file)
-        preview.save()
-        
-    class Meta:
-        verbose_name = _('attachment')
-        verbose_name_plural = _('attachments')
+            file = open(page_obj.file.path, 'wb')
+            image.copy().save(file)
+            file.close()
+            file = open(page_obj.thumb.path, 'wb')
+            image.thumbnail((50,70))
+            image.save(file)
+            file.close()
+        except Exception as ex:
+            logger.error('_pdf_callback (%s): %s' % (self, ex))
+        else:
+            page_obj.save()        
 
 
-class AttachPreview(models.Model):
+class AttachmentPage(models.Model):
     "Stores PDF pages converted to images"
     attachment = models.ForeignKey(Attachment)
-    page = models.PositiveIntegerField(_('page'), )
-    file = models.ImageField(_('file'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
+    page = models.PositiveIntegerField(_('page number'), )
+    file = models.ImageField(_('page'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE)
+    thumb = models.ImageField(_('thumbnail'), max_length=180, upload_to=preview_upload_location, storage=APPSTORAGE, null=True)
     
     class Meta:
         verbose_name = _('attachment preview')
-        verbose_name_plural = _('attachment previews')
-#         ordering = ['page']
+        verbose_name_plural = _('attachment pages')
+        ordering = ['attachment', 'page']
+    
+    def __unicode__(self):
+        return '%s#%d' % (self.attachment, self.page)
     
 
 class Appliance(models.Model):

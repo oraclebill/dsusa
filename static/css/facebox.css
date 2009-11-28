@@ -1,27 +1,27 @@
 #facebox .b {
-  background:url(b.png);
+  background:url(../images/b.png);
 }
 
 #facebox .tl {
-  background:url(fbx-border-sprite.png) 0 0;
+  background:url(../images/fbx-border-sprite.png) 0 0;
   width: 10px; 
   height: 10px;
 }
 
 #facebox .tr {
-  background:url(fbx-border-sprite.png) -10px 0;
+  background:url(../images/fbx-border-sprite.png) -10px 0;
   width: 10px; 
   height: 10px;
 }
 
 #facebox .bl {
-  background:url(fbx-border-sprite.png) -20px 0;
+  background:url(../images/fbx-border-sprite.png) -20px 0;
   width: 10px; 
   height: 10px;
 }
 
 #facebox .br {
-  background:url(fbx-border-sprite.png) -30px 0;
+  background:url(../images/fbx-border-sprite.png) -30px 0;
   width: 10px; 
   height: 10px;
 }

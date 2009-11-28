@@ -3,84 +3,169 @@
   "pk": 1, 
   "model": "product.product", 
   "fields": {
-   "is_revision": null, 
+   "product_type": "B", 
    "name": "Pro Design", 
-   "debitable": true, 
    "description": "A completed 20/20 KIT file and Cabinet Price Report.", 
-   "purchaseable": true, 
-   "sort_order": 100, 
+
    "credit_value": 85, 
-   "base_price": "85"
+   "base_price": "85.00"
+  }
+ }, 
+ {
+  "pk": 11, 
+  "model": "product.product", 
+  "fields": {
+   "product_type": "S", 
+   "name": "Two Year Subscription", 
+   "description": "Two Year Subscription", 
+
+   "credit_value": 0, 
+   "base_price": "259.00"
+  }
+ }, 
+ {
+  "pk": 20, 
+  "model": "product.product", 
+  "fields": {
+   "product_type": "O", 
+   "name": "Rush Service", 
+   "description": "Next Business Day delivery for orders placed before 2pm EST", 
+   "credit_value": 20, 
+   "base_price": "20.00"
+  }
+ }, 
+ {
+  "pk": 12, 
+  "model": "product.product", 
+  "fields": {
+   "product_type": "S", 
+   "name": "Three Year Subscription", 
+   "description": "Three Year Subscription", 
+
+   "credit_value": 0, 
+   "base_price": "339.00"
   }
  }, 
  {
   "pk": 2, 
   "model": "product.product", 
   "fields": {
-   "is_revision": null, 
+   "product_type": "B", 
    "name": "Presentation Pack", 
-   "debitable": true, 
    "description": "A presentation ready package containing PDF floorplans, elevations, and color persepective views in addition to 20/20 KIT file and Cabinet Price Report.", 
-   "purchaseable": true, 
-   "sort_order": 120, 
+
    "credit_value": 125, 
-   "base_price": "125"
+   "base_price": "125.00"
   }
  }, 
  {
   "pk": 4, 
   "model": "product.product", 
   "fields": {
-   "is_revision": true, 
+   "product_type": "O", 
    "name": "Presentation Pack Revision", 
-   "debitable": true, 
    "description": "A Presentation Pack Revision gives you the ability to purchase a revision to a previous design for a discounted price. Presentation Pack revisions can not be purchsed individually - they must be purchased with a Presentation Pack.", 
-   "purchaseable": true, 
-   "sort_order": 140, 
+
    "credit_value": 80, 
-   "base_price": "80"
+   "base_price": "80.00"
   }
  }, 
  {
   "pk": 7, 
   "model": "product.product", 
   "fields": {
-   "is_revision": null, 
-   "name": "Pro Design 6-4-5", 
-   "debitable": false, 
+   "product_type": "BP", 
+   "name": "Pro Design Bundle - Six for Five", 
    "description": "Six Pro Designs for the price of five.", 
-   "purchaseable": true, 
-   "sort_order": 1000, 
+
    "credit_value": 510, 
-   "base_price": "425"
+   "base_price": "425.00"
+  }
+ }, 
+ {
+  "pk": 10, 
+  "model": "product.product", 
+  "fields": {
+   "product_type": "S", 
+   "name": "One Year Subscription", 
+   "description": "One Year Subscription", 
+
+   "credit_value": 0, 
+   "base_price": "199.00"
   }
  }, 
  {
   "pk": 8, 
   "model": "product.product", 
   "fields": {
-   "is_revision": null, 
-   "name": "Presentation Pack 6-4-5 Special", 
-   "debitable": false, 
+   "product_type": "BP", 
+   "name": "Presentation Pack Six-for-Five Bundle", 
    "description": "Six Presentation Pack Design Packages for the price of five.", 
-   "purchaseable": true, 
-   "sort_order": 1010, 
+
    "credit_value": 750, 
-   "base_price": "625"
+   "base_price": "625.00"
   }
  }, 
  {
   "pk": 9, 
   "model": "product.product", 
   "fields": {
-   "is_revision": true, 
+   "product_type": "OP", 
    "name": "Presentation Pack Revision 6-4-5 Special", 
-   "debitable": false, 
    "description": "Six Presentation Pack Design Revisions for the price of five", 
-   "purchaseable": true, 
-   "sort_order": 1020, 
+
    "credit_value": 480, 
-   "base_price": "400"
+   "base_price": "400.00"
   }
- } 
+ }, 
+ {
+  "pk": 1, 
+  "model": "product.productrelationship", 
+  "fields": {
+   "source": 7, 
+   "deptype": "C", 
+   "target": 1, 
+   "description": ""
+  }
+ }, 
+ {
+  "pk": 2, 
+  "model": "product.productrelationship", 
+  "fields": {
+   "source": 4, 
+   "deptype": "R", 
+   "target": 2, 
+   "description": ""
+  }
+ }, 
+ {
+  "pk": 3, 
+  "model": "product.productrelationship", 
+  "fields": {
+   "source": 8, 
+   "deptype": "C", 
+   "target": 2, 
+   "description": null
+  }
+ }, 
+ {
+  "pk": 4, 
+  "model": "product.productrelationship", 
+  "fields": {
+   "source": 9, 
+   "deptype": "C", 
+   "target": 2, 
+   "description": null
+  }
+ }, 
+ {
+  "pk": 5, 
+  "model": "product.productrelationship", 
+  "fields": {
+   "source": 9, 
+   "deptype": "R", 
+   "target": 8, 
+   "description": null
+  }
+ }
 ]

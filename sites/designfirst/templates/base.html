@@ -1,8 +1,8 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd" >
 {% load util %}
 {% load i18n %}
 {% load menu_tags %}
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -13,11 +13,9 @@
     <link rel="stylesheet" type="text/css" href="{% media /css/layout.css %}" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% media /css/nav.css %}" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% media /css/dsusa.css %}" media="screen" />
-    <link rel="stylesheet" type="text/css" href="{% media /css/jquery-ui.css %}" media="screen" />
 <!--[if IE 6]><link rel="stylesheet" type="text/css" href="{% media /css/ie6.css %}" media="screen" /><![endif]-->
 <!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{% media /css/ie.css %}" media="screen" /><![endif]-->
 	<script type="text/javascript" src="{% media /js/jquery-1.3.2.min.js %}"></script>
-	<script type="text/javascript" src="{% media /js/jquery-ui.js %}"></script>
 	<script type="text/javascript" src="{% media /js/jquery-fluid16.js %}"></script>
 	{% block extrastyle %}
 		{# saved for b.w. compability, later will be removed #} 
@@ -26,11 +24,12 @@
 	{% endblock %}
   </head>
   <body>
+  	{% block header-div %}
 	<div id="header" class="container_16 clearfix">
 	   {% block content-header %}
 		<!-- begin branding block -->
 		<div id="logo" class="grid_2">
-			<img src="{{MEDIA_URL}}images/logo.png" height="50">
+			<img src="{{MEDIA_URL}}images/logo.png" alt="design service usa" height="50"/>
 		</div>
 		<!-- end branding block -->
 
@@ -58,7 +57,9 @@
 		{% endif %}
 		{% endblock %}
 	</div>		
-
+	{% endblock %}
+	
+	{% block content-div %}
     <div id="content" class="container_16 clearfix">
 		<div id="messages">
 	        {% if messages %}
@@ -70,16 +71,9 @@
         {% block content %} {% endblock %}
         <!-- end main content block -->
     </div>
+	{% endblock %}
 
-    <div id="content2" class="container_12">
-        <!-- begin main content block -->
-        {% block content2 %} {% endblock %}
-        <!-- end main content block -->
-
-        <div class="clear"></div>        
-    </div>
-
-      
+    {% block footer-div %}  
       <div id="footer" class="container_16">      
           <div id="site-info" class="grid_16">
               <div class="box">
@@ -94,6 +88,7 @@
           </div>
           <div class="clear"></div>          
       </div>
+	 {% endblock %}
 
 	<!-- begin tail javascript -->
 	<!-- end tail javascript -->

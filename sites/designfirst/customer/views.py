@@ -151,7 +151,7 @@ def dealer_dashboard(request):
     
     # orders = account.created_orders.all()
     orders = user.workingorder_set.all()
-    transactions = account.transaction_set.all()
+    invoices = account.invoice_set.order_by('-created')[:5]
     
     working_orders = orders.filter( status__exact = WorkingOrder.DEALER_EDIT )
     submitted_orders = orders.filter( status__in = [ WorkingOrder.SUBMITTED, WorkingOrder.ASSIGNED ] )
@@ -288,7 +288,7 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
     else:
         form = form_class(request.POST, instance=order)
         if form.is_valid():
-            order = form.save()
+            order = form.save()            
             account = request.user.get_profile().account
             cost = order.cost or Decimal()  
             register_design_order(user, account, order, cost)
@@ -300,28 +300,11 @@ def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
         def __init__(self, order):
             self.order = order
             
-    return render_to_response('wizard/order_review.html',
+    return render_to_response('orders/order_review.html',
                 dict(order=order, form=form, orders=FakeWizard(order)),
                 context_instance=RequestContext(request))
     
-    
-@login_required
-def dealer_review_order(request, orderid):
-    ##FIXME dup
-    order = get_current_order(request, orderid)
-    if request.method == "GET":
-        form = DesignOrderAcceptanceForm(instance=order)
-    elif request.method == "POST":
-        form = DesignOrderAcceptanceForm(request.POST,instance=order)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect( reverse('customer.views.dealer_dashboard') )
-    else:
-        raise Exception, 'Invalid HTTP operation %s' % request.method        
         
-    return render_to_response( "customer/design_rating_form.html", locals(),
-        context_instance=RequestContext(request) )
-    
 @login_required
 @active_dealer_only
 def dealer_accept_order(request, orderid):

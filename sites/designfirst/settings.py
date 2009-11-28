@@ -18,14 +18,32 @@ SECURE = False
 APP_FILES_ROOT = rel('..','..','var','designfirst','files')
 APP_FILES_URL = '/files'
 
+##
+## PRODUCTION EMAIL SETUP
+##
 ADMINS = (
-     ('Test Admins', 'admins@domain.com'),
+    ('Design Service USA Support', 'support@designserviceusa.com'),
+    ('Bill Jones', 'bill@averline.com'),
 )
 
-MANAGERS =(
-     ('Test Managers', 'managers@domain.com'),
+MANAGERS = (
+    ('Bill Jones', 'bill@designserviceusa.com'),
+    ('Barry Tarzy', 'barry@designserviceusa.com'),
+    ('Chris Ingram', 'chris@designserviceusa.com'),
+    ('Jim Tarzy', 'jim@designserviceusa.com'),
+    ('Jeff Stone', 'jeff@designserviceusa.com'),
+    ('Design Service USA Support', 'support@designserviceusa.com'),
 )
 
+DEFAULT_FROM_EMAIL='site-managers@www.designserviceusa.com'
+SERVER_EMAIL='site-admin@www.designserviceusa.com'
+EMAIL_SUBJECT_PREFIX='[DSUSA]: '
+
+EMAIL_HOST='m0.designserviceusa.com'
+
+##
+## PRODUCTION DATABASE SETUP
+##
 DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = rel('designfirst.db')             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
@@ -33,35 +51,15 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
 TIME_ZONE = 'America/New_York'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
-
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
 USE_I18N = True
-
-# Absolute path to the directory that holds media.
-# Example: "/customer/media/media.lawrence.com/"
 MEDIA_ROOT = rel('..', '..', 'static')
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 # Make this unique, and don't share it with anybody.
@@ -95,7 +93,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -125,9 +122,13 @@ INSTALLED_APPS = (
     'designfirst.accounting',
     'designfirst.catalog',
     'designfirst.barcode',
+    'test',
 )
 
 if DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ) 
     INSTALLED_APPS += ( 
         'debug_toolbar',
     )
@@ -175,10 +176,16 @@ ACCOUNT_ACTIVATION_DAYS=2
 REGISTRATION_AUTHORIZATION = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True
 
-PPM_TMP_ROOT = os.path.join(APP_FILES_ROOT, 'tmp')
+##
+## Settings to control image processing module
+##
 
+#PPM_TMP_ROOT = os.path.join(APP_FILES_ROOT, 'tmp')
+import tempfile
+PPM_TMP_ROOT = tempfile.mkdtemp(suffix='-imgtmp')
 
 try:
     from settings_local import *
 except ImportError:
     pass
+

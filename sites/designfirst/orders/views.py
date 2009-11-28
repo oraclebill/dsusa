@@ -1,6 +1,7 @@
 from datetime import datetime
 import string
 import random
+import decimal
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -12,8 +13,12 @@ from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
+from accounting.models import register_design_order
 from catalog.manufacturers import CabinetLine, Catalog
+from product.models import Product, CartItem
+from product.views import review_and_process_payment_info
 from utils.views import render_to
+import summary 
 
 from base import WizardBase
 from models import WorkingOrder, Attachment, Appliance, Moulding
@@ -22,10 +27,10 @@ from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousFo
 from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
 from accounting.models import register_design_order
 from customer.auth import active_dealer_only
-#from forms import * 
 import summary 
 
 LETTERS_AND_DIGITS = string.letters + string.digits
+RUSH_PROD_ID = 20
 
 @login_required
 @render_to('orders/create_order.html')
@@ -37,25 +42,130 @@ def create_order(request, *args):
     tracking_code = "".join([random.choice(LETTERS_AND_DIGITS) for x in xrange(15)])
              
     if request.method == 'POST':
-        form = NewDesignOrderForm(request.POST)
+        form = NewDesignOrderForm(request.POST, request.FILES)
         if form.is_valid():
             order = form.save(commit=False)
             order.client_account = account #TODO: there is actually no client_account in working order
             order.owner = request.user
-            order.save()                        
+            order.save()                     
+            floorplanfile = request.FILES.get('floorplan', None)   
+            if floorplanfile:
+                att = order.attachments.create(type=Attachment.FLOORPLAN, file=floorplanfile, source=Attachment.UPLOADED)
+                att.save()
+                att.split_pages()
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
     else:
         form = NewDesignOrderForm(initial=dict(tracking_code=tracking_code))
     
     return dict(account=account, form=form, tracking_code=tracking_code)
 
+@login_required
+@render_to('orders/order_review.html')
+def review_order(request, orderid):
+    account = request.user.get_profile().account  
+    order = request.user.workingorder_set.get(pk=orderid)
+#    user = request.user
+    if request.method == 'POST':
+        form = SubmitForm(request.POST, instance=order)
+#        if form.is_valid():
+#            register_design_order(user, user.get_profile().account,
+#                                  order, order.cost)
+#            order = form.save(commit=False)
+#            order.status = WorkingOrder.SUBMITTED
+#            order.save()
+#            return HttpResponseRedirect('/dealer/')
+    else:
+        form = SubmitForm(instance=order)
+        
+    result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
+    exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
+    for title, excl in summary.SUBMIT_SUMMARY:
+        exclude += excl
+    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude and f.editable]
+    result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
+    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 
+@login_required
+@render_to('orders/print_order.html')
+def print_order(request, id):
+    order = get_object_or_404(WorkingOrder, id=id)
+    if order.owner.id != request.user.id:
+        return HttpResponseForbidden("Not allowed to view this order")
+    s = summary.order_summary(order, summary.STEPS_SUMMARY)
+    #making two columns display
+    l = len(s)/2
+    s = s[:l], s[l:]
+    return {'order': order, 'summary': s}
 
+@login_required
+@transaction.commit_on_success
+@render_to('orders/simple_submit.html')
+def submit_order(request, orderid):
+    """
+    Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
+    
+    TODO - error handling, logging, 
+    """
+    user = request.user
+    if user is None or not user.is_authenticated():
+        return HttpResponseRedirect('/')
+ 
+    profile = user.get_profile()
+    account = profile.account
+    order = user.workingorder_set.get(id=orderid) 
+    
+    if request.method == 'GET':
+        form = SubmitForm(instance=order)
+    else:
+        form = SubmitForm(request.POST, instance=order)
+        if form.is_valid():
+            order = form.save(commit=False)
+            cost = order.cost or decimal.Decimal()      
+            if cost > account.credit_balance:
+                ## users account doesn't have enough juice.. send then to the ecom engine 
+                ## to pay, then get them back here ...
+                order.save()
+                products = [form.cleaned_data['design_product']]
+                if form.cleaned_data['rush']:
+                    products.append(RUSH_PROD_ID)
+                return purchase_order(request, orderid, products, success_url=reverse('submit-order', args=[orderid]))
+            else:           
+                register_design_order(order.owner, order.owner.get_profile().account, order, cost)
+                order.status = WorkingOrder.SUBMITTED
+                order.save()
+            # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
+            return HttpResponseRedirect(reverse('submit-order-completed', args=[order.id]))              
+    return dict(order=order, form=form)
+    
+def purchase_order(request, orderid, product_ids=[], success_url=None):
+    """
+    Initiate a purchase using the selected product and processing options.
+    """    
+    assert(len(product_ids))
+    CartItem.objects.filter(session_key=request.session.session_key).delete()   
+    item_count = 1
+    for prodid in product_ids: 
+        item = CartItem(
+            number = item_count,
+            session_key = request.session.session_key,
+            product = Product.objects.get(pk=prodid),
+            quantity = 1
+        )
+        item.save()
+        item_count += 1
+    return review_and_process_payment_info(request, success_url)
+#    return HttpResponseRedirect(isinstance(next, tuple) and reverse(*next) 
+
+@login_required
+@render_to('orders/confirm_submission.html')
+def post_submission_details(request, orderid):
+    return dict(order=get_object_or_404(WorkingOrder, id=orderid))    
+    
 class Wizard(WizardBase):
     
     steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
-             'appliances', 'diagrams', 'order_review']
+             'appliances', 'diagrams', 'review']
     
     def step_manufacturer(self, request):
         manufacturers = {}
@@ -165,8 +275,8 @@ class Wizard(WizardBase):
                 obj = form.save(commit=False)
                 obj.order = self.order
                 obj.save()
-                if obj.is_multipage:
-                    obj.generate_pdf_previews()
+                if obj.file.path.lower().endswith('pdf'):
+                    obj.split_pages()
                 context['confirm_attach'] = obj.id
                 
         else:
@@ -180,51 +290,27 @@ class Wizard(WizardBase):
         context.update({'form': form, 'attachments': attachments})
         return context
     
-    def step_order_review(self, request):
-        return _order_review(request, self)
-    
+    def step_review(self, request):
+        if request.method == 'POST':
+            #TODO: check if the order is complete!
+            return self.dispatch_next_step()
+        return dict(form=SubmitForm())
+        
+    def complete(self, request):
+        order = self.order
+        if order.is_complete():
+            return HttpResponseRedirect(reverse('submit-order', args=[order.id]))
+        else:
+            return dict()
+
     def get_summary(self):
         return summary.order_summary(self.order, summary.STEPS_SUMMARY)
-
 
 @login_required
 @active_dealer_only
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 
-@render_to('wizard/order_review.html')
-def _order_review(request, wizard):
-    order = wizard.order
-    user = request.user
-    if request.method == 'POST':
-        form = SubmitForm(request.POST, instance=order)
-        if form.is_valid():
-            register_design_order(user, user.get_profile().account,
-                                  order, order.cost)
-            order = form.save(commit=False)
-            order.status = WorkingOrder.SUBMITTED
-            order.save()
-            return HttpResponseRedirect('/dealer/')
-    else:
-        form = SubmitForm(instance=order)
-    result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
-    exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
-    for title, excl in summary.SUBMIT_SUMMARY:
-        exclude += excl
-    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude and f.editable]
-    result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
-    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
-
-@render_to('print_order.html')
-def print_order(request, id):
-    order = get_object_or_404(WorkingOrder, id=id)
-    if order.owner.id != request.user.id:
-        return HttpResponseForbidden("Not allowed to view this order")
-    summary = summary.order_summary(order, summary.STEPS_SUMMARY)
-    #making two columns display
-    l = len(summary)/2
-    summary = summary[:l], summary[l:]
-    return {'order': order, 'summary': summary}
 
 def is_existing_manufacturer(order):
 #     return order.manufacturer in get_manufacturers()

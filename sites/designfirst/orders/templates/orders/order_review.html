@@ -1,0 +1,104 @@
+
+<link rel="stylesheet" type="text/css" media="screen" href="{{MEDIA_URL}}css/pikastyle.css" />
+<script type="text/javascript" src="{{MEDIA_URL}}js/pikachoose-min.js" ></script>
+<script type="text/javascript">
+$(function(){
+	$('a.diagram').click(function(){
+		$('img#diagram').attr('src', this.href);
+		return false;
+	})
+	$('#pages').PikaChoose();
+})
+</script>
+
+<div class="container_16 clearfix">
+	<div class="grid_7 ">
+		<div id="selections" class="details"> 
+			<h3>Design Selections</h3>
+			&nbsp;
+	       	{% for section, values in data.items %}
+		    <div class="details border">
+				{% ifequal section "Options" %}
+				{% else %}
+					<h4>{{section}}</h4>
+					{% for name, value in values %}
+					<div class="summary-row row{% cycle "1" "2" %}">
+						<label>{{name}}</label> <span>{{value}}</span>
+					</div>
+					{% endfor %}
+				{% endifequal %}
+	    	</div>
+	       	{% endfor %}
+		</div>
+		<div id="options" class="details">
+    		<h4>Other Options</h4>
+			<div id="options_details" class="details">
+				{% for name, value in data.Options %}
+					<div class="summary-row row{% cycle "1" "2" %}">
+						<label>{{name}}</label><span>{{value}}</span> 
+					</div>
+				{% endfor %}
+			</div>						
+		</div>
+	</div>
+
+    <div class="grid_9">
+		<div id="diagrams" class="details">
+	    	<div id="sketch" class="block pikachoose">
+	    		<h3>Attachments</h3>
+				{% if order.attachments.count %}
+					<ul id="pages">
+					{% for att in order.attachments.all %}
+						{% for page in att.attachmentpage_set.all %}
+						<li><img width="500" height="650" src="{{page.file.url}}" alt="{{att.name}}, page {{ page.page }}"/>
+						<span>{{att.file.name}}, {{att.get_source_display|lower}} on {{att.timestamp|date}}  - page #{{page.page}}</span>
+						</li>
+						{% empty %}
+						<li><img width="500" height="650" src="{{att.file.url}}" alt="primary floorplan sketch"/></li>				
+						{% endfor %}
+					{% endfor %}
+					</ul>
+				{% else %}
+					<div id="attachment-frame">
+						<img width="500" height="650" src="#" alt="No attachments yet..."/>
+					</div>
+				{% endif %}
+	    	</div>
+		</div>
+    </div>
+</div>
+<div class="container_16 clearfix">
+	<div class="grid_9">
+		<div id="appliances" class="details">
+	    	<h3>Appliances</h3>
+			<table>
+				<tr>
+					<th>Type</th>
+					<th>Description</th>
+					<th>Width</th>
+					<th>Height</th>
+					<th>Depth</th>
+					<th> </th>
+				</tr>
+				{% for item in order.appliances.all %}
+				<tr class="row{% cycle "1" "2"%}">
+					<td>{{item.type}}</td>
+					<td>{{item.description|default:"N/A"}}</td>
+					<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+					<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+					<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+					<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+	
+	<div class="grid_7">
+		<div id="notes" class="details">
+	    	<h3>Design Notes</h3>
+			<div>
+			<p>TBD</p>
+			</div>
+		</div>
+	</div>

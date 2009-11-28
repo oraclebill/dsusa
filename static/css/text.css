@@ -15,7 +15,9 @@ body
 
 a:focus
 {
-	outline: 1px dotted invert;
+	outline-width: 1px;
+	outline-style: dotted;
+	outline-color: invert;
 }
 
 hr

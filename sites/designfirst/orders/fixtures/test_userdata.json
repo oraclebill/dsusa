@@ -1,0 +1,68 @@
+[
+ {
+  "pk": 2, 
+  "model": "auth.user", 
+  "fields": {
+   "username": "dealer", 
+   "first_name": "Test", 
+   "last_name": "Dealer", 
+   "is_active": true, 
+   "is_superuser": false, 
+   "is_staff": false, 
+   "last_login": "2009-11-22 18:07:03", 
+   "groups": [], 
+   "user_permissions": [], 
+   "password": "sha1$985dc$cde856d958d1c6e84b308f29e742b6696eaf0f7c", 
+   "email": "test-dealer@designserviceusa.com", 
+   "date_joined": "2009-11-03 03:16:12"
+  }
+ }, 
+ {
+  "pk": 1, 
+  "model": "auth.user", 
+  "fields": {
+   "username": "admin", 
+   "first_name": "", 
+   "last_name": "", 
+   "is_active": true, 
+   "is_superuser": true, 
+   "is_staff": true, 
+   "last_login": "2009-11-22 20:16:32", 
+   "groups": [], 
+   "user_permissions": [], 
+   "password": "sha1$71377$68342f1ee2b30adef6e65985dbed7c44a0727fe9", 
+   "email": "admin@ad.ad", 
+   "date_joined": "2009-11-03 03:04:31"
+  }
+ }, 
+ {
+  "pk": 1, 
+  "model": "customer.dealer", 
+  "fields": {
+   "status": "P", 
+   "legal_name": "Test Dealer", 
+   "fax": "", 
+   "address_2": "", 
+   "city": "", 
+   "credit_balance": "32890.00", 
+   "notes": "", 
+   "account_rep": null, 
+   "account_rep_name": "", 
+   "num_locations": 1, 
+   "phone": "", 
+   "state": "", 
+   "address_1": "", 
+   "internal_name": "test-dealer-001", 
+   "email": "", 
+   "zip4": ""
+  }
+ }, 
+ {
+  "pk": 2, 
+  "model": "customer.userprofile", 
+  "fields": {
+   "account": 1, 
+   "primary": true
+  }
+ }
+]

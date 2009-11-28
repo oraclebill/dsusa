@@ -100,7 +100,8 @@ def select_products(request, template):
     pricelist = [ ( product, 
                     product.base_price, 
                     product.cartitem_set.aggregate(Sum('quantity')).get('quantity__sum') or 0
-                  ) for product in Product.objects.filter(purchaseable=True) ]
+                  ) for product in Product.objects.all() ]
+    
     cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)
     cart_total = sum([i.extended_price for i in cart_items])
     # the following won't work, since extended_price is not a database field...
@@ -123,7 +124,7 @@ def confirm_selections(request):
 @login_required
 @active_dealer_only
 @transaction.commit_on_success
-def review_and_process_payment_info(request):
+def review_and_process_payment_info(request, success_url=None):
     "Display and/or collect payment information while displaying a summary of products to be purchased."    
     #
     account = request.user.get_profile().account
@@ -131,7 +132,7 @@ def review_and_process_payment_info(request):
     # we're basically a wrapper around this view func... so lets configure it.
     view_func = PayPalPro(payment_template="product/payment_info_review.html",     
                     confirm_template="paypal/express_confirmation.html",
-                    success_url=reverse('dealer-dashboard')
+                    success_url=success_url
     )    
     try:        
         # if there's no NEW invoice, create one from current cart
@@ -161,7 +162,7 @@ def review_and_process_payment_info(request):
                 "custom":       request.session.session_key,    # for debugging
                 "desc":         invoice.description,
                 "cancelurl":    make_site_url(request, reverse('select_products')),     # Express checkout cancel url
-                "returnurl":    make_site_url(request, reverse('dealer-dashboard'))     # Express checkout return url
+                "returnurl":    make_site_url(request, reverse('home'))     # Express checkout return url
             }        
             request.user.message_set.create(message='Thanks for your order!')
     except:

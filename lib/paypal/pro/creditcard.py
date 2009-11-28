@@ -31,12 +31,13 @@ def verify_credit_card(number):
 
 class CreditCard(object):
     def __init__(self, number):
-        self.number = number
+        self.number = number and re.sub(r'[^\d]', '', self.number)
 	
     def is_number(self):
         """True if there is at least one digit in number."""
-        self.number = re.sub(r'[^\d]', '', self.number)
-        return self.number.isdigit()
+	# modifying members in 'test' methods is a bad idea...
+        #self.number = re.sub(r'[^\d]', '', self.number).isdigit()
+        return self.number and self.number.isdigit() or False
 
     def is_mod10(self):
         """Returns True if number is valid according to mod10."""
