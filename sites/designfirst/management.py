@@ -8,8 +8,6 @@ from notification import models as notification
 from orders import models as orders, signals as order_signals
 import logging
 
-EMAIL_FROM='no-reply@designserviceusa.com'
-EMAIL_SUPPORT='support@designserviceusa.com'
 
 logger = logging.getLogger('management')
 
@@ -22,6 +20,11 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
         _("Thanks for registering!"), 
         _("Your registration has been received.")
     )
+#    notification.create_notice_type(
+#        "new_dealer_registration", 
+#        _("New Dealer Registration"), 
+#        _("New dealer registration received.")
+#    )
     notification.create_notice_type(
         "new_dealer_welcome", 
         _("Welcome to Design Service USA"), 
@@ -59,32 +62,6 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
     )
 dbsignals.post_syncdb.connect(create_notice_types, sender=notification)
  
-def new_dealer_notification(sender, **kwargs):
-    "When a new dealer appears, send a 'thanks for registering' email"
-    if not kwargs.get('created'):
-        return        
-    dealer = kwargs.get('instance')  
-    if not dealer.email:
-        mail_managers(
-            'New dealer %s requires manual validation - email blank' % dealer.legal_name,
-            'Dealer email blank' 
-        )
-        return            
-    mail_managers('New dealer registration - %s' % dealer.legal_name, '/service/registrations/%s' % dealer.id  )
-    # the notification infrastructure needs a 'User'...
-#    notification.send([dealer.primary_contact], 'registration_ack', locals())
-    # so we send mail manually, basd on email in dealer object..  
-    ## todo: use notifications!
-    context = {'name': dealer.legal_name }
-    subject = render_to_string( 'notification/registration_ack/short.txt', context)
-    message = render_to_string( 'notification/registration_ack/full.txt', context)
-    recipients = [dealer.email, EMAIL_SUPPORT]
-    rep = dealer.account_rep
-    if rep:
-        recipients.append(rep.email)        
-    send_mail(subject, message, EMAIL_FROM, recipients)
-          
-dbsignals.post_save.connect(new_dealer_notification, sender=customer.Dealer)        
         
 def new_fax_notification(sender, **kwargs):
     "When a new fax appears, send a 'got it!' email"

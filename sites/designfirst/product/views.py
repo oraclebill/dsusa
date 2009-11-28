@@ -19,6 +19,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
+from utils import make_site_url
 from accounting.models import register_purchase
 from models import Product,CartItem
 from customer.models import Invoice
@@ -46,12 +47,6 @@ def paypal_failure_callback(sender, **kwargs):
 payment_was_flagged.connect(paypal_failure_callback)
 
 
-def make_site_url(request, path):
-    from django.contrib.sites.models import Site
-    scheme = request.is_secure() and 'https' or 'http'
-    domain = Site.objects.get_current().domain.rstrip('/')    
-    return '%s://%s/%s' % (scheme, domain, path.lstrip('/'))
-    
 def product_detail(request, prodid):
     user = request.user
     if user is None or not user.is_authenticated():
@@ -161,8 +156,8 @@ def review_and_process_payment_info(request, success_url=None):
                 "invnum":       invoice.id,
                 "custom":       request.session.session_key,    # for debugging
                 "desc":         invoice.description,
-                "cancelurl":    make_site_url(request, reverse('select_products')),     # Express checkout cancel url
-                "returnurl":    make_site_url(request, reverse('home'))     # Express checkout return url
+                "cancelurl":    make_site_url(reverse('select_products')),     # Express checkout cancel url
+                "returnurl":    make_site_url(reverse('home'))     # Express checkout return url
             }        
             request.user.message_set.create(message='Thanks for your order!')
     except:

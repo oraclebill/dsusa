@@ -31,7 +31,12 @@ from registration.models import RegistrationProfile, SHA1_RE
 from registration.signals import user_registered, user_activated
 
 from forms import DealerRegistrationForm
+from notifications import notify_new_dealer_registration
+
 import signals
+import logging
+
+logger = logging.getLogger('customer.registration.backends')
         
 class DealerRegistrationBackend(DefaultBackend):
     
@@ -61,6 +66,8 @@ class DealerRegistrationBackend(DefaultBackend):
 
         """        
         
+        logger.debug('DealerRegistrationBackend: register(%s) called', kwargs)
+        
         first_name, last_name, company_name, email = kwargs.pop('first_name'), kwargs.pop('last_name'), kwargs['legal_name'], kwargs['email']
         notes = {}
         for key in ('rush', 'product_type', 'revisions', 'expected_orders', 'tos' ):
@@ -86,27 +93,25 @@ class DealerRegistrationBackend(DefaultBackend):
             
             new_profile = UserProfile(user=new_user, account=new_dealer)
             new_profile.primary = True
-            new_profile.save()
-        except:
+            new_profile.save()        
+            
+            notify_new_dealer_registration(new_dealer)
+                
+        except Exception as ex:
+            logger.error('DealerRegistrationBackend: registration failure: %s - rolling back', ex)
             transaction.rollback()
             new_user.delete()
             transaction.commit()
-            return False
+#            return False
+            raise ex
         else:
             transaction.commit()
-
-
-        context = { 'dealer': new_dealer, 'site': site }
-        subject = render_to_string( 'registration/admin_email_subject.txt', context)
-        # Email subject *must not* contain newlines
-        subject = ''.join(subject.splitlines())
-        message = render_to_string('registration/admin_email.txt', context)
-
-        mail_managers(subject, message)
+        
         user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=request)
-        return new_user
+        logger.info('DealerRegistrationBackend: new registration for %s/%s', new_user, new_dealer)
+        return new_user 
 
 
 #    def approve(self, request, activation_key):
@@ -177,6 +182,10 @@ class DealerRegistrationBackend(DefaultBackend):
         return DealerRegistrationForm
     
     def post_registration_redirect(self, request, user):
+        """
+        In addition to providing the redirect address, we also send the registration acknowledgement
+        """
+        
         return ('registration_complete', [], {})
 
     def post_activation_redirect(self, request, user):
