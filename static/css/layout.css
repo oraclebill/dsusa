@@ -299,7 +299,7 @@ td.currency {
 /* forms
 ----------------------------------------------- */
 form {
-	overflow:hidden;
+/*	overflow:hidden; */
 }
 fieldset {
 	border:1px solid #bbb;

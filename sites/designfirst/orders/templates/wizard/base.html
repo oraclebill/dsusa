@@ -9,65 +9,65 @@
 
 {% block extra-head %}
 	<link rel="stylesheet" href="{{MEDIA_URL}}css/wizard.css" type="text/css" media="screen" title="wizard css" charset="utf-8"/>
-	{{form.media}}
+	{{ form.media }}
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.js"></script>
 	<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.ajax_forms.validation.js"></script>
 	
-<script type="text/javascript">
-var STEP = '{{wizard.step}}'
-var MEDIA_URL = '{{ MEDIA_URL }}'
-var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
-var KEY_TAB = 9;
-
-function wizard_go_to(step) {
-	$('#next_step').val(step)
-	$('form#wizard_form').submit();
-}
-
-{% block ajax-validation %}
-$(function(){
-	//Ajax validation:
-	$('form').validation({% render_ajax_fields form %});
-})
-{% endblock %}
-
-function get_fieldset_id(element) {
-	var id = false;
-	$(element).parents().each(function(){
-		if (this.tagName == 'FIELDSET') {
-			id = $(this).attr('id').replace('fields_', '')
-			return false
-		}
+	<script type="text/javascript">
+	var STEP = '{{wizard.step}}'
+	var MEDIA_URL = '{{ MEDIA_URL }}'
+	var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
+	var KEY_TAB = 9;
+	
+	function wizard_go_to(step) {
+		$('#next_step').val(step)
+		$('form#wizard_form').submit();
+	}
+	
+	{% block ajax-validation %}
+	$(function(){
+		//Ajax validation:
+		$('form').validation({% render_ajax_fields form %});
 	})
-	return id;
-}
-
-$(function(){
-	//Tabs navigation:	
-	$('#wizard_content :input:visible:first').keydown(function(event){
-		if (event.keyCode == KEY_TAB && event.shiftKey) {
-			if (!IS_FIRST_STEP)
-				wizard_go_to('_prev_')
+	{% endblock %}
+	
+	function get_fieldset_id(element) {
+		var id = false;
+		$(element).parents().each(function(){
+			if (this.tagName == 'FIELDSET') {
+				id = $(this).attr('id').replace('fields_', '')
+				return false
+			}
+		})
+		return id;
+	}
+	
+	$(function(){
+		//Tabs navigation:	
+		$('#wizard_content :input:visible:first').keydown(function(event){
+			if (event.keyCode == KEY_TAB && event.shiftKey) {
+				if (!IS_FIRST_STEP)
+					wizard_go_to('_prev_')
+				return false;
+			}
+		}).focus()
+		$('#wizard_content :input:visible:last').keydown(function(event){
+			if (event.keyCode == KEY_TAB && !event.shiftKey) {
+				wizard_go_to('_next_')
+				return false;
+			}
+		})
+		$('#wizard_steps a').click(function(){
+			wizard_go_to($(this).attr('step'))
 			return false;
-		}
-	}).focus()
-	$('#wizard_content :input:visible:last').keydown(function(event){
-		if (event.keyCode == KEY_TAB && !event.shiftKey) {
-			wizard_go_to('_next_')
-			return false;
-		}
+		})
+	
+		//Collapse fieldsets:
+		$('fieldset.collapse legend').click(function() {
+			$(this).parent().find('div').toggle('fast');
+		})
 	})
-	$('#wizard_steps a').click(function(){
-		wizard_go_to($(this).attr('step'))
-		return false;
-	})
-
-	//Collapse fieldsets:
-	$('fieldset.collapse legend').click(function() {
-		$(this).parent().find('div').toggle('fast');
-	})
-})
-</script>
+	</script>
 {% endblock %}
 
 
@@ -87,10 +87,9 @@ $(function(){
 
 
 
-</div> <!-- end container -->
 <form method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} id="wizard_form" action=".">
 	<input type="hidden" name="next_step_" id="next_step" value="_next_">
-<div class="container_16 clearfix">
+	<div class="container_16 clearfix">
 
 	{% block wizard-base-content %}
 	<div id="wizard_content" class="grid_11 ">

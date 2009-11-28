@@ -23,5 +23,5 @@ class DealerBackend(backends.ModelBackend):
                         in (models.Dealer.PENDING, models.Dealer.ARCHIVED):
                     return None
                 return user
-        except User.DoesNotExist:
+        except user.DoesNotExist:
             return None    

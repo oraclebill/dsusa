@@ -29,6 +29,7 @@ class NewDesignOrderForm(forms.ModelForm):
     
 ## TODO: do this right..
 def price_order(dealer, product, options={}):
+    #FIXME!!!
     product = int(product)
     if product == 1:
         price = Decimal('85')
@@ -37,7 +38,7 @@ def price_order(dealer, product, options={}):
     else:
         raise forms.ValidationError('Invalid product "%d"' % product)
     if options.get('rush', None):
-       price = price + 20
+        price = price + 20
     return price    
 
 base_product_choices = Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')

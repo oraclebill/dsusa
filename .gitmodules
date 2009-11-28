@@ -4,3 +4,6 @@
 [submodule "modules/django-notification"]
 	path = modules/django-notification
 	url = git://github.com/jtauber/django-notification.git
+[submodule "modules/debug_toolbar"]
+	path = modules/debug_toolbar
+	url = git://github.com/robhudson/django-debug-toolbar.git
