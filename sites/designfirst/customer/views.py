@@ -34,6 +34,7 @@ from orders import forms as wf
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
 from models import Dealer, UserProfile  
+import forms
 from forms import DesignOrderAcceptanceForm, DealerProfileForm
 from auth import active_dealer_only
 
@@ -121,6 +122,10 @@ def do_logout(request):
         pass
     return HttpResponseRedirect(reverse('customer.views.home'))
 
+def view_profile(request):
+    user = request.user
+    return render_to_response('profiles/dealer_profile.html', user, user.get_profile().account)
+
 def create_profile(request):
     user = request.user;
     
@@ -137,6 +142,39 @@ def create_profile(request):
                 locals(), 
                 context_instance=RequestContext(request))
                 
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        company_form = forms.CompanyProfileForm(
+            request.POST, request.FILES,
+            instance=request.user.get_profile().account,
+            prefix='company'
+        )
+        profile_form = forms.UserProfileForm(
+            request.POST, request.FILES,
+            instance=request.user.get_profile(),
+            prefix='profile'
+        )
+
+        if company_form.is_valid() and profile_form.is_valid():
+            profile = profile_form.save()
+            account = company_form.save()
+            return redirect('home')
+    else:
+        company_form = forms.CompanyProfileForm(
+            instance=request.user.get_profile().account,
+            prefix='company'
+        )
+        profile_form = forms.UserProfileForm(
+            instance=request.user.get_profile(),
+            prefix='profile'
+        )
+
+    return render_to_response( 'profiles/edit_profile.html', {
+        'profile_form': profile_form,
+        'company_form': company_form,
+    }, context_instance=RequestContext(request))
+    
     
 @login_required
 def dealer_dashboard(request):

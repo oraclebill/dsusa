@@ -7,7 +7,7 @@ menus['dealer'] = lambda: (
     (_('Dashboard'), reverse('home')),
     (_('New order'), reverse('new_order')),
     (_('Purchase Designs'), reverse('select_products')),
-    (_('Profile'), reverse('dealer-complete-profile')),
+    (_('Profile'), reverse('profile-edit')),
     # (_('Account'), reverse('')),
     # (_('With submenu'), (
     #     (_('Dashboard'), reverse('home')),
@@ -18,7 +18,7 @@ menus['dealer'] = lambda: (
 
 menus['limited'] = lambda: (
     (_('Dashboard'), reverse('dealer-dashboard')),
-    (_('Profile'), reverse('dealer-complete-profile')),
+    (_('Profile'), reverse('profile-edit')),
 )
 
 

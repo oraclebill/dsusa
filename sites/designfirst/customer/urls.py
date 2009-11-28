@@ -9,6 +9,7 @@ urlpatterns = patterns('customer.views',
     url(r'^logout/$', 'do_logout', name='do-logout'),
 
     url(r'^dealer/profile/complete$', 'create_profile', name='dealer-complete-profile'),
+    url(r'^dealer/profile/$', 'edit_profile', name='profile-edit'),
     
     url(r'^dealer/$', 'dealer_dashboard', name='home'),
     

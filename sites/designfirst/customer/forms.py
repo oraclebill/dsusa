@@ -6,6 +6,19 @@ from product.models import Product
 
 from orders.models import WorkingOrder
 
+class CompanyProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = Dealer
+        exclude = ('status', 'credit_balance', 'internal_name')
+
+
+class UserProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = UserProfile
+        exclude = ('user', 'account', 'primary')
+
 
 class DealerProfileForm(forms.ModelForm):
     company = forms.CharField(max_length=75)
