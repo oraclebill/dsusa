@@ -61,11 +61,21 @@ def product_detail(request, prodid):
         
     return render_to_response( "product/product_detail.html", 
         locals(), context_instance=RequestContext(request) )
+
+@login_required
+@active_dealer_only
+def add_cart_product(request, prodid):
+    pass
+
+@login_required
+@active_dealer_only
+def remove_cart_product(request, prodid):
+    pass
     
 @login_required
 @active_dealer_only
-def select_products(request, template):
-    "Display the product list and collect product id's for users purchase."
+def select_products(request, template="product/product_selection.html", extra_context={}):
+    "Provides the template with a product list and the cart item list, combined for users purchase."
     user = request.user
     if user is None or not user.is_authenticated():
         return HttpResponseRedirect('/') ## FIXME with decorators..
@@ -74,9 +84,8 @@ def select_products(request, template):
 
     # post means they've selected somethign to purchase. put the items in your 'cart' and go to confirm stage
     cart = shcart.get_cart_from_request(request)
-    if request.method == 'GET':
-        shcart.destroy_cart(cart)        
-    elif request.method == 'POST':
+
+    if request.method == 'POST':
         shcart.destroy_cart(cart)        
         cart_empty = True        
         product_quantities = [ (int(id[6:]), int(count or 0)) 
@@ -95,17 +104,24 @@ def select_products(request, template):
             else:
                 # go to confirmation page
                 return HttpResponseRedirect(reverse("confirm_purchase_selections"))
+        return HttpResponseRedirect(reverse('select_products'))
 
-    pricelist = Product.objects.all()
-        
     cart_items = shcart.get_cart_items(cart)
     cart_total = sum([i.extended_price for i in cart_items])
+    item_hash = dict()
+    for item in cart_items:
+        item_hash[item.product_id] = item
+
+    products = Product.objects.all()
+    pricelist = [ (product, item_hash.get(product.id, 0)) for product in products]
+        
     # the following won't work, since extended_price is not a database field...
     # cart_total = cart_items.aggregate(Sum('extended_price')).get('extended_price__sum', 0)
         
     logger.debug('cart items: %s', cart_items)
-    logger.debug('cart items: %s', cart_items)
-    return render_to_response( template, locals(), context_instance=RequestContext(request) )
+    context = {'pricelist': pricelist, 'cart_items': cart_items, 'cart_total': cart_total}
+    context.update(extra_context)
+    return render_to_response( template, context, context_instance=RequestContext(request) )
                 
                 
 def render_cart(request, template_name='product/cart_fragment.html'):

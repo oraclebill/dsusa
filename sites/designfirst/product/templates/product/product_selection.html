@@ -8,54 +8,128 @@ DesignFirst - Purchase Design Credits
 <style type="text/css" media="screen">
 
 #orderform .label {
+	width: 20em;
     font-weight: bolder;
 }
-
+#orderform p .label {
+	display: block;
+}
+#orderform .price:before {
+	content: "$  ";
+}
 #orderform .price {
     width: 5em;
     text-align: right;
 }
 
+#orderform div.total {
+	padding: 1em;
+	font-size: larger;
+	background: #eee;
+}
+#orderform div.control {
+	margin: 1em;
+}
 #orderform .right {
     text-align: right;
+	float:right;
+}
+#orderform .left {
+    text-align: right;
+	float:left;
 }
 
 </style>
+
+{% if selection %}
+<script type="text/javascript">
+	// update the line and cart totals when a quantity changes
+	function updateTotals() {
+		grand_total = 0.0;
+		$('#orderform tr.pdesc').each(function() {
+			unit_price = $(".unitprice", this).text();	
+			quantity = $("input:text", this).val();
+			total = unit_price * quantity;
+			grand_total += total;
+			$('.lineprice',this).text( total );
+		});
+		$("#grand-total").text(grand_total);
+	}
+	function clearForm(){
+		$('#orderform tr.pdesc input:text').val('');
+		updateTotals();
+		return false;
+	}
+	$(function(){
+		updateTotals();
+  		$('#orderform input:text').change( function() {
+			updateTotals();
+		});
+  		$('#clear').click( function() {
+			clearForm();
+		});
+	});
+</script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
-
 	<div class="grid_14 prefix_1 ">
 		<div id="products" class="box">
 			<h2>Product List</h2>
 		    <div id="orderform">	
 		        <form action="." method="POST">
     				<table border="0" cellspacing="5" cellpadding="5">
-    				    <caption>Design Products</caption>
+    				    <caption>Products</caption>
     					<thead>
-    						<tr><th>Name</th><th>Description</th><th>Price</th><th>Count</th></tr>
+    						<tr><th>Name</th><th>Description</th><th>Price</th><th>Count</th><th>Total</th></tr>
     					</thead>
     					<tbody>
-        					{% for product in pricelist %}
-        					<tr>
-        						<td class="label">{{ product.name }}</td>
-        						<td>{{ product.description }}</td>
-        						<td class='price'>$ {{ product.base_price|stringformat:"10.02f" }}</td>
-        						<td><input type="text" name="count_{{product.id}}" size="4" value="{{ count }}"></td>
-        					</tr>
-        					{% endfor %}
-        				    <tr>
-        				        <td colspan="1"></td>
-    				            <td class="label right">Total</td>
-    				            <td id='cart_total' class='price'>$ {{ cart_total|stringformat:"10.02f" }}</td>
-    				            <td colspan="1"></td>
-				            </tr>
+    						{% if selection %}
+	        					{% for product, item in pricelist %}
+	        					<tr class="pdesc">
+	        						<td class="label">{{ product.name }}</td>
+	        						<td>{{ product.description }}</td>
+	        						<td class='price unitprice'>{{ product.base_price|stringformat:"10.02f" }}</td>
+	        						<td><input type="text" name="count_{{product.id}}" size="4" value="{{ item.quantity|default:0 }}"></td>
+	        						<td class='price lineprice'></td>
+	        					</tr>
+	        					{% endfor %}
+							{% else %}
+								{% for item in cart_items %}
+			    					{% if item.quantity %}
+			    					<tr>
+			    						<td class="label">{{ item.product.name }}</td>
+			    						<td>{{ item.product.description }}</td>
+			    						<td class="price">$ {{ item.unit_price|stringformat:"10.2f" }}</td>
+			    						<td>{{ item.quantity }}</td>
+			    						<td class="price">$ {{ item.extended_price|stringformat:"10.2f" }}</td>
+			    					</tr>
+			    					{% endif %}
+								{% endfor %}
+							{% endif %}
     					</tbody>
     				</table>
-    				<table border="0" cellspacing="5" cellpadding="5">
-    				</table>
-				    <p><input type="submit" value="Update"></p>
-				    <p><input type="submit" name="_purchase" value="Purchase &rarr;"></p>
+					<div class="total clearfix">
+				    	<p class='right'><span class='label'>Order Total</span> <span class='price' id="grand-total">{{ cart_total|stringformat:"10.02f" }}</span></p>
+					</div>
+					{% if selection %}
+					<div class="control clearfix">
+					    <p class="left"><input id="clear" type="submit" value="Clear Selections"></p>
+					    <p class="right"><input type="submit" name="_purchase" value="Purchase &rarr;"></p>
+					</div>
+					{% else %}
+					<div class="control clearfix">
+					    <div class="left">
+				            <a href="{% url select_products %}">Return To Product Selection</a>
+					    </div>
+						
+					    <div class="right ">
+					        <a href="{% url review_and_process_payment_info %}?express"><img  src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif"  alt="PayPal"></a>
+					        <a href="{% url review_and_process_payment_info %}"><img src="{{ MEDIA_URL }}images/grey-checkout-button.png"   alt="Purchase With Credit Card"></a>
+						</div>	
+					</div>
+					{% endif %}
 		        </form>	        
 		        
 			</div>

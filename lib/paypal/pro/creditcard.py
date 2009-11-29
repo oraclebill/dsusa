@@ -31,7 +31,7 @@ def verify_credit_card(number):
 
 class CreditCard(object):
     def __init__(self, number):
-        self.number = number and re.sub(r'[^\d]', '', self.number)
+        self.number = number and re.sub(r'[^\d]', '', number)
 	
     def is_number(self):
         """True if there is at least one digit in number."""

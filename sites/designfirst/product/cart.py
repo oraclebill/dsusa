@@ -1,8 +1,15 @@
+from datetime import datetime
+from hashlib import sha1
+import logging
+
 from django.contrib.auth.models import User
 from django.db import transaction
 
+from customer.models import Invoice
 from models import Product, CartItem
-    
+
+logger = logging.getLogger('product.cart')
+
 @transaction.commit_on_success
 def new_cart(request, product_ids=[]):
     """
@@ -43,3 +50,23 @@ def get_cart_from_request(request):
 def get_cart_items(cart):
     return CartItem.objects.filter(session_key=cart)
 
+@transaction.commit_on_success
+def create_invoice_from_cart(cart, account, user):
+    logger.debug('create_invoice_from_cart: entering: cart=%s, account=%s, user=%s', cart, account, user)
+    
+    sig = sha1(repr(datetime.now())).hexdigest()
+    invoice = Invoice(id=sig, customer=account, status=Invoice.NEW)
+    cart_items = get_cart_items(cart)    
+    
+    items = []
+    for item in cart_items:
+        logger.debug('create_invoice_from_cart: adding invoice line: item=%s', item)
+        invoice.add_line(item.product.name, item.product.base_price, item.quantity)
+        items.append(item.product.name)
+        item.delete()
+
+    invoice.description = " $%3.02f items - %s" % (invoice.total, ', '.join(items))        
+    invoice.save()       
+    destroy_cart(cart) 
+
+    return invoice
