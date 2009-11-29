@@ -9,7 +9,7 @@ urlpatterns = patterns('orders.views',
     url(r'^print/(\d+)/$', 'print_order', name='print-order'),
 
     url(r'^complete/(\d+)/$', 'submit_order', name='submit-order'), # e.g. checkout
-    url(r'^purchase/(\d+)/$', 'purchase_order', name='submit-order-purchase'), # e.g. checkout required
+#    url(r'^purchase/(\d+)/$', 'purchase_order', name='submit-order-purchase'), # e.g. checkout required
     url(r'^complete/(\d+)/details/$', 'post_submission_details', name='submit-order-completed'), # e.g. checkout acknowledgement
     
     url(r'^ajax/wood/$', 'ajax_wood',               name='ajax-door-material'),

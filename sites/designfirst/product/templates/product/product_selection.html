@@ -36,18 +36,18 @@ DesignFirst - Purchase Design Credits
     						<tr><th>Name</th><th>Description</th><th>Price</th><th>Count</th></tr>
     					</thead>
     					<tbody>
-        					{% for product, price, count in pricelist %}
+        					{% for product in pricelist %}
         					<tr>
         						<td class="label">{{ product.name }}</td>
         						<td>{{ product.description }}</td>
-        						<td class='price'>$ {{ price|stringformat:"10.02f" }}</td>
+        						<td class='price'>$ {{ product.base_price|stringformat:"10.02f" }}</td>
         						<td><input type="text" name="count_{{product.id}}" size="4" value="{{ count }}"></td>
         					</tr>
         					{% endfor %}
         				    <tr>
         				        <td colspan="1"></td>
     				            <td class="label right">Total</td>
-    				            <td class='price'>$ {{ cart_total|stringformat:"10.02f" }}</td>
+    				            <td id='cart_total' class='price'>$ {{ cart_total|stringformat:"10.02f" }}</td>
     				            <td colspan="1"></td>
 				            </tr>
     					</tbody>

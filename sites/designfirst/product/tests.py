@@ -6,8 +6,12 @@ Replace these with more appropriate tests for your application.
 """
 
 from django.test import TestCase
+from django.http import HttpRequest
+
 from models import Product
 from product.models import ProductRelationship
+from product.cart import new_cart
+import views
 
 class FixtureTest(TestCase):
     "Verify initial data includes core products"
@@ -40,11 +44,73 @@ class FixtureTest(TestCase):
         products = Product.objects.filter(product_type__contains=Product.Const.SUBSCRIPTION, source_set__deptype=ProductRelationship.Const.COMPOSED_OF)
         self.failIf(products)
         
+
+class ModelTest(TestCase):
+    "Test basic model functionality"
+    pass
         
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+        
+class CartTest(TestCase):
+    "Test shopping cart functionality"
+    pass
+        
 
->>> 1 + 1 == 2
-True
-"""}
+class ViewTest(TestCase):
+    "Test view methods"
+    
+    def setUp(self):
+        pass
 
+    def testProductDetail(self):
+        response = self.client.get('/')
+        product = Product.objects.all()[0]   
+        self.client.login()       
+        response = self.client.get('/product/%d' % product.id)  
+        print response
+        self.assertContains(response, product.name)
+
+    def testSelectProducts(self):
+        pass
+    
+    def testReviewAndProcessPaymentInfo(self):
+        pass
+    
+    def test_product_purchase(self):
+        """
+        product purchase screen is available to dealers in 'active' status and 
+        displays a product list form
+        """
+        
+class TestCaseTemplate(TestCase):
+    urls = 'test.urls'  # root urlconf for testing
+    fixtures = ['test-data.json', 'more-test-data', ]
+     
+    def xsetUp(self):
+        pass
+    
+    def xtestTemplate(self):
+        # ajax request
+        response = self.client.get('/profiles/1', follow=False, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        if response.is_ajax():
+            pass
+        
+        response = self.client.get('/profiles/1', follow=True, data={'foo': 'bar'})
+        if response.redirect_chain:
+            pass
+        
+        response = self.client.get('/profiles/1', content_type='text/xml')
+        
+#        self.client.post('/orders/1/new', data={}, content_type, follow)
+#        self.client.login()
+#        self.client.logout()
+#        
+#        self.assertContains(response, text, count, status_code)
+#        self.assertNotContains(response, text, status_code)
+#        self.assertFormError(response, form, field, errors)
+#        self.assertTemplateUsed(response, template_name)
+#        self.assertTemplateNotUsed(response, template_name)
+#        self.assertRedirects(response, expected_url, status_code, target_status_code, host)
+        
+        
+        
+            

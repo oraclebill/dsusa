@@ -3,10 +3,7 @@ from django.conf.urls.defaults import *
 import paypal
 
 urlpatterns = patterns('customer.views', 
-    (r'^$', 'home'),
-    
-    (r'^login/$', 'do_login'),
-    url(r'^logout/$', 'do_logout', name='do-logout'),
+    (r'^$', 'home'),    
 
     url(r'^dealer/profile/complete$', 'create_profile', name='dealer-complete-profile'),
     url(r'^dealer/profile/$', 'edit_profile', name='profile-edit'),

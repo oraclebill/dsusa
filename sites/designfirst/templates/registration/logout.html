@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} You have been logged out {% endblock %}
+
+{% block content %}
+	<div  class="grid_6 prefix_5 suffix_5">
+    	<div class="box">
+    		<h2>Logged out</h2>
+			<div>
+    		<p>You have been looged out of the application. Thank you for visiting Design Service USA.</p>
+			<p>&nbsp;</p>
+			</div>
+        </div> 
+	</div> 
+	<div class="grid_3 suffix_5">
+		<p><a href="http://www.designserviceusa.com">Click here</a> to return to Design Service USA's main site.</p>
+	</div>
+	<div class="grid_3 prefix_5">
+		<p><a href="{% url home %}">Click here</a> to login again.</p>
+	</div>
+
+{% endblock %}

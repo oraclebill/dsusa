@@ -28,19 +28,18 @@ class NewDesignOrderForm(forms.ModelForm):
     floorplan = forms.FileField(label='Floorplan File', required=False)
     
 ## TODO: do this right..
-def price_order(dealer, product, options={}):
+def price_order(dealer, product, options=[]):
     #TODO: optimize - prices probably don't change very often so prices should be cached..
     product = int(product)
     price = Product.objects.get(pk=product).base_price
-    for key, value in options:
-        if key =='rush':
-            price = price + 20
+    for key in options:
+        if key: price += Product.objects.get(pk=key).base_price
     return price    
 
 base_product_choices = Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')
 #TODO: figure out better programmatic method for finding rush and revision prods.
 #revision_product_choices = Product.objects.filter(product_type=Product.Const.OPTION, name__icontains='revision').values_list('id', 'name')
-procesing_option_choices = Product.objects.filter(product_type=Product.Const.OPTION, name__icontains='rush').values_list('id', 'name') 
+procesing_option_choices = list(Product.objects.filter(product_type=Product.Const.OPTION, name__icontains='rush').values_list('id', 'name')) 
 procesing_option_choices.insert(0, ('', ''))
 #TODO: support for revisions..
 
@@ -54,6 +53,7 @@ class SubmitForm(forms.ModelForm):
             'project_name',
             'project_type',
             'design_product',
+            'processing_option',
             'client_notes',
         ]
 
@@ -63,7 +63,7 @@ class SubmitForm(forms.ModelForm):
     
     # will determine 'quoted_cabinet_list, color_views, etc ...
     design_product = forms.ChoiceField(choices=base_product_choices)
-    processing_option = forms.ChoiceField(choices=procesing_option_choices)
+    processing_option = forms.ChoiceField(choices=procesing_option_choices, required=False)
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -76,8 +76,8 @@ class SubmitForm(forms.ModelForm):
         try:
             order.cost = price_order(dealer, 
                                      cleaned_data['design_product'], 
-                                     options={'rush': cleaned_data['rush']} )
-        except Exception, exc_info:
+                                     [cleaned_data['processing_option'],] )
+        except Exception as exc_info:
             raise forms.ValidationError('Error: Unable to price order: %s' % exc_info)
         #
         return cleaned_data        

@@ -14,7 +14,7 @@
 </div>
 <div id="login_panel" class="grid_5 suffix_1">
          <div class="block" id="login-forms">
-            <form action="/login/" method="post">
+            <form action="{% url auth_login %}" method="post">
               <fieldset class="login">
                 <legend>Login</legend>
 		{% if login_message %}
@@ -33,6 +33,7 @@
                   <input type="password" name="password" />
                 </p>
                  <input type="hidden" name="next" value="{{next}}" />
+				 {% csrf_token %}
                 <input class="login button" type="submit" value="Login" />
                 <br />
 		        {% trans "You can also " %}

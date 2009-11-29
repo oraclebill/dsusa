@@ -1,8 +1,10 @@
+# standard library imports
 from datetime import datetime
 import string
 import random
 import decimal
 
+# third party library imports
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import transaction
@@ -13,21 +15,24 @@ from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
+# foreign app imports
 from accounting.models import register_design_order
 from catalog.manufacturers import CabinetLine, Catalog
-from product.models import Product, CartItem
+from product.cart import new_cart
+from product.models import Product
 from product.views import review_and_process_payment_info
 from utils.views import render_to
+from accounting.models import register_design_order
+from customer.auth import active_dealer_only
 import summary 
 
+# local app imports
 from base import WizardBase
 from models import OrderBase, WorkingOrder, Attachment, Appliance, Moulding
 from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
 from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
-from accounting.models import register_design_order
-from customer.auth import active_dealer_only
-import summary 
+
 
 LETTERS_AND_DIGITS = string.letters + string.digits
 RUSH_PROD_ID = 20
@@ -114,7 +119,7 @@ def submit_order(request, orderid):
     account = profile.account
     order = user.workingorder_set.get(id=orderid) 
     
-    if request.method == 'GET':
+    if request.method == 'GET': 
         form = SubmitForm(instance=order)
     else:
         form = SubmitForm(request.POST, instance=order)
@@ -126,11 +131,12 @@ def submit_order(request, orderid):
                 ## to pay, then get them back here ...
                 order.save()
                 products = [form.cleaned_data['design_product']]
-                if form.cleaned_data['rush']:
-                    products.append(RUSH_PROD_ID)                    
-                request.method = 'GET'  # 
-                
-                return purchase_order(request, orderid, products, success_url=reverse('submit-order', args=[orderid]))
+                option = form.cleaned_data.get('processing_option', None)
+                if option:
+                    products.append(option)                    
+                new_cart(request, products)
+                request.method = 'GET'                
+                return review_and_process_payment_info(request, success_url=reverse('submit-order', args=[orderid]))
             else:           
                 register_design_order(order.owner, order.owner.get_profile().account, order, cost)
                 order.status = OrderBase.Const.SUBMITTED
@@ -139,25 +145,6 @@ def submit_order(request, orderid):
             return HttpResponseRedirect(reverse('submit-order-completed', args=[order.id]))              
     return dict(order=order, form=form)
     
-def purchase_order(request, orderid, product_ids=[], success_url=None):
-    """
-    Initiate a purchase using the selected product and processing options.
-    """    
-    assert(len(product_ids))
-    CartItem.objects.filter(session_key=request.session.session_key).delete()   
-    item_count = 1
-    for prodid in product_ids: 
-        item = CartItem(
-            number = item_count,
-            session_key = request.session.session_key,
-            product = Product.objects.get(pk=prodid),
-            quantity = 1
-        )
-        item.save()
-        item_count += 1
-    return review_and_process_payment_info(request, success_url)
-#    return HttpResponseRedirect(isinstance(next, tuple) and reverse(*next) 
-
 @login_required
 @render_to('orders/confirm_submission.html')
 def post_submission_details(request, orderid):

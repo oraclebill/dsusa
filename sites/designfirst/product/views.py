@@ -1,16 +1,17 @@
 from datetime import datetime
 from decimal import Decimal
 from hashlib import sha1
-from pickle import dumps
+import json
 import logging
 
 from paypal.pro.views import PayPalPro            
 from paypal.pro.signals import payment_was_successful, payment_was_flagged
 
 
+from django.core import serializers
 from django.db import transaction
 from django.db.models import Sum        
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 # from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
@@ -21,9 +22,11 @@ from django.contrib.auth.decorators import login_required
 
 from utils import make_site_url
 from accounting.models import register_purchase
-from models import Product,CartItem
+from models import Product
 from customer.models import Invoice
 from customer.auth import active_dealer_only
+    
+import cart as shcart
     
 logger = logging.getLogger('product.views')
 
@@ -70,19 +73,21 @@ def select_products(request, template):
     account = request.user.get_profile().account
 
     # post means they've selected somethign to purchase. put the items in your 'cart' and go to confirm stage
-    if request.method == 'POST':
-        cart_empty = True
-        CartItem.objects.all().delete()
-        product_quantities = [ (int(id[6:]), int(count or 0)) for (id, count) in request.POST.items() if id.startswith('count_') and int(count or 0)]
+    cart = shcart.get_cart_from_request(request)
+    if request.method == 'GET':
+        shcart.destroy_cart(cart)        
+    elif request.method == 'POST':
+        shcart.destroy_cart(cart)        
+        cart_empty = True        
+        product_quantities = [ (int(id[6:]), int(count or 0)) 
+                                for (id, count) 
+                                    in request.POST.items() 
+                                        if id.startswith('count_') and int(count or 0)]
+        logger.debug('product_quantities\n\n\n\n %s, %s, %s', product_quantities, bool(product_quantities), len(product_quantities))
         if product_quantities:      
             cart_empty = False                  
             for prod_id, qty in product_quantities:
-                item = CartItem(
-                    session_key = request.session.session_key,
-                    product = Product.objects.get(pk=prod_id),
-                    quantity = int(qty)
-                )
-                item.save()
+                shcart.add_item(cart, prod_id, int(qty))                
                 
         if '_purchase' in request.POST:            
             if cart_empty:
@@ -91,26 +96,46 @@ def select_products(request, template):
                 # go to confirmation page
                 return HttpResponseRedirect(reverse("confirm_purchase_selections"))
 
-    # using a aggregate here seems silly, but baffled as to how else to do this cleanly..
-    pricelist = [ ( product, 
-                    product.base_price, 
-                    product.cartitem_set.aggregate(Sum('quantity')).get('quantity__sum') or 0
-                  ) for product in Product.objects.all() ]
-    
-    cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)
+    pricelist = Product.objects.all()
+        
+    cart_items = shcart.get_cart_items(cart)
     cart_total = sum([i.extended_price for i in cart_items])
     # the following won't work, since extended_price is not a database field...
     # cart_total = cart_items.aggregate(Sum('extended_price')).get('extended_price__sum', 0)
         
+    logger.debug('cart items: %s', cart_items)
+    logger.debug('cart items: %s', cart_items)
     return render_to_response( template, locals(), context_instance=RequestContext(request) )
                 
+                
+def render_cart(request, template_name='product/cart_fragment.html'):
+    cart = shcart.get_cart_from_request(request)
+    cart_items = shcart.get_cart_items(cart)
+    if request.is_ajax():
+        response = serializers.serialize("json", cart_items)
+        return HttpResponse(response, content_type='application/json')
+    return render_to_response(template_name, {'cart_items': cart_items} )        
+        
+def render_product_list(request, template_name='product/product_list_fragment.html'):
+    all_prods = Product.objects.all()
+    base_prods = all_prods.filter(product_type=Product.Const.BASE)
+    package_prods = all_prods.filter(product_type=Product.Const.PACKAGE)
+    option_prods = all_prods.filter(product_type=Product.Const.OPTION)
+    pkgoption_prods = all_prods.filter(product_type=Product.Const.PACKAGE + Product.Const.OPTION)
+    subscription_prods = all_prods.filter(product_type=Product.Const.SUBSCRIPTION)
+    if request.is_ajax():
+        response = serializers.serialize("json", locals())
+        return HttpResponse(response, content_type='application/json')
+    return render_to_response(template_name, locals() )                                    
+        
 @login_required
 @active_dealer_only
 def confirm_selections(request):
     "Display the selected products and pricing info and identify payment mechanism."
     account = request.user.get_profile().account
 
-    cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)
+    cart = shcart.get_cart_from_request(request)
+    cart_items = shcart.get_cart_items(cart)
     cart_total = sum([i.extended_price for i in cart_items])
               
     return render_to_response( "product/product_selection_review.html", locals(), 
@@ -138,7 +163,9 @@ def review_and_process_payment_info(request, success_url=None):
             sig = sha1(repr(datetime.now())).hexdigest()
             invoice = Invoice(id=sig, customer=account, status=Invoice.NEW)
             invoice.description = "Web Purchase by '%s' on '%s'" % (request.user.email, datetime.now())
-            cart_items = CartItem.objects.filter(session_key__exact=request.session.session_key)    
+            cart = shcart.get_cart_from_request(request)
+            cart_items = shcart.get_cart_items(cart)    
+            
             for item in cart_items:
                 invoice.add_line(item.product.name, item.product.base_price, item.quantity)
                 item.delete()

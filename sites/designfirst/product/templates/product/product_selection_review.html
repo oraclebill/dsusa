@@ -49,7 +49,7 @@ img {
 				    <tr>
 				        <td colspan="1"></td>
 			            <td class="label right">Total</td>
-			            <td class='price'>$ {{ cart_total|stringformat:"10.02f" }}</td>
+			            <td id='purchase_total' class='price'>$ {{ cart_total|stringformat:"10.02f" }}</td>
 			            <td colspan="1"></td>
 		            </tr>
 				</tbody>
@@ -62,9 +62,11 @@ img {
             <a href="{% url select_products %}">Return To Product Selection</a>
         </p>
     </div>
+	
     <div class="grid_3 prefix_6 ">
         <a href="{% url review_and_process_payment_info %}?express"><img  src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif"  alt="PayPal"></a>
     </div>
+	
     <div class="grid_3 omega">
         <a href="{% url review_and_process_payment_info %}"><img src="{{ MEDIA_URL }}images/grey-checkout-button.png"   alt="Purchase With Credit Card"></a>
 	</div>	

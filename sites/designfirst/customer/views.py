@@ -77,50 +77,9 @@ def home(request):
     """    
     if request.session:
         request.session.flush()
-    return render_to_response( 'registration/login.html',context_instance=RequestContext(request) )
+#    return render_to_response( 'registration/login.html',context_instance=RequestContext(request) )
+    return HttpResponseRedirect(reverse('home'))
 
-
-def do_login(request, next=None):
-    """
-    Log user in and direct them to the proper area.
-    
-    TODO allow for chaining from unauthorized accesses.
-    """
-    
-    username = request.POST['username']
-    password = request.POST['password']
-    login_message = None
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            try:
-                profile = user.get_profile()
-            except UserProfile.DoesNotExist:
-                return HttpResponseRedirect(reverse('dealer-complete-profile') )                                
-            next = request.POST.get('next') 
-            request.session.set_expiry(0)  # expire at browser close  
-            return HttpResponseRedirect( next or '/dealer/' )
-        else:
-            login_message="User is locked. Please contact support"
-    else:
-        login_message="Login failed."
-
-    return render_to_response('registration/login.html', 
-        dict(login_message=login_message),
-        context_instance=RequestContext(request))
-
-def do_logout(request):
-    """
-    Log user out and direct them to the home page.
-    
-    TODO
-    """    
-    try:
-        request.session.flush()
-    except:
-        pass
-    return HttpResponseRedirect(reverse('customer.views.home'))
 
 def view_profile(request):
     user = request.user
