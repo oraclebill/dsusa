@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import backends
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.decorators import user_passes_test
@@ -23,5 +24,5 @@ class DealerBackend(backends.ModelBackend):
                         in (models.Dealer.PENDING, models.Dealer.ARCHIVED):
                     return None
                 return user
-        except user.DoesNotExist:
+        except ObjectDoesNotExist:
             return None    
