@@ -206,6 +206,7 @@ def paypal_checkout(request,
 
     phase = request.GET.get('p', 'collect')
     logger.debug('entered paypal_checkout: phase=%s, GET=%s, POST=%s', phase, request.GET, request.POST) 
+        
     # gather some info we always need
     account = request.user.get_profile().account
     cart = shcart.get_cart_from_request(request)
