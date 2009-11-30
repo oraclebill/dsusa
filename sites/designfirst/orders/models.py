@@ -108,7 +108,7 @@ class OrderBase(models.Model):
     def is_step_finished(self, name):
         return name in self.finished_steps
 
-    def finish_step(self, name, commit=False):
+    def finish_step(self, name, commit=True):
         if not name in self.finished_steps:
             if self.finished_steps:
                 self.finished_steps += ','

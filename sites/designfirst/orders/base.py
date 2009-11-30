@@ -62,7 +62,7 @@ class WizardBase(object):
             form = FormClass(request.POST, instance=self.order)
             if form.is_valid():
                 form.save()
-                self.order.finish_step(self.step, commit=True)
+                self.order.finish_step(self.step)
                 return self.dispatch_next_step()
         else:
             form = FormClass(instance=self.order)
