@@ -64,7 +64,7 @@ if opts.action in ['start', 'restart']:
      'socket=%s' % socket,
      'pidfile=%s' % pidfile,
      'errlog=%s' % errlog,
-     'maxchildren=4']
+     'maxchildren=2']
   #print 'running %s' % params
   subprocess.call(params)
   subprocess.call(['chmod', '666', socket])
