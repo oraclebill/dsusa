@@ -1,10 +1,12 @@
 keyname = 'executive'
 catalog_name = 'Executive Kitchens'
 line_name = 'Executive Kitchens'
-logo_path = 'images/manufacturers/test.jpg'
+logo_path = 'media/manufacturers/executive/executive.png'
 
 
-product_lines = ['Executive', 'Bellini', 'Biltmore'] # , 'Impact']   
+product_lines = ['Executive', 
+                 'Bellini', 
+                 'Biltmore'] # , 'Impact']   
 #
 primary_finish_types = ['paint', 'stain']
 finish_option_types = ['glaze', 'standard finish option', 'special finish option']

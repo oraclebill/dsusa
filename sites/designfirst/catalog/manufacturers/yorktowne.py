@@ -1,125 +1,36 @@
 catalog_name = 'Yorktowne Cabinetry'
 line_name = 'Yorktowne'
 keyname = 'yorktowne'
+logo_path = 'media/manufacturers/yorktowne/yorktowne.png'
 
 product_lines = [
     'yorktowne',
     ]
 #    
 wood_species = [
-    'cherry',
-    ('oak', 'quartersawn oak'),
-    'maple',
-    'hickory',
-    'thermafoil'
+    'Cherry',
+    'Oak', 'Quartersawn Oak',
+    'Maple',
+    'Hickory',
+    'Thermafoil'
     ]
 #    
-stains = {
-    'cherry': [
-        'Butternut',
-        'Garnet',
-        'Ginger',
-        'Java',
-        'Merlot',
-        'Sorrel',
-        'Toffee',
-        ],
-    'maple': [
-        'Antique White Sheer',
-        'Champagne',
-        'Chiffon',
-        'Chestnut',
-        'Cider',
-        'Java',
-        'Merlot',
-        'Natural',
-        'Oatmeal',
-        'Roselle',
-        'Spice',
-        'Toffee',
-        ],
-    'hickory': [
-        'Amber',
-        'Chestnut',
-        'Ginger',
-        'Honey',
-        'Java',
-        'Merlot',
-        'Toffee',
-        ],
-    'oak': [
-        'Bisque',
-        'Carmel',
-        'Chestnut',
-        'Garnet',
-        'Java',
-        'Merlot',
-        'Natural',
-        'Toffee',
-        'Wheat',
-        ],
-    'quartersawn oak': [
-        'Carmel',
-        'Chestnut',
-        'Natural',
-        'Roselle',
-        'Sorrel',
-        'Toffee',
-        ],
-    }
+stains = {'Cherry': ['Butternut', 'Garnet', 'Ginger', 'Java', 'Merlot', 'Sorrel', 'Toffee'], 'Oak': ['Bisque', 'Carmel', 'Chestnut', 'Garnet', 'Java', 'Merlot', 'Natural', 'Toffee', 'Wheat'], 'Maple': ['Antique White Sheer', 'Champagne', 'Chiffon', 'Chestnut', 'Cider', 'Java', 'Merlot', 'Natural', 'Oatmeal', 'Roselle', 'Spice', 'Toffee'], 'Hickory': ['Amber', 'Chestnut', 'Ginger', 'Honey', 'Java', 'Merlot', 'Toffee'], 'Quartersawn Oak': ['Carmel', 'Chestnut', 'Natural', 'Roselle', 'Sorrel', 'Toffee']}
+
 #
 glazes = {
-    'all': [
-        'ebony',
-        'mist',
-        'mocha',
+    '*': [
+        'Ebony',
+        'Mist',
+        'Mocha',
         ]    
     }
 #
 accent_finishes = [
-        'brindle', 
-        'opal'     
+        'Brindle', 
+        'Opal'     
     ]
     
-door_styles = [
-    'arch', 
-    'asbury square', 
-    'avondale cathedral', 
-    'avondale square*', 
-    'bellaire', 
-    'belmonte', 
-    'brentwood', 
-    'cambridge square*', 
-    'catalina arch*', 
-    'catalina square', 
-    'cathedral*', 
-    'celebration', 
-    'charlton', 
-    'contours', 
-    'coventry', 
-    'foxridge', 
-    'glenmont', 
-    'greenfield', 
-    'hallmark', 
-    'harborton', 
-    'harmony', 
-    'hartford', 
-    'hearthside', 
-    'keystone', 
-    'kingfield', 
-    'metropolitan', 
-    'millstream', 
-    'ridgewood', 
-    'riverbend', 
-    'royalle', 
-    'savannah', 
-    'selena', 
-    'serenity', 
-    'simplicity', 
-    'somerset', 
-    'springhill', 
-    'stockton', 
-    'verona', 
-    'wilshire', 
-]
+door_styles = ['Arch', 'Asbury Square', 'Avondale Cathedral', 'Avondale Square*', 'Bellaire', 'Belmonte', 'Brentwood', 'Cambridge Square*', 'Catalina Arch*', 'Catalina Square', 'Cathedral*', 'Celebration', 'Charlton', 'Contours', 'Coventry', 'Foxridge', 'Glenmont', 'Greenfield', 'Hallmark', 'Harborton', 'Harmony', 'Hartford', 'Hearthside', 'Keystone', 'Kingfield', 'Metropolitan', 'Millstream', 'Ridgewood', 'Riverbend', 'Royalle', 'Savannah', 'Selena', 'Serenity', 'Simplicity', 'Somerset', 'Springhill', 'Stockton', 'Verona', 'Wilshire']
+
 

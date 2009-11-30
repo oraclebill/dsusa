@@ -14,6 +14,7 @@ Definitions for FieldStone Cabinetry
 catalog_name = 'Fieldstone Cabinetry'
 line_name = 'Fieldstone'
 keyname = 'fieldstone'
+logo_path = 'media/manufacturers/fieldstone/fieldstone.jpg'
 #
 product_lines = [ 
         'FieldStone',
