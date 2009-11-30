@@ -95,7 +95,7 @@ class OrderBase(models.Model):
     desired = models.DateTimeField('Desired Delivered Date', null=True, blank=True)
     cost = models.DecimalField(_('Total Design Cost'), max_digits=10, decimal_places=2, blank=True, null=True)
     client_notes = models.TextField('Notes for the Designer', null=True, blank=True)
-    finished_steps = models.CharField(max_length=100, editable=False, default='')
+    finished_steps = models.CharField(max_length=250, editable=False, default='')
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
     submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
 
@@ -108,7 +108,7 @@ class OrderBase(models.Model):
     def is_step_finished(self, name):
         return name in self.finished_steps
 
-    def finish_step(self, name, commit=False):
+    def finish_step(self, name, commit=True):
         if not name in self.finished_steps:
             if self.finished_steps:
                 self.finished_steps += ','

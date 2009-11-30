@@ -7,25 +7,17 @@ class Migration:
     
     def forwards(self, orm):
         
-        # Changing field 'WorkingOrder.finish_type'
-        # (to signature: django.db.models.fields.CharField(max_length=150, null=True, blank=True))
-        db.alter_column('orders_workingorder', 'finish_type', orm['orders.workingorder:finish_type'])
-        
-        # Changing field 'AttachPreview.file'
-        # (to signature: django.db.models.fields.files.ImageField(max_length=180))
-        # db.alter_column('orders_attachpreview', 'file', orm['orders.attachpreview:file'])
+        # Changing field 'WorkingOrder.finished_steps'
+        # (to signature: django.db.models.fields.CharField(default='', max_length=250))
+        db.alter_column('orders_workingorder', 'finished_steps', orm['orders.workingorder:finished_steps'])
         
     
     
     def backwards(self, orm):
         
-        # Changing field 'WorkingOrder.finish_type'
-        # (to signature: django.db.models.fields.CharField(default='S', max_length=150, null=True, blank=True))
-        db.alter_column('orders_workingorder', 'finish_type', orm['orders.workingorder:finish_type'])
-        
-        # Changing field 'AttachPreview.file'
-        # (to signature: django.db.models.fields.files.ImageField(max_length=100))
-        # db.alter_column('orders_attachpreview', 'file', orm['orders.attachpreview:file'])
+        # Changing field 'WorkingOrder.finished_steps'
+        # (to signature: django.db.models.fields.CharField(default='', max_length=100))
+        db.alter_column('orders_workingorder', 'finished_steps', orm['orders.workingorder:finished_steps'])
         
     
     
@@ -78,15 +70,17 @@ class Migration:
             'file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'order': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'attachments'", 'to': "orm['orders.WorkingOrder']"}),
+            'page_count': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'}),
             'source': ('django.db.models.fields.CharField', [], {'default': "'F'", 'max_length': '1'}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'type': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'})
         },
-        'orders.attachpreview': {
+        'orders.attachmentpage': {
             'attachment': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['orders.Attachment']"}),
             'file': ('django.db.models.fields.files.ImageField', [], {'max_length': '180'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'page': ('django.db.models.fields.PositiveIntegerField', [], {})
+            'page': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'thumb': ('django.db.models.fields.files.ImageField', [], {'max_length': '180', 'null': 'True'})
         },
         'orders.moulding': {
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -110,7 +104,7 @@ class Migration:
             'degree90_corner_base': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'degree90_corner_base_shelv': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'}),
             'degree90_corner_wall': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
-            'desired': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
+            'desired': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'diagonal_corner_base': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'diagonal_corner_base_shelv': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'}),
             'diagonal_corner_wall': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
@@ -126,6 +120,7 @@ class Migration:
             'finish_color': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
             'finish_options': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
             'finish_type': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
+            'finished_steps': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '250'}),
             'glass_doors': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'has_soffits': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -136,6 +131,7 @@ class Migration:
             'posts': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'product_line': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
             'project_name': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
+            'project_type': ('django.db.models.fields.CharField', [], {'default': "'K'", 'max_length': '1'}),
             'quoted_cabinet_list': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'range_hood': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'rush': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
@@ -147,7 +143,6 @@ class Migration:
             'status': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'}),
             'submitted': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'tracking_code': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True', 'blank': 'True'}),
-            'type': ('django.db.models.fields.CharField', [], {'default': "'K'", 'max_length': '1'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'valance': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'vanity_cabinet_depth': ('DimensionField', ["_('Depth')"], {'null': 'True', 'blank': 'True'}),

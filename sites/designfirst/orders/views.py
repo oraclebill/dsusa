@@ -188,6 +188,7 @@ class Wizard(WizardBase):
                 sort_order = map(int, [i for i in request.POST['order'].split(',') if len(i) > 0])
                 Moulding.reorder(self.order, int(request.POST['type']), sort_order)
             else:
+                self.order.finish_step(self.step)
                 return self.dispatch_next_step()
             items = Moulding.groups(self.order)
             return HttpResponse(render_to_string(
@@ -238,6 +239,7 @@ class Wizard(WizardBase):
     def step_appliances(self, request):
         if request.method == 'POST':
             if 'add_appliance' not in request.POST:
+                self.order.finish_step(self.step)
                 return self.dispatch_next_step()
             form = ApplianceForm(request.POST, request.FILES)
             if form.is_valid():
@@ -261,6 +263,7 @@ class Wizard(WizardBase):
         context = {}
         if request.method == 'POST':
             if 'upload_file' not in request.POST:
+                self.order.finish_step(self.step)
                 return self.dispatch_next_step()
             form = AttachmentForm(request.POST, request.FILES)
             if form.is_valid():
