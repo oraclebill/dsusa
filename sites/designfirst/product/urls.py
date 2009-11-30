@@ -24,9 +24,9 @@ urlpatterns = patterns('product.views',
                                      },
                             name='confirm_purchase_selections'),
                             
-                        url(r'^review_payment_info/', 
-                            'checkout', 
-                            name='checkout'),
+                        url(r'^checkout/', 'checkout', name='checkout'), 
+                        url(r'^pp_checkout/', 'paypal_checkout', name='paypal-checkout'), 
+                        url(r'^pp_checkout/', 'paypal_checkout', {'phase': 'confirm'}, name='paypal-checkout-confirm'), 
                         
                         # url(r'^confirm_payment_info/', 
                         #     'confirm_payment_info', 

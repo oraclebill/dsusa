@@ -371,7 +371,7 @@ class Attachment(models.Model):
 
     @property
     def preview(self):
-        if self.pages_count > 1:
+        if self.page_count > 1:
             return self.attachmentpage_set.all()[0].file
         return self.file 
     

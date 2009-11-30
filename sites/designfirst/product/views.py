@@ -160,10 +160,11 @@ def confirm_selections(request):
 
 @login_required
 @active_dealer_only
-def paypal_checkout(request, phase='collect', 
-                    collection_template='product/payment_info_review.html', 
-                    confirmation_template='product/payment_info_review.html', 
-                    form_class=None, 
+def paypal_checkout(request,  
+                    collection_template='product/paypal_checkout.html', 
+                    confirmation_template='product/paypal_checkout.html', 
+                    success_url=None,
+                    form_class=PaymentForm, 
                     extra_context=None):    
     """
     Checkout the current shopping cart via paypal..
@@ -201,6 +202,10 @@ def paypal_checkout(request, phase='collect',
             "cancelurl":    make_site_url(reverse('select_products')),     # Express checkout cancel url
             "returnurl":    make_site_url(reverse('home'))     # Express checkout return url
         } 
+        return item
+
+    phase = request.GET.get('p', 'collect')
+    logger.debug('entered paypal_checkout: phase=%s, GET=%s, POST=%s', phase, request.GET, request.POST) 
         
     # gather some info we always need
     account = request.user.get_profile().account
@@ -215,38 +220,46 @@ def paypal_checkout(request, phase='collect',
         # validate the cc form. 
         form = form_class(request.POST, request.FILES) 
         if phase == 'collect':
+            logger.debug(' paypal_checkout: collect phase...') 
             if form.is_valid():
                 template = confirmation_template
                 phase = 'confirm'
         elif phase == 'confirm':
+            logger.debug(' paypal_checkout: confirm phase...') 
             if form.is_valid():
+                logger.debug(' paypal_checkout: confirm phase valid...') 
                 invoice = shcart.create_invoice_from_cart(cart, account, request.user)
                 response = form._process(request, item_from_invoice(invoice))
+                logger.debug(' paypal_checkout: payment response: %s', response) 
                 if not response.flag:      
                     invoice.status = Invoice.Const.PAID
                     invoice.save()
                     register_purchase(invoice.id, invoice.customer, invoice.total, invoice.total_credit)          
                     request.user.message_set.create(message='Payment processed successfully - thanks!')
+                    if success_url:
+                        return HttpResponseRedirect(success_url)
                 else:
                     invoice.status = Invoice.Const.CANCELLED
                     #invoice.notes = '%s: %s' % (response.flag_code, response.flag_info)
                     notes = '%s: %s' % (response.flag_code, response.flag_info)
                     invoice.save()
-                    request.user.message_set.create(message='Payment processing error - ' % notes)
-                return HttpResponseRedirect(reverse('show_invoice', [invoice.id,], {}))
+                    request.user.message_set.create(message='Payment processing error - %s' % notes)
+                return HttpResponseRedirect(reverse('invoice-detail', kwargs={'object_id': invoice.id}))
             else:
-                return HttpResponseServerError("Internal error - invalid data.")
+                phase = 'collect'  # back up...
         else:
-            return HttpResponseServerError("Internal error - illegal program state: %s" % phase)
-            
+            return HttpResponseServerError("Internal error - illegal program state: %s" % phase)            
                 
-    return render_to_response( template, locals(), context_instance=RequestContext(request))            
+    context = locals()
+    context.pop('request')
+    logger.debug(' paypal_checkout: exiting with context: %s', context) 
+    return render_to_response( template, context, context_instance=RequestContext(request))            
         
         
 @login_required
 @active_dealer_only
 @transaction.commit_on_success
-def checkout(request):
+def checkout(request, success_url=''):
     """
     Display and/or collect payment information while displaying a summary of products to be purchased.
     
@@ -272,7 +285,7 @@ def checkout(request):
     account = request.user.get_profile().account
     #
     # we're basically a wrapper around this view func... so lets configure it.
-    view_func = PayPalPro(payment_template="product/payment_info_review.html",
+    view_func = PayPalPro(payment_template="product/checkout.html",
                     confirm_template="paypal/express_confirmation.html",
                     success_url=reverse('home')
     )   

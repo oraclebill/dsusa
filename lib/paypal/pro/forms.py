@@ -19,6 +19,9 @@ class PaymentForm(forms.Form):
     cvv2 = CreditCardCVV2Field(label="Card Security Code")
 
     def process(self, request, item):
+        return not _process(request,item).flag
+        
+    def _process(self, request, item):
         """Process a PayPal direct payment."""
         from paypal.pro.helpers import PayPalWPP
         wpp = PayPalWPP(request) 
@@ -30,11 +33,11 @@ class PaymentForm(forms.Form):
  
         # Create single payment:
         if 'billingperiod' not in params:
-            response = wpp.doDirectPayment(params)
+            response = wpp._doDirectPayment(params)
 
         # Create recurring payment:
         else:
-            response = wpp.createRecurringPaymentsProfile(params, direct=True)
+            response = wpp._createRecurringPaymentsProfile(params, direct=True)
  
         return response
 

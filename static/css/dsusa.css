@@ -1,3 +1,9 @@
+ul.errorlist {	
+	float: right;	
+	color: red;
+	list-style-type:none;
+}
+
 /* Colors
 ----------------------------------------------- */
 body {
