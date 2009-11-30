@@ -125,6 +125,10 @@ form p.error {
 	font-weight: bold;
 }
 
+#wizard_steps div.finished span {
+    text-decoration: line-through;
+}
+
 /* Wizard Summary ------------------------- */
 
 #summary_content {
