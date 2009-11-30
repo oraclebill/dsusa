@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     (r'^orders/',   include("orders.urls")),
     (r'^barcode/',  include("barcode.urls")),        
     (r'^notification/',  include("notification.urls")),        
+    (r'^support/',  'django.views.generic.simple.redirect_to', {'url': 'http://www.designserviceusa.com/support' }, 'support'),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/',    include(admin.site.urls)),
 )

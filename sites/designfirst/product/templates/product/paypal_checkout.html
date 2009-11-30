@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Review Payment Information{% endblock %}
+
+{% block extra-head %}
+<style type="text/css" media="screen">
+#payment_info input[type=submit],
+#payment_info input[type=cancel]
+{
+	display: block;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin: 10px;
+	background: #ccc;
+	border: #aaa solid 1px;
+	text-align: center;
+	font-weight: bolder;
+}
+
+</style>	
+{% ifequal phase "confirm" %}
+<script type="text/javascript">
+	$(function(){
+		// disable text input fields 
+		$('input:text, select').attr('readonly', 'readonly');
+	})
+</script>
+{% endifequal %}
+{% endblock %}
+
+{% block content %}
+
+<div class="grid_10">
+	<form method="post" action="{% url paypal-checkout %}?p={{phase}}">
+	<div id="payment_info" class="box ">
+		<h2>Complete Payment</h2>
+			<fieldset>
+				{% ifequal phase "collect" %}
+				<legend>Enter Your Credit Card Information</legend>
+				{% endifequal %}
+				{% ifequal phase "confirm" %}
+				<legend>Confirm Your Credit Card Information</legend>
+				{% endifequal %}
+				
+				<table>
+					<tbody>
+			            {% if errors %}<tr><td colspan="2" align="center">{{ errors }}</td></tr>{% endif %}
+			            {{ form.as_table }}
+					</tbody>
+				</table>
+			</fieldset>
+			<div class="submit-buttons clearfix">
+	        	<input type="cancel" value="Cancel"/>
+				{% ifnotequal phase "confirm" %}
+	        	<input type="submit" value="Confirm Order Details"/>
+				{% endifnotequal %}
+				{% ifequal phase "confirm" %}
+	        	<input type="submit" value="Complete Purchase"/>
+				{% endifequal %}
+			</div>
+		</div>
+	</form>
+</div>
+
+<div class="grid_6 omega">
+	<div id="order_summary" class="box ">
+		<h2>Order Summary</h2>
+	    <div>
+			&nbsp;
+			<table>				
+				<thead><th class="table-head" colspan="2">Invoice Detail</th></thead>
+	         	<tr><th>Inv. #</th><td>{{ invoice.id|slice:":20" }}</td></tr>
+	         	<tr><th>Inv. Date</th><td>{{ invoice.created|date }}</td></tr>	        
+	         	<tr><th>Description</th><td>{{ invoice.description }}...</td></tr>	        
+	         	<tr><th>Total</th><td>{{ invoice.total }}</td></tr>	
+			</table>
+			<table border="0" cellspacing="5" cellpadding="5">
+				<thead>
+					<th class="table-head" colspan="5">Line Items</th>
+				<tr>
+					<th>#</th>
+					<th>Description</th>
+					<th>Qty</th>
+					<th>Unit</th>
+					<th>Total</th>
+					</tr>
+				</thead>
+	        	{% for item in invoice.lines.all %}
+				<tr>
+					<td>{{ item.number|wordwrap:15 }}</td>
+					<td>{{ item.description|wordwrap:15 }}</td>
+					<td>{{ item.quantity }}</td>
+					<td>{{ item.unit_price }}</td>
+					<td>{{ item.line_price }}</td>
+					</tr>
+	        	{% endfor %}
+			</table>
+	         <div class="labeled_row"><span class="column">Order Total</span>{{ invoice.total }}</div>	 
+	       	<div class="clear"> </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

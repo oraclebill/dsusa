@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Thanks for your order!{% endblock %}
+
+{% block content %}
+
+<div class="grid_8 prefix_4 suffix_4">
+	<div id="payment_info" class="box ">
+		<h2>Thanks for your order!</h2>
+		<div>
+			Your payment was successful. You can <a href="{% url invoice-detail object_id=invoice.id %}">review your invoice</a>, or <a href="{% url home %}">return to the dashboard</a>.
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

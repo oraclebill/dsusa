@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}There was a problem with your payment{% endblock %}
+
+{% block content %}
+
+<div class="grid_8 prefix_4 suffix_4">
+	<div id="payment_info" class="box ">
+		<h2>Problem processing payment</h2>
+		<div>
+			Your payment was not successful. There may be some error information attached to <a href="{% url invoice-detail object_id=invoice.id %}">your failed invoice</a>, or <a href="{% url home %}">return to the dashboard</a> and try again.
+			<p>If you continue to have issues with payments, please <a href="{% url support %}">contact support</a>.</p>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

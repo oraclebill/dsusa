@@ -20,7 +20,7 @@ from accounting.models import register_design_order
 from catalog.manufacturers import CabinetLine, Catalog
 from product.cart import new_cart
 from product.models import Product
-from product.views import review_and_process_payment_info
+from product.views import paypal_checkout
 from utils.views import render_to
 from accounting.models import register_design_order
 from customer.auth import active_dealer_only
@@ -136,7 +136,7 @@ def submit_order(request, orderid):
                     products.append(option)                    
                 new_cart(request, products)
                 request.method = 'GET'                
-                return review_and_process_payment_info(request, success_url=reverse('submit-order', args=[orderid]))
+                return paypal_checkout(request, success_url=reverse('submit-order', args=[orderid]))
             else:           
                 register_design_order(order.owner, order.owner.get_profile().account, order, cost)
                 order.status = OrderBase.Const.SUBMITTED

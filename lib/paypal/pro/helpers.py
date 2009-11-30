@@ -61,6 +61,9 @@ class PayPalWPP(object):
         self.signature = urlencode(self.signature_values) + "&"
 
     def doDirectPayment(self, params):
+        return not _doDirectPayment(params).flag
+        
+    def _doDirectPayment(self, params):
         """Call PayPal DoDirectPayment method."""
         defaults = {"method": "DoDirectPayment", "paymentaction": "Sale"}
         required = L("creditcardtype acct expdate cvv2 ipaddress firstname lastname street city state countrycode zip amt")
@@ -71,7 +74,7 @@ class PayPalWPP(object):
         #   nvp_obj.set_flag("Invalid cvv2match: %s" % qd.get('cvv2match')
         # if qd.get('avscode') not in ['X', '0']:
         #   nvp_obj.set_flag("Invalid avscode: %s" % qd.get('avscode')
-        return not nvp_obj.flag
+        return nvp_obj
 
     def setExpressCheckout(self, params):
         """
@@ -97,6 +100,9 @@ class PayPalWPP(object):
         return not nvp_obj.flag
         
     def createRecurringPaymentsProfile(self, params, direct=False):
+        return not _createRecurringPaymentsProfile(params, direct).flag
+    
+    def _createRecurringPaymentsProfile(self, params, direct=False):
         """
         Set direct to True to indicate that this is being called as a directPayment.
         Returns True PayPal successfully creates the profile otherwise False.
@@ -188,6 +194,7 @@ class PayPalWPP(object):
         nvp_obj = PayPalNVP(**nvp_params)
         nvp_obj.init(self.request, params, response_params)
         nvp_obj.save()
+        self.nvp_obj = nvp_obj
         return nvp_obj
         
     def _request(self, data):
