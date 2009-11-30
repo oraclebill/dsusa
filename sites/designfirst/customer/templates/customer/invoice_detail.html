@@ -1,0 +1,80 @@
+{% extends "customer/dealer_base.html" %}
+
+{% block title %}
+DesignFirst - Design Order 
+{% endblock %}
+
+	
+{% block content %}
+
+
+<!-- account info -->
+
+<!-- invoices -->
+	<div class="grid_10 prefix_3 suffix_3">
+		<div class="block">	
+			<h4>Invoice # {{object.id}}</h4>	
+			<table>
+				<tbody>
+					<tr>
+						<th colspan='2'>Customer</th>
+						<td colspan='2'>{{ object.customer }}</td>
+					</tr>
+					<tr>
+						<th>ID</th>
+						<td>{{ object.id }}</a></td>
+						<th>Created</th>
+						<td>{{ object.created }}</td>
+					</tr>
+					<tr>
+						<th>Status</th>
+						<td>{{ object.get_status_display }}</td>
+						<th>Invoice Total</th>
+						<td class="price">{{ object.total }}</td>
+					</tr>
+					<tr>
+						<th>Description</th>
+						<td  colspan='3'>{{ object.description }}</td>
+					</tr>
+					<tr>
+						<th>Notes</th>
+						<td  colspan='3'>{{ object.notes }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="block">
+			<h4>Items</h4>
+			<table>
+				<tbody>
+					{% for line in object.lines.all %}
+					<tr>
+						<td>{{ line.number }}</td>
+						<td>{{ line.description }}</td>
+						<td>{{ line.quantity }}</td>
+						<td>{{ line.unit_price }}</td>
+						<td>{{ line.line_price }}</td>
+					</tr>
+					{% empty %}
+					<tr>
+						<td colspan=5>
+							<div>
+								<p>
+									Empty invoice. This can be caused by system errors - please notify support, using <a href='#support'>this link</a>.
+								</p>
+							</div>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>  <!-- box -->  
+	</div> <!-- end grid_10 -->
+	<div class="grid_3 prefix_1 suffix_5">
+		<a href="#prev">Previous</a>
+	</div>
+	<div class="grid_2 prefix_5">
+		<a href="#next">Next</a>
+	</div>
+{% endblock %}
+

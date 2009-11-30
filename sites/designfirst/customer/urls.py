@@ -2,6 +2,8 @@ from django.conf.urls.defaults import *
 
 import paypal
 
+from models import Invoice
+
 urlpatterns = patterns('customer.views', 
     (r'^$', 'home'),    
 
@@ -10,8 +12,6 @@ urlpatterns = patterns('customer.views',
     
     url(r'^dealer/$', 'dealer_dashboard', name='home'),
     
-    # (r'^dealer/order/$', 'dealer_dashboard'),                       
-    # url(r'^dealer/order/new/$', 'create_order', name='new_order'),
     (r'^dealer/order/(\d+)/edit/$', 'edit_order_detail'),
     (r'^dealer/order/(\d+)/submit/$', 'dealer_submit_order'),
 #    (r'^dealer/order/(\d+)/review/$', 'dealer_review_order'),
@@ -22,9 +22,20 @@ urlpatterns = patterns('customer.views',
         'remove_order_appliance', 
         name='delete_order_appliance'),
         
-    (r'^dealer/order/(\w+)/fax-cover/', 'current_order_info', {},
-        'fax_cover')
+    url(r'^dealer/order/(\w+)/fax-cover/', 'current_order_info', name='fax_cover'),
+    
+    url(r'^dealer/invoice/(\d+)/$', 'display_invoice', name='display-invoice'),
+    
 )
+
+# invoice display
+invoice_params = { 'queryset': Invoice.objects.all() }                           
+urlpatterns += patterns('',
+    url(r'^dealer/invoice/$', 'customer.views.invoice_list', invoice_params, name='invoice-list'),
+    url(r'^dealer/invoice/(?P<object_id>\w+)/$', 'django.views.generic.list_detail.object_detail', invoice_params, name='invoice-detail'),
+)
+
+# misc
 urlpatterns += patterns('',
     url(r'access-denied/$', 'django.views.generic.simple.direct_to_template', {
         'template': 'customer/access_denied.html',

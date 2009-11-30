@@ -5,6 +5,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import models, transaction
+from django.db.models import permalink
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -132,18 +133,20 @@ def uuid_key():
     return uuid1().hex
         
 class Invoice(models.Model):
-    NEW, CANCELLED, PENDING, PAID = ('N', 'C', 'E', 'A')
-    INV_STATUS_CHOICES = ((NEW, _('NEW')), (PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('CANCELLED')))
+    class Const:
+        NEW, CANCELLED, PENDING, PAID = ('N', 'C', 'E', 'A')
+        INV_STATUS_CHOICES = ((NEW, _('NEW')), (PENDING, _('PENDING')), (PAID, _('PAID')), (CANCELLED, _('FAILED')))
 
     id          = models.CharField(max_length=50, primary_key=True, default=uuid_key)
     customer    = models.ForeignKey(Dealer)
-    status      = models.CharField(max_length=1, choices=INV_STATUS_CHOICES)
+    status      = models.CharField(max_length=1, choices=Const.INV_STATUS_CHOICES)
     description = models.TextField(blank=True)
     created     = models.DateTimeField(auto_now_add=True)
     ## TODO
     # updated = models.DateTimeField(auto_now=True)
     
     class Meta:
+        ordering = ['customer', 'created',] 
         verbose_name = _('invoice')
         verbose_name_plural = _('invoices')
         
@@ -167,6 +170,10 @@ class Invoice(models.Model):
             unit_price=price, 
             quantity=quantity
         )
+
+    def get_absolute_url(self):
+        return ('invoice-detail', [], {'object_id': self.id})
+    get_absolute_url = models.permalink(get_absolute_url)
         
     def __unicode__(self):
         return 'Invoice[id=%s,customer=%s,status=%s,created=%s]' % (
