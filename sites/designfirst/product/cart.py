@@ -55,7 +55,7 @@ def create_invoice_from_cart(cart, account, user):
     logger.debug('create_invoice_from_cart: entering: cart=%s, account=%s, user=%s', cart, account, user)
     
     sig = sha1(repr(datetime.now())).hexdigest()
-    invoice = Invoice(id=sig, customer=account, status=Invoice.NEW)
+    invoice = Invoice(id=sig, customer=account, status=Invoice.Const.NEW)
     cart_items = get_cart_items(cart)    
     
     items = []

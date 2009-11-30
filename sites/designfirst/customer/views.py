@@ -10,7 +10,7 @@ from decimal import Decimal
 ##
 ## django imports
 from django.utils import simplejson
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
@@ -34,6 +34,7 @@ from orders import forms as wf
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
 from models import Dealer, UserProfile  
+from django.core import context_processors
 import forms
 from forms import DesignOrderAcceptanceForm, DealerProfileForm
 from auth import active_dealer_only
@@ -103,36 +104,6 @@ def create_profile(request):
                 
 @login_required
 def edit_profile(request):
-#    if request.method == 'POST':
-#        company_form = forms.CompanyProfileForm(
-#            request.POST, request.FILES,
-#            instance=request.user.get_profile().account,
-#            prefix='company'
-#        )
-#        profile_form = forms.UserProfileForm(
-#            request.POST, request.FILES,
-#            instance=request.user.get_profile(),
-#            prefix='profile'
-#        )
-#
-#        if company_form.is_valid() and profile_form.is_valid():
-#            profile = profile_form.save()
-#            account = company_form.save()
-#            return redirect('home')
-#    else:
-#        company_form = forms.CompanyProfileForm(
-#            instance=request.user.get_profile().account,
-#            prefix='company'
-#        )
-#        profile_form = forms.UserProfileForm(
-#            instance=request.user.get_profile(),
-#            prefix='profile'
-#        )
-#
-#    return render_to_response( 'profiles/edit_profile.html', {
-#        'profile_form': profile_form,
-#        'company_form': company_form,
-#    }, context_instance=RequestContext(request))
     return create_profile(request)    
     
 @login_required
@@ -353,3 +324,16 @@ def remove_order_appliance(request, orderid, appliance_key):
             raise RuntimeError('Appliance does not exist!')
     return HttpResponseRedirect( reverse('edit_order', args=[orderid]) )
     
+    
+from django.views.generic.list_detail import object_list, object_detail
+@login_required
+def invoice_list(request, queryset):
+    account = request.user.get_profile().account
+    queryset = queryset.filter(customer=account)
+    return object_list(request,queryset)
+
+@login_required
+def display_invoice(request, queryset, object_id):
+    account = request.user.get_profile().account
+    queryset = queryset.filter(customer=account)
+    return object_detail(request,queryset,object_id=object_id)

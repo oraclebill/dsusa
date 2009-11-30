@@ -125,8 +125,8 @@ DesignFirst - Purchase Design Credits
 					    </div>
 						
 					    <div class="right ">
-					        <a href="{% url review_and_process_payment_info %}?express"><img  src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif"  alt="PayPal"></a>
-					        <a href="{% url review_and_process_payment_info %}"><img src="{{ MEDIA_URL }}images/grey-checkout-button.png"   alt="Purchase With Credit Card"></a>
+					        <a href="{% url checkout %}?express"><img  src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif"  alt="PayPal"></a>
+					        <a href="{% url checkout %}"><img src="{{ MEDIA_URL }}images/grey-checkout-button.png"   alt="Purchase With Credit Card"></a>
 						</div>	
 					</div>
 					{% endif %}

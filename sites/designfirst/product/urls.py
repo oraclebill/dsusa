@@ -25,8 +25,8 @@ urlpatterns = patterns('product.views',
                             name='confirm_purchase_selections'),
                             
                         url(r'^review_payment_info/', 
-                            'review_and_process_payment_info', 
-                            name='review_and_process_payment_info'),
+                            'checkout', 
+                            name='checkout'),
                         
                         # url(r'^confirm_payment_info/', 
                         #     'confirm_payment_info', 

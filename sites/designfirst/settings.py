@@ -10,7 +10,7 @@ def rel(*x):
 sys.path.insert(0, rel('..', '..', 'lib'))      #Adding lib to system path
 
 DEBUG = True
-LOCAL = DEBUG
+LOCAL = True
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ('127.0.0.1',)
 SECURE = False
