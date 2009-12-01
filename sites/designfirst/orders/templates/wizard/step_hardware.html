@@ -14,7 +14,7 @@
 
            function hide_on_radio_select(radio_groupname, trigger_selector, input_selector) {
                 var trigger = $(trigger_selector),
-                    field = $(input_selector).parents('.fs_row');
+                    field = $(input_selector).parents('.sel_grp');
 
                 $("input[name=" + radio_groupname + "]").change(function(){
                     if (trigger.attr('checked')) {

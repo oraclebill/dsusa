@@ -10,6 +10,7 @@ def rel(*x):
 sys.path.insert(0, rel('..', '..', 'lib'))      #Adding lib to system path
 
 DEBUG = True
+DEBUGTOOL = False
 LOCAL = True
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ('127.0.0.1',)
@@ -127,7 +128,7 @@ INSTALLED_APPS = (
     'test',
 )
 
-if DEBUG:
+if DEBUGTOOL:
     MIDDLEWARE_CLASSES += (
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     ) 

@@ -13,7 +13,7 @@
 	<!-- fieldset fields -->
 	{% for field in fieldset %}		
 		<!-- start field: {{field.name}} -->
-		<div id="fsf_{{fieldset.id}}" class="fs_row{% if field.styles %} {{field.styles}}{% endif %}">
+		<div id="fsf_{{fieldset.id}}_{{field.name}}" class="sel_grp{% if field.styles %} {{field.styles}}{% endif %}">
 			<!-- start field errors -->
 		 {% if field.errors %}<div class="errorlist">{{field.errors}}</div>{% endif %}
 			<!-- end field errors -->

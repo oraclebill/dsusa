@@ -189,71 +189,45 @@ form p.error {
 }
 
 
-/*  form field row
+/*  wizard form selection groups
  -------------------------------------- */
  
-#wizard_form .fs_row {
+#wizard_form .sel_grp {
     margin-top: .2em;
     padding-top: .2em;
     vertical-align: baseline;    
     position: relative;
     float: left;
     clear: left;
+    xwidth: 200px;
 }
 
-#wizard_form .fs_row > div {
+#wizard_form .sel_grp > div {
     display: block;
     float: left;
 }
 
-#wizard_form .fs_row span {
+#wizard_form .sel_grp span {
     width: 12em;
     float: left;
     font-weight: bolder;
 }
 
-#wizard_form .fs_row .fs_images img {
+#wizard_form .sel_grp .fs_images img {
     width: 180px;
 }
 
-#wizard_form .fs_row ul {
+#wizard_form .sel_grp ul {
     display: block;
     float: left;
     font-weight: bolder;
 }
 
-#wizard_form .fs_row ul li {
+#wizard_form .sel_grp ul li {
     margin: 0px;
 }
 
-/*#wizard_form .fs_row ul,
-#wizard_form .label
- {
-    margin: .2em .5em .2em .5em;
-    display: block;
-    width: 8em;
-    float: left;
-    font-weight: bolder;
-}
-
-#wizard_form .fs_row select,
-#wizard_form .fs_row input
-{
-    margin-left: 70px;
-    clear: right;
-}
-*/
-
-
-#wizard_form fieldset fieldset {
-/*    min-height: 180px; */
-}
-
-.row2 {
-	background-color: lightgray;
-}
-
-.right_float_field {
+.dependent {
 	position: absolute; 
 	top: 0px; 
 	left: 160px; 
@@ -262,8 +236,16 @@ form p.error {
 	padding: 4px;
 }
 
-.right_float_field span {
+.dependent span {
 	font-weight: bold;
+}
+
+#wizard_form fieldset fieldset {
+/*    min-height: 180px; */
+}
+
+.row2 {
+	background-color: lightgray;
 }
 
 fieldset.collapse legend {

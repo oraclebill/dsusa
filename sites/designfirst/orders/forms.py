@@ -235,9 +235,9 @@ class CornerCabinetForm(forms.ModelForm, FieldsetForm):
     fieldsets = Meta.fieldsets
     
     field_styles = {
-        'diagonal_corner_wall_shelv': 'right_float_field',
-        'diagonal_corner_base_shelv': 'right_float_field',
-        'degree90_corner_base_shelv': 'right_float_field',
+        'diagonal_corner_wall_shelv': 'dependent',
+        'diagonal_corner_base_shelv': 'dependent',
+        'degree90_corner_base_shelv': 'dependent',
     }
     def __init__(self, *args, **kwargs):
         #Labels/Widget customization
