@@ -152,7 +152,7 @@ def post_submission_details(request, orderid):
     
 class Wizard(WizardBase):
     
-    steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'dimensions', 
+    steps = ['manufacturer', 'hardware', 'moulding', 'soffits', 'configuration', 
              'corner_cabinet', 'interiors', 'miscellaneous', 
              'appliances', 'diagrams', 'review']
     def step_manufacturer(self, request):
@@ -200,7 +200,7 @@ class Wizard(WizardBase):
         return self.handle_form(request, SoffitsForm)
     
     
-    def step_dimensions(self, request):
+    def step_configuration(self, request):
         standart_sizes = simplejson.dumps(WorkingOrder.STANDARD_SIZES)
         images = {
             WorkingOrder.S_NONE: None,
@@ -224,7 +224,7 @@ class Wizard(WizardBase):
             'stack_images_base': images_base,
         }
         return self.handle_form(request, DimensionsForm, context)
-    step_dimensions.title = summary.DIMENSION_SECTION[0]
+    step_configuration.title = summary.DIMENSION_SECTION[0]
     
     
     def step_corner_cabinet(self, request):

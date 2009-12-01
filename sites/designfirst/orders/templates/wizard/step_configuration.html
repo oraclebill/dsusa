@@ -54,7 +54,7 @@
 	}
 	
 	$(function(){
-        field_images_hover(GROUPS, "dimensions", "{{ MEDIA_URL }}");
+        field_images_hover(GROUPS, "configuration", "{{ MEDIA_URL }}");
 		toggle_fields($('#id_standard_sizes').get(0).checked)
 		
 		$('#id_standard_sizes').change(function() {
@@ -70,7 +70,7 @@
 		})
 
 		//Stack/Staggering images
-		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/dimensions.png">'
+		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/configuration.png">'
 		$('#fsf_0 div.fs_images').append(img_html);
 		
 		function switch_image() {

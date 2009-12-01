@@ -17,6 +17,8 @@
 	var STEP = '{{wizard.step}}'
 	var MEDIA_URL = '{{ MEDIA_URL }}'
 	var IS_FIRST_STEP = {{wizard.is_first_step|lower}};
+	
+	
 	var KEY_TAB = 9;
 	
 	function wizard_go_to(step) {
@@ -77,7 +79,7 @@
 		{% for step in wizard.get_tabs %}
 			<div class="step_icon{% if step.selected %} selected{% endif %} {% if wizard|step_finished:step %}finished{% endif %}">
 				<a href="{{ step.url }}" step="{{step.slug}}">
-					<img src="{{MEDIA_URL}}images/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png" alt="{{step.slug}}"/>
+					<img src="{{MEDIA_URL}}/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png" alt="{{step.slug}}"/>
 					<span>{{step.title}}</span>
 				</a>
 			</div>
