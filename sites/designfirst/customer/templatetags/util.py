@@ -27,6 +27,6 @@ register.tag('media', do_add_media_url_prefix)
 @register.filter
 def menu_type(user):
     if user.get_profile().account.status\
-            in (Dealer.SUSPENDED, Dealer.CANCELLED):
+            in (Dealer.Const.SUSPENDED, Dealer.Const.CANCELLED):
         return 'limited'
     return 'dealer'

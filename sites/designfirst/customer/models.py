@@ -1,6 +1,7 @@
 from uuid import uuid1
 from datetime import datetime
 from decimal import Decimal
+import logging
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -13,13 +14,14 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from notification import models as notification
 from django.core.mail import mail_managers
 
+logger = logging.getLogger('customer.models')
 
 class IllegalState(Exception):
     pass
 
 class ActiveDealerManager(models.Manager):
     def get_query_set(self):
-        return super(ActiveDealerManager, self).get_query_set().filter(status__exact=Dealer.ACTIVE)
+        return super(ActiveDealerManager, self).get_query_set().filter(status__exact=Dealer.Const.ACTIVE)
         
 class Dealer(models.Model):
     """
@@ -31,12 +33,14 @@ class Dealer(models.Model):
     """
     # class Meta:
     #     abstAract = True
-    PENDING, ACTIVE, SUSPENDED, CANCELLED, ARCHIVED = ('P', 'A', 'S', 'C', 'R')
-    ACCOUNT_STATUSES = ( 
-        (PENDING, _('Pending')), (ACTIVE, _('Active')), (SUSPENDED, _('Suspended')), 
-        (CANCELLED, _('Cancelled')), (ARCHIVED, _('Archived') ),
-    )
-    status  = models.CharField(_('Account Status'), max_length=1, choices=ACCOUNT_STATUSES, default=PENDING)    
+    class Const:
+        PENDING, ACTIVE, SUSPENDED, CANCELLED, ARCHIVED = ('P', 'A', 'S', 'C', 'R')
+        ACCOUNT_STATUSES = ( 
+            (PENDING, _('Pending')), (ACTIVE, _('Active')), (SUSPENDED, _('Suspended')), 
+            (CANCELLED, _('Cancelled')), (ARCHIVED, _('Archived') ),
+        )
+
+    status  = models.CharField(_('Account Status'), max_length=1, choices=Const.ACCOUNT_STATUSES, default=Const.PENDING)    
     internal_name = models.SlugField(_('Account Code'), blank=True) # e.g. 'dds-010-...'
     legal_name = models.CharField(_('Business Name'), max_length=50, unique=True)
     address_1 = models.CharField(_('Address 1'), max_length=40, blank=True, null=True)
@@ -60,6 +64,7 @@ class Dealer(models.Model):
         verbose_name_plural = _('dealers')
         
     def send_welcome(self):
+        logger.info('Dealer::send_welcome: welcoming %s', self)
         registration_key = self.primary_contact.registrationprofile_set.all()[0].activation_key
         uri = reverse('registration_activate', kwargs={'activation_key': registration_key })
         scheme = settings.SECURE and 'https' or 'http'
@@ -71,11 +76,19 @@ class Dealer(models.Model):
             }
         )
 
+    def activate(self):
+        logger.info('Dealer::activate: activating %s (%s)', self, self.get_status_display())
+        if self.status in ( self.Const.PENDING, self.Const.SUSPENDED, self.Const.CANCELLED ):
+            self.status = self.Const.ACTIVE
+            self.save()
+    
     def approve(self):
-        self.status = Dealer.ACTIVE
-        self.save()
-        mail_managers('dealer approved - %s' % self.legal_name, 'approved')
-        self.send_welcome()
+        self.activate()        
+        try:
+            mail_managers('dealer approved - %s' % self.legal_name, 'approved')
+            self.send_welcome()
+        except Exception as error:
+            logger.error('Dealer::approve: "%s" error sending approval mails for "%s"', error, self)  
         
     def __unicode__(self):
         return self.legal_name

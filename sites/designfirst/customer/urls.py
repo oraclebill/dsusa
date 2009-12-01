@@ -7,7 +7,7 @@ from models import Invoice
 urlpatterns = patterns('customer.views', 
     (r'^$', 'home'),    
 
-    url(r'^dealer/profile/complete$', 'create_profile', name='dealer-complete-profile'),
+    url(r'^dealer/profile/complete$', 'edit_profile', name='dealer-complete-profile'),
     url(r'^dealer/profile/$', 'edit_profile', name='profile-edit'),
     
     url(r'^dealer/$', 'dealer_dashboard', name='home'),

@@ -19,12 +19,13 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from django.db import transaction
 
-
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-##
+## third party ##
+from notification.models import NoticeType, NoticeSetting
+
 ## imports from other apps
 from accounting.models import register_design_order
 from product.models import Product
@@ -81,31 +82,47 @@ def home(request):
 #    return render_to_response( 'registration/login.html',context_instance=RequestContext(request) )
     return HttpResponseRedirect(reverse('home'))
 
-
 def view_profile(request):
     user = request.user
     return render_to_response('profiles/dealer_profile.html', user, user.get_profile().account)
 
-def create_profile(request):
-    user = request.user;
+def edit_profile(request, template='profiles/edit_profile.html', extra_context={}):
+    """
+    Display and edit user profile.
     
+    Profile consists of:
+         - user contact info
+         - organization info (editable if user is primary contact)
+         - notification preferences
+    """
+    user = request.user;
+    account = user.get_profile().account
+    
+    notice_types = NoticeType.objects.all()
+    notice_settings = NoticeSetting.objects.filter(user=request.user)
+    
+    ns_queryset = NoticeSetting.objects.filter(user=request.user)
     if request.method == 'GET':
         form = DealerProfileForm(instance=user)
     else:
-        form = DealerProfileForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            ## FIXME: for now all users without profiles are assumed dealers.
-            return HttpResponseRedirect('/dealer/')
-            
-    return render_to_response( 'profiles/create_profile.html', 
-                locals(), 
-                context_instance=RequestContext(request))
-                
-@login_required
-def edit_profile(request):
-    return create_profile(request)    
+        if 'add-notification' in request.GET:
+            #TODO: add
+            pass                
+        if 'delete-notification' in request.GET:
+            # TODO: delete
+            pass                
+        if 'update-profile' in request.GET:            
+            form = DealerProfileForm(request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+        else:
+            form = DealerProfileForm(instance=user)
+                    
+    context = dict(account=account, form=form, notice_types=notice_types, notice_settings=notice_settings)
+    context.update(extra_context)
     
+    return render_to_response( template, context, context_instance=RequestContext(request))
+                    
 @login_required
 def dealer_dashboard(request):
     """

@@ -88,7 +88,7 @@ class DealerRegistrationBackend(DefaultBackend):
             
             new_dealer = Dealer(**kwargs)
             new_dealer.notes = '\n'.join(['%s: %s' % (k,v) for (k,v) in notes.items()])
-            new_dealer.status = Dealer.PENDING
+            new_dealer.status = Dealer.Const.PENDING
             new_dealer.save()
             
             new_profile = UserProfile(user=new_user, account=new_dealer)
@@ -151,7 +151,7 @@ class DealerRegistrationBackend(DefaultBackend):
         try:
             profile = RegistrationProfile.objects.get(activation_key__exact=activation_key)
             dealer = profile.user.get_profile().account
-            if dealer.status == dealer.ACTIVE:                
+            if dealer.status == dealer.Const.ACTIVE:                
                 user = super(DealerRegistrationBackend, self).activate(request, activation_key)
                 ## log the user in and redirect them to the password reset page
                 internal = User.objects.make_random_password()

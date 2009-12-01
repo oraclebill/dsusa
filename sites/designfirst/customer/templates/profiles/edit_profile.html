@@ -5,20 +5,102 @@
 {% block title %}{% trans "Edit profile" %}{% endblock %}
 
 {% block content %}
-	<div class="grid_6 prefix_5 suffix_5">
-		<h1>{% trans "Edit profile" %}</h1>
-		<div class=box>
-			<form method='POST' action='.'>
-                <h2>{% trans "Personal info" %}</h2>
+	<div class="grid_16">
+		<h1>Edit Profile</h1>
+	</div>
+	<div class=" grid_7 ">
+		<form method='POST' action='?update-profile'>
+			<div class=box>
+                <h2>{% trans "Your Contact Information" %}</h2>
 				<table>
-                    {{ profile_form }}
+					<tr><th>{{ form.first_name.label_tag }}</th>
+						<td>{{ form.first_name }} {{ form.first_name.errors }}</td>
+					</tr>
+					<tr><th>{{ form.last_name.label_tag }}</th>
+						<td>{{ form.last_name }} {{ form.last_name.errors }}</td>
+					</tr>
+					<tr><th>{{ form.email.label_tag }}</th>
+						<td>{{ form.email }} {{ form.email.errors }}</td>
+					</tr>
                 </table>
-                <h2>{% trans "Company info" %}</h2>
+			</div>
+			<div class="box">
+				<h2>Company Information</h2>
 				<table>
-                    {{ company_form }}
-                </table>
-				<input name='submit' type='submit' value='Save'>
+					<tr><th>{{ form.legal_name.label_tag }}</th>
+						<td>{{ form.legal_name }} {{ form.legal_name.errors }}</td>
+					</tr>
+					<tr><th>{{ form.address_1.label_tag }}</th>
+						<td>{{ form.address_1 }} {{ form.address_1.errors }}</td>
+					</tr>
+					<tr><th>{{ form.address_2.label_tag }}</th>
+						<td>{{ form.address_2 }} {{ form.address_2.errors }}</td>
+					</tr>
+					<tr><th>{{ form.city.label_tag }}</th>
+						<td>{{ form.city }} {{ form.city.errors }}</td>
+					</tr>
+					<tr><th>{{ form.state.label_tag }}</th>
+						<td>{{ form.state }} {{ form.state.errors }}</td>
+					</tr>
+					<tr><th>{{ form.zip4.label_tag }}</th>
+						<td>{{ form.zip4 }} {{ form.zip4.errors }}</td>
+					</tr>
+					<tr><th>{{ form.phone.label_tag }}</th>
+						<td>{{ form.phone }} {{ form.phone.errors }}</td>
+					</tr>
+				</table>
+			</div>
+			<div class="buttonbar">
+				<input type="reset" value="Reset"/>
+				<input type="submit" value="Update Profile"/>
+			</div>
+		</form>
+	</div>
+	<div class="grid_9 ">
+		<div class="box">
+            <h2>{% trans "Notification Preferences" %}</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Notice Type</th>
+						<th>Notice Description</th>
+						<th>Method</th>
+						<th>-</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for opt in notice_settings %}
+					<tr>
+						<td>{{ opt.notice_type.display }}</td>
+						<td>{{ opt.notice_type.description }}</td>
+						<td>{{ opt.get_medium_display }}</td>
+						<td><form><input type="button" disabled="disabled" value="Delete"/></form></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+            </table>
+		</div>
+		<div class="box">
+			<form id='notice-update' method="post" action="?add-notfication">
+				<table>
+					<tr>				
+						<td><label for="name">Notice Type</label></td>
+						<td><select  disabled="disabled" name="type">
+						<option>---</option>
+						{% for notice in notice_types %}
+							<option>{{ notice.display }}</option>
+						{% endfor %}
+						</select></td>
+						<td><label for="method">Method</label></td>
+						<td><select  disabled="disabled" name="method">
+							<option>Email</option>
+						</select></td>			
+					</tr>
+				</table>
+				<input type="button"  disabled="disabled" value="Add Setting"/>					
 			</form>
 		</div>
 	</div> 
+	<div class="prefix_1 grid_4 suffix_11">
+	</div>
 {% endblock %}
