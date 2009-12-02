@@ -227,7 +227,7 @@ form p.error {
     margin: 0px;
 }
 
-.dependent {
+#wizard_form .dependent {
 	position: absolute; 
 	top: 0px; 
 	left: 160px; 
