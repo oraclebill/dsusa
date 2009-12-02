@@ -207,11 +207,11 @@ class WorkingOrder(OrderBase):
             (HANDLE_PULL, 'Pull'),
             (HANDLE_KNOB, 'Knob'))
     
-    door_handle_type = models.PositiveSmallIntegerField(_('Handle Type'), choices=HANDLE_TYPES, default=HANDLE_NONE)
-    door_handle_model = models.CharField(_('Model/Style'), max_length=255, null=True, blank=True)
+    door_handle_type = models.PositiveSmallIntegerField(_('Door Handle Type'), choices=HANDLE_TYPES, default=HANDLE_NONE)
+    door_handle_model = models.CharField(_('Door Handle Product'), max_length=255, null=True, blank=True)
     
-    drawer_handle_type = models.PositiveSmallIntegerField(_('Handle Type'), choices=HANDLE_TYPES, default=HANDLE_NONE)
-    drawer_handle_model = models.CharField(_('Model/Style'), max_length=255, null=True, blank=True)
+    drawer_handle_type = models.PositiveSmallIntegerField(_('Drawer Handle Type'), choices=HANDLE_TYPES, default=HANDLE_NONE)
+    drawer_handle_model = models.CharField(_('Drawer Handle Product'), max_length=255, null=True, blank=True)
     
     #Soffits page
     has_soffits = models.BooleanField(_('Has Soffits?'), blank=True, default=False)
