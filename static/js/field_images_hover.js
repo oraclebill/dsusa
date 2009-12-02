@@ -27,10 +27,7 @@ function field_images_hover(GROUPS, PAGE_NAME, MEDIA_URL) {
 			value = slugify(value);
 			img_path += value;
 		}
-		if (img_path.match(/^none/))
-		  img_path = MEDIA_URL + 'images/blank.png';
-		else
-		  img_path = MEDIA_URL + 'wizard/' + PAGE_NAME + '/' + group[0] + '/' + img_path + '.png';
+		img_path = MEDIA_URL + 'wizard/' + PAGE_NAME + '/' + group[0] + '/' + img_path + '.png';
 		return img_path;
 	}
 
@@ -40,7 +37,7 @@ function field_images_hover(GROUPS, PAGE_NAME, MEDIA_URL) {
 		    img = image_for(input_el),
 		    $image = $('img#fieldset_img_'+fs_id);
 
-        if (img != '')
+        if (img == '')
 	        $image.attr('src', MEDIA_URL + 'images/blank.png');
 		else
             $image.attr('src', img);
@@ -55,13 +52,13 @@ function field_images_hover(GROUPS, PAGE_NAME, MEDIA_URL) {
 	}
 
 	$('#wizard_content li label').hover(
-			function(){
-				update_pic($(this).find('input').get(0), true);
-			},
-			function(){
-				var fs_id = get_fieldset_id($(this).get(0));
-				reset_img(fs_id);
-			}
+		function(){
+			update_pic($(this).find('input').get(0), true);
+		},
+		function(){
+			var fs_id = get_fieldset_id($(this).get(0));
+			reset_img(fs_id);
+		}
 	);
 
 	$('#wizard_content input:radio:checked').each(function(){

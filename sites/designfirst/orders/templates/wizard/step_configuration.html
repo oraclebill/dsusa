@@ -8,7 +8,7 @@
        	['dimension_style']
 	];
 
-    var stack_images = {{stack_images|safe}};
+//    var stack_images = {{stack_images|safe}};
 	var standard_sizes = {{standard_sizes|safe}};
 
 	function input_html(id, name, value) {
@@ -68,19 +68,19 @@
 		})
 
 		//Stack/Staggering images
-		var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/configuration.png">'
-		$('#fields_0 div.fs_images').append(img_html);
+		//var img_html = '<img id="stack_sgage" src="{{MEDIA_URL}}/images/wizard/configuration.png">'
+        //$('#fields_0 div.fs_images').append(img_html);
 		
-		function switch_image() {
-			var val = $('input.dimension_style[checked]:radio').val();
-			var image = '{{stack_images_base}}' + stack_images[val];
-			$('#stack_sgage').attr('src', image);
-		}
+		//function switch_image() {
+		//	var val = $('input.dimension_style[checked]:radio').val();
+		//	var image = '{{stack_images_base}}' + stack_images[val];
+		//	$('#stack_sgage').attr('src', image);
+		//`}
 
-		$('input.dimension_style').change(function(){
-			switch_image();
-		})
-		switch_image();
+		//$('input.dimension_style').change(function(){
+		//	switch_image();
+		//})
+		//switch_image();
 	})
 
 </script>

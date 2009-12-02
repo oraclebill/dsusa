@@ -202,15 +202,6 @@ class Wizard(WizardBase):
     
     def step_configuration(self, request):
         standart_sizes = simplejson.dumps(WorkingOrder.STANDARD_SIZES)
-        images = {
-            WorkingOrder.S_NONE: None,
-            WorkingOrder.S_STACKED: 'S_STACKED.png',
-            WorkingOrder.S_STG_HWC: 'S_STG_HWC.png',
-            WorkingOrder.S_STG_DHWC: 'S_STG_DHWC.png',
-            WorkingOrder.S_STG_HBC: 'S_STG_HBC.png',
-            WorkingOrder.S_STG_DBC: 'S_STG_DBC.png',
-        }
-        images_base = settings.MEDIA_URL + 'images/stacking_staggering/'
         #when the manufacturer is one of the valid manufacturers, 
         #default 'Standard Sizes' should be 'checked' or 'True', 
         #otherwise false. :
@@ -220,8 +211,6 @@ class Wizard(WizardBase):
             self.order.standard_sizes = is_existing_manufacturer(self.order)
         context = {
             'standard_sizes': standart_sizes,
-            'stack_images': simplejson.dumps(images),
-            'stack_images_base': images_base,
         }
         return self.handle_form(request, DimensionsForm, context)
     step_configuration.title = summary.DIMENSION_SECTION[0]
