@@ -12,34 +12,34 @@
 	var standard_sizes = {{standard_sizes|safe}};
 
 	function input_html(id, name, value) {
-		return '<input type="text" name="'+name+'" id="'+id+'" value="'+value+'">'
+		return '<input type="text" name="'+name+'" id="'+id+'" value="'+value+'">';
 	}
 
 	function select_html(id, name, value, choices) {
         if (!choices) {
             choices = standard_sizes;
         }
-		var options = '<option></option>'
+		var options = '<option></option>';
 		for (var i=0; i<choices.length; i++) {
-			var selected = ''
+			var selected = '';
 			if (value=='' && i==0)
-				selected = ' selected="selected"'
+				selected = ' selected="selected"';
 			else if (value == choices[i])
-				selected = ' selected="selected"'
-			options += '<option value="'+choices[i]+'"'+selected+'> '+choices[i]+'&#148; </option>'
+				selected = ' selected="selected"';
+			options += '<option value="'+choices[i]+'"'+selected+'> '+choices[i]+'&#148; </option>';
 		}
-		return '<select name="'+name+'" id="'+id+'">'+options+'</select>'
+		return '<select name="'+name+'" id="'+id+'">'+options+'</select>';
 	}
 
 	function replace_widget(id, name, standard, choices) {
-		var validation = $('#'+id).data('validation') //Validatoin fix
-		var value = $('#'+id).val()
+		var validation = $('#'+id).data('validation'); //Validatoin fix
+		var value = $('#'+id).val();
 		if (standard)
 			html = select_html(id, name, value, choices);
 		else
 			html = input_html(id, name, value);
-		$('#'+id).replaceWith(html)
-		$('#'+id).data('validation', validation)
+		$('#'+id).replaceWith(html);
+		$('#'+id).data('validation', validation);
 	}
 
 	function toggle_fields(standard) {
@@ -53,10 +53,10 @@
 	
 	$(function(){
         field_images_hover(GROUPS, "configuration", "{{ MEDIA_URL }}");
-		toggle_fields($('#id_standard_sizes').get(0).checked)
+		toggle_fields($('#id_standard_sizes').get(0).checked);
 		
 		$('#id_standard_sizes').change(function() {
-			toggle_fields(this.checked)
+			toggle_fields(this.checked);
 		})
 		
 		//Fixing navigation

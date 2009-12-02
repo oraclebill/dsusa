@@ -6,21 +6,31 @@ function field_images_hover(GROUPS, PAGE_NAME, MEDIA_URL) {
 					return GROUPS[k];
 		alert('Field not found - ' + name);
 	}
-
+    
+	function slugify(s) {
+		return s.replace(/^\s+|\s+$/g,'').
+		          replace(/\W+/g, '_').
+				  toLowerCase();
+	}
+	
 	function image_for(element) {
 		var group = _group(element.name),
 		    img_path = '';
 		for (var i = 0; i < group.length; i++) {
 			var value = false;
-			if (element.name == group[i])
-				value = $(element).val();
+			if (element.name == group[i])			    
+				value = $(element).parent('label').text();
 			else
-				value = $("input[name='"+group[i]+"']:checked").val();
+				value = $("input[name='"+group[i]+"']:checked").parent('label').text();
 			if (img_path.length > 0)
 				img_path += '_';
+			value = slugify(value);
 			img_path += value;
 		}
-		img_path = MEDIA_URL + 'wizard/' + PAGE_NAME + '/' + group[0] + '/' + img_path + '.png';
+		if (img_path.match(/^none/))
+		  img_path = MEDIA_URL + 'images/blank.png';
+		else
+		  img_path = MEDIA_URL + 'wizard/' + PAGE_NAME + '/' + group[0] + '/' + img_path + '.png';
 		return img_path;
 	}
 
@@ -30,9 +40,13 @@ function field_images_hover(GROUPS, PAGE_NAME, MEDIA_URL) {
 		    img = image_for(input_el),
 		    $image = $('img#fieldset_img_'+fs_id);
 
-		$image.attr('src', img);
-		if (!temporary)
-			$image.data('original', img);
+        if (img != '')
+	        $image.attr('src', MEDIA_URL + 'images/blank.png');
+		else
+            $image.attr('src', img);
+		  
+        if (!temporary)
+            $image.data('original', img);			
 	}
 
 	function reset_img(id) {

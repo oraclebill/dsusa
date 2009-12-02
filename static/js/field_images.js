@@ -1,8 +1,17 @@
 $(function(){
-    function set_image(element) {
+	/** 
+	 * Defines a function to set the display image based on selected field.
+	 * Works for text and radio input elements (select?)
+	 * 
+	 * Image to display -> 
+	 *     <MEDIA_URL>/wizard/<step_name_slug>/<field_name>['_' + <option_number>].png
+	 *     
+	 * @param {Object} element
+	 */
+    function set_image(element) {		
 		var img = MEDIA_URL + 'wizard/'+STEP+'/';
 
-		img += this.name;
+		img += this.name;  // field name
 
 		var tag_type = $(this).attr('type');
 		if (tag_type == 'radio') {

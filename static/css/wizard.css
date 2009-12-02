@@ -229,31 +229,35 @@ form p.error {
 
 #wizard_form .dependent {
 	position: absolute; 
-	top: 0px; 
+	top: 2.5em; 
 	left: 160px; 
 	border: 1px solid #BBBBBB; 
 	width: 200px;
 	padding: 4px;
 }
 
-.dependent span {
+#wizard_form  .dependent span {
 	font-weight: bold;
 }
 
+#wizard_form div.fs_images img {
+	width:180px;
+	height: 140px;
+}
 #wizard_form fieldset fieldset {
 /*    min-height: 180px; */
 }
 
-.row2 {
+#wizard_form .row2 {
 	background-color: lightgray;
 }
 
-fieldset.collapse legend {
+#wizard_form fieldset.collapse legend {
 	text-decoration: underline;
 	cursor: pointer;
 } 
 
-fieldset.collapse div {
+#wizard_form fieldset.collapse div {
 	display: none;
 } 
 
