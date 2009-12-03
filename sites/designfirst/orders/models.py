@@ -244,12 +244,12 @@ class WorkingOrder(OrderBase):
     CORNER_NONE, CORNER_RIGHT, CORNER_LEFT = range(3)
     BUILD_CORNER_CHOICES = (
             (CORNER_NONE, _('None')),
-            (CORNER_RIGHT, _('Left Opening')),
-            (CORNER_LEFT, _('Right Opening')))
+            (CORNER_RIGHT, _('Right Hinged')),
+            (CORNER_LEFT, _('Left Hinged')))
     
     SHELF, LAZY_SUSAN = range(1,3)
     SHELVING_CHOICES = (
-            (SHELF, _('Shelf')),
+            (SHELF, _('Shelves')),
             (LAZY_SUSAN, _('Lazy Susan')))
     diagonal_corner_wall = models.PositiveSmallIntegerField(_('Diagonal Corner Wall'), choices=BUILD_CORNER_CHOICES, default=CORNER_NONE)
     diagonal_corner_wall_shelv = models.PositiveSmallIntegerField(_('Shelving Option'), choices=SHELVING_CHOICES, default=SHELF)
