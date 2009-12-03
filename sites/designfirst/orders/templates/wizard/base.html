@@ -34,7 +34,7 @@
 		{% for step in wizard.get_tabs %}
 			<div class="step_icon{% if step.selected %} selected{% endif %} {% if wizard|step_finished:step %}finished{% endif %}">
 				<a href="{{ step.url }}" step="{{step.slug}}">
-					<img src="{{MEDIA_URL}}/wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png" alt="{{step.slug}}"/>
+					<img src="{{MEDIA_URL}}wizard/{{step.slug}}{% if step.selected %}_selected{% endif %}.png" alt="{{step.slug}}"/>
 					<span>{{step.title}}</span>
 				</a>
 			</div>
