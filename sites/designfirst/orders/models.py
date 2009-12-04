@@ -429,8 +429,23 @@ class AttachmentPage(models.Model):
     
 
 class Appliance(models.Model):
-    TYPES = ['Refrigerator', 'Microwave', 'Sink', 'Offset Sink', 'Double sink', 'Bar Sink', 'Cooktop', 'Oven', 
-        'Double Oven', 'Range', 'Range Top', 'Coffee Maker', 'Under Counter Refrigerator', 'Vent Hood']
+    TYPES = ['Bar Sink',
+             'Coffee Maker',
+             'Cooktop',
+             'Dishwasher',
+             'Double Oven',
+             'Double sink',
+             'Microwave',
+             'Offset Sink',
+             'Oven',
+             'Range',
+             'Range Top',
+             'Refrigerator',
+             'Sink',
+             'Under Counter Refrigerator',
+             'Vent Hood'
+            ]
+
     
     order = models.ForeignKey(WorkingOrder, editable=False, related_name='appliances')
     type = models.CharField(_('Type'), max_length=20, choices=[(i,i) for i in TYPES])
