@@ -5,7 +5,7 @@ from django.test import TestCase
 from models import InboundFaxProcessor
 
 class EFaxApiTest(TestCase):
-    def test_xml_processing(self):        
+    def test_single_page(self):        
         """
         efax sends a post request with a single 'xml' parameter when they recieve a fax.
         
@@ -22,7 +22,9 @@ class EFaxApiTest(TestCase):
         for code in parsed_fax.faxbarcode_set.all():
             print code.symbology, code.key
         self.failUnlessEqual(parsed_fax.faxbarcode_set.count(), 5)
+        xmlstream.close()
 
+    def test_multi_page(self):        
         print ' ----------- test 2 ------->'
         xmlstream = StringIO.StringIO(SAMPLE2)
         parsed_fax = InboundFaxProcessor(xmlstream).process_message()
@@ -32,6 +34,7 @@ class EFaxApiTest(TestCase):
         for code in parsed_fax.faxbarcode_set.all():
             print code.symbology, code.key
         self.failUnlessEqual(parsed_fax.faxbarcode_set.count(), 5)
+        xmlstream.close()
 
 SAMPLE1 = """<?xml version="1.0"?>
 <InboundPostRequest>
@@ -240,7 +243,7 @@ SAMPLE2="""<?xml version="1.0"?>
       <BarcodesRead>5</BarcodesRead>
       <Barcodes>
         <Barcode>
-          <Key>EFAXTEST1A</Key>
+          <Key>FEAXTEST1A</Key>
           <AdditionalInfo>
             <ReadSequence>1</ReadSequence>
             <ReadDirection>2-Dimentional</ReadDirection>
@@ -265,7 +268,7 @@ SAMPLE2="""<?xml version="1.0"?>
           </AdditionalInfo>
         </Barcode>
         <Barcode>
-          <Key>EFAXTEST2A</Key>
+          <Key>FEAXTEST2A</Key>
           <AdditionalInfo>
             <ReadSequence>1</ReadSequence>
             <ReadDirection>2-Dimentional</ReadDirection>
@@ -290,7 +293,7 @@ SAMPLE2="""<?xml version="1.0"?>
           </AdditionalInfo>
         </Barcode>
         <Barcode>
-          <Key>EFAXTEST3A</Key>
+          <Key>FEAXTEST3A</Key>
           <AdditionalInfo>
             <ReadSequence>1</ReadSequence>
             <ReadDirection>2-Dimentional</ReadDirection>
@@ -315,7 +318,7 @@ SAMPLE2="""<?xml version="1.0"?>
           </AdditionalInfo>
         </Barcode>
         <Barcode>
-          <Key>EFAXTEST4A</Key>
+          <Key>FEAXTEST4A</Key>
           <AdditionalInfo>
             <ReadSequence>1</ReadSequence>
             <ReadDirection>2-Dimentional</ReadDirection>
@@ -340,7 +343,7 @@ SAMPLE2="""<?xml version="1.0"?>
           </AdditionalInfo>
         </Barcode>
         <Barcode>
-          <Key>EFAXTEST5A</Key>
+          <Key>FEAXTEST5A</Key>
           <AdditionalInfo>
             <ReadSequence>1</ReadSequence>
             <ReadDirection>2-Dimentional</ReadDirection>

@@ -26,7 +26,6 @@ class Const(object):
 class FaxDateTimeField(models.DateTimeField):
     def to_python(self, value):
         month, day, year, hour, minute, seconds = [int(a) for a in re.split('/| |:', value)]      
-        print (  month, day, year, hour, minute, seconds )
         return super(FaxDateTimeField, self).to_python(
                         datetime(year,month,day,hour,minute,seconds))
                                                   
@@ -46,7 +45,7 @@ class Fax(models.Model):
                              help_text=_('The station identifier, when supplied by the receiving fax machine upon successful transmission.'))
     ani = models.CharField(max_length=25, help_text=_('The automatic number identification (caller id) contains the calling partys fax number.'))
     status = models.PositiveSmallIntegerField(help_text=_('Numeric field indicating the fax status. "0" indicates a successful transmission while all other values indicate an error code which can be cross- referenced with am eFax DeveloperTM supplied table.'))
-    mcf_id = models.IntegerField(primary_key=True,help_text=_('eFax DeveloperTM fax ID.'))
+    mcf_id = models.IntegerField(help_text=_('eFax DeveloperTM fax ID.'))
     file_contents = models.TextField(null=True, blank=True, help_text=_('Base64 encoded file contents.'))
     
     user_fields_read = models.PositiveSmallIntegerField(help_text=_('Count of associated user-defined fields for this document.'))
@@ -141,15 +140,18 @@ class FaxPage(models.Model):
 class InboundFaxProcessor(xml_serializer.Deserializer):
 
     _object_mappings = {}
-    _children = []
     
     def register_object_mapping(cls, model):
-        logger.debug('InboundFaxProcessor::register_object_mapping(<%s>)', model)
+        #logger.debug('InboundFaxProcessor::register_object_mapping(<%s>)', model)
         model._root = model.XmlMapping.root.rsplit('/',1)[-1]
         model._fieldmap = dict([(name.rsplit('/',1)[-1], val) for (name, val) in model.XmlMapping.fields])        
         cls._object_mappings[model._root] = model
     register_object_mapping = classmethod(register_object_mapping)
         
+    def __init__(self, stream):
+        self._children = []
+        return super(InboundFaxProcessor, self).__init__(stream)
+
     def process_message(self):
         root = None
         for event, node in self.event_stream:
@@ -158,14 +160,15 @@ class InboundFaxProcessor(xml_serializer.Deserializer):
                 break;
         if root:
             root.save()
+            logger.debug('InboundFaxProcessor::process_message saved message (<%s>)', root.pk)
             for child in self._children:
                 child.fax = root
                 child.save()
-                
+                #logger.debug('InboundFaxProcessor::process_message saved child (<%s>, <%s>, <%s>)', root.pk, child.pk, child.__class__)
         return root
     
     def process_element(self, node, parent=None):
-        logger.debug('InboundFaxProcessor::process_element(<%s>, <%s>)', node, parent)
+        #logger.debug('InboundFaxProcessor::process_element(<%s>, <%s>)', node, parent)
         model = self._object_mappings[node.nodeName]
         instance = model()
         for event, child_node in self.event_stream:
@@ -176,10 +179,9 @@ class InboundFaxProcessor(xml_serializer.Deserializer):
             elif event == 'START_ELEMENT' and child_node.nodeName in self._object_mappings:
                 child = self.process_element(child_node, node)
                 self._children.append(child)
-                logger.debug('InboundFaxProcessor::_handle_object stashing child <%s>', child)
+                #logger.debug('InboundFaxProcessor::_handle_object stashing child <%s>', child)
             elif event == 'END_ELEMENT' and child_node.nodeName == node.nodeName:
                 break 
-            
         return instance
             
             
