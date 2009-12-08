@@ -1,13 +1,11 @@
 from datetime import datetime, timedelta
 import os, os.path
 import logging
-import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.text import get_valid_filename
 from django.core.files.base import File as DjangoFile
-from django.core.files.storage import FileSystemStorage
 from django.db.transaction import commit_on_success
 from django.db import models
 from django.utils.datastructures import SortedDict
@@ -15,6 +13,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 from utils.pdf import pdf2ppm
 from utils.fields import DimensionField
+from utils.storage import AppStorage
 from signals import status_changed
 
 logger = logging.getLogger('orders.models')
@@ -22,18 +21,6 @@ logger = logging.getLogger('orders.models')
 PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
 PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
 
-class AppStorage(FileSystemStorage):
-    def __init__(self): 
-        super(AppStorage, self).__init__(
-            location=getattr(settings, 'APP_FILES_ROOT', settings.MEDIA_ROOT), 
-            base_url=getattr(settings, 'APP_FILES_URL', settings.MEDIA_URL)       
-        )
-        
-    def url(self,name):
-        if not self.base_url or urlparse.urlparse(self.base_url).scheme:
-            return super(AppStorage, self).url(name)
-        return os.path.join(self.base_url, name)
-        
 APPSTORAGE = AppStorage()        
     
 def attachment_upload_location(attachment_obj, filename):

@@ -14,11 +14,24 @@ class EFaxApiTest(TestCase):
         if the account was setup in this way. 
         
         """
+        print ' ----------- test 1 ------->'
         xmlstream = StringIO.StringIO(SAMPLE1)
         parsed_fax = InboundFaxProcessor(xmlstream).process_message()
         self.failUnless(parsed_fax)
         self.failUnlessEqual(parsed_fax.account_id, '1234567890')
-        self.failUnless(parsed_fax.faxbarcode_set.all())
+        for code in parsed_fax.faxbarcode_set.all():
+            print code.symbology, code.key
+        self.failUnlessEqual(parsed_fax.faxbarcode_set.count(), 5)
+
+        print ' ----------- test 2 ------->'
+        xmlstream = StringIO.StringIO(SAMPLE2)
+        parsed_fax = InboundFaxProcessor(xmlstream).process_message()
+        self.failUnless(parsed_fax)
+        self.failUnlessEqual(parsed_fax.account_id, '1234567891')
+        self.failUnlessEqual(parsed_fax.faxpage_set.count(), 5)
+        for code in parsed_fax.faxbarcode_set.all():
+            print code.symbology, code.key
+        self.failUnlessEqual(parsed_fax.faxbarcode_set.count(), 5)
 
 SAMPLE1 = """<?xml version="1.0"?>
 <InboundPostRequest>
@@ -200,7 +213,7 @@ SAMPLE2="""<?xml version="1.0"?>
     <RequestType>New Inbound</RequestType>
   </RequestControl>
   <FaxControl>
-    <AccountID>1234567890</AccountID>
+    <AccountID>1234567891</AccountID>
     <NumberDialed>0987654321</NumberDialed>
     <DateReceived>08/18/2005 12:07:49</DateReceived>
     <FaxName>SampleOut</FaxName>
