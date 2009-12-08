@@ -34,14 +34,14 @@ door_info = {
         'special finish option':  special_finish_options,
     },
     'cherry': { 
-        'stain' : ['Natural Cherry', 'Cherry Cafe', 'Cherry Merlot', 'Cherry Spice', 'Cherry Espresso', 'Cherry Mocha', 'Cherry Moroccan', 'Cherry Port'],
+        'stain' : ['Cherry Cafe', 'Cherry Espresso', 'Cherry Merlot', 'Cherry Mocha', 'Cherry Moroccan', 'Cherry Port', 'Cherry Spice', 'Natural Cherry'],
         'glaze': ['Chocolate', 'Coffee', 'Linen', 'Pewter', 'Sueded', 'Tan', 'White'],
         'style': _std_door_styles,
         'standard finish option':  finish_options,
         'special finish option':  special_finish_options,
     },
     'lyptus': {
-        'stain': ['Caramel', 'Desert Mist', 'Fruitwood', 'Honey', 'Amaretto', 'Burgundy', 'Walnut'],
+        'stain': ['Amaretto', 'Burgundy', 'Caramel', 'Desert Mist', 'Fruitwood', 'Honey', 'Walnut'],
         'glaze': ['Chocolate', 'Coffee', 'Linen', 'Pewter', 'Sueded', 'Tan', 'White'],    
         'style': _std_door_styles,
         'standard finish option':  finish_options,
@@ -55,7 +55,7 @@ door_info = {
         'special finish option':  special_finish_options,
     },    
     'thermafoil': {
-        'paint': ['Antique', 'Basil', 'Black', 'Butterscotch', 'Cherries Jubilee', 'Clover', 'Cocoa Bean', 'Cocoa', 'Country Pebble', 'Dylan Green', 'Fashion Gray', 'Fern', 'Fine Wine', 'Forest Green', 'Goldenrod', 'Indigo', 'Juniper', 'Misty Green', 'Sage', 'Willow', 'Shalimar', 'Soft White', 'Sunflower', 'Super White', 'Taupe', 'Twilight Blue', 'Washboard'],
+        'paint': ['Antique', 'Basil', 'Black', 'Butterscotch', 'Cherries Jubilee', 'Clover', 'Cocoa', 'Cocoa Bean', 'Country Pebble', 'Dylan Green', 'Fashion Gray', 'Fern', 'Fine Wine', 'Forest Green', 'Goldenrod', 'Indigo', 'Juniper', 'Misty Green', 'Sage', 'Shalimar', 'Soft White', 'Sunflower', 'Super White', 'Taupe', 'Twilight Blue', 'Washboard', 'Willow'],
         'style': _thermafoil_or_metal_styles,
     },    
 }
