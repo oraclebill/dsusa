@@ -13,7 +13,7 @@ finish_option_types = ['glaze', 'standard finish option', 'special finish option
 #
 ##
 #
-_std_door_styles = ['Bali', 'Bel Air', 'Bitlmore Estate', 'Bitlmore Manor', 'Bitlmore Vineyard', 'Boca', 'Bombay', 'Brittany', 'Broadway', 'Camelot', 'Camelot Beaded', 'Charleston', 'Charleston Reversed', 'Contemporary Slab', 'Cumberland', 'Georgetown', 'Harvest', 'Harvest Reversed', 'Hilton', 'Huntington', 'Lattice', 'Louvre Solid', 'Louvre Vented', 'Midtown', 'Normandy', 'Plaza', 'Quinta', 'Rockefeller', 'Romanesque', 'Saratoga', 'Shaker 1/4 Beaded', 'Shaker 3', 'Shaker 3 Reversed', 'Shaker 4', 'Shaker Double', 'Shaker Single', 'Shaker Solid Beaded', 'Tiffany', 'Traditional', 'Traditional Beaded', 'Traditional Reversed', 'Tuscany', 'Villa', 'Williamsburg', 'Wood Veneer']
+_std_door_styles = ['Bali', 'Bel Air', 'Biltmore Estate', 'Biltmore Manor', 'Biltmore Vineyard', 'Boca', 'Bombay', 'Brittany', 'Broadway', 'Camelot', 'Camelot Beaded', 'Charleston', 'Charleston Reversed', 'Contemporary Slab', 'Cumberland', 'Georgetown', 'Harvest', 'Harvest Reversed', 'Hilton', 'Huntington', 'Lattice', 'Louvre Solid', 'Louvre Vented', 'Midtown', 'Normandy', 'Plaza', 'Quinta', 'Rockefeller', 'Romanesque', 'Saratoga', 'Shaker 1/4 Beaded', 'Shaker 3', 'Shaker 3 Reversed', 'Shaker 4', 'Shaker Double', 'Shaker Single', 'Shaker Solid Beaded', 'Tiffany', 'Traditional', 'Traditional Beaded', 'Traditional Reversed', 'Tuscany', 'Villa', 'Williamsburg', 'Wood Veneer']
 _thermafoil_or_metal_styles = ['Allegro', 'Alpha', 'Beta', 'Chateau', 'Classic Shaker', 'Cosmos', 'Dakota', 'Designer', 'Euro', 'Gamma', 'Glamour', 'Loft', 'Milano', 'New Yorker', 'Omega', 'Revere', 'Sahara', 'Shaker Beaded', 'Slab Mdf', 'Tempo', 'Traditional Shaker', 'Ultra', 'Vogue Foil', 'Zephyr']
 #
 #

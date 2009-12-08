@@ -1,15 +1,28 @@
 (function($) {
     $.fn.update_choices = (function(){
 	    function select_html(id, name, value, choices) {
-		        var options = '',
-            selected = '',
-            option = '';
+		    var options = '',
+	            selected = '',
+				option_selected = false,
+	            option = '';
 
 		    for (var i=0; i<choices.length; i++) {
-                option = choices[i];
-                selected = value == option ? ' selected="selected"' : '';
+                option = choices[i]; 
+				if (value == option) {
+					option_selected = true;
+					selected = ' selected="selected"';
+				}
+				else {
+					selected = '';
+				}
 			    options += '<option value="'+ option +'"'+selected+'> '+ option +'</option>';
 		    }
+			if (option_selected) {
+				options = '<option value="" selected="selected">--------</option>' + options;			
+			} else {
+				options = '<option value="">--------</option>' + options;			
+			}
+			
 		    return '<select name="'+name+'" id="'+id+'">'+options+'</select>';
 	    }
 
@@ -20,10 +33,10 @@
 
         return function(choices, default_selects) {
                 var $$ = this,
-            val = $$.val(),
-            id = $$.attr('id'),
-            name = $$.attr('name'),
-                default_choices = (id in default_selects) ? default_selects[id] : null;
+		            val = $$.val(),
+		            id = $$.attr('id'),
+		            name = $$.attr('name'),
+	                default_choices = (id in default_selects) ? default_selects[id] : null;
 
             if (!choices.length) {
                 if (!default_choices) {
@@ -42,11 +55,12 @@
 
             if (val && $.inArray(val, choices) == -1) {
                 $$.parent().parent().addClass("invalid").removeClass("valid");
-                $$.before(
-                    '<ul class="errorlist" style="display: block;"><li>'+
-                        val +
-                        ' is invalid now. Choose something else</li></ul>'
-                );
+				$$.children('option:first').attr('selected','selected');
+//                $$.before(
+//                    '<ul class="errorlist" style="display: block;"><li>'+
+//                        val +
+//                        ' is invalid now. Choose something else</li></ul>'
+//                );
                 $$.change(clear_error);
             } else {
                 clear_error($$);
