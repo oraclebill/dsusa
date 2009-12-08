@@ -446,7 +446,6 @@ class Appliance(models.Model):
              'Under Counter Refrigerator',
              'Vent Hood'
             ]
-
     
     order = models.ForeignKey(WorkingOrder, editable=False, related_name='appliances')
     type = models.CharField(_('Type'), max_length=20, choices=[(i,i) for i in TYPES])

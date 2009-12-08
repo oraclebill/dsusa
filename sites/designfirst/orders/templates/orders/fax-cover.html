@@ -129,24 +129,28 @@ tr > td:first-child {
     </table>
     <table class="column" width="100%" border="1">
       <tr>
-        <td width="40%" align="left" valign="top">Order #</td>
-        <td>{{ order.id }}</td>
-      </tr>
-      <tr>
-        <td width="30%" align="left" valign="top">Account Name</td>
-        <td>{{ account.legal_name }}</td>
-      </tr>
-      <tr>
-        <td width="30%" align="left" valign="top">Phone #</td>
-        <td>{{ account.phone }}</td>
-      </tr>
-      <tr>
         <td align="left" valign="top">Date Sent</td>
         <td>{% now  "F jS Y" %}</td>
       {# </tr> #}
       {# <tr> #}
       {#   <td width="30%" align="left" valign="top">Email</td> #}
       {#   <td>{{ account.email }}</td> #}
+      </tr>
+      <tr>
+        <td width="40%" align="left" valign="top">Order #</td>
+        <td>{{ order_code }}</td>
+      </tr>
+      <tr>
+        <td width="40%" align="left" valign="top">Tracking #</td>
+        <td>{{ tracking_code }}</td>
+      </tr>
+      <tr>
+        <td width="30%" align="left" valign="top">Account </td>
+        <td>{{ account.legal_name }}</td>
+      </tr>
+      <tr>
+        <td width="30%" align="left" valign="top">Phone #</td>
+        <td>{{ account.phone }}</td>
       </tr>
     </table>
 </div>
@@ -161,8 +165,8 @@ tr > td:first-child {
   	<input type="button" value="Return to Dashboard" onclick="void();">    
   </div>
   <div id="barcode-area">
-    <p><img src="{% url generate_barcode type='c128',val=order_code %}"></p>
-    <p><img src="{% url generate_barcode type='dmtx',val=order_code %}"></p>
+    <p><img src="{% url generate_barcode type='c128',val=tracking_code %}"></p>
+    <p><img src="{% url generate_barcode type='dmtx',val=tracking_code %}"></p>
   </div>
 
 </div>

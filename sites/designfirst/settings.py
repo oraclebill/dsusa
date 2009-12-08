@@ -119,6 +119,7 @@ INSTALLED_APPS = (
     'registration',
     'south',
     'notification',
+    'api',
     'designfirst.customer',
     'designfirst.product',
     'designfirst.orders',
@@ -127,6 +128,7 @@ INSTALLED_APPS = (
     'designfirst.barcode',
     'test',
 )
+
 
 if DEBUGTOOL:
     MIDDLEWARE_CLASSES += (

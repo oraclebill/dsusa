@@ -10,7 +10,8 @@ from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect,\
     HttpResponseForbidden
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
@@ -36,6 +37,8 @@ from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
 
 LETTERS_AND_DIGITS = string.letters + string.digits
 RUSH_PROD_ID = 20
+
+ORDER_PREFIX = 'DDS-010'
 
 @login_required
 @render_to('orders/create_order.html')
@@ -90,17 +93,32 @@ def review_order(request, orderid):
     result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
     return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
 
+    
 @login_required
-@render_to('orders/print_order.html')
-def print_order(request, id):
+def print_order(request, id, template='orders/print_order.html', include_summary=True, extra_context={}):
     order = get_object_or_404(WorkingOrder, id=id)
-    if order.owner.id != request.user.id:
-        return HttpResponseForbidden("Not allowed to view this order")
-    s = summary.order_summary(order, summary.STEPS_SUMMARY)
-    #making two columns display
-    l = len(s)/2
-    s = s[:l], s[l:]
-    return {'order': order, 'summary': s}
+    if order.owner.id: 
+        if order.owner.id != request.user.id:
+            return HttpResponseForbidden("Not allowed to view this order")
+        account = order.owner.get_profile().account
+    else:
+        account = request.user.get_profile().account
+        
+    context = {'order': order, 'account': account }
+    context['order_code'] = '%s-%03d-%03d' % (ORDER_PREFIX, account.id, order.id)
+    context['tracking_code'] = order.tracking_code
+            
+    if include_summary:
+        s = summary.order_summary(order, summary.STEPS_SUMMARY)
+        #making two columns display
+        l = len(s)/2
+        s = s[:l], s[l:]
+        context['summary'] = s
+        
+    if extra_context:
+        context.update(extra_context)
+        
+    return render_to_response(template, context, context_instance=RequestContext(request))
 
 @login_required
 @transaction.commit_on_success

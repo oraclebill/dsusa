@@ -81,7 +81,7 @@
 {% for att in order.attachments.all %}
 	<h3>{{att}}</h3>
 	{% for page in att.attachmentpage_set.all %}
-	<img src="{{page.file.url}}" alt="{{page.file.name}} - {{page.page}}""><br>
+	<img src="{{page.file.url}}" alt="{{page.file.name}} - {{page.page}}" ><br>
 	{% endfor %}
 {% endfor %}
 <br>

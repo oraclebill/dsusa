@@ -2,11 +2,14 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('orders.views',
     url(r'^(\d+)/$', 'wizard', name='order-wizard'),
+    url(r'^(\d+)/print/$', 'print_order',  name='print-order'),
+    url(r'^(\d+)/fax-cover/', 'print_order', {'template': 'orders/fax-cover.html', 'include_summary': False}, name='fax-cover'),
     url(r'^(\d+)/(.*?)/$', 'wizard', name='order-wizard-step'),
     
     url(r'^new/$', 'create_order', name='new_order'),
     url(r'^display/(\d+)/$', 'review_order', name='generic-order-review'),
-    url(r'^print/(\d+)/$', 'print_order', name='print-order'),
+    #url(r'^print/(\d+)/$', 'print_order',  name='print-order'),
+    url(r'^print/(\w+)/fax-cover/', 'print_order', {'template': 'orders/fax-cover.html', 'summary': False}, name='fax-cover'),
 
     url(r'^complete/(\d+)/$', 'submit_order', name='submit-order'), # e.g. checkout
 #    url(r'^purchase/(\d+)/$', 'purchase_order', name='submit-order-purchase'), # e.g. checkout required

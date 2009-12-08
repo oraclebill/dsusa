@@ -22,7 +22,6 @@ urlpatterns = patterns('customer.views',
         'remove_order_appliance', 
         name='delete_order_appliance'),
         
-    url(r'^dealer/order/(\w+)/fax-cover/', 'current_order_info', name='fax_cover'),
     
     url(r'^dealer/invoice/(\d+)/$', 'display_invoice', name='display-invoice'),
     
