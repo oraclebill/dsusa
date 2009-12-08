@@ -175,29 +175,30 @@ class OrderBase(models.Model):
 
 class WorkingOrder(OrderBase):
     
-    PAINT, STAIN, NATURAL, GLAZE = ('P', 'S', 'N', 'G')
-    FINISH_CHOICES = (
-        (STAIN, 'Stain'), (PAINT, 'Paint'), (NATURAL, 'Natural'), (GLAZE, 'Glaze'),
-    )
-
-    MAPLE, CHERRY, ALDER, LYPTUS, BIRCH, MDF, STAINLESS, PERMAFOIL, GLASS = (
-        'MAPL', 'CHER', 'ALDR', 'LYPT', 'BIRC', 'MDF', 'STEEL', 'FOIL', 'GLASS')        
-    DOOR_MATERIAL_CHOICES = ( 
-        (MAPLE, 'Maple'), (CHERRY, 'Cherry'), (ALDER, 'Alder'), (LYPTUS, 'Lyptus'), 
-        (BIRCH, 'Birch'), (MDF, 'MDF'), (STAINLESS, 'Stainless Steel'), (PERMAFOIL, 'Permafoil'), 
-        (GLASS, 'Glass'),
-    )
+#    PAINT, STAIN, NATURAL, GLAZE = ('P', 'S', 'N', 'G')
+#    FINISH_CHOICES = (
+#        (STAIN, 'Stain'), (PAINT, 'Paint'), (NATURAL, 'Natural'), (GLAZE, 'Glaze'),
+#    )
+#
+#    MAPLE, CHERRY, ALDER, LYPTUS, BIRCH, MDF, STAINLESS, PERMAFOIL, GLASS = (
+#        'MAPL', 'CHER', 'ALDR', 'LYPT', 'BIRC', 'MDF', 'STEEL', 'FOIL', 'GLASS')        
+#    DOOR_MATERIAL_CHOICES = ( 
+#        (MAPLE, 'Maple'), (CHERRY, 'Cherry'), (ALDER, 'Alder'), (LYPTUS, 'Lyptus'), 
+#        (BIRCH, 'Birch'), (MDF, 'MDF'), (STAINLESS, 'Stainless Steel'), (PERMAFOIL, 'Permafoil'), 
+#        (GLASS, 'Glass'),
+#    )
     
     #Manufacturer page (cabinetry options)
-    manufacturer    = models.CharField(_('Manufacturer'), max_length=150, blank=True, null=True)
-    product_line    = models.CharField(_('Product Line'), max_length=150, blank=True, null=True)
-    door_style      = models.CharField(_('Door Style'), max_length=150, blank=True, null=True)
-    drawer_front_style = models.CharField(_('Drawer Front Style'), max_length=150, blank=True, null=True)
-    cabinet_material= models.CharField(_('Door Material'), max_length=10, blank=True, null=True)
-    finish_type     = models.CharField(_('Finish Type'), max_length=150, blank=True, null=True)
+    manufacturer    = models.CharField(_('Manufacturer'), max_length=50, blank=True, null=True)
+    product_line    = models.CharField(_('Product Line'), max_length=50, blank=True, null=True)
+    door_style      = models.CharField(_('Door Style'), max_length=50, blank=True, null=True)
+    drawer_front_style = models.CharField(_('Drawer Front Style'), max_length=50, blank=True, null=True)
+    
+    cabinet_material= models.CharField(_('Door Material'), max_length=20, blank=True, null=True)
+    finish_type     = models.CharField(_('Finish Type'), max_length=50, blank=True, null=True)
 
-    finish_color    = models.CharField(_('Paint/Stain Color'), max_length=150, blank=True, null=True) # maybe 'color'?
-    finish_options  =  models.CharField(_('Finish Options'), max_length=150, blank=True, null=True)
+    finish_color    = models.CharField(_('Paint/Stain Color'), max_length=50, blank=True, null=True) # maybe 'color'?
+    finish_options  =  models.CharField(_('Finish Options'), max_length=50, blank=True, null=True)
     
         
     #Hardware page
@@ -208,10 +209,10 @@ class WorkingOrder(OrderBase):
             (HANDLE_KNOB, 'Knob'))
     
     door_handle_type = models.PositiveSmallIntegerField(_('Door Handle Type'), choices=HANDLE_TYPES, default=HANDLE_NONE)
-    door_handle_model = models.CharField(_('Door Handle Product'), max_length=255, null=True, blank=True)
+    door_handle_model = models.CharField(_('Door Handle Product'), max_length=100, null=True, blank=True)
     
     drawer_handle_type = models.PositiveSmallIntegerField(_('Drawer Handle Type'), choices=HANDLE_TYPES, default=HANDLE_NONE)
-    drawer_handle_model = models.CharField(_('Drawer Handle Product'), max_length=255, null=True, blank=True)
+    drawer_handle_model = models.CharField(_('Drawer Handle Product'), max_length=100, null=True, blank=True)
     
     #Soffits page
     has_soffits = models.BooleanField(_('Has Soffits?'), blank=True, default=False)
