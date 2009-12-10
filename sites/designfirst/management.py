@@ -96,12 +96,12 @@ def new_order_notification(sender, **kwargs):
     #       - notice_subject. If we find a notice for 'this' thing, don't repeat notification.
     if not order.owner:
         mail_managers(
-            'New order %s requires manual validation - blank owner' % order,
-            'No associated owner for order %s' % order.id
+            'New order %s requires manual validation - blank owner' % order.id,
+            'No associated owner for order %s' % vars(order)
         )
         return        
     notification.send([order.owner], 'order_submission_ack', locals())
-    mail_managers('Order Submission Notice - order #%s for %s' % (order, order.owner.get_profile().account.legal_name), '')
+    mail_managers('[NOTICE] Order #%s submitted for %s on %s' % (order.pk, order.owner.get_profile().account.legal_name, order.submitted), '')
 order_signals.status_changed.connect(new_order_notification)        
     
 def completed_order_notification(sender, **kwargs):

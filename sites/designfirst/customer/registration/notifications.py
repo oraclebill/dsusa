@@ -1,11 +1,9 @@
 import logging
 
-from django.core.mail import mail_admins, mail_managers, send_mail
+from django.core.mail import mail_managers, send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.sites.models import Site, RequestSite
-
-from utils import make_site_url
 
 logger = logging.getLogger('customer.registration.notification')
 
