@@ -28,7 +28,7 @@ from customer.auth import active_dealer_only
 import summary 
 
 # local app imports
-from base import WizardBase
+from wizard import WizardBase
 from models import OrderBase, WorkingOrder, Attachment, Appliance, Moulding
 from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm

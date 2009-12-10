@@ -40,6 +40,7 @@ class WizardBase(object):
         template = 'wizard/step_%s.html' % self.step
         context = {
             'wizard': self,
+            'BTN_PREVIOUS': GO_PREVIOUS,
             'BTN_SAVENEXT': BTN_SAVENEXT
         }
         if isinstance(result, (list, tuple)):
@@ -86,7 +87,9 @@ class WizardBase(object):
         assert self.request.method == 'POST', 'dispatch_next_step works only with POST'
         step = self.request.POST[NEXT_STEP_VAR]
         assert step is not None
-        if step == GO_NEXT:
+        if GO_PREVIOUS in self.request.POST:
+            step = self.previous_step()
+        elif step == GO_NEXT:
             step = self.next_step()
         elif step == GO_PREVIOUS:       # TODO: broken
             step = self.previous_step()
