@@ -1,13 +1,30 @@
-Dealer Design Service - Order submited
+Order Confirmation
 
-	-------  Order Information -------  
+Thanks for your order -
 
-Order #:            {{ order.id }}
-Project:            {{ order.project_name }}
-Presentation Pack?: {{ order.color_views }}
-Rush:               {{ order.rush|yesno }}
-Submitted By:       {{ order.owner }}
+We have received order # {{ order.id }}: "{{ order.project_name }}"
+and have submitted it for processing by our designers. 
+
+If no clarifications are necessary your design will be available 
+within two business days for standard service, or the next business day 
+for 'RUSH' orders (if submitted before 2pm EST).
+
+		-------  Order Information -------  
+	
+	Order #:            {{ order.id }}
+	Project:            {{ order.project_name }}
+	Type:               {{ order.get_project_type_display }}
+	Design Product:     {{ order.color_views|yesno:"Presentation Pack, Pro Design, Not Specified (Pro Design)" }}
+	Processing Opt.:    {{ order.rush|yesno:"Rush Service, Standard Processing" }}
+	Submitted on:       {{ order.submitted|date }} by {{order.owner.get_full_name}} [{{order.owner.username}}]
+	
+	   -------  End Order Information -------  
+
+To check on the status of your order check your dashboard at 
+<< https://secure.designserviceusa.com/dealer >> or contact 
+support at << support@designserviceusa.com >>.
 
 Thanks for using Design Service USA!
 
-The Dealers Design Service Team
+
+

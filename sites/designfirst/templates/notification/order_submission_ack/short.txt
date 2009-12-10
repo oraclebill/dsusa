@@ -1,1 +1,1 @@
-New order submited: {{ order.pk }} by {{ order.owner }}
+Order #{{ order.pk }} - '{{ order.project_name }}' - submitted at {{order.submitted|date:"N j, Y, P"}}

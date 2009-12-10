@@ -7,19 +7,20 @@
 	<h1>Submission Confirmation</h1>
 </div>
 
-<div class="grid_6 prefix_5 suffix_5">
+<div class="grid_7 prefix_5 suffix_4">
 	<div class="block">
-		<h4>Thank you for your order</h4>
 		<table>
-			<caption>Submission Details</caption>
-			<thead></thead>
+			<thead>
+		<caption><h5> Summary</h5></caption>
+				
+			</thead>
 			<tbody>
-				<tr><th>Order ID</th><td>{{order.id}}</td></tr>
-				<tr><th>Submitted On</th><td>{{order.submitted}}</td></tr>
-				<tr><th>Project Name</th><td>{{order.project_name}}</td></tr>
-				<tr><th>Project Type</th><td>{{order.get_project_type_display}}</td></tr>
-				<tr><th>Processing Options</th><td>{{order.options}}</td></tr>
-				<tr><th>Delivery Date</th><td>{{order.submitted}}  plus X days</td></tr>
+				<tr><th>Order #</th><td>{{order.id}}</td></tr>
+				<tr><th>Project</th><td>{{order.project_name}}</td></tr>
+				<tr><th>Type</th><td>{{order.get_project_type_display}}</td></tr>
+				<tr><th>Design Product</th><td>{{ order.color_views|yesno:"Presentation Pack, Pro Design, Not Specified (Pro Design)" }}</td></tr>
+				<tr><th>Processing Options</th><td>{{ order.rush|yesno:"Rush Service, Standard Processing" }}</td></tr>
+				<tr><th>Submitted On</th><td>{{order.submitted|date:"N j, Y, P"}} by {{order.owner.get_full_name}} [{{order.owner.username}}] </td></tr>
 			</tbody>
 		</table>
 		<p>

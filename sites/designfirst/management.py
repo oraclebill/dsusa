@@ -75,7 +75,7 @@ def new_fax_notification(sender, **kwargs):
             'No associated order for attachment %s' % attachment.id
         )
         return        
-    if attachment.source == attachment.FAXED:        
+    if attachment.source == attachment.Const.FAXED:        
         context = {'document': attachment, 'order': attachment.order }
         notification.send([attachment.order.owner], 'fax_document_ack', context)    
 dbsignals.post_save.connect(new_fax_notification, sender=orders.Attachment)        

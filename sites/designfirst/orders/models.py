@@ -269,7 +269,7 @@ class WorkingOrder(OrderBase):
         return [a.preview for a in self.attachments.all()]
     
     def is_complete(self):
-        return self.attachments.filter(type=Attachment.FLOORPLAN)
+        return self.attachments.filter(type=Attachment.Const.FLOORPLAN)
     
     
 class Moulding(models.Model):
@@ -334,18 +334,19 @@ class Moulding(models.Model):
                 
 
 class Attachment(models.Model):
-    FLOORPLAN, PHOTO, OTHER = range(1,4)
-    TYPE_CHOICES = (
-            (FLOORPLAN, _('Floorplan Sketch')),
-            (PHOTO, _('Photograph')),
-            (OTHER, _('Other')),)
-    UPLOADED, FAXED = ('U','F')
-    ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Uploaded')),(FAXED, _('Faxed')),)
+    class Const:
+        FLOORPLAN, PHOTO, OTHER = range(1,4)
+        TYPE_CHOICES = (
+                (FLOORPLAN, _('Floorplan Sketch')),
+                (PHOTO, _('Photograph')),
+                (OTHER, _('Other')),)
+        UPLOADED, FAXED = ('U','F')
+        ATTACHMENT_SRC_CHOICES=((UPLOADED, _('Uploaded')),(FAXED, _('Faxed')),)
     
     order = models.ForeignKey(WorkingOrder, related_name='attachments')
-    type = models.PositiveSmallIntegerField(_('type'), choices=TYPE_CHOICES, default=FLOORPLAN)
+    type = models.PositiveSmallIntegerField(_('type'), choices=Const.TYPE_CHOICES, default=Const.FLOORPLAN)
     file = models.FileField(_('file'), upload_to=attachment_upload_location, storage=APPSTORAGE)
-    source = models.CharField(_('attachment method'), max_length=1, choices=ATTACHMENT_SRC_CHOICES, default=FAXED, editable=False)
+    source = models.CharField(_('attachment method'), max_length=1, choices=Const.ATTACHMENT_SRC_CHOICES, default=Const.UPLOADED, editable=False)
     timestamp = models.DateTimeField(_('uploaded on'), auto_now_add=True)
     page_count = models.PositiveSmallIntegerField(_('page count'), default=1)
 

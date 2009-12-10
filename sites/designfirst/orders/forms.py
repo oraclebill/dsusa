@@ -69,7 +69,7 @@ class SubmitForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
         order = self.instance
         #
-        if not order.attachments.filter(type__exact=Attachment.FLOORPLAN):
+        if not order.attachments.filter(type__exact=Attachment.Const.FLOORPLAN):
             raise forms.ValidationError('Your order has no attachments! We at least need a flooplan image to continue...')        
         #
         dealer = order.owner.get_profile().account

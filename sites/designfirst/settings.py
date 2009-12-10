@@ -38,9 +38,9 @@ MANAGERS = (
 
 SUPPORT_EMAIL='support@designserviceusa.com'
 NOREPLY_EMAIL='no-reply@designserviceusa.com'
-DEFAULT_FROM_EMAIL='site-managers@www.designserviceusa.com'
-SERVER_EMAIL='site-admin@www.designserviceusa.com'
-EMAIL_SUBJECT_PREFIX='[DSUSA]: '
+DEFAULT_FROM_EMAIL='support@designserviceusa.com'
+SERVER_EMAIL='system@designserviceusa.com'
+EMAIL_SUBJECT_PREFIX=''
 
 EMAIL_HOST='m0.designserviceusa.com'
 

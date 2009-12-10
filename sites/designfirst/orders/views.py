@@ -58,7 +58,7 @@ def create_order(request, *args):
             order.save()                     
             floorplanfile = request.FILES.get('floorplan', None)   
             if floorplanfile:
-                att = order.attachments.create(type=Attachment.FLOORPLAN, file=floorplanfile, source=Attachment.UPLOADED)
+                att = order.attachments.create(type=Attachment.Const.FLOORPLAN, file=floorplanfile, source=Attachment.Const.UPLOADED)
                 att.save()
                 att.split_pages()
             return HttpResponseRedirect(reverse("order-wizard", args=[order.id]))
@@ -75,13 +75,6 @@ def review_order(request, orderid):
 #    user = request.user
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
-#        if form.is_valid():
-#            register_design_order(user, user.get_profile().account,
-#                                  order, order.cost)
-#            order = form.save(commit=False)
-#            order.status = WorkingOrder.SUBMITTED
-#            order.save()
-#            return HttpResponseRedirect('/dealer/')
     else:
         form = SubmitForm(instance=order)
         
@@ -155,6 +148,7 @@ def submit_order(request, orderid):
                 register_design_order(order.owner, order.owner.get_profile().account, order, cost)
                 order = form.save(commit=False)
                 order.status = OrderBase.Const.SUBMITTED
+                order.submitted = datetime.now()
                 order.save()
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
             return HttpResponseRedirect(reverse('submit-order-completed', args=[order.id]))              
