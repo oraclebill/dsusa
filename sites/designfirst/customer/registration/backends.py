@@ -19,21 +19,17 @@ from hashlib import sha1
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site, RequestSite
-from django.template.loader import render_to_string
-from django.core.mail import mail_admins, mail_managers
-from django.utils.encoding import force_unicode
 from django.http import Http404
 from django.db import transaction
 
 from customer.models import Dealer, UserProfile
 from registration.backends.default import DefaultBackend
 from registration.models import RegistrationProfile, SHA1_RE
-from registration.signals import user_registered, user_activated
+from registration.signals import user_registered
 
 from forms import DealerRegistrationForm
 from notifications import notify_new_dealer_registration
 
-import signals
 import logging
 
 logger = logging.getLogger('customer.registration.backends')
@@ -139,13 +135,7 @@ class DealerRegistrationBackend(DefaultBackend):
         account corresponding to that key (if possible).
         
         Presumes the account has been approved already. If the account
-        of the user is in an inactive status we throw an error.
-
-        After successful activation, the signal
-        ``registration.signals.user_activated`` will be sent, with the
-        newly activated ``User`` as the keyword argument ``user`` and
-        the class of this backend as the sender.
-        
+        of the user is in an inactive status we throw an error.        
         """
         ## make sure user is eligible for validation
         try:
