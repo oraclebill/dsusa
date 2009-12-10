@@ -25,14 +25,15 @@ __forms__ = [
 def make_summary(form):
     name = form.name
     fset_list = getattr(form, 'fieldsets', None)
-    return (name, fset_list and forms.fieldset_fields(fset_list) or tuple())
+    if not fset_list:
+        fset_list = [(None, {'fields': form.base_fields.keys()})]
+    return (name, forms.fieldset_fields(fset_list))
         
 MFG_SECTION, HARDWARE_SECTION, MOULDING_SECTION, SOFFIT_SECTION, DIMENSION_SECTION, CORNER_CABINET_SECTION, CABINET_INTERIORS_SECTION, MISCELLANEOUS_OPTIONS_SECTION, ATTACHMENT_SECTION, APPLIANCE_SECTION, TRACKING_SECTION = [ make_summary(f) for f in __forms__ ]
             
 STEPS_SUMMARY = [
     MFG_SECTION,
     HARDWARE_SECTION,
-    MOULDING_SECTION,
     SOFFIT_SECTION,
     DIMENSION_SECTION,
     CORNER_CABINET_SECTION,
@@ -42,7 +43,6 @@ STEPS_SUMMARY = [
 
 SUBMIT_SUMMARY = [
     MFG_SECTION,
-    MOULDING_SECTION,
     DIMENSION_SECTION,
 ]
 
