@@ -147,7 +147,7 @@ def submit_order(request, orderid):
             if cost > account.credit_balance:
                 ## users account doesn't have enough juice.. send then to the ecom engine 
                 ## to pay, then get them back here ...
-                order.save()
+                order = form.save()
                 products = [form.cleaned_data['design_product']]
                 option = form.cleaned_data.get('processing_option', None)
                 if option:
@@ -157,6 +157,7 @@ def submit_order(request, orderid):
                 return paypal_checkout(request, success_url=reverse('submit-order', args=[orderid]))
             else:           
                 register_design_order(order.owner, order.owner.get_profile().account, order, cost)
+                order = form.save(commit=False)
                 order.status = OrderBase.Const.SUBMITTED
                 order.save()
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO

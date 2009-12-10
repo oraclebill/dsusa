@@ -15,7 +15,7 @@ from models import OrderBase, WorkingOrder,  Attachment, Appliance, Moulding
 NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
 
 PRO_DESIGN_PROD_ID = 1          ## Yes, very ugly..
-PRESENTATION_PACK_PROD_ID = 2
+PRESENTATION_PACK_PROD_ID = Product.objects.get(name__icontains='Presentation Pack', product_type=Product.Const.BASE).id
 
 
 
@@ -86,8 +86,8 @@ class SubmitForm(forms.ModelForm):
         #
         order = self.instance
         order.rush = bool(self.cleaned_data['processing_option'])
-        premium_selected = (self.cleaned_data['design_product'] == PRESENTATION_PACK_PROD_ID)
-        order.color_view = order.quoted_cabinet_list  = order.elevations = premium_selected
+        premium_selected = (int(self.cleaned_data['design_product']) == PRESENTATION_PACK_PROD_ID)
+        order.color_views = order.quoted_cabinet_list  = order.elevations = premium_selected
         return super(SubmitForm, self).save(commit)
              
              

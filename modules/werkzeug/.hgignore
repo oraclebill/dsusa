@@ -1,0 +1,8 @@
+^MANIFEST$
+^(build|dist|Werkzeug\.egg-info)/
+\.py[co]$
+\.DS_Store$
+^env$
+^docs/_build
+[^/]+-stats\.txt$
+^bench/[ab]/

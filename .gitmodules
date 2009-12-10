@@ -7,3 +7,6 @@
 [submodule "modules/debug_toolbar"]
 	path = modules/debug_toolbar
 	url = git://github.com/robhudson/django-debug-toolbar.git
+[submodule "modules/django-extensions"]
+	path = modules/django-extensions
+	url = git://github.com/django-extensions/django-extensions.git
