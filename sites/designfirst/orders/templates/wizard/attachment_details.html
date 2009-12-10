@@ -38,7 +38,7 @@ $(function(){
 		Type: <strong>{{attachment.get_type_display}}</strong><br>
 	</td>
 	<td>
-		{% for page in attachment.pages %}
+		{% for page in attachment.attachmentpage_set.all %}
 		<a href="{{page.file.url}}" class="imgpage">[Page {{page.page}}]</a>
 		{% endfor %}
 		<br>

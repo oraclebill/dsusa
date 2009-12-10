@@ -22,7 +22,7 @@ class AttachmentAdmin(admin.ModelAdmin):
     ]
     
 class AttachmentPageAdmin(admin.ModelAdmin):
-    list_display = ['page', 'file']
+    list_display = ['id', 'attachment', 'page', 'file']
     
 admin.site.register(WorkingOrder, WorkingOrderAdmin)
 admin.site.register(Attachment, AttachmentAdmin)
