@@ -42,8 +42,7 @@ STEPS_SUMMARY = [
 ]
 
 SUBMIT_SUMMARY = [
-    MFG_SECTION,
-    DIMENSION_SECTION,
+    TRACKING_SECTION,
 ]
 
 def order_summary(order, summary_fields):
@@ -57,18 +56,21 @@ def order_summary(order, summary_fields):
                 field, val = val
             else:
                 field = val
-            item_name = WorkingOrder._meta.get_field(field).verbose_name
-            item_name = capfirst(item_name)
-            if hasattr(order, 'get_%s_display' % field):
-                item_value = getattr(order, 'get_%s_display' % field)()
-            else:
-                item_value = getattr(order, field)
-            if type(item_value) == type(True):
-                item_value = item_value and 'Yes' or 'No'
-            elif type(item_value) == type(TIMETYPE):
-                item_value = item_value.date().isoformat()
-            if item_value not in ('', None):
-                values.append((item_name,item_value))
+            try:
+                item_name = WorkingOrder._meta.get_field(field).verbose_name
+                item_name = capfirst(item_name)
+                if hasattr(order, 'get_%s_display' % field):
+                    item_value = getattr(order, 'get_%s_display' % field)()
+                else:
+                    item_value = getattr(order, field)
+                if type(item_value) == type(True):
+                    item_value = item_value and 'Yes' or 'No'
+                elif type(item_value) == type(TIMETYPE):
+                    item_value = item_value.date().isoformat()
+                if item_value not in ('', None):
+                    values.append((item_name,item_value))
+            except:
+                pass
         if len(values) > 0:
             result.append((name, values))
     return result

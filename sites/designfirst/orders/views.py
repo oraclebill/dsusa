@@ -85,13 +85,9 @@ def review_order(request, orderid):
     else:
         form = SubmitForm(instance=order)
         
-    result_summary = summary.order_summary(order, summary.SUBMIT_SUMMARY)
-    exclude = ['owner', 'status', 'project_name', 'desired', 'cost', 'id']
-    for title, excl in summary.SUBMIT_SUMMARY:
-        exclude += excl
-    OPT_FIELDS = [f.name for f in order._meta.fields if f.name not in exclude and f.editable]
-    result_summary += summary.order_summary(order, [('Options', OPT_FIELDS)])
-    return {'order': order, 'data': dict(result_summary), 'form':form, 'wizard': wizard}
+    order_info = summary.order_summary(order, summary.SUBMIT_SUMMARY)
+    result_summary = summary.order_summary(order, summary.STEPS_SUMMARY)
+    return {'order': order, 'order_info': order_info, 'data': result_summary, 'form':form, 'wizard': wizard}
 
     
 @login_required

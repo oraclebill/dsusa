@@ -13,32 +13,31 @@ $(function(){
 
 <div class="container_16 clearfix">
 	<div class="grid_7 ">
-		<div id="selections" class="details"> 
-			<h3>Design Selections</h3>
-			&nbsp;
-	       	{% for section, values in data.items %}
+		<div id="order_tracking" class="details">
+	       	{% for section, values in order_info %}
 		    <div class="details border">
-				{% ifequal section "Options" %}
-				{% else %}
-					<h4>{{section}}</h4>
-					{% for name, value in values %}
-					<div class="summary-row row{% cycle "1" "2" %}">
-						<label>{{name}}</label> <span>{{value}}</span>
-					</div>
-					{% endfor %}
-				{% endifequal %}
+				<h4>{{section}}</h4>
+				{% for name, value in values %}
+				<div class="summary-row row{% cycle "1" "2" %}">
+					<label>{{name}}</label> <span>{{value}}</span>
+				</div>
+				{% endfor %}
 	    	</div>
 	       	{% endfor %}
 		</div>
-		<div id="options" class="details">
-    		<h4>Other Options</h4>
-			<div id="options_details" class="details">
-				{% for name, value in data.Options %}
-					<div class="summary-row row{% cycle "1" "2" %}">
-						<label>{{name}}</label><span>{{value}}</span> 
-					</div>
+		<div id="selections" class="details"> 
+			<h3>Design Selections</h3>
+			&nbsp;
+	       	{% for section, values in data %}
+		    <div class="details border">
+				<h4>{{section}}</h4>
+				{% for name, value in values %}
+				<div class="summary-row row{% cycle "1" "2" %}">
+					<label>{{name}}</label> <span>{{value}}</span>
+				</div>
 				{% endfor %}
-			</div>						
+	    	</div>
+	       	{% endfor %}
 		</div>
 	</div>
 
@@ -95,10 +94,12 @@ $(function(){
 	</div>
 	
 	<div class="grid_7">
+		<!--
 		<div id="notes" class="details">
 	    	<h3>Design Notes</h3>
 			<div>
 			<p>TBD</p>
 			</div>
 		</div>
+		-->
 	</div>
