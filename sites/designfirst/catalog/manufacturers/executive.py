@@ -13,9 +13,9 @@ finish_option_types = ['glaze', 'standard finish option', 'special finish option
 #
 ##
 #
-_std_door_styles = ['Bali', 'Bel Air', 'Biltmore Estate', 'Biltmore Manor', 'Biltmore Vineyard', 'Boca', 'Bombay', 'Brittany', 'Broadway', 'Camelot', 'Camelot Beaded', 'Charleston', 'Charleston Reversed', 'Contemporary Slab', 'Cumberland', 'Georgetown', 'Harvest', 'Harvest Reversed', 'Hilton', 'Huntington', 'Lattice', 'Louvre Solid', 'Louvre Vented', 'Midtown', 'Normandy', 'Plaza', 'Quinta', 'Rockefeller', 'Romanesque', 'Saratoga', 'Shaker 1/4 Beaded', 'Shaker 3', 'Shaker 3 Reversed', 'Shaker 4', 'Shaker Double', 'Shaker Single', 'Shaker Solid Beaded', 'Tiffany', 'Traditional', 'Traditional Beaded', 'Traditional Reversed', 'Tuscany', 'Villa', 'Williamsburg', 'Wood Veneer']
-_thermafoil_or_metal_styles = ['Allegro', 'Alpha', 'Beta', 'Chateau', 'Classic Shaker', 'Cosmos', 'Dakota', 'Designer', 'Euro', 'Gamma', 'Glamour', 'Loft', 'Milano', 'New Yorker', 'Omega', 'Revere', 'Sahara', 'Shaker Beaded', 'Slab Mdf', 'Tempo', 'Traditional Shaker', 'Ultra', 'Vogue Foil', 'Zephyr']
-#
+_std_door_styles = ['Bali', 'Bel Air', 'Biltmore Estate', 'Biltmore Estate Flat Panel', 'Biltmore Estate Raised Panel', 'Biltmore Manor', 'Biltmore Vineyard', 'Boca', 'Bombay', 'Brittany', 'Brittany Flat Panel', 'Brittany Raised Panel', 'Broadway', 'Camelot', 'Camelot Beaded', 'Camelot Flat Panel', 'Camelot Raised Panel', 'Charleston', 'Charleston Flat Panel', 'Charleston Raised Panel', 'Charleston Reversed', 'Charleston Reversed Raised Panel', 'Contemporary Slab', 'Cumberland', 'Cumberland Flat Panel', 'Cumberland Raised Panel', 'Georgetown', 'Georgetown Flat Panel', 'Georgetown Raised Panel', 'Harvest', 'Harvest Arch', 'Harvest Arch Flat Panel', 'Harvest Arch Raised Panel', 'Harvest Cathedral', 'Harvest Cathedral Flat Panel', 'Harvest Cathedral Raised Panel', 'Harvest Flat Panel', 'Harvest Raised Panel', 'Harvest Reversed', 'Harvest Reversed Raised Panel', 'Harvest Square Flat Panel', 'Harvest Square Raised Panel', 'Hilton', 'Hilton Flat Panel', 'Hilton Raised Panel', 'Huntington', 'Huntington Flat Panel', 'Huntington Raised Panel', 'Lattice', 'Louvre Solid', 'Louvre Vented', 'Midtown', 'Normandy', 'Normandy Flat Panel', 'Normandy Raised Panel', 'Plaza', 'Plaza Flat Panel', 'Plaza Raised Panel', 'Quinta', 'Rockefeller', 'Rockefeller Flat Panel', 'Rockefeller Raised Panel', 'Romanesque', 'Saratoga', 'Shaker 1/4 Beaded', 'Shaker 3', 'Shaker 3 Reversed', 'Shaker 3\xe2\x80\x9d Reversed Raised Panel', 'Shaker 4', 'Shaker Double', 'Shaker Single', 'Shaker Solid Beaded', 'Tiffany', 'Traditional', 'Traditional Beaded', 'Traditional Flat Panel', 'Traditional Raised Panel', 'Traditional Reversed', 'Traditional Reversed Raised Panel', 'Tuscany', 'Tuscany Flat Panel', 'Tuscany Raised Panel', 'Villa', 'Williamsburg', 'Wood Veneer']
+_thermafoil_or_metal_styles = ['Allegro', 'Alpha', 'Beta', 'Chateau Arch', 'Chateau Cathedral', 'Chateau Eyebrow', 'Classic Shaker', 'Cosmos', 'Dakota', 'Designer', 'Designer Arch', 'Designer Cathedral', 'Designer Eyebrow', 'Euro', 'Euro Arch', 'Euro Cathedral', 'Euro Eyebrow', 'Gamma', 'Glamour', 'Loft', 'Milano', 'New Yorker', 'New Yorker Eyebrow', 'Omega', 'Revere', 'Sahara', 'Shaker Beaded', 'Slab Mdf', 'Tempo', 'Traditional Shaker', 'Ultra', 'Ultra Arch', 'Ultra Cathedral', 'Ultra Eyebrow', 'Vogue Foil', 'Zephyr']
+
 #
 finish_options = ['Flyspeck', 'Grain Cracking', 'Heavy Rustic Distressing', 'Lite Weathered Distressing', 'Low Sheenrandom Scraped Edges', 'Rub Thru', 'Spot Crackle', 'Wormhole']
 special_finish_options = ['Biltmore Finishes', 'Brushed Glaze', 'Island Finish']
@@ -58,6 +58,7 @@ door_info = {
         'paint': ['Antique', 'Basil', 'Black', 'Butterscotch', 'Cherries Jubilee', 'Clover', 'Cocoa', 'Cocoa Bean', 'Country Pebble', 'Dylan Green', 'Fashion Gray', 'Fern', 'Fine Wine', 'Forest Green', 'Goldenrod', 'Indigo', 'Juniper', 'Misty Green', 'Sage', 'Shalimar', 'Soft White', 'Sunflower', 'Super White', 'Taupe', 'Twilight Blue', 'Washboard', 'Willow'],
         'style': _thermafoil_or_metal_styles,
     },    
+        
 }
 #    
 #
