@@ -127,7 +127,6 @@ INSTALLED_APPS = (
     'designfirst.catalog',
     'designfirst.barcode',
     'test',
-    'django_extensions',
 )
 
 
