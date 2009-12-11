@@ -1,4 +1,4 @@
-_all_manufacturers = [ 'executive', 'fieldstone' ]
+_all_manufacturers = [ 'executive', 'fieldstone', 'executive-impact' ]
 _cabinet_lines = {}
 
                 
@@ -15,8 +15,8 @@ class CabinetLine(object):
         self.door_info = module.door_info
         self.primary_finish_types = module.primary_finish_types
         self.finish_option_types = module.finish_option_types
-        self.primary_finish_set = set(reduce(list.__add__, [self.get_primary_finishes(ftype) for ftype in self.primary_finish_types]))
-        self.finish_options_set = set(reduce(list.__add__, [self.get_finish_options(otype) for otype in self.get_finish_option_types()]))
+        self.primary_finish_set = set(reduce(list.__add__, [self.get_primary_finishes(ftype) for ftype in self.primary_finish_types], []))
+        self.finish_options_set = set(reduce(list.__add__, [self.get_finish_options(otype) for otype in self.get_finish_option_types()], []))
         
     def _get_options_for_attribute(self, attr, species=None, style=None):
         """ 
