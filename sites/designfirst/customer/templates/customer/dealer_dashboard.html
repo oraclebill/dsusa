@@ -46,20 +46,22 @@ DesignFirst Customer Dashboard
 		     <tr><th class="table-head" colspan="5">Submitted Orders</th></tr>
 		     <tr>
   		       <th>id</th>
-		       <th>submitted</th>
 		       <th>project</th>
-		       <th>eta</th>
-		       <th>flags</th>
+		       <th>submitted</th>
+		       <th>status</th>
+		       <th>actions</th>
 		     </tr>
 		   </thead>
 		   <tbody>
 		     {% for order in submitted_orders %}
 		     <tr class="{% cycle 'even' 'odd' %}">
 		       	<td> {{ order.id }} </td> 
-				<td> {{ order.updated|date:"D, M j @ P T" }} </td> 
 				<td> {{ order.project_name }} </td> 
-				<td> {{ order.expected }} </td> 
-				<td> {{ order.flags }} </td> 
+				<td> {{ order.submitted }} </td> 
+				<td> {{ order.get_status_display }} </td> 
+				<td> 
+    	       		<a href="{% url print-order order.id %}">Print</a>
+				</td> 
 		     </tr>
 		     {% endfor %}
 		   </tbody>
@@ -67,9 +69,9 @@ DesignFirst Customer Dashboard
 		</div>
 		
 		
-		<!-- archived orders table -->
-		<div id="dead_order_table" class="block">
-		   <table summary="accepted and rejected orders">
+		<!-- completed orders table -->
+		<div id="completed_order_table" class="block">
+		   <table summary="completed orders">
 		   <thead>
 		     <tr><th class="table-head" colspan="5">Completed Orders</th></tr>
 		     <tr>
@@ -77,6 +79,7 @@ DesignFirst Customer Dashboard
 		       <th>project</th>
 		       <th>rating</th>
 		       <th>processing time</th>
+			   <th>actions</th>
 		     </tr>
 		   </thead>
 		   <tbody>
@@ -86,6 +89,9 @@ DesignFirst Customer Dashboard
 				<td> {{ order.project_name }} </td> 
 				<td> {{ order.get_client_review_rating_display }} </td> 
 				<td> {{ order.completed|timesince:order.submitted }} </td>
+				<td>    	       		
+					<a href="{% url print-order order.id %}">Print</a>
+				</td>
 		     </tr>
 		     {% endfor %}
 		   </tbody>
