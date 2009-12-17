@@ -1,0 +1,22 @@
+{% extends "customer/dealer_base.html" %}
+
+{% block title %}Confirm Order Deletion{% endblock %}
+
+{% block content %}
+<div class='prefix_5 suffix_5 grid_6' >
+	<h1> Confirm Order Deletion </h1>
+</div>
+
+<div class="grid_7 prefix_5 suffix_4">
+	<div class="block">
+	    <p>Are you sure you want to delete order #{{ order.id }} ({{ order.project_name }})?</p>
+	    <form action="" method="post">{% csrf_token %}
+	    <div>
+	    <input type="hidden" name="post" value="yes" />
+	    <input type="submit" value="Yes, I'm sure" />
+	    </div>
+	    </form>
+	</div>
+</div>
+
+{% endblock %}

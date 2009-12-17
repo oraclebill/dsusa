@@ -154,6 +154,23 @@ def submit_order(request, orderid):
             return HttpResponseRedirect(reverse('submit-order-completed', args=[order.id]))              
     return dict(order=order, form=form)
     
+    
+@login_required
+def delete_order(request, orderid, return_to):
+    # verify permissions
+    order = WorkingOrder.objects.get(pk=orderid)
+    user = request.user
+    if order.owner != request.user:
+        if not user.has_perm('workingorder.delete'):
+            return HttpResponseForbidden('You do not have permission to delete this order.')
+    context = dict(order=order)
+    if request.POST.get('post'):
+        order.delete()
+        return HttpResponseRedirect(return_to)
+        
+    return render_to_response('orders/confirm_delete.html', context, context_instance=RequestContext(request))
+        
+    
 @login_required
 @render_to('orders/confirm_submission.html')
 def post_submission_details(request, orderid):
