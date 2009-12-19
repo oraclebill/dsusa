@@ -5,12 +5,6 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 import models
 
-def active_dealer_only(view):
-    return user_passes_test(
-        lambda u: u.get_profile().account.status == models.Dealer.Const.ACTIVE,
-        login_url='/access-denied/'
-    )(view)
-
 
 class DealerBackend(backends.ModelBackend):
     """

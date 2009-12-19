@@ -22,6 +22,14 @@ urlpatterns = patterns('',
     (r'^admin/',    include(admin.site.urls)),
 )
 
+# site housekeeping patterns
+urlpatterns += patterns('',
+    url(r'^suspended/$', direct_to_template,  { 'template': 'account_suspended.html' }, name='account-suspended'),
+    url(r'^inactive/$', direct_to_template,   { 'template': 'account_inactive.html' }, name='account-inactive'),
+    url(r'^denied/$', direct_to_template,     { 'template': 'access_denied.html' }, name='access-denied'),
+)
+
+
 from django.conf import settings
 if settings.DEBUG and settings.LOCAL:
     urlpatterns += patterns('',

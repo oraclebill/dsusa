@@ -11,6 +11,7 @@ from django.db import models
 from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from customer.models import Dealer
 from utils.pdf import pdf2ppm
 from utils.fields import DimensionField
 from utils.storage import AppStorage
@@ -65,6 +66,8 @@ class OrderBase(models.Model):
         )
     
     owner = models.ForeignKey(User)
+#    creator = models.ForeignKey(User, related_name='orders_created')   # will replace 'owner'..
+#    account = models.ForeignKey(Dealer)    
     status = models.PositiveSmallIntegerField(_('Status'), choices=Const.STATUS_CHOICES, default=Const.DEALER_EDIT)
 
     #whj:  new fields 11/18/09 to support tracking and fax correlation

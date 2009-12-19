@@ -24,7 +24,7 @@ class WizardBase(object):
         self.request = request
         
         #Permission check
-        if self.order.owner.id != request.user.id:
+        if self.order.owner.id != request.user.id and not request.user.is_staff:
             return HttpResponseForbidden("Not allowed to update this order")
         
         if complete:

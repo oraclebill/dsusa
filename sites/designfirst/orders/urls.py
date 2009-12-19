@@ -11,8 +11,10 @@ urlpatterns = patterns('orders.views',
     url(r'^new/$', 'create_order', name='new_order'),
     url(r'^display/(\d+)/$', 'review_order', name='generic-order-review'),
 
-    url(r'^complete/(\d+)/$', 'submit_order', name='submit-order'), # e.g. checkout
-    url(r'^complete/(\d+)/details/$', 'post_submission_details', name='submit-order-completed'), # e.g. checkout acknowledgement
+    url(r'^submit/(\d+)/$', 'submit_order', name='submit-order'), # e.g. checkout
+    url(r'^submit/(\d+)/details/$', 'post_submission_details', name='submit-order-completed'), # e.g. checkout acknowledgement
+
+    url(r'^complete/(\d+)/$', 'complete_order', name='complete-order'), 
     
     url(r'^ajax/wood/$', 'ajax_wood',               name='ajax-door-material'),
     url(r'^ajax/manufacturer/$', 'ajax_manufacturer',               name='ajax-manufacturer'),

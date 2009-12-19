@@ -6,11 +6,14 @@ register = template.Library()
 
 @register.inclusion_tag('menu/menu.html', takes_context=True)
 def menu(context, menu_name):
-    if callable(menus[menu_name]):
-        menus[menu_name] = menus[menu_name]()
+    menu_item = menus.get(menu_name, None)
+    if menu_item and callable(menu_item):
+        menu_item = menu_item()
+    elif not menu_item:
+        menu_item = '#'
     return {
         'current': context['request'].path,
-        'menu': menus[menu_name],
+        'menu': menu_item,
     }
 
 

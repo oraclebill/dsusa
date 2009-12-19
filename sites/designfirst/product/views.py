@@ -24,7 +24,6 @@ from utils import make_site_url
 from accounting.models import register_purchase
 from models import Product
 from customer.models import Invoice
-from customer.auth import active_dealer_only
     
 import cart as shcart
     
@@ -63,17 +62,14 @@ def product_detail(request, prodid):
         locals(), context_instance=RequestContext(request) )
 
 @login_required
-@active_dealer_only
 def add_cart_product(request, prodid):
     pass
 
 @login_required
-@active_dealer_only
 def remove_cart_product(request, prodid):
     pass
     
 @login_required
-@active_dealer_only
 def select_products(request, template="product/product_selection.html", extra_context={}):
     "Provides the template with a product list and the cart item list, combined for users purchase."
     user = request.user
@@ -145,7 +141,6 @@ def render_product_list(request, template_name='product/product_list_fragment.ht
     return render_to_response(template_name, locals() )                                    
         
 @login_required
-@active_dealer_only
 def confirm_selections(request):
     "Display the selected products and pricing info and identify payment mechanism."
     account = request.user.get_profile().account
@@ -159,7 +154,6 @@ def confirm_selections(request):
 
 
 @login_required
-@active_dealer_only
 def paypal_checkout(request,  
                     collection_template='product/paypal_checkout.html', 
                     confirmation_template='product/paypal_checkout.html', 
@@ -257,7 +251,6 @@ def paypal_checkout(request,
         
         
 @login_required
-@active_dealer_only
 @transaction.commit_on_success
 def checkout(request, success_url=''):
     """

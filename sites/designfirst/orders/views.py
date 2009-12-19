@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect,\
-    HttpResponseForbidden
+    HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -24,7 +24,6 @@ from product.models import Product
 from product.views import paypal_checkout
 from utils.views import render_to
 from accounting.models import register_design_order
-from customer.auth import active_dealer_only
 import summary 
 
 # local app imports
@@ -46,14 +45,18 @@ def create_order(request, *args):
     """
     Create a new order.
     """
-    account = request.user.get_profile().account  
+    
+    # prevent staff from creating orders until UI support available
+    if not request.account:
+        return HttpResponseNotAllowed("Invalid Action - Not Allowed")
+    
     tracking_code = "".join([random.choice(LETTERS_AND_DIGITS) for x in xrange(15)])
              
     if request.method == 'POST':
         form = NewDesignOrderForm(request.POST, request.FILES)
         if form.is_valid():
             order = form.save(commit=False)
-            order.client_account = account #TODO: there is actually no client_account in working order
+            order.client_account = request.account #TODO: there is actually no client_account in working order
             order.owner = request.user
             order.save()                     
             floorplanfile = request.FILES.get('floorplan', None)   
@@ -65,13 +68,17 @@ def create_order(request, *args):
     else:
         form = NewDesignOrderForm(initial=dict(tracking_code=tracking_code))
     
-    return dict(account=account, form=form, tracking_code=tracking_code)
+    return dict(account=request.account, form=form, tracking_code=tracking_code)
 
 @login_required
 @render_to('orders/order_review.html')
 def review_order(request, orderid):
-    account = request.user.get_profile().account  
-    order = request.user.workingorder_set.get(pk=orderid)
+    
+    if request.user.is_staff:
+        order = WorkingOrder.objects.get(pk=orderid)
+    else:
+        order = request.user.workingorder_set.get(pk=orderid)
+        
 #    user = request.user
     if request.method == 'POST':
         form = SubmitForm(request.POST, instance=order)
@@ -91,7 +98,7 @@ def print_order(request, id, template='orders/print_order.html', include_summary
             return HttpResponseForbidden("Not allowed to view this order")
         account = order.owner.get_profile().account
     else:
-        account = request.user.get_profile().account
+        account = request.account
         
     context = {'order': order, 'account': account }
     context['order_code'] = '%s-%03d-%03d' % (ORDER_PREFIX, account.id, order.id)
@@ -118,13 +125,13 @@ def submit_order(request, orderid):
     
     TODO - error handling, logging, 
     """
-    user = request.user
-    if user is None or not user.is_authenticated():
-        return HttpResponseRedirect('/')
- 
-    profile = user.get_profile()
-    account = profile.account
-    order = user.workingorder_set.get(id=orderid) 
+    if request.user.is_staff:
+        order = WorkingOrder.objects.get(pk=orderid)
+    else:
+        order = request.user.workingorder_set.get(id=orderid) 
+
+    # always submit orders in the context of proper account
+    account = order.owner.get_profile().account
     
     if request.method == 'GET': 
         form = SubmitForm(instance=order)
@@ -171,6 +178,11 @@ def delete_order(request, orderid, return_to):
     return render_to_response('orders/confirm_delete.html', context, context_instance=RequestContext(request))
         
     
+    
+def complete_order(request, orderid):
+    pass
+
+
 @login_required
 @render_to('orders/confirm_submission.html')
 def post_submission_details(request, orderid):
@@ -317,7 +329,6 @@ class Wizard(WizardBase):
         return summary.order_summary(self.order, summary.STEPS_SUMMARY)
 
 @login_required
-@active_dealer_only
 def wizard(request, id, step=None, complete=False):
     return Wizard()(request, id, step, complete)
 

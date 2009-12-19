@@ -34,11 +34,10 @@ from orders import forms as wf
 ##
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
-from models import Dealer, UserProfile  
+from models import Dealer, Invoice, UserProfile  
 from django.core import context_processors
 import forms
 from forms import DesignOrderAcceptanceForm, DealerProfileForm
-from auth import active_dealer_only
 
 
 #TODO: need to be able to delete orders in dashboard
@@ -53,15 +52,11 @@ def get_current_order(request, orderid):
     
     TODO
     """
-    
-    user = request.user
-    if user.is_authenticated():
-        profile = user.get_profile()
-        account = profile.account
-        # order = account.created_orders.get(id=orderid)
-        order = user.workingorder_set.get(id=orderid)
-    else:
-        raise PermissionDenied("You're not allowed here - anonymous users go home!")
+
+    try:
+        order = request.order_queryset.get(id=orderid)
+    except:
+        raise PermissionDenied("Access to orderid %d denied" % orderid)
     
     return order
     
@@ -82,10 +77,6 @@ def home(request):
 #    return render_to_response( 'registration/login.html',context_instance=RequestContext(request) )
     return HttpResponseRedirect(reverse('home'))
 
-def view_profile(request):
-    user = request.user
-    return render_to_response('profiles/dealer_profile.html', user, user.get_profile().account)
-
 def edit_profile(request, template='profiles/edit_profile.html', extra_context={}):
     """
     Display and edit user profile.
@@ -96,7 +87,6 @@ def edit_profile(request, template='profiles/edit_profile.html', extra_context={
          - notification preferences
     """
     user = request.user;
-    account = user.get_profile().account
     
     notice_types = NoticeType.objects.all()
     notice_settings = NoticeSetting.objects.filter(user=request.user)
@@ -118,7 +108,7 @@ def edit_profile(request, template='profiles/edit_profile.html', extra_context={
         else:
             form = DealerProfileForm(instance=user)
                     
-    context = dict(account=account, form=form, notice_types=notice_types, notice_settings=notice_settings)
+    context = dict(account=request.account, form=form, notice_types=notice_types, notice_settings=notice_settings)
     context.update(extra_context)
     
     return render_to_response( template, context, context_instance=RequestContext(request))
@@ -131,12 +121,13 @@ def dealer_dashboard(request):
     TODO - document
     """
     
-    user = request.user    
-    account = request.user.get_profile().account
-    
-    # orders = account.created_orders.all()
-    orders = user.workingorder_set.all()
-    invoices = account.invoice_set.order_by('-created')[:5]
+    if request.account:    
+        orders = request.user.workingorder_set.all()
+        invoices = request.account.invoice_set.order_by('-created')[:5]
+    else:
+        orders = WorkingOrder.objects.all()
+        invoices = Invoice.objects.order_by('-created')[:5]
+        
     
     working_orders = orders.filter( status__exact = OrderBase.Const.DEALER_EDIT )
     submitted_orders = orders.filter( status__in = [ OrderBase.Const.SUBMITTED, OrderBase.Const.ASSIGNED ] )
@@ -176,112 +167,8 @@ def process_form(form_class, order_inst, data=None, files=None, model_class=Work
         name = '%s_form' % model.__name__.lower() 
         return (name, form)
 
-
-@login_required
-@active_dealer_only
-def edit_order_detail(request, order_id):
-    """
-    Editable detailed design order display. 
-
-    This view constructs a set of subforms based on current order.    
-
-    We attempt to give the template some flexibility with respect to how to manage
-    data entry by decomposing the field set of the design order into a number of subforms.
-
-    We pass the following to the template:
-     - request context (of course)
-     - order: the current DesignOrder object
-     - formlist: a list of form objects for the field groups that comprise a DesignOrder
-    """    
-    user = request.user
-    if user is None or not user.is_authenticated():
-        return HttpResponseRedirect('/')
- 
-    profile = user.get_profile()
-    account = profile.account
-    # order = account.created_orders.get(id=order_id)  # will throw if current user didn't create current order
-    order = user.workingorder_set.get(id=order_id)  # will throw if current user didn't create current order
-                        
-    # if this is an update, determine which subform to apply and validate
-    form_name = None
-    if request.method == 'POST': 
-        try:
-            form_name = request.POST['_formname']
-        except:
-            raise Exception('Invalid form: missing required data!')   
-                     
-    formlist = []
-    context = RequestContext(request)  
-         
-    for form_class in ORDER_SUBFORMS:
-        if form_name and form_class.name == form_name:
-            name,obj = process_form(form_class, order, request.POST, request.FILES)            
-        else:
-            name,obj = process_form(form_class, order) 
-            
-        if name:
-            context[name] = obj
-        else:
-            formlist.append(obj)
-
-    # context control...
-    context['order'] = order
-    context['formlist'] = formlist
-    
-    return render_to_response( "customer/dealer_order_detail.html", context_instance=context )
-    
-
-@login_required
-def accept_floorplan_template_upload(request, orderid):
-    pass
-    
-
-@login_required
-def accept_floorplan_template_fax(request, orderid):
-    pass
-    
-    
-@login_required
-@active_dealer_only
-@transaction.commit_on_success
-def dealer_submit_order(request, orderid, form_class=wf.SubmitForm):
-    """
-    Change the order status from CLIENT_EDITING to CLIENT_SUBMITTED, and notify waiters.
-    
-    TODO - error handling, logging, 
-    """
-    user = request.user
-    if user is None or not user.is_authenticated():
-        return HttpResponseRedirect('/')
- 
-    profile = user.get_profile()
-    account = profile.account
-    order = user.workingorder_set.get(id=orderid) 
-    
-    if request.method == 'GET':
-        form = form_class(instance=order)
-    else:
-        form = form_class(request.POST, instance=order)
-        if form.is_valid():
-            order = form.save()            
-            account = request.user.get_profile().account
-            cost = order.cost or Decimal()  
-            register_design_order(user, account, order, cost)
-            
-            # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
-            return HttpResponseRedirect(reverse('customer.views.dealer_dashboard') )              
-              
-    class FakeWizard(object):
-        def __init__(self, order):
-            self.order = order
-            
-    return render_to_response('orders/order_review.html',
-                dict(order=order, form=form, orders=FakeWizard(order)),
-                context_instance=RequestContext(request))
-    
         
 @login_required
-@active_dealer_only
 def dealer_accept_order(request, orderid):
     order = get_current_order(request, orderid)
     if request.method == "GET":
@@ -300,7 +187,6 @@ def dealer_accept_order(request, orderid):
         context_instance=RequestContext(request) )
     
 @login_required
-@active_dealer_only
 def dealer_reject_order(request, orderid):
     ##FIXME dup
     order = get_current_order(request, orderid)
@@ -316,31 +202,21 @@ def dealer_reject_order(request, orderid):
         
     return render_to_response( "customer/design_rating_form.html", locals(),
         context_instance=RequestContext(request) )
-    
-@login_required
-@active_dealer_only
-def remove_order_appliance(request, orderid, appliance_key):
-    order = get_current_order(request, orderid)
-    # verify appliance is child of order
-    if request.method == "POST":
-        try:
-            appliance = order.appliances.get(pk=appliance_key)
-            appliance.delete()
-            appliance.save()
-        except Appliance.DoesNotExist:
-            raise RuntimeError('Appliance does not exist!')
-    return HttpResponseRedirect( reverse('edit_order', args=[orderid]) )
-    
+        
     
 from django.views.generic.list_detail import object_list, object_detail
 @login_required
 def invoice_list(request, queryset):
-    account = request.user.get_profile().account
-    queryset = queryset.filter(customer=account)
+    if request.account:
+        queryset = queryset.filter(customer=request.account)
+    elif not request.user.is_staff:
+        return HttpResponseForbidden("2.1")
     return object_list(request,queryset)
 
 @login_required
 def display_invoice(request, queryset, object_id):
-    account = request.user.get_profile().account
-    queryset = queryset.filter(customer=account)
+    if request.account:
+        queryset = queryset.filter(customer=request.account)
+    elif not request.user.is_staff:
+        return HttpResponseForbidden("2.2")
     return object_detail(request,queryset,object_id=object_id)
