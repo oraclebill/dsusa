@@ -1,7 +1,7 @@
 from customer import models as customer
 from django.core.mail import mail_managers, send_mail
 from django.core.urlresolvers import reverse
-from django.db.models import signals as dbsignals
+from django.db.models import ObjectDoesNotExist, signals as dbsignals 
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_noop as _
 from notification import models as notification
@@ -101,7 +101,12 @@ def new_order_notification(sender, **kwargs):
         )
         return        
     notification.send([order.owner], 'order_submission_ack', locals())
-    mail_managers('[NOTICE] Order #%s submitted for %s on %s' % (order.pk, order.owner.get_profile().account.legal_name, order.submitted), '')
+    try:
+        order_owner = '"%s"' % order.owner.get_profile().account.legal_name
+    except ObjectDoesNotExist:
+        order_owner = '"%s" (staff)' % order.owner.username        
+        
+    mail_managers('[NOTICE] Order #%s submitted for %s on %s' % (order.pk, order_owner, order.submitted), '')
 order_signals.status_changed.connect(new_order_notification)        
     
 def completed_order_notification(sender, **kwargs):

@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.text import get_valid_filename
 from django.core.files.base import File as DjangoFile
+from django.core import exceptions
 from django.db.transaction import commit_on_success
 from django.db import models
 from django.utils.datastructures import SortedDict
@@ -164,7 +165,12 @@ class BaseOrder(models.Model):
         return ', '.join(flags)
 
     def save(self, force_insert=False, force_update=False):
-        logger.debug('saving ... %s' % self)        
+        if not self.project_name:
+            raise exceptions.ValidationError('All orders must contain a project name')
+        if not self.account_code:
+            raise exceptions.ValidationError('All orders must contain an account code')
+        if not (self.status and self.status in [first for (first,second) in self.Const.STATUS_CHOICES]):
+            raise exceptions.ValidationError('All orders must have a valid status')
         changed, old_status = self._check_status_change()
         super(BaseOrder,self).save(force_insert, force_update)
         if None == old_status: # new order
@@ -179,7 +185,7 @@ class BaseOrder(models.Model):
         old_status = None
         new_status = self.status
         try:
-            old_status = BaseOrder.objects.get(pk=self.id).status
+            old_status = self.__class__._default_manager.get(pk=self.id).status
             changed = new_status != old_status
         except self.DoesNotExist:
             changed = True                

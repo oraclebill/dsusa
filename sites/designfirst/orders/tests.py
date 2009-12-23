@@ -3,11 +3,11 @@ Tests basic functionality of the orders module.
 """
 from django.conf import settings
 from django.core.urlresolvers import *
-from django.db import models
-from django.test import TestCase, TransactionTestCase
+from django.db import models, transaction
+from django.test import TestCase, TransactionTestCase as BaseTransactionTestCase
 from django.contrib.auth.models import User
 from django.http import HttpRequest
-
+from django.core.exceptions import ValidationError
 
 from customer.models import Dealer, create_basic_dealer_account 
 
@@ -20,10 +20,25 @@ PRO_PRICE = 85
 PPACK_PRICE = 125
 RUSH_FEE = 20
 
+
+class TransactionTestCase(BaseTransactionTestCase):
+    def _fixture_teardown(self):
+        transaction.rollback()
+    
 class OrderTests(TestCase):
     def setUp(self):
         self.testuser = User.objects.create_user('test-user', 'test@test.com', 'test-user')
 
+    def test_save_hits_database(self):
+        order = WorkingOrder()
+        order.owner = self.testuser
+        order.account_code = 'test-account-code'
+        order.project_name = 'test-project-name'
+        order.save()
+        orderid = order.id
+        
+        self.failUnless(WorkingOrder.objects.get(pk=orderid))
+        
     def test_ownerless_order(self):
         
         # fail if owner not set
@@ -42,61 +57,74 @@ class OrderTests(TestCase):
         order = WorkingOrder()
         order.account_code = 'test-account-code'
         order.owner = self.testuser
-        self.failUnlessRaises(Exception, order.save)
+        self.failUnlessRaises(ValidationError, order.save)
 
         order = WorkingOrder(owner=self.testuser, account_code='test-account-code')
-        self.failUnlessRaises(Exception, order.save)
+        self.failUnlessRaises(ValidationError, order.save)
     
-#    def test_accountless_order(self):
-#        # fail if owner not set
-#        order = WorkingOrder()
-#        #order.account_code = 'test-account-code'
-#        order.project_name = 'test-project-name'
-#        self.failUnlessRaises(Exception, order.save)
-#    
-#        order = WorkingOrder(owner=self.testuser, project_name = 'test-project-name')
-#        order.save()
-#
-#    def test_minimal_order(self):
-#        order = WorkingOrder()
-#        order.owner = self.testuser
-#        order.account_code = 'test-account-code'
-#        order.project_name = 'test-project-name'
-#        order.save()
-#        
-#        order = WorkingOrder(owner=self.testuser, account_code='test-account-code', project_name = 'test-project-name')
-#        order.save()
-#        
-#    def test_submittable_order(self):
-#        order = WorkingOrder()
-#        order.owner = self.testuser
-#        order.account_code = 'test-account-code'
-#        order.project_name = 'test-project-name'
-#        order.save()
-#        
-#        order = WorkingOrder(owner=self.testuser, account_code='test-account-code', project_name = 'test-project-name')
-#        order.save()
-#                        
-#    class ChangeCounter(object):
-#        def __init__(self):
-#            self.counter = 0
-#            self.last_sender = None
-#            self.last_kwargs = None
-#
-#        def trigger(self, sender, **kwargs):
-#            self.counter += 1
-#            self.last_sender = sender
-#            self.last_kwargs = kwargs
-#
-#    def test_status_change(self):
-#        cc = self.ChangeCounter()                
-#        status_changed.connect(cc.trigger)
-#        count = cc.counter
-#        order = WorkingOrder()
-#        order.owner = self.testuser
-#        order.save()
-#        
-                        
+    def test_accountless_order(self):
+        # fail if owner not set
+        order = WorkingOrder()
+        #order.account_code = 'test-account-code'
+        order.project_name = 'test-project-name'
+        self.failUnlessRaises(ValidationError, order.save)
+    
+        order = WorkingOrder(owner=self.testuser, project_name = 'test-project-name')
+        self.failUnlessRaises(ValidationError, order.save)
+
+    def test_minimal_order(self):
+        order = WorkingOrder()
+        order.owner = self.testuser
+        order.account_code = 'test-account-code'
+        order.project_name = 'test-project-name'
+        order.save()
+        
+        order = WorkingOrder(owner=self.testuser, account_code='test-account-code', project_name = 'test-project-name')
+        order.save()
+        
+
+    def test_status_change(self):
+        # create a listener for the 'status_changed' event
+        update = [0, None]        
+        def handle_event(sender, **kwargs):
+            print 'fired...'
+            update[0] += 1
+            update[1] = kwargs
+
+        def validate_order_status(inst, count, old, new):
+            self.failUnlessEqual(inst.status, new)
+            self.failUnlessEqual(update[1]['old'], old)
+            self.failUnlessEqual(update[1]['new'], new)
+            self.failUnlessEqual(update[0], count)
+            
+        # register as a listener
+        status_changed.connect(handle_event)
+        self.failUnlessEqual(update[0], 0, 'initially counter is zero')
+        
+        # create a new order, verify counter incremented
+        save_counter = 0
+        order = WorkingOrder(owner=self.testuser, account_code='test-account-code', project_name = 'test-project-name')
+        order.save(); save_counter += 1    # 1   
+        validate_order_status(order, save_counter, None, BaseOrder.Const.DEALER_EDIT)
+        
+        # retrieve a copy of the order, verify counter incremented only after save
+        order_copy = WorkingOrder.objects.get(pk=order.id)
+        order_copy.status = BaseOrder.Const.SUBMITTED
+        self.failUnlessEqual(update[0], save_counter)
+        order_copy.save(); save_counter += 1   # 2    
+        validate_order_status(order_copy, save_counter, BaseOrder.Const.DEALER_EDIT, BaseOrder.Const.SUBMITTED)
+
+        # retrieve a copy of the order, verify counter not incremented  when update doesn't modify value
+        copy2 = WorkingOrder.objects.get(pk=order.id)
+        copy2.status = BaseOrder.Const.SUBMITTED
+        copy2.save(); save_counter += 1   # 3  
+        self.failUnlessEqual(update[0], save_counter - 1)  # this save shouldn't have counted  
+        
+        # update original order.. again..
+        order.status = BaseOrder.Const.ASSIGNED
+        order.save()
+        validate_order_status(order, save_counter, BaseOrder.Const.SUBMITTED, BaseOrder.Const.ASSIGNED)
+        
 #class ManagerTests(TestCase):
 class ManagerTests():
     
