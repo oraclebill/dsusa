@@ -4,6 +4,7 @@ from decimal import Decimal
 import logging
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db import models, transaction
 from django.db.models import permalink
@@ -220,4 +221,24 @@ class InvoiceLine(models.Model):
     @property
     def line_credit(self):
         return self.unit_credit * self.quantity        
-        
+    
+@transaction.commit_on_success
+def create_basic_dealer_account(dealer_name, username, email, account_status=Dealer.Const.PENDING, initial_balance=0, password=None, company_mail=None):
+    """
+    Create a skeletal Dealer, User and UserProfile.
+    """
+    user = User.objects.create_user(username, email, password)
+    company = Dealer.objects.create(
+                legal_name=dealer_name,
+                status=account_status,
+                email=company_mail or email,
+                credit_balance=initial_balance
+    )
+    profile = UserProfile.objects.create(
+                user = user,
+                account = company,
+                primary = True
+    )
+    return user
+
+

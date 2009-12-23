@@ -10,23 +10,16 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf.urls.defaults import *
 
-from models import Dealer, UserProfile
+from models import Dealer, create_basic_dealer_account 
 import views as cust_views
 
 def create_dealer_and_user(name, status):
-    user = User.objects.create_user(name, '%s@test.com' % name, name)
-    company = Dealer.objects.create(
-                legal_name=' %s - test dealer' % name,
-                status=status,
-                email='%s_dealer@test.com' % name,
-                credit_balance=500
-    )
-    profile = UserProfile.objects.create(
-                user = user,
-                account = company,
-                primary = True
-    )
-                         
+    email = '%s@test.com' % name
+    legal_name = ' %s - test dealer' % name
+    company_mail = '%s_dealer@test.com' % name
+    return create_basic_dealer_account(legal_name, name, email, account_status=status, initial_balance=500, password=name, company_mail=company_mail)
+
+
 class TestUserClasses(TestCase):
             
     def setUp(self):
@@ -35,10 +28,6 @@ class TestUserClasses(TestCase):
         name = 'plain-user'
         user = User.objects.create_user(name, '%s@test.com' % name, name)
         #                
-        name = 'staff-user'
-        user = User.objects.create_user(name, '%s@test.com' % name, name)
-        user.is_staff = True
-        user.save()        
                         
     def test_view_with_login(self):
         "Request a page that is protected with @login_required"
@@ -89,15 +78,22 @@ class TestUserClasses(TestCase):
         self.assertContains(response, reverse('create-order'))
         self.assertContains(response, response.context['request'].user.get_profile().account.legal_name)
         # 
-            
     
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+    def test_admin_access(self):
+        dealer1 = create_dealer_and_user('dealer1', Dealer.Const.ACTIVE)
+        dealer1.workingorder_set.create()
+        
+        dealer2 = create_dealer_and_user('dealer2', Dealer.Const.ACTIVE)
 
+        name = 'staff-user'
+        user = User.objects.create_user(name, '%s@test.com' % name, name)
+        user.is_staff = True
+        user.save()       
+        self.failUnless(self.client.login(username=name, password=name))
+        response = self.client.get('')
+ 
+
+    
 __test__ = {"doctest": """
 Another way to test that 1 + 1 is equal to 2.
 
