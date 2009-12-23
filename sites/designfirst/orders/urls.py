@@ -8,7 +8,7 @@ urlpatterns = patterns('orders.views',
 
     url(r'^print/(\w+)/fax-cover/', 'print_order', {'template': 'orders/fax-cover.html', 'include_summary': False}, name='fax-cover'),
 
-    url(r'^new/$', 'create_order', name='new_order'),
+    url(r'^new/$', 'create_order', name='create-order'),
     url(r'^display/(\d+)/$', 'review_order', name='generic-order-review'),
 
     url(r'^submit/(\d+)/$', 'submit_order', name='submit-order'), # e.g. checkout
