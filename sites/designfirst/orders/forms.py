@@ -15,7 +15,26 @@ from models import OrderBase, WorkingOrder,  Attachment, Appliance, Moulding
 NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
 
 PRO_DESIGN_PROD_ID = 1          ## Yes, very ugly..
-PRESENTATION_PACK_PROD_ID = Product.objects.get(name__icontains='Presentation Pack', product_type=Product.Const.BASE).id
+PRESENTATION_PACK_PROD_ID = lambda : Product.objects.get(name__icontains='Presentation Pack', product_type=Product.Const.BASE).id
+
+## TODO: price order based on dealer
+def price_order(dealer, product, options=[]):
+    #TODO: optimize - prices probably don't change very often so prices should be cached..
+    product = int(product)
+    price = Product.objects.get(pk=product).base_price
+    for key in options:
+        if key: price += Product.objects.get(pk=key).base_price
+    return price    
+
+def base_product_choices():
+    return Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')
+ 
+#TODO: figure out better programmatic method for finding rush and revision prods.
+def procesing_option_choices():
+    ret = list(Product.objects.filter(product_type=Product.Const.OPTION, name__icontains='rush').values_list('id', 'name')) 
+    ret.insert(0, ('', ''))
+    return ret
+ 
 
 
 
@@ -27,20 +46,6 @@ class NewDesignOrderForm(forms.ModelForm):
     project_type = forms.ChoiceField(choices=OrderBase.Const.PROJECT_TYPE_CHOICES)
     floorplan = forms.FileField(label='Floorplan File', required=False)
     
-## TODO: do this right..
-def price_order(dealer, product, options=[]):
-    #TODO: optimize - prices probably don't change very often so prices should be cached..
-    product = int(product)
-    price = Product.objects.get(pk=product).base_price
-    for key in options:
-        if key: price += Product.objects.get(pk=key).base_price
-    return price    
-
-base_product_choices = Product.objects.filter(product_type=Product.Const.BASE).values_list('id', 'name')
-#TODO: figure out better programmatic method for finding rush and revision prods.
-#revision_product_choices = Product.objects.filter(product_type=Product.Const.OPTION, name__icontains='revision').values_list('id', 'name')
-procesing_option_choices = list(Product.objects.filter(product_type=Product.Const.OPTION, name__icontains='rush').values_list('id', 'name')) 
-procesing_option_choices.insert(0, ('', ''))
 #TODO: support for revisions..
 
 class SubmitForm(forms.ModelForm):
@@ -62,15 +67,15 @@ class SubmitForm(forms.ModelForm):
 #    project_type = forms.ChoiceField(widget=forms.Select(attrs={'readonly':'readonly'}))
     
     # will determine 'quoted_cabinet_list, color_views, etc ...
-    design_product = forms.ChoiceField(choices=base_product_choices)
-    processing_option = forms.ChoiceField(choices=procesing_option_choices, required=False)
+    design_product = forms.ChoiceField(choices=base_product_choices())
+    processing_option = forms.ChoiceField(choices=procesing_option_choices(), required=False)
 
     def clean(self):
         cleaned_data = self.cleaned_data
         order = self.instance
         #
         if not order.attachments.filter(type__exact=Attachment.Const.FLOORPLAN):
-            raise forms.ValidationError('Your order has no attachments! We at least need a flooplan image to continue...')        
+            raise forms.ValidationError('Your order has no attachments! We at least need a floorplan image to continue...')        
         #
         dealer = order.owner.get_profile().account
         try:
@@ -86,7 +91,7 @@ class SubmitForm(forms.ModelForm):
         #
         order = self.instance
         order.rush = bool(self.cleaned_data['processing_option'])
-        premium_selected = (int(self.cleaned_data['design_product']) == PRESENTATION_PACK_PROD_ID)
+        premium_selected = (int(self.cleaned_data['design_product']) == PRESENTATION_PACK_PROD_ID())
         order.color_views = order.quoted_cabinet_list  = order.elevations = premium_selected
         return super(SubmitForm, self).save(commit)
              

@@ -30,7 +30,6 @@ from notification.models import NoticeType, NoticeSetting
 from accounting.models import register_design_order
 from product.models import Product
 from orders.models  import OrderBase, WorkingOrder, Appliance, Moulding, Attachment
-from orders import forms as wf
 ##
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
@@ -136,36 +135,6 @@ def dealer_dashboard(request):
         
     return render_to_response( 'customer/dealer_dashboard.html', locals(),                                
                                 context_instance=RequestContext(request) ) 
- 
-
-ORDER_SUBFORMS = [ wf.ManufacturerForm, wf.HardwareForm, wf.MouldingForm, wf.SoffitsForm, 
-                    wf.DimensionsForm, wf.CornerCabinetForm, wf.InteriorsForm, 
-                    wf.MiscellaneousForm, wf.ApplianceForm, wf.AttachmentForm ]
-                    # wf.MiscellaneousForm,  ]
-
-# little util to help with form processing
-def process_form(form_class, order_inst, data=None, files=None, model_class=WorkingOrder):
-    # some of the forms need to always be instantiated unbound, and will be in 
-    model = form_class._meta.model
-    modelmatch = model == model_class
-    if modelmatch:
-        inst = order_inst
-    else:
-        inst = model()                
-    if data or files:
-        form = form_class(data, files, instance=inst )
-        if form.is_valid():
-            obj = form.save(commit=False)      
-            obj.order = order_inst
-            obj.save()            
-    else:
-        form = form_class(instance=inst)  
-
-    if modelmatch:
-        return (None, form)
-    else:
-        name = '%s_form' % model.__name__.lower() 
-        return (name, form)
 
         
 @login_required
