@@ -1,9 +1,7 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.decorators import permission_required
 from django.views.generic.list_detail import object_detail
 from django.views.generic.simple import direct_to_template
-
 
 import menus  # remove this import and any page with a {% menu ... %} tag fails.. pretty damn random.. 
 
@@ -24,6 +22,7 @@ urlpatterns = patterns('',
 
 # site housekeeping patterns
 urlpatterns += patterns('',
+    url(r'^pending/$', direct_to_template,  { 'template': 'account_pending.html' }, name='account-pending'),
     url(r'^suspended/$', direct_to_template,  { 'template': 'account_suspended.html' }, name='account-suspended'),
     url(r'^inactive/$', direct_to_template,   { 'template': 'account_inactive.html' }, name='account-inactive'),
     url(r'^denied/$', direct_to_template,     { 'template': 'access_denied.html' }, name='access-denied'),
