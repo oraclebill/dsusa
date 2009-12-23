@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-import os, os.path
-import logging
+import os, os.path, random, string, logging
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -19,9 +18,7 @@ from signals import status_changed
 
 logger = logging.getLogger('orders.models')
 
-PREVIEW_GENERATION_FAILED_IMG_FILE = os.path.join(settings.MEDIA_ROOT,'images', 'preview-failed.png')
-PREVIEW_GENERATION_FAILED_IMG_SIZE = (450,600)
-
+LETTERS_AND_DIGITS = string.letters + string.digits
 APPSTORAGE = AppStorage()        
     
 def attachment_upload_location(attachment_obj, filename):
@@ -42,7 +39,40 @@ def preview_upload_location(preview_obj, filename):
         str(filename)
     )
 
-class OrderBase(models.Model):
+def package_upload_location(package_or_file_obj, filename):
+    return os.path.join( 'account-data', 
+        str(package_or_file_obj.attachment.order.owner.get_profile().account.id), 
+        'order-data',
+        str(package_or_file_obj.attachment.order.id), 
+        'designs',
+        str(filename)
+    )
+
+
+def _get_customer_code(user):
+    try:
+        profile = user.get_profile()            
+        if profile.account and profile.account.internal_name:
+            return profile.account.internal_name
+        elif profile.account:
+            return profile.account.legal_name
+    except:            
+        return user.username 
+
+def _generate_tracking_code(order):
+    return "".join([random.choice(LETTERS_AND_DIGITS) for x in xrange(15)])
+
+class BaseOrderManager(models.Manager):
+            
+    def create_order(self, owner, project_name, project_type=None, account_code=None, tracking_code=None):
+        "create a new order initializing required fields"
+        order = self.model(owner=owner, project_name=project_name)
+        order.project_type = project_type or order.Const.KITCHEN_DESIGN
+        order.tracking_code = tracking_code or _generate_tracking_code(order)
+        order.account_code = account_code or _get_customer_code(owner)
+        return order
+               
+class BaseOrder(models.Model):
     """
     This is a temporary object used for storing data 
     when  user goes step to step in orders
@@ -64,7 +94,7 @@ class OrderBase(models.Model):
             (CLOSET_DESIGN, _('Closet')),
             (GENERAL_DESIGN, _('Other (Generic)')),
         )
-    
+        
     owner = models.ForeignKey(User)
 #    creator = models.ForeignKey(User, related_name='orders_created')   # will replace 'owner'..
 #    account = models.ForeignKey(Dealer)    
@@ -88,6 +118,8 @@ class OrderBase(models.Model):
     finished_steps = models.CharField(max_length=250, editable=False, default='')
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
     submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
+
+    objects = BaseOrderManager()
 
     class Meta:
         abstract = True
@@ -132,30 +164,30 @@ class OrderBase(models.Model):
     def save(self, force_insert=False, force_update=False):
         logger.debug('saving ... %s' % self)        
         changed, old_status = self._check_status_change()
-        super(OrderBase,self).save(force_insert, force_update)
+        super(BaseOrder,self).save(force_insert, force_update)
         if None == old_status: # new order
             self._init_tracking_fields()
         if changed:
             status_changed.send(self, old=old_status, new=self.status)
 
     def _check_status_change(self):
+        if not self.id:
+            return True, None        
         changed = False
         old_status = None
         new_status = self.status
         try:
-            old_status = self._base_manager.get(pk=self.id).status
+            old_status = BaseOrder.objects.get(pk=self.id).status
             changed = new_status != old_status
         except self.DoesNotExist:
             changed = True                
         return (changed, old_status)
         
     def _init_tracking_fields(self):
-        if self.owner:            
-            self.customer_code = 'DDS-0001-%04d' % self.owner.get_profile().account.id 
-        else: 
-            self.customer_code = 'DDS-INTERNAL'
+        if self.owner and not self.account_code:            
+            self.customer_code = _get_customer_code(self.owner) 
         if not self.tracking_code:
-            self.tracking_code = get_valid_filename('%s-%02d' % (self.customer_code, self.project_name))
+            self.tracking_code = _generate_tracking_code(self) # get_valid_filename('%s-%02d' % (self.customer_code, self.project_name))
         
         
     def __unicode__(self):
@@ -163,7 +195,7 @@ class OrderBase(models.Model):
 
 
 
-class WorkingOrder(OrderBase):
+class WorkingOrder(BaseOrder):
     
 #    PAINT, STAIN, NATURAL, GLAZE = ('P', 'S', 'N', 'G')
 #    FINISH_CHOICES = (
@@ -383,7 +415,6 @@ class Attachment(models.Model):
                 self.save()
             except OSError as ex:
                 logger.error('%s error during page generation for %s' % (ex, self))
-                #self._pdf_callback(PREVIEW_GENERATION_FAILED_IMG_FILE, 0, PREVIEW_GENERATION_FAILED_IMG_SIZE)
     
     def _pdf_callback(self, image, name, page):
         logger.debug('enter: _pdf_callback(%s, %s, %s, %s)' % (self, image, name, page))
@@ -441,10 +472,43 @@ class Appliance(models.Model):
     order = models.ForeignKey(WorkingOrder, editable=False, related_name='appliances')
     type = models.CharField(_('Type'), max_length=20, choices=[(i,i) for i in TYPES])
     model = models.CharField(_('Model'), max_length=30, null=True, blank=True)
-    width = DimensionField(_(''), null=True, blank=True)
-    height = DimensionField(_(''), null=True, blank=True)
-    depth = DimensionField(_(''), null=True, blank=True)
+    width = DimensionField(_('Width'), null=True, blank=True)
+    height = DimensionField(_('Height'), null=True, blank=True)
+    depth = DimensionField(_('Depth'), null=True, blank=True)
     options = models.CharField(_('Options'), max_length=80, null=True, blank=True)
     
     def __unicode__(self):
         return self.type
+
+
+#class DesignPackage(models.Model):
+#    """
+#    Associates an order with deliverable design products.
+#    
+#    Design packages contain at least a .KIT file, and possibly a price report 
+#    and a collection of images - floorplans, elevations and perspective views
+#    """
+#    order = models.ForeignKey(WorkingOrder, related_name='designpackage',
+#        help_text=_('The order this design package was generated for.'))
+#    version = models.AutoField('Revision Number')
+#    created = models.DateTimeField(_('Created'),
+#        default=datetime.now, help_text=_('The timestamp of when this package was sent to the customer.'))
+#
+#
+#class DesignPackageFile(models.Model):
+#    '''
+#    A file in design package delivered to a customer.
+#    '''
+#    class Const:
+#        KIT, QUOTE, ARCHIVE, PERSPECTIVE, FLOORPLAN, ELEVATION= 'K', 'Q', 'A', 'P', 'F', 'E'  
+#        DP_ATTACHMENT_CHOICES = ((KIT, '20/20 KIT File'), 
+#                                 (QUOTE, 'Quote'), 
+#                                 (ARCHIVE, 'Image Archive'), 
+#                                 (PERSPECTIVE, 'Image File'),
+#                                 (FLOORPLAN, 'Image File'),
+#                                 (ELEVATION, 'Image File'),
+#        )
+#    design_package = models.ForeignKey(DesignPackage)
+#    type = models.CharField(_('type'), max_length=1, choices=Const.DP_ATTACHMENT_CHOICES)
+#    file = models.ImageField(_('image'), upload_to=package_upload_location, storage=APPSTORAGE)
+#    

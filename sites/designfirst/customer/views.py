@@ -28,7 +28,7 @@ from notification.models import NoticeType, NoticeSetting
 ## imports from other apps
 from accounting.models import register_design_order
 from product.models import Product
-from orders.models  import OrderBase, WorkingOrder, Appliance, Moulding, Attachment
+from orders.models  import BaseOrder, WorkingOrder, Appliance, Moulding, Attachment
 ##
 ## local imports 
 from constants import ACCOUNT_ID, ORDER_ID
@@ -123,10 +123,10 @@ def dealer_dashboard(request):
         invoices = Invoice.objects.order_by('-created')[:5]
         
     
-    working_orders = orders.filter( status__exact = OrderBase.Const.DEALER_EDIT )
-    submitted_orders = orders.filter( status__in = [ OrderBase.Const.SUBMITTED, OrderBase.Const.ASSIGNED ] )
+    working_orders = orders.filter( status__exact = BaseOrder.Const.DEALER_EDIT )
+    submitted_orders = orders.filter( status__in = [ BaseOrder.Const.SUBMITTED, BaseOrder.Const.ASSIGNED ] )
         ## TODO: fixme!
-    archived_orders = orders.exclude( status__in = [ OrderBase.Const.DEALER_EDIT, OrderBase.Const.SUBMITTED, OrderBase.Const.ASSIGNED ] ) 
+    archived_orders = orders.exclude( status__in = [ BaseOrder.Const.DEALER_EDIT, BaseOrder.Const.SUBMITTED, BaseOrder.Const.ASSIGNED ] ) 
         
     return render_to_response( 'customer/dealer_dashboard.html', locals(),                                
                                 context_instance=RequestContext(request) ) 

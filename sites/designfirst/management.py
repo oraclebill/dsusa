@@ -89,7 +89,7 @@ def new_order_notification(sender, **kwargs):
     status = kwargs.get('new')
     if not status:
         raise IllegalStateException()
-    if status != orders.OrderBase.Const.SUBMITTED:
+    if status != orders.BaseOrder.Const.SUBMITTED:
         return
     # TODO: Don't send notices for events that have already been signaled
     #       I think we can extend the Notice framework to have a generic FK 
@@ -109,7 +109,7 @@ def completed_order_notification(sender, **kwargs):
     order = sender
     if not order:
         raise IllegalStateException() 
-    if order.status != orders.OrderBase.Const.COMPLETED:
+    if order.status != orders.BaseOrder.Const.COMPLETED:
         return
     # TODO: Don't send notices for events that have already been signaled
     #       I think we can extend the Notice framework to have a generic FK 

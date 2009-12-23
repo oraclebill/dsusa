@@ -9,7 +9,7 @@ from utils.forms import FieldsetForm
 from utils.fields import CheckedTextWidget
 from product.models import Product
 
-from models import OrderBase, WorkingOrder,  Attachment, Appliance, Moulding
+from models import BaseOrder, WorkingOrder,  Attachment, Appliance, Moulding
 
 
 NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
@@ -43,7 +43,7 @@ class NewDesignOrderForm(forms.ModelForm):
         model = WorkingOrder
         fields = ['tracking_code', 'project_name', 'project_type', ]
     tracking_code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    project_type = forms.ChoiceField(choices=OrderBase.Const.PROJECT_TYPE_CHOICES)
+    project_type = forms.ChoiceField(choices=BaseOrder.Const.PROJECT_TYPE_CHOICES)
     floorplan = forms.FileField(label='Floorplan File', required=False)
     
 #TODO: support for revisions..
