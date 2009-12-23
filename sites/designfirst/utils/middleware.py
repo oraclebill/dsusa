@@ -24,6 +24,8 @@ class UserAccountMiddleware(object):
             	request.session.flush()
                 if request.account.status ==  Dealer.Const.SUSPENDED:
                     return HttpResponseRedirect(reverse('account-suspended'))
+                elif request.account.status == Dealer.Const.PENDING:
+                    return HttpResponseRedirect(reverse('account-pending'))
                 else: 
                     return HttpResponseRedirect(reverse('account-inactive'))
         except:
