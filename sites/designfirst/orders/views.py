@@ -28,7 +28,7 @@ import summary
 
 # local app imports
 from wizard import WizardBase
-from models import OrderBase, WorkingOrder, Attachment, Appliance, Moulding
+from models import BaseOrder, WorkingOrder, Attachment, Appliance, Moulding
 from forms import ApplianceForm, AttachmentForm, CornerCabinetForm, DimensionsForm
 from forms import HardwareForm, InteriorsForm, ManufacturerForm, MiscellaneousForm
 from forms import SoffitsForm, SubmitForm, MouldingForm, NewDesignOrderForm
@@ -154,7 +154,7 @@ def submit_order(request, orderid):
             else:           
                 register_design_order(order.owner, order.owner.get_profile().account, order, cost)
                 order = form.save(commit=False)
-                order.status = OrderBase.Const.SUBMITTED
+                order.status = BaseOrder.Const.SUBMITTED
                 order.submitted = datetime.now()
                 order.save()
             # return HttpResponseRedirect('completed_order_summary', args=[orderid]) # TODO
@@ -264,7 +264,7 @@ class Wizard(WizardBase):
         return self.handle_form(request, MiscellaneousForm)
     
     def step_appliances(self, request):
-        if request.method == 'POST':
+        if request.method == 'POST' and self.order.status == WorkingOrder.Const.DEALER_EDIT:
             if 'add_appliance' not in request.POST:
                 self.order.finish_step(self.step)
                 return self.dispatch_next_step()
@@ -275,7 +275,7 @@ class Wizard(WizardBase):
                 obj.save()
                 form = ApplianceForm()
         else:
-            if 'delete' in request.GET:
+            if 'delete' in request.GET and self.order.status == WorkingOrder.Const.DEALER_EDIT:
                 appliance = get_object_or_404(Appliance, order=self.order, 
                                            id=int(request.GET['delete']))
                 appliance.delete()
@@ -288,7 +288,7 @@ class Wizard(WizardBase):
     
     def step_diagrams(self, request):
         context = {}
-        if request.method == 'POST':
+        if request.method == 'POST' and self.order.status == WorkingOrder.Const.DEALER_EDIT:
             if 'upload_file' not in request.POST:
                 self.order.finish_step(self.step)
                 return self.dispatch_next_step()
@@ -302,7 +302,7 @@ class Wizard(WizardBase):
                 context['confirm_attach'] = obj.id
                 
         else:
-            if 'delete' in request.GET:
+            if 'delete' in request.GET and self.order.status == WorkingOrder.Const.DEALER_EDIT:
                 attach = get_object_or_404(Attachment, order=self.order, 
                                            id=int(request.GET['delete']))
                 attach.delete()

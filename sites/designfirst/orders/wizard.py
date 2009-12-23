@@ -59,7 +59,7 @@ class WizardBase(object):
         return self.method(request)
     
     def handle_form(self, request, FormClass, extra_context={}):
-        if request.method == 'POST':
+        if request.method == 'POST' and self.order.status == WorkingOrder.Const.DEALER_EDIT:
             form = FormClass(request.POST, instance=self.order)
             if form.is_valid():
                 form.save()
