@@ -17,23 +17,9 @@
             <form action="{% url auth_login %}" method="post">
               <fieldset class="login">
                 <legend>Login</legend>
-		{% if login_message %}
-                <p class="error"> {{ login_message }} </p>
-		{% else %}
-                <p class="notice">Login to place an order or review
-                order status.</p>
-		{% endif %}
-                <p>
-                  <label>Username: </label>
-
-                  <input type="text" name="username" />
-                </p>
-                <p>
-                  <label>Password: </label>
-                  <input type="password" name="password" />
-                </p>
-                 <input type="hidden" name="next" value="{{next}}" />
+				{{ form.as_p }}
 				 {% csrf_token %}
+                <input type="hidden" name="next" value="{{next}}" />
                 <input class="login button" type="submit" value="Login" />
                 <br />
 		        {% trans "You can also " %}
@@ -41,11 +27,8 @@
                 {% trans "or" %}
 		        <a href="{% url auth_password_reset %}">{% trans "Recover password" %}</a>
               </fieldset>
-
             </form>
-
-
-	  </div> <!-- block -->
-	  </div> <!-- box -->
+	  	</div> <!-- block -->
+</div> <!-- box -->
 
 {% endblock %}

@@ -19,7 +19,6 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from django.db import transaction
 
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -59,7 +58,6 @@ def get_current_order(request, orderid):
     
     return order
     
-# todo: create - /static/[inactive_user|login_failure|page_not_found]
 
 ##
 ## VIEW FUNCTIONS
@@ -67,14 +65,11 @@ def get_current_order(request, orderid):
 
 def home(request):
     """
-    Render the home page.
-    
-    TODO should be static?
+    Render the home page and clear current session.
     """    
     if request.session:
         request.session.flush()
-#    return render_to_response( 'registration/login.html',context_instance=RequestContext(request) )
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('dealer-dashboard'))
 
 def edit_profile(request, template='profiles/edit_profile.html', extra_context={}):
     """
@@ -85,7 +80,7 @@ def edit_profile(request, template='profiles/edit_profile.html', extra_context={
          - organization info (editable if user is primary contact)
          - notification preferences
     """
-    user = request.user;
+    user = request.user
     
     notice_types = NoticeType.objects.all()
     notice_settings = NoticeSetting.objects.filter(user=request.user)

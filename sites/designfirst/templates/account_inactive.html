@@ -1,17 +1,21 @@
-<html>
-<head>
-<title>Inactive Account</title>
-<style>
-body { font-family: Tahoma, Verdana, Arial, sans-serif; }
-</style>
-</head>
-<body bgcolor="white" text="black">
-<table width="100%" height="100%">
-<tr>
-<td align="center" valign="middle">
-This account has been marked as 'inactive'..<br/>
-</td>
-</tr>
-</table>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %} Inactive Account {% endblock %}
+
+{% block extra-head %}
+<meta http-equiv="Refresh" content="10;URL=http://www.designserviceusa.com/">
+{% endblock %}
+
+{% block content %}
+	<div class="grid_6 prefix_5 suffix_5">
+		<h1>Inactive Account</h1>
+		<div class=box>
+			<div>
+                <p>Sorry, your account has been terminated.</p>
+			</div>
+		</div>
+	</div> 
+
+{% endblock %}
+
+

@@ -194,7 +194,7 @@ def paypal_checkout(request,
             "custom":       request.session.session_key,    # for debugging
             "desc":         inv.description,
             "cancelurl":    make_site_url(reverse('select_products')),     # Express checkout cancel url
-            "returnurl":    make_site_url(reverse('home'))     # Express checkout return url
+            "returnurl":    make_site_url(reverse('dealer-dashboard'))     # Express checkout return url
         } 
         return item
 
@@ -280,7 +280,7 @@ def checkout(request, success_url=''):
     # we're basically a wrapper around this view func... so lets configure it.
     view_func = PayPalPro(payment_template="product/checkout.html",
                     confirm_template="paypal/express_confirmation.html",
-                    success_url=reverse('home')
+                    success_url=reverse('dealer-dashboard')
     )   
     try:
         # if there's no NEW invoice, create one from current cart
@@ -310,7 +310,7 @@ def checkout(request, success_url=''):
                 "custom":       request.session.session_key,    # for debugging
                 "desc":         invoice.description,
                 "cancelurl":    make_site_url(reverse('select_products')),     # Express checkout cancel url
-                "returnurl":    make_site_url(reverse('home'))     # Express checkout return url
+                "returnurl":    make_site_url(reverse('dealer-dashboard'))     # Express checkout return url
             }
             request.user.message_set.create(message='Thanks for your order!')
     except Exception as ex:

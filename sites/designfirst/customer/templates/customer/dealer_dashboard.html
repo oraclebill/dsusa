@@ -129,9 +129,9 @@ DesignFirst Customer Dashboard
 	    <h2>Company Info</h2>
 		<table>
 			<tbody>
-				<tr><th>Company</th><td>{{ account.legal_name }}</td></tr>
-				<tr><th>Account Status</th><td>{{ account.get_status_display }} </td></tr>
-				<tr><th>Credit Balance</th><td>{{ account.credit_balance }} 
+				<tr><th>Company</th><td>{{ request.account.legal_name }}</td></tr>
+				<tr><th>Account Status</th><td>{{ request.account.get_status_display }} </td></tr>
+				<tr><th>Credit Balance</th><td>{{ request.account.credit_balance }} 
 						<a href="{% url select_products %}">Purchase</a></td></tr>
 			</tbody>
 		</table>
