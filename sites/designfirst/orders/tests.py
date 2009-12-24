@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from customer.models import Dealer, create_basic_dealer_account 
 
 
-from models import BaseOrderManager, BaseOrder, WorkingOrder 
+from models import BaseOrderManager, BaseOrder, WorkingOrder, Attachment 
 from forms import SubmitForm
 from signals import status_changed
 
@@ -126,7 +126,7 @@ class OrderTests(TestCase):
         validate_order_status(order, save_counter, BaseOrder.Const.SUBMITTED, BaseOrder.Const.ASSIGNED)
         
 #class ManagerTests(TestCase):
-class ManagerTests():
+class ManagerTests(TestCase):
     
     def test_create_order_as_admin(self):
         user = User.objects.create_user('test', 'test@test.com', 'test')
@@ -157,7 +157,7 @@ class ManagerTests():
 #            order = WorkingOrder.objects.create_order(user, 'test project')
 #            order.save()
 #        self.failUnlessRaises(Exception, create_order_with_invalid_user)
-        
+#        
     def test_create_order_as_dealer(self):        
         dealer = create_basic_dealer_account("test-dealer", "dealer", "dealer@dealer.com")        
         order = WorkingOrder.objects.create_order(dealer, 'test project')
@@ -169,7 +169,7 @@ class ManagerTests():
         self.failUnlessEqual(order.project_type, BaseOrder.Const.KITCHEN_DESIGN)        
                 
                 
-class LifeCycleTest():
+class UILifeCycleTest(TestCase):
     "Tests the order lifecycle"
     
     def setUp(self):
@@ -182,26 +182,79 @@ class LifeCycleTest():
                                              username=username, 
                                              email='%s@%s.com' % (username, username), 
                                              password=password, 
-                                             account_status=Dealer.Const.ACTIVE)
-        credentials = (username, password)
-        self.failUnless(self.client.login())      
-        # create an unsubmittable order (no attachments) and validate I can't submit it        
-        order = WorkingOrder.objects.create_order(dealer, 'test project')
-        submiturl = reverse('submit-order', args=[order.id])
+                                             account_status=Dealer.Const.ACTIVE,
+                                             initial_balance=500)
+        self.failUnless(self.client.login(username=username, password=password))      
+        # create an new (blank) order and validate I can't submit it (needs attachment)   
+        submiturl = reverse('create-order')
+        data = dict(tracking_code='testtrack123', project_name='test-project', project_type='K', floorplan='/tmp/dummy.txt' )
+        response = self.client.post(submiturl, data, follow=True)
+            # expect response is redirected to 'manufacturer' screen
+        self.failUnless( response.redirect_chain)
+        self.assertEqual(response.template[0].name, 'wizard/step_manufacturer.html')
+        
+        # get order id from context 
+        orderid = response.context['wizard'].order.id
+        self.failUnless(orderid)
+            # expect order status to be DEALER_EDIT
+        order = WorkingOrder.objects.get(pk=orderid)
+        self.failUnlessEqual(order.status, BaseOrder.Const.DEALER_EDIT)
+        
+        # try to submit the order prematurely..
+        submiturl = reverse('submit-order', args=[orderid])
         data = dict(rush=False, client_notes="this is a test", design_product="1")
         response = self.client.post(submiturl, data)
-        self.failUnlessEqual(response.status_code, 200)
-        # make the order submittable, validate we can submit it
+            # fail with attachment error
+        self.assertContains(response, '<ul class="errorlist"><li>Your order has no attachments!', status_code=200)
+        
+        # add a 'floorplan' attachment 
+        submiturl = reverse('order-wizard-step', args=[orderid, 'diagrams'])
+        f = open('../../static/dummy-template.pdf')
+        print submiturl
+        data = dict(next_step_='_next_', type=1, source='U', upload_file='Upload', file = f )
+        response = self.client.post(submiturl, data, follow=True)
+        f.close()
+            # validate attachment appears on page 
+        self.assertContains(response, '<title>test-project | Diagrams</title>')
+        self.assertContains(response, 'href="/orders/ajax/attachment/')
+            # validate attachment associated with order 
+        self.failUnless(Attachment.objects.filter(order__id=orderid))
+
+        # try to submit the order again
+        submiturl = reverse('submit-order', args=[orderid])
+        data = dict(rush=False, 
+                    design_product="1", 
+                    tracking_code=order.tracking_code, 
+                    project_name=order.project_name, 
+                    project_type=order.project_type)
+        response = self.client.post(submiturl, data, follow=True)
+            # expect success
+        self.failUnless( response.redirect_chain )
+        self.assertEqual(response.template[0].name, 'orders/confirm_submission.html', 200)
+
+            # confirm the submission receipt        
+        self.assertContains(response, order.project_name)
+        self.assertContains(response, order.get_project_type_display())
+        self.assertContains(response, order.id)        
+        
         # make sure status attributes change appropriately on submisssion
+        order = WorkingOrder.objects.get(pk=orderid)
+        self.failUnlessEqual(order.status, BaseOrder.Const.SUBMITTED)
+        
         # validate we cannot submit an already submitted order                
-        data = dict(rush=False, client_notes="this is a test", design_product="1", tracking_code='1', project_name='foo', project_type='K' )
-        response = self.client.post(submiturl, data)
-        self.assertRedirects(response, reverse('submit-order-completed', args=[13]))
+        submiturl = reverse('submit-order', args=[orderid])
+        data = dict(rush=False, 
+                    design_product="1", 
+                    tracking_code=order.tracking_code, 
+                    project_name=order.project_name, 
+                    project_type=order.project_type)
+        response = self.client.post(submiturl, data, follow=True)
+        self.assertRedirects(response, reverse('submit-order-completed', args=[orderid]))
         # validate we cannot edit an already submitted order
         # validate we can view/print submitted order without updating timestamps              
 
                 
-class SubmitFormTest():
+class SubmitFormTest(TestCase):
     "Verify Order Submission Form"
     fixtures = ['test_userdata', 'test_orderdata']
     

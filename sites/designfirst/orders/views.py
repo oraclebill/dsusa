@@ -55,9 +55,10 @@ def create_order(request, *args):
     if request.method == 'POST':
         form = NewDesignOrderForm(request.POST, request.FILES)
         if form.is_valid():
-            order = form.save(commit=False)
-            order.client_account = request.account #TODO: there is actually no client_account in working order
-            order.owner = request.user
+            order = WorkingOrder.objects.create_order(request.user, 
+                                                      form.cleaned_data['project_name'], 
+                                                      form.cleaned_data['project_type'], 
+                                                      form.cleaned_data['tracking_code'])
             order.save()                     
             floorplanfile = request.FILES.get('floorplan', None)   
             if floorplanfile:

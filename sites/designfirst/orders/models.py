@@ -66,7 +66,7 @@ def _generate_tracking_code(order):
 class BaseOrderManager(models.Manager):
             
     def create_order(self, owner, project_name, project_type=None, account_code=None, tracking_code=None, save=True):
-        "create a new order initializing required fields"
+        "create a new order initializing required fields"        
         order = self.model(owner=owner, project_name=project_name)
         order.project_type = project_type or order.Const.KITCHEN_DESIGN
         order.tracking_code = tracking_code or _generate_tracking_code(order)

@@ -16,10 +16,10 @@ urlpatterns = patterns('orders.views',
 
     url(r'^complete/(\d+)/$', 'complete_order', name='complete-order'), 
     
-    url(r'^ajax/wood/$', 'ajax_wood',               name='ajax-door-material'),
-    url(r'^ajax/manufacturer/$', 'ajax_manufacturer',               name='ajax-manufacturer'),
-    url(r'^ajax/door/$', 'ajax_door_style',         name='ajax-door-style'),
-    url(r'^ajax/finish_color/$', 'ajax_finish_color',     name='ajax-finish-color'),
+    url(r'^ajax/wood/$', 'ajax_wood', name='ajax-door-material'),
+    url(r'^ajax/manufacturer/$', 'ajax_manufacturer', name='ajax-manufacturer'),
+    url(r'^ajax/door/$', 'ajax_door_style', name='ajax-door-style'),
+    url(r'^ajax/finish_color/$', 'ajax_finish_color', name='ajax-finish-color'),
     url(r'ajax/attachment/(\d+)/$', 'ajax_attach_details', name='ajax-attachment-details'),
     
     url(r'^(\d+)/([^/]+)/$', 'wizard', name='order-wizard-step'),
