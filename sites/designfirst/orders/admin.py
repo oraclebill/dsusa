@@ -29,6 +29,9 @@ class WorkingOrderAdmin(admin.ModelAdmin):
         AttachmentInline, 
 #        AttachmentPageInline  # causes hangs..
     ]
+    
+    def complete_order(self):
+        print "Yay!"
 
 
 class AttachmentAdmin(admin.ModelAdmin):

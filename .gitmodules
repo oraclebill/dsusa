@@ -10,3 +10,6 @@
 [submodule "modules/django-extensions"]
 	path = modules/django-extensions
 	url = git://github.com/django-extensions/django-extensions.git
+[submodule "modules/django-uploadify"]
+	path = modules/django-uploadify
+	url = git://github.com/tstone/django-uploadify.git
