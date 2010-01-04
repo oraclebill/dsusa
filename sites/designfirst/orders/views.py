@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect,\
-    HttpResponseForbidden, HttpResponseNotAllowed
+    HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -131,6 +131,9 @@ def submit_order(request, orderid):
     else:
         order = request.user.workingorder_set.get(id=orderid) 
 
+    if order.status != BaseOrder.Const.DEALER_EDIT:
+        return HttpResponseServerError()
+    
     # always submit orders in the context of proper account
     account = order.owner.get_profile().account
     
@@ -289,19 +292,19 @@ class Wizard(WizardBase):
     
     def step_diagrams(self, request):
         context = {}
-        if request.method == 'POST' and self.order.status == WorkingOrder.Const.DEALER_EDIT:
+        if request.method == 'POST':
             if 'upload_file' not in request.POST:
-                self.order.finish_step(self.step)
+                if self.order.status == WorkingOrder.Const.DEALER_EDIT:
+                    self.order.finish_step(self.step)
                 return self.dispatch_next_step()
             form = AttachmentForm(request.POST, request.FILES)
-            if form.is_valid():
+            if form.is_valid() and self.order.status == WorkingOrder.Const.DEALER_EDIT:
                 obj = form.save(commit=False)
                 obj.order = self.order
                 obj.save()
                 if obj.file.path.lower().endswith('pdf'):
                     obj.split_pages()
-                context['confirm_attach'] = obj.id
-                
+                context['confirm_attach'] = obj.id                
         else:
             if 'delete' in request.GET and self.order.status == WorkingOrder.Const.DEALER_EDIT:
                 attach = get_object_or_404(Attachment, order=self.order, 
