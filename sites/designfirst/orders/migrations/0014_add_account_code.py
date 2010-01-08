@@ -17,7 +17,7 @@ class Migration:
             if not order.owner:
                 order.owner = default_user
                         
-            order.account_code = 'DEFAULT[%s]' % order.owner
+            order.account_code = 'DEFAULT[%s]' % order.owner.username
             order.save()    
             
             

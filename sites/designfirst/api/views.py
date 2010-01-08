@@ -20,5 +20,3 @@ def process_inbound_fax(request):
         return HttpResponseBadRequest(ex)
     
     return HttpResponse('Post Successful')
-
-                        

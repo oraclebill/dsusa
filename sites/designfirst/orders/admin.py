@@ -8,7 +8,7 @@ class AttachmentPageInline(admin.TabularInline):
     model = AttachmentPage
 
 class WorkingOrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'created', 'owner', 'project_name', 'status', 'updated', 'submitted' ]
+    list_display = ['id', 'account_code', 'project_name', 'status', 'created', 'owner', 'updated', 'submitted' ]
     list_display_links = ['id', 'project_name']
     list_filter = ['owner', 'status' ]
     ordering = ['id',]
