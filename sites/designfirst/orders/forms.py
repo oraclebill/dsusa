@@ -34,15 +34,10 @@ def procesing_option_choices():
     ret = list(Product.objects.filter(product_type=Product.Const.OPTION, name__icontains='rush').values_list('id', 'name')) 
     ret.insert(0, ('', ''))
     return ret
- 
 
-
-
-class NewDesignOrderForm(forms.ModelForm):    
-    class Meta: 
-        model = WorkingOrder
-        fields = ['tracking_code', 'project_name', 'project_type', ]
+class NewDesignOrderForm(forms.Form):    
     tracking_code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    project_name = forms.CharField()
     project_type = forms.ChoiceField(choices=BaseOrder.Const.PROJECT_TYPE_CHOICES)
     floorplan = forms.FileField(label='Floorplan File', required=False)
     
