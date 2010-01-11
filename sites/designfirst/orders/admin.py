@@ -1,4 +1,4 @@
-from models import WorkingOrder, Attachment, AttachmentPage
+from models import WorkingOrder, RequestNotation, Attachment, AttachmentPage
 from django.contrib import admin
 from django.forms.models import fields_for_model
 
@@ -12,15 +12,9 @@ class AttachmentPageInline(admin.TabularInline):
     model = AttachmentPage
     
     
-class OrderNoteInline(admin.ModelAdmin):
+class RequestNotationInline(admin.TabularInline):
     
-    model = OrderNote
-
-    list_display = ['author', 'subject', 'date']
-    inlines = [
-        AttachmentPageInline, 
-#        AttachmentPageInline  # causes hangs..
-    ]
+    model = RequestNotation
     
 
 class WorkingOrderAdmin(admin.ModelAdmin):
@@ -35,7 +29,7 @@ class WorkingOrderAdmin(admin.ModelAdmin):
     actions_on_top = True
     
     fieldsets = (
-        ('Order Information', {
+        (None, {
             'fields': ( 'status', 'account_code', 'tracking_code', 
                        'project_name', 'owner', 'project_type', 
                        ('rush', 'color_views', 'elevations', 'quoted_cabinet_list'), 'cost', )
@@ -47,6 +41,7 @@ class WorkingOrderAdmin(admin.ModelAdmin):
 
     inlines = [
         AttachmentInline, 
+        RequestNotationInline,
 #        AttachmentPageInline  # causes hangs..
     ]
     
@@ -57,7 +52,8 @@ class WorkingOrderAdmin(admin.ModelAdmin):
             fields.pop(fieldname, None) 
         undeclared_fields = (('Design Information', 
                                 {'fields': fields.keys() ,
-                                 'classes': ('collapse',) } ),)
+                                 'classes': ('collapse',) } ),)        
+        self.readonly_fields = admin.util.flatten_fieldsets(undeclared_fields)
         self.fieldsets += undeclared_fields
 
 class AttachmentAdmin(admin.ModelAdmin):

@@ -50,10 +50,17 @@
 
 	{% block wizard-base-content %}
 	<div id="wizard_content" class="grid_11 ">
-		<fieldset>
-			<legend>{{wizard.step_title}}</legend>
+		<fieldset id="section-fields">
+			<legend>{{ wizard.step_title }}</legend>
 			{% block wizard-content %}
-			{% endblock %}
+			{% endblock %}			
+		</fieldset>
+		<fieldset id="section-notes" class="collapse">
+			<legend>Notes{%if section_notes %}*{% endif %}</legend>
+			<div>
+				<p>Use this section to note any additional information that may be helpful for the designer.</p>
+				<textarea id="notes" name="section_notes" rows="4" cols="80">{{ section_notes }}</textarea>
+			</div>
 		</fieldset>
 	</div>
 	
@@ -83,7 +90,9 @@
 	</div>
 	{% endblock wizard-base-content %}
 </div> <!-- end container -->
+
 {% block wizard-base-navigation %}
+<!-- start wizard-base-navigation -->
 <div id="wizard-base-navigation" class="container_16 clearfix">
 	<div id="wizard-base-nav" >
 		<div class="grid_16">
@@ -105,8 +114,10 @@
 			</div>
 		</div>
 	</div>
-</div>	<!-- end container wizard-base-navigation -->
+</div>	
+<!-- end wizard-base-navigation -->
 {% endblock wizard-base-navigation %}
+
 </form>
 
 <div class="clear"></div>

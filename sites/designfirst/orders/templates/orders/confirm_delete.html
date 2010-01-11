@@ -10,7 +10,8 @@
 <div class="grid_7 prefix_5 suffix_4">
 	<div class="block">
 	    <p>Are you sure you want to delete order #{{ order.id }} ({{ order.project_name }})?</p>
-	    <form action="" method="post">{% csrf_token %}
+	    <form action="" method="post"> 
+		{# csrf_token #}
 	    <div>
 	    <input type="hidden" name="post" value="yes" />
 	    <input type="submit" value="Yes, I'm sure" />

@@ -88,8 +88,8 @@ class Dealer(models.Model):
         try:
             mail_managers('dealer approved - %s' % self.legal_name, 'approved')
             self.send_welcome()
-        except Exception as error:
-            logger.error('Dealer::approve: "%s" error sending approval mails for "%s"', error, self)  
+        except Exception , err:
+            logger.error('Dealer::approve: "%s" error sending approval mails for "%s"', err, self)
         
     def __unicode__(self):
         return self.legal_name

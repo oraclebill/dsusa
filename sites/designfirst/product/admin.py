@@ -10,6 +10,6 @@ class ProductRelationshipInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'product_type', 'base_price', 'description']
     list_filter = ['product_type', ]
-    inlines = [ ProductRelationshipInline, ]
+    #inlines = [ ProductRelationshipInline, ]
 
 admin.site.register(Product, ProductAdmin)

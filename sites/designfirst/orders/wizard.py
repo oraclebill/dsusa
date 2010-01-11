@@ -5,10 +5,10 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.http import Http404, HttpResponse, HttpResponseRedirect,\
     HttpResponseForbidden
 from django.template.context import RequestContext
-from models import WorkingOrder
 from django.template.defaultfilters import capfirst
 from django.core.urlresolvers import reverse
 
+from models import WorkingOrder, RequestNotation
 
 BTN_SAVENEXT = '_savenext_'
 
@@ -58,20 +58,43 @@ class WizardBase(object):
         
         return self.method(request)
     
-    def handle_form(self, request, FormClass, extra_context={}):
+    def handle_form(self, request, FormClass, extra_context={}):        
+        note_text = self.get_page_note()
         if request.method == 'POST':
             form = FormClass(request.POST, instance=self.order)
             if form.is_valid():
                 if self.order.status == WorkingOrder.Const.DEALER_EDIT:
                     form.save()
+                    new_note_text = request.POST.get('section_notes', '')
+                    if not note_text == new_note_text:
+                        self.set_page_note(request.user.id, new_note_text)
                     self.order.finish_step(self.step)
                 return self.dispatch_next_step()
         else:
             form = FormClass(instance=self.order)
-        context = {'form':form}
+        
+        context = { 
+            'form': form, 
+            'section_notes': note_text 
+        }
         context.update(extra_context)
         return context
     
+    def get_page_note(self):
+        note_text = ''
+        try:
+            note_text = self.order.notes.filter(area_reference=self.step).latest('id').note_text
+        except:
+            pass
+        return note_text
+
+    def set_page_note(self, authorid, note_text):
+        section_note, created = self.order.notes.get_or_create(area_reference=self.step, 
+                                       defaults={ 'author_id': authorid })
+        section_note.note_text = note_text
+        section_note.save()   
+        
+        
     def get_tabs(self):
         """
         Returns iterator if tab items(icon+text on top of wizard)

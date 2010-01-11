@@ -73,7 +73,7 @@ class BaseOrderManager(models.Manager):
         if save:
             order.save()
         return order
-               
+                              
 class BaseOrder(models.Model):
     """
     This is a temporary object used for storing data 
@@ -374,6 +374,43 @@ class Moulding(models.Model):
             item.save()
             i += 1
                 
+
+class RequestNotation(models.Model):
+    """
+    A notation provided by the requestor, specifying or clarifying something in a way that is not 
+    otherwise possible in the interface.
+    
+    Notations may also be captured from notes in submitted diagrams.
+    """
+    author      = models.ForeignKey(User, 
+                                    related_name='order_notes', 
+                                    verbose_name=_("author"),
+                                    help_text=_("The user that created this notation."))
+    order       = models.ForeignKey(WorkingOrder, 
+                                    related_name='notes',
+                                    verbose_name=_("design request"),
+                                    help_text=_("The design request this notation refers to."))
+    note_text   = models.TextField(_("note text"),
+                                   help_text=_("The content of the notation"))
+    created         = models.DateTimeField(_("created"), 
+                                           auto_now_add=True,
+                                           help_text=_("Timestamp of this notes creation."))
+    area_reference  = models.CharField(_("referenced area"), 
+                                       max_length=50, 
+                                       null=True, 
+                                       blank=True,
+                                       help_text=_("The area (within the wizard or data entry application) that\
+                                       this comment was captured in. This is an optional item."))
+    field_reference = models.CharField(_("referenced field"), 
+                                       max_length=50, 
+                                       null=True, 
+                                       blank=True,
+                                       help_text=_("The name of the field this comment or notation applies to. This \
+                                       is an optional item."))
+    
+    class Meta:
+        unique_together = ('order', 'area_reference', 'field_reference', )
+        
 
 class Attachment(models.Model):
     class Const:

@@ -215,7 +215,15 @@ class Wizard(WizardBase):
         return self.handle_form(request, HardwareForm)
 
     def step_moulding(self, request):
-        if request.method == 'POST': # Ajax submit of new moulding
+        page_note = self.get_page_note()        
+        if not self.order.status == WorkingOrder.Const.DEALER_EDIT:
+            if 'add_moulding' in request.POST or 'delete' in request.POST or 'order' in request.POST:
+                pass # pretend its a GET
+            else: 
+                return self.dispatch_next_step()             
+        elif request.method == 'POST': # Ajax submit of new moulding
+            page_note = request.POST.get('section_notes', page_note)
+            self.set_page_note(request.user.id, page_note)
             if 'add_moulding' in request.POST:
                 form = MouldingForm(request.POST)
                 if form.is_valid():
@@ -235,8 +243,9 @@ class Wizard(WizardBase):
             items = Moulding.groups(self.order)
             return HttpResponse(render_to_string(
                         'wizard/moulding_items.html', {'items':items}))
+            
         form = MouldingForm()
-        return {'form': form, 'items': Moulding.groups(self.order)}
+        return {'form': form, 'items': Moulding.groups(self.order),  'section_notes': page_note}
     
     def step_soffits(self, request):
         return self.handle_form(request, SoffitsForm)
@@ -268,50 +277,64 @@ class Wizard(WizardBase):
         return self.handle_form(request, MiscellaneousForm)
     
     def step_appliances(self, request):
-        if request.method == 'POST' and self.order.status == WorkingOrder.Const.DEALER_EDIT:
-            if 'add_appliance' not in request.POST:
+        # short circuit all mutators if not in edit mode...
+        if self.order.status != WorkingOrder.Const.DEALER_EDIT:
+            if (request.method == 'POST' and 'add_appliance' in request.POST) or 'delete' in request.GET:
+                return HttpResponseRedirect('./')
+             
+        page_note = self.get_page_note()
+        if request.method == 'POST':
+            page_note = request.POST.get('section_notes', page_note)
+            self.set_page_note(request.user.id, page_note)
+            if 'add_appliance' in request.POST:
+                form = ApplianceForm(request.POST, request.FILES)
+                if form.is_valid():
+                    obj = form.save(commit=False)
+                    obj.order = self.order
+                    obj.save()
+            else:
                 self.order.finish_step(self.step)
-                return self.dispatch_next_step()
-            form = ApplianceForm(request.POST, request.FILES)
-            if form.is_valid():
-                obj = form.save(commit=False)
-                obj.order = self.order
-                obj.save()
-                form = ApplianceForm()
+                return self.dispatch_next_step()                
         else:
-            if 'delete' in request.GET and self.order.status == WorkingOrder.Const.DEALER_EDIT:
+            if 'delete' in request.GET:
                 appliance = get_object_or_404(Appliance, order=self.order, 
                                            id=int(request.GET['delete']))
                 appliance.delete()
-                return HttpResponseRedirect(request.META['HTTP_REFERER'])
                 return HttpResponseRedirect('./')
-            form = AttachmentForm()
-            form = ApplianceForm()
+        form = ApplianceForm()
         appliances = Appliance.objects.filter(order=self.order)
-        return {'form': form, 'appliances': appliances}
+        return {'form': form, 'appliances': appliances, 'section_notes': page_note }
     
     def step_diagrams(self, request):
         context = {}
+        # short circuit all mutators if not in edit mode...
+        if self.order.status != WorkingOrder.Const.DEALER_EDIT:
+            if request.method == 'POST':
+                return self.dispatch_next_step()
+            if 'delete' in request.GET:
+                return HttpResponseRedirect('./')
+            
         if request.method == 'POST':
             if 'upload_file' not in request.POST:
-                if self.order.status == WorkingOrder.Const.DEALER_EDIT:
-                    self.order.finish_step(self.step)
+                self.order.finish_step(self.step)
                 return self.dispatch_next_step()
             form = AttachmentForm(request.POST, request.FILES)
-            if form.is_valid() and self.order.status == WorkingOrder.Const.DEALER_EDIT:
+            if form.is_valid():
                 obj = form.save(commit=False)
                 obj.order = self.order
                 obj.save()
                 if obj.file.path.lower().endswith('pdf'):
                     obj.split_pages()
                 context['confirm_attach'] = obj.id                
-        else:
-            if 'delete' in request.GET and self.order.status == WorkingOrder.Const.DEALER_EDIT:
-                attach = get_object_or_404(Attachment, order=self.order, 
-                                           id=int(request.GET['delete']))
-                attach.delete()
-                return HttpResponseRedirect('./')
-            form = AttachmentForm()
+            return HttpResponseRedirect('./')
+
+        # GET processing
+        form = AttachmentForm()
+        if 'delete' in request.GET:
+            attach = get_object_or_404(Attachment, order=self.order, 
+                                       id=int(request.GET['delete']))
+            attach.delete()
+            return HttpResponseRedirect('./')
         attachments = Attachment.objects.filter(order=self.order)
         context.update({'form': form, 'attachments': attachments})
         return context

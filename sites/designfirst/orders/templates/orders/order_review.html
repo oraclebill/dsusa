@@ -71,14 +71,17 @@ $(function(){
 		<div id="appliances" class="details">
 	    	<h3>Appliances</h3>
 			<table>
-				<tr>
+				<thead>
+					<tr>
 					<th>Type</th>
 					<th>Description</th>
 					<th>Width</th>
 					<th>Height</th>
 					<th>Depth</th>
 					<th> </th>
-				</tr>
+					</tr>
+				</thead>
+				<tbody>
 				{% for item in order.appliances.all %}
 				<tr class="row{% cycle "1" "2"%}">
 					<td>{{item.type}}</td>
@@ -89,17 +92,25 @@ $(function(){
 					<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
 				</tr>
 				{% endfor %}
+				</tbody>
 			</table>
 		</div>
 	</div>
 	
 	<div class="grid_7">
-		<!--
 		<div id="notes" class="details">
 	    	<h3>Design Notes</h3>
 			<div>
-			<p>TBD</p>
+				<table>
+					<thead>
+						<tr><th>Section</th><th>Comment</th><th>Author</th></tr>
+					</thead>
+					<tbody>
+					{% for note in order.notes.all %}
+						<tr><td>{{ note.area_reference }}</td><td><p>{{ note.note_text }}</p></td><td>{{ note.author.get_full_name }}</td></tr>
+					{% endfor %}
+				</tbody>
+				</table>
 			</div>
 		</div>
-		-->
 	</div>
