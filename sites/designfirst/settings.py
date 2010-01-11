@@ -129,12 +129,6 @@ INSTALLED_APPS = (
     'test',
 )
 
-try:
-    INSTALLED_APPS += (
-        'django_extensions',
-    )
-except:
-    pass
 
 
 if DEBUGTOOL:
