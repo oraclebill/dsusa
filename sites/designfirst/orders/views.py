@@ -8,13 +8,14 @@ import decimal
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect,\
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, \
     HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
+
 
 # foreign app imports
 from accounting.models import register_design_order
@@ -325,7 +326,7 @@ class Wizard(WizardBase):
                 obj.save()
                 if obj.file.path.lower().endswith('pdf'):
                     obj.split_pages()
-                context['confirm_attach'] = obj.id                
+#                context['confirm_attach'] = obj.id                
             return HttpResponseRedirect('./')
 
         # GET processing
@@ -336,7 +337,7 @@ class Wizard(WizardBase):
             attach.delete()
             return HttpResponseRedirect('./')
         attachments = Attachment.objects.filter(order=self.order)
-        context.update({'form': form, 'attachments': attachments})
+        context.update({'form': form, 'order': self.order, 'attachments': attachments})
         return context
     
     def step_review(self, request):
@@ -364,10 +365,13 @@ def is_existing_manufacturer(order):
 #     return order.manufacturer in get_manufacturers()
     return False
 
+
+
 @render_to('wizard/attachment_details.html')
 def ajax_attach_details(request, id):
     attachment = get_object_or_404(Attachment, id=id)
     return {'attachment': attachment}
+
 
 def _make_kwargs(request, keys=['ds', 'dm', 'ft']):
     kwargs = {}
@@ -447,3 +451,39 @@ def ajax_manufacturer(request):
         res = manufacturer_data(cabinet_line)
 
     return HttpResponse(simplejson.dumps(res), mimetype="application/javascript")
+
+
+@render_to('orders/fragments/attachment_list.html')
+def attachment_list(request, orderid):
+    order = get_object_or_404(WorkingOrder, id=orderid)
+    # TODO: permissions
+    attachments = order.attachments.all() 
+    return {'attachments': attachments}
+    
+@render_to('orders/fragments/attachment_details.html')
+def attachment_details(request, orderid, attachmentid):
+    attachment = get_object_or_404(Attachment, id=attachmentid)
+    if not attachment.order.id == orderid:
+        return HttpResponseNotFound('%s for %d' % (attachmentid, orderid))
+    return {'attachment': attachment}
+    
+def attachment_upload(request, orderid):
+    #import pdb; pdb.set_trace()
+    order = get_object_or_404(WorkingOrder, id=orderid)
+    if request.method == 'POST' and request.FILES:
+        upload = order.attachments.create()
+        upload.timestamp = datetime.now()
+        try:
+            upload.type = int(request.POST['type'])
+        except:
+            pass  # default         
+        if upload.type in ('jpg', 'png', 'gif', 'bmp'):
+            upload.page_count = 1
+        else: 
+            upload.page_count = 0
+        upload.file = request.FILES['Filedata']
+        upload.save()
+        return HttpResponse(True)
+    return HttpResponseServerError("Fail")
+
+    

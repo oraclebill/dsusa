@@ -17,7 +17,8 @@ urlpatterns = patterns('',
     (r'^orders/',   include("orders.urls")),
     (r'^barcode/',  include("barcode.urls")),        
     (r'^notification/',  include("notification.urls")),        
-    (r'^support/',  'django.views.generic.simple.redirect_to', {'url': 'http://www.designserviceusa.com/support' }, 'support'),
+    (r'^support/',  'django.views.generic.simple.redirect_to', 
+        {'url': 'http://www.designserviceusa.com/support' }, 'support'),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/',    include(admin.site.urls)),
     
@@ -25,8 +26,7 @@ urlpatterns = patterns('',
     (r'^uploadify/', include('uploadify.urls')),
     (r'^uploadifytest1/', uploadifytest.view1), 
     (r'^uploadifytest2/', uploadifytest.view2), 
-    (r'^uploadifytestcomplete/', uploadifytest.com_view, {}, 'upload_complete_url' ),
-    
+    (r'^uploadifytestcomplete/', uploadifytest.com_view, {}, 'upload_complete_url' ),    
 )
 
 # site housekeeping patterns
@@ -39,7 +39,7 @@ urlpatterns += patterns('',
 
 
 from django.conf import settings
-if settings.DEBUG and settings.LOCAL:
+if settings.LOCAL:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
         (r'^files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.APP_FILES_ROOT}),
