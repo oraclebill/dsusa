@@ -60,21 +60,23 @@
 </div>
 
 <h2>Appliances</h2>
-<table style="width: 50%;">
+<table style="width: 90%;">
 	<tr>
 		<th style="background-color: lightgray;">Type</th>
-		<th style="background-color: lightgray;">Description</th>
+		<th style="background-color: lightgray;">Model</th>
 		<th style="background-color: lightgray;">Width</th>
 		<th style="background-color: lightgray;">Height</th>
 		<th style="background-color: lightgray;">Depth</th>
+		<th style="background-color: lightgray;">Options</th>
 	</tr>
 	{% for item in order.appliances.all %}
 	<tr class="row{% cycle "1" "2"%}">
 		<td>{{item.type}}</td>
-		<td>{{item.description|default:"N/A"}}</td>
+		<td>{{item.model|default:"N/A"}}</td>
 		<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
 		<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
 		<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+		<td>{{item.options|default:"N/A"}}</td>
 	</tr>
 	{% endfor %}
 </table>
