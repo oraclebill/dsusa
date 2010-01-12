@@ -12,7 +12,7 @@ from product.models import Product
 from models import BaseOrder, WorkingOrder,  Attachment, Appliance, Moulding
 
 
-NONE_IMG = settings.MEDIA_URL + 'orders/none.png'
+NONE_IMG = settings.MEDIA_URL + 'wizard/empty.png'
 
 PRO_DESIGN_PROD_ID = 1          ## Yes, very ugly..
 PRESENTATION_PACK_PROD_ID = lambda : Product.objects.get(name__icontains='Presentation Pack', product_type=Product.Const.BASE).id
