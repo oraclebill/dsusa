@@ -5,8 +5,6 @@ from django.views.generic.simple import direct_to_template
 
 import menus  # remove this import and any page with a {% menu ... %} tag fails.. pretty damn random.. 
 
-import uploadifytest
-
 from django.contrib import admin
 admin.autodiscover()
 
@@ -21,13 +19,6 @@ urlpatterns = patterns('',
         {'url': 'http://www.designserviceusa.com/support' }, 'support'),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/',    include(admin.site.urls)),
-    
-    # uploadify (obviously) 
-    (r'^uploadify/', include('uploadify.urls')),
-    (r'^uploadifytest1/', uploadifytest.view1), 
-    (r'^uploadifytest2/', uploadifytest.view2), 
-    (r'^uploadifytestcomplete/', uploadifytest.com_view, {}, 'upload_complete_url' ),    
-)
 
 # site housekeeping patterns
 urlpatterns += patterns('',

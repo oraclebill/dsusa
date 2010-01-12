@@ -122,7 +122,6 @@ INSTALLED_APPS = (
     'registration',
     'south',
     'notification',
-    'uploadify',
     # local apps
     'designfirst.api',
     'designfirst.customer',
