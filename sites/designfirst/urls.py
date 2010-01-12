@@ -19,6 +19,7 @@ urlpatterns = patterns('',
         {'url': 'http://www.designserviceusa.com/support' }, 'support'),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/',    include(admin.site.urls)),
+)
 
 # site housekeeping patterns
 urlpatterns += patterns('',
