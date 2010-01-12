@@ -72,6 +72,7 @@
     if (data.ajax) fillFaceboxFromAjax(data.ajax, klass)
     else if (data.image) fillFaceboxFromImage(data.image, klass)
     else if (data.div) fillFaceboxFromHref(data.div, klass)
+    else if (data.iframe) fillFaceboxFromIFrame(data.iframe, klass); 
     else if ($.isFunction(data)) data.call($)
     else $.facebox.reveal(data, klass)
   }
@@ -84,8 +85,8 @@
     settings: {
       opacity      : 0,
       overlay      : true,
-      loadingImage : '../images/loading.gif',
-      closeImage   : '../images/closelabel.gif',
+      loadingImage : '/images/loading.gif',
+      closeImage   : '/images/closelabel.gif',
       imageTypes   : [ 'png', 'jpg', 'jpeg', 'gif' ],
       faceboxHtml  : '\
     <div id="facebox" style="display:none;"> \
@@ -102,7 +103,7 @@
                 </div> \
                 <div class="footer"> \
                   <a href="#" class="close"> \
-                    <img src="../images/closelabel.gif" title="close" class="close_image" /> \
+                    <img src="/images/closelabel.gif" title="close" class="close_image" /> \
                   </a> \
                 </div> \
               </td> \
@@ -281,6 +282,26 @@
   function fillFaceboxFromAjax(href, klass) {
     $.get(href, function(data) { $.facebox.reveal(data, klass) })
   }
+
+  function fillFaceboxFromIFrame(href, klass) { 
+    var data = $('<iframe src="' + href + '" width="100%" height="100" scrolling="no" frameborder="0" />') 
+	    .width(800) 
+	    .height(600) 
+	    .load(function () { 
+		var IFrame = this; 
+		var height = $(this).height(); 
+		if (IFrame && !window.opera) { 
+		    IFrame.style.display = "block"; 
+		    if (IFrame.contentDocument && IFrame.contentDocument.body.offsetHeight) { 
+			height = IFrame.contentDocument.body.offsetHeight; 
+		    } else if (IFrame.Document && IFrame.Document.body.scrollHeight) { 
+			height = IFrame.Document.body.scrollHeight; 
+		    } 
+		} 
+		$(this).height(height); 
+	    }); 
+    $.facebox.reveal(data, klass); 
+  } 
 
   function skipOverlay() {
     return $.facebox.settings.overlay == false || $.facebox.settings.opacity === null

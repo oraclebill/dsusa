@@ -7,10 +7,24 @@
 			if (!confirm('Delete this attachment?')) return false;
 		})
 		// setup preview dialog for uploaded files 
-		$('a[rel*=facebox]').facebox({
-			loadingImage : '{{MEDIA_URL}}images/loading.gif',
-			closeImage   : '{{MEDIA_URL}}images/closelabel.gif'
+		$('a[rel*=facebox]').click(function(e){
+			e.preventDefault();
+			viewer_url = 'http://docs.google.com/viewer?url=' + this.href + '&embedded=True';
+			data = '<iframe src="' + viewer_url + '" width="800"></iframe>';
+		//	jQuery.facebox(data);
+            		$.facebox({ 
+				'iframe' : viewer_url,
+				loadingImage : '{{MEDIA_URL}}/images/loading.gif',
+				closeImage   : '{{MEDIA_URL}}/images/closelabel.gif'
+ 			}); 
+
+			//alert(data);
+			return false;
 		}) 
+//		$('a[rel*=facebox]').facebox({
+//			loadingImage : '{{MEDIA_URL}}images/loading.gif',
+//			closeImage   : '{{MEDIA_URL}}images/closelabel.gif'
+//		}) 
 	})
 // }>></script>
 
@@ -29,7 +43,7 @@
 		{% for item in attachments %}
 		<tr class="row{% cycle "1" "2"%}">
 			<!--td><a href="{% url ajax-attachment-details item.id %}" id="attach{{item.id}}" rel="facebox">{{ item }}</a></td-->
-			<td><a href="{{ item.file.url }}" id="attach{{item.id}}" xrel="facebox">{{ item }}</a></td>
+			<td><a href="{{ item.file.url }}" id="attach{{item.id}}" rel="facebox">{{ item }}</a></td>
 			<td>{{ item.get_type_display }}</td>
 			<td>{{ item.page_count }}</td>
 			<td>{{ item.timestamp|date }}</td>

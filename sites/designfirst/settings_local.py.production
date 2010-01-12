@@ -1,8 +1,6 @@
 #DEBUG = False
 SECURE = True
 
-APPL_FILE_ROOT='/var/www/com_designserviceusa_stage/var/application-data'
-
 EMAIL_HOST='m0.designserviceusa.com'   		# bull
 SERVER_EMAIL='stage@designserviceusa.com'   	# from address for system mails (to admins and manager)
 

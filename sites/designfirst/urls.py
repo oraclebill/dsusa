@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls.defaults import *
 from django.contrib.auth import views as auth_views
 from django.views.generic.list_detail import object_detail
@@ -30,9 +31,7 @@ urlpatterns += patterns('',
 )
 
 
-from django.conf import settings
-if settings.LOCAL:
-    urlpatterns += patterns('',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-        (r'^files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.APP_FILES_ROOT}),
-    )
+urlpatterns += patterns('',
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    (r'^files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.APP_FILES_ROOT}),
+)
