@@ -95,16 +95,7 @@ def review_order(request, orderid):
 @login_required
 def print_order(request, id, template='orders/print_order.html', include_summary=True, extra_context={}):
     order = get_object_or_404(WorkingOrder, id=id)
-    if order.owner.id: 
-        if order.owner.id != request.user.id:
-            return HttpResponseForbidden("Not allowed to view this order")
-        account = order.owner.get_profile().account
-    else:
-        account = request.account
-        
-    context = {'order': order, 'account': account }
-    context['order_code'] = '%s-%03d-%03d' % (ORDER_PREFIX, account.id, order.id)
-    context['tracking_code'] = order.tracking_code
+    context = {'order': order }
             
     if include_summary:
         s = summary.order_summary(order, summary.STEPS_SUMMARY)

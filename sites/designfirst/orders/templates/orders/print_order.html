@@ -1,96 +1,117 @@
 <html>
 <head>
-	<title>{{order}}</title>
+	<title>Design Order {{order.account_code}}-{{order.id}} - {{order.project_name}}</title>
     <style>
         #diagrams img { width: 7.5in; }
+		table { width: 90%; margin-left: 20px; margin-bottom: 15px; }
+		table caption { font-weight: bolder; font-size: larger; background: silver; margin-top: 10px;  }
+	    table thead th { background-color: lightgray; }
+        table tbody td { padding: 3px; } 
     </style>
 </head>
 <body>
-<table style="width: 100%; margin-bottom: 15px;">
-<tr>
-	<th style="background-color: lightgray;">Order information</th>
-	<th style="background-color: lightgray;">Design information</th>
-</tr>
-<tr>
-	<td>
-		<table>
-			<tr><td>Order id:</td><td>{{order.id}}</td></tr>
-			<tr><td>Customer id:</td><td>{{order.owner.id}}</td></tr>
-			<tr><td>Project name:</td><td>{{order}}</td></tr>
-			<tr><td>Date submitted:</td><td>{{order.submitted}}</td></tr>
-		</table>
-	</td>
-	<td>
-		<table>
-			<tr><td>Color views:</td><td>{{order.color_views}}</td></tr>
-			<tr><td>Elevations:</td><td>{{order.elevations}}</td></tr>
-			<tr><td>Quoted cabinet list:</td><td>{{order.quoted_cabinet_list}}</td></tr>
-		</table>
-	</td>
-</tr>
-<tr>
-{% for column in summary %}
-	<td style="vertical-align: top;">
-	<table>
-	<tr>
-		<th style="background-color: lightgray;">Section</th>
-		<th style="background-color: lightgray;">Value</th>
-	</tr>
-	{% for section, values in column %}
+<div>
+	<table style="margin-bottom: 15px;">
 		<tr>
-			<th>{{section}}</th>
-			<th></th>
+			<td>
+				<table >
+					<caption>Order Information</caption>
+					<tr><td>Order id:</td><td>{{order.id}}</td></tr>
+					<tr><td>Customer id:</td><td>{{order.owner.id}}</td></tr>
+					<tr><td>Project name:</td><td>{{order}}</td></tr>
+					<tr><td>Date submitted:</td><td>{{order.submitted}}</td></tr>
+				</table>
+			</td>
+			<td>
+				<table>
+					<caption>Design Information</caption>
+					<tr><td>Color views:</td><td>{{order.color_views}}</td></tr>
+					<tr><td>Elevations:</td><td>{{order.elevations}}</td></tr>
+					<tr><td>Quoted cabinet list:</td><td>{{order.quoted_cabinet_list}}</td></tr>
+				</table>
+			</td>
 		</tr>
-		{% for name, value in values %}
 		<tr>
-			<td>{{name}}</td>
-			<td>{{value}}</td>
+		    {% for column in summary %}
+			<td style="vertical-align: top;">
+				{% for section, values in column %}
+			    <table>
+						<caption>{{section}}</caption>
+					<thead>
+						<tr>
+							<th >Section</th>
+							<th >Value</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for name, value in values %}
+						<tr>
+							<td>{{name}}</td>
+							<td>{{value}}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+			    </table>
+				{% endfor %}
+			</td>
+		    {% endfor %}
+		</tr>
+	</table>
+</div>
+
+<div id="appliances">
+	<h2>Appliances</h2>
+	<table>
+		<thead>
+		  <tr>
+			<th >Type</th>
+			<th >Model</th>
+			<th >Width</th>
+			<th >Height</th>
+			<th >Depth</th>
+			<th >Options</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for item in order.appliances.all %}
+		<tr class="row{% cycle "1" "2"%}">
+			<td>{{item.type}}</td>
+			<td>{{item.model|default:"N/A"}}</td>
+			<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+			<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+			<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+			<td>{{item.options|default:"N/A"}}</td>
 		</tr>
 		{% endfor %}
-	{% endfor %}
+		</tbody>
 	</table>
-	</td>
-{% endfor %}
-</tr>
-</table>
+</div>
 
 <div id="notes">
 	<h2>Clients Notes</h2>
-	<p>{{order.client_notes|safe}}</p>
+	<table cellpadding=3 cellspacing=3 width="80%">
+	  <colgroup><col width="20%"></colgroup>
+	  <colgroup><col width="80%"></colgroup>
+	  <thead>
+	    <tr><th>Section</th><th>Comment</th></tr></thead>
+	  <tbody>
+	    {% for note in order.notes.all %}
+	    <tr><td>{{note.area_reference}}</td><td>{{note.note_text|safe}}</td></tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
 </div>
 
-<h2>Appliances</h2>
-<table style="width: 90%;">
-	<tr>
-		<th style="background-color: lightgray;">Type</th>
-		<th style="background-color: lightgray;">Model</th>
-		<th style="background-color: lightgray;">Width</th>
-		<th style="background-color: lightgray;">Height</th>
-		<th style="background-color: lightgray;">Depth</th>
-		<th style="background-color: lightgray;">Options</th>
-	</tr>
-	{% for item in order.appliances.all %}
-	<tr class="row{% cycle "1" "2"%}">
-		<td>{{item.type}}</td>
-		<td>{{item.model|default:"N/A"}}</td>
-		<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
-		<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
-		<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
-		<td>{{item.options|default:"N/A"}}</td>
-	</tr>
-	{% endfor %}
-</table>
-
-<h2>Diagrams</h2>
 		
 <div id="diagrams" class="details">
-{% for att in order.attachments.all %}
-	<h3>{{att}}</h3>
-	{% for page in att.attachmentpage_set.all %}
-	<img src="{{page.file.url}}" alt="{{page.file.name}} - {{page.page}}" ><br>
+	<h2>Diagrams</h2>
+	{% for att in order.attachments.all %}
+		<h3>{{att}}</h3>
+		{% for page in att.attachmentpage_set.all %}
+		<img src="{{page.file.url}}" alt="{{page.file.name}} - {{page.page}}" ><br>
+		{% endfor %}
 	{% endfor %}
-{% endfor %}
-<br>
+</div>
 
 </body>
 </html>
