@@ -116,12 +116,15 @@ INSTALLED_APPS = (
     'paypal.standard.ipn',
     'paypal.standard', 
     'paypal.pro', 
+    
     # third party apps
     'ajax_forms',
     'menu',
     'registration',
     'south',
     'notification',
+    'django_extensions',
+    
     # local apps
     'designfirst.api',
     'designfirst.customer',
