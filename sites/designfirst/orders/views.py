@@ -214,8 +214,9 @@ class Wizard(WizardBase):
             else: 
                 return self.dispatch_next_step()             
         elif request.method == 'POST': # Ajax submit of new moulding
-            page_note = request.POST.get('section_notes', page_note)
-            self.set_page_note(request.user.id, page_note)
+            new_page_note = request.POST.get('section_notes', page_note)
+            if new_page_note != page_note:
+                self.set_page_note(request.user.id, new_page_note)
             if 'add_moulding' in request.POST:
                 form = MouldingForm(request.POST)
                 if form.is_valid():
@@ -276,8 +277,9 @@ class Wizard(WizardBase):
              
         page_note = self.get_page_note()
         if request.method == 'POST':
-            page_note = request.POST.get('section_notes', page_note)
-            self.set_page_note(request.user.id, page_note)
+            new_page_note = request.POST.get('section_notes', page_note)
+            if new_page_note != page_note:
+                self.set_page_note(request.user.id, new_page_note)
             if 'add_appliance' in request.POST:
                 form = ApplianceForm(request.POST, request.FILES)
                 if form.is_valid():
