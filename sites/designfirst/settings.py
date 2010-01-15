@@ -14,7 +14,7 @@ DEBUGTOOL = False
 LOCAL = True
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ('127.0.0.1',)
-SECURE = False
+SECURE = True
 
 APP_FILES_ROOT = rel('..','..','var','designfirst','files')
 APP_FILES_URL = '/files'

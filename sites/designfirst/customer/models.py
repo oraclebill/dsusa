@@ -11,9 +11,12 @@ from django.db.models import permalink
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.core.mail import mail_managers
 
 from notification import models as notification
-from django.core.mail import mail_managers
+
+from signals import new_dealer_approved
+
 
 logger = logging.getLogger('customer.models')
 
@@ -65,17 +68,28 @@ class Dealer(models.Model):
         verbose_name_plural = _('dealers')
         
     def send_welcome(self):
-        logger.info('Dealer::send_welcome: welcoming %s', self)
+        logger.debug('Dealer::send_welcome: welcoming %s', self)
         registration_key = self.primary_contact.registrationprofile_set.all()[0].activation_key
-        uri = reverse('registration_activate', kwargs={'activation_key': registration_key })
-        scheme = settings.SECURE and 'https' or 'http'
-        setup_url = '%s://%s%s' % (scheme, Site.objects.get_current().domain, uri)
-        notification.send([self.primary_contact], 'new_dealer_welcome',
+        path = reverse('registration_activate', kwargs={'activation_key': registration_key })
+        protocol = settings.SECURE and 'https' or 'http'
+        host = Site.objects.get_current().domain
+        setup_url = '%s://%s%s' % (protocol, host, path)
+        recipients = [self.primary_contact]
+        if settings.ADMINS:
+            admin_users = User.objects.filter(email__in=[b for (a,b) in settings.ADMINS])
+            if not admin_users:
+                logger.warning('send_welcome: admin_users falling back to superusers (no admins or admins emails are not system users).')
+                admin_users = User.objects.filter(is_superuser=True)
+            if not admin_users:
+                logger.error('send_welcome: cannot find admin_user to send mail notification to.')
+            recipients.extend(admin_users)
+        notification.send(recipients, 'new_dealer_welcome',
             extra_context={
                 'setup_url': setup_url,
                 'account': self,
             }
         )
+        logger.debug('send_welcome: welcome notification sent to %s.' % recipients)
 
     def activate(self):
         logger.info('Dealer::activate: activating %s (%s)', self, self.get_status_display())

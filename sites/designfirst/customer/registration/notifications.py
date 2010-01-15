@@ -8,7 +8,11 @@ from django.contrib.sites.models import Site, RequestSite
 logger = logging.getLogger('customer.registration.notification')
 
 def notify_new_dealer_registration(dealer):
-    "When a new dealer appears, send a 'thanks for registering' email"
+    """
+    When a new dealer appears, send a 'thanks for registering' email
+    
+    Note that we would like to use the notification framework for this, but it requires an actual django 'User'
+    """
     if not dealer.email:
         logger.info("new_dealer_notification: dealer [%s] has no email, mailing managers", dealer)            
         try:
