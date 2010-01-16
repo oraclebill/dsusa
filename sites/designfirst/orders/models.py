@@ -103,14 +103,16 @@ class BaseOrder(models.Model):
     status = models.PositiveSmallIntegerField(_('Status'), choices=Const.STATUS_CHOICES, default=Const.DEALER_EDIT)
 
     #whj:  new fields 11/18/09 to support tracking and fax correlation
-    account_code = models.CharField(_('Customer Account Code'), max_length=40, blank=True)
+    account_code = models.CharField(_('Customer Account Code'), max_length=40)
     tracking_code = models.CharField(_('Tracking Code'), max_length=20, null=True, blank=True)
     project_name = models.CharField(_('Project Name'), max_length=150)
     project_type = models.CharField(_('Project Type'), max_length=1, choices=Const.PROJECT_TYPE_CHOICES, default=Const.KITCHEN_DESIGN)
     created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
     
     #Submit options
-    rush = models.BooleanField(_('Rush Processing'), default=False)
+    rush = models.BooleanField(_('Rush Processing'), default=False)  ## TODO: processing_options = 'NONE', 'RUSH'
+    #product_selection = models.TextField(_('DSUSA Product'), null=True, blank=True)
+    
     color_views = models.BooleanField(_('Include Color Perspectives'), default=False)
     elevations = models.BooleanField(_('Include Elevations'), default=False)
     quoted_cabinet_list = models.BooleanField(_('Include Cabinetry Quote'), default=False)
@@ -120,6 +122,7 @@ class BaseOrder(models.Model):
     finished_steps = models.CharField(max_length=250, editable=False, default='')
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
     submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
+    completed = models.DateTimeField(_('Completed On'), null=True, blank=True, editable=False)
 
     objects = BaseOrderManager()
 
@@ -164,10 +167,10 @@ class BaseOrder(models.Model):
         return ', '.join(flags)
 
     def save(self, force_insert=False, force_update=False):
-        if not self.project_name:
-            raise exceptions.ValidationError('All orders must contain a project name')
-        if not self.account_code:
-            raise exceptions.ValidationError('All orders must contain an account code')
+#        if not self.project_name:
+#            raise exceptions.ValidationError('All orders must contain a project name')
+#        if not self.account_code:
+#            raise exceptions.ValidationError('All orders must contain an account code')
         if not (self.status and self.status in [first for (first,second) in self.Const.STATUS_CHOICES]):
             raise exceptions.ValidationError('All orders must have a valid status')
         changed, old_status = self._check_status_change()
