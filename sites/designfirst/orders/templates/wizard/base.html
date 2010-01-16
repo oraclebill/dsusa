@@ -97,19 +97,26 @@
 	<div id="wizard-base-nav" >
 		<div class="grid_16">
 			<div class="buttonbar left">
-				<!-- <input type="submit" name="{{BTN_SKIP}}" value="Skip"> -->
+               {% ifequal wizard.order.status 1 %}
 				<a href="/dealer/"><em>Continue later</em></a>
+			   {% endifequal %}
 			</div>
 			<div class="buttonbar right">
 				<input type="submit" name="{{BTN_PREVIOUS}}" value="Previous"{% if wizard.is_first_step %} disabled="disabled"{%endif%}>
 				{% if wizard.is_last_step %}
 					{% if wizard.is_valid_order %}
-					<input type="submit" name="{{BTN_SAVENEXT}}" value="Complete Order">
+	                   {% ifequal wizard.order.status 1 %}
+					   <input type="submit" name="{{BTN_SAVENEXT}}" value="Complete Order">
+	                   {% endifequal %}                    					   
 					{% else %}
 					<input type="submit" name="{{BTN_SAVENEXT}}" value="Order Incomplete" disabled="disabled">
 					{% endif %}
 				{% else %}
-				<input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
+				    {% ifequal wizard.order.status 1 %}
+				    <input type="submit" name="{{BTN_SAVENEXT}}" value="Save/Next">
+					{% else %}
+                    <input type="submit" name="{{BTN_SAVENEXT}}" value="Next">
+                    {% endifequal %}					
 				{% endif %}
 			</div>
 		</div>

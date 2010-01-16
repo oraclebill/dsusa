@@ -72,8 +72,9 @@ DesignFirst Customer Dashboard
 				<td> {{ order.submitted|timesince }} </td> 
 				<td> {{ order.get_status_display }} </td> 
 				<td> 
-    	       		<a href="{% url print-order order.id %}">Print</a>
-					{% if not request.account %}
+                    <a href="{% url order-wizard order.id %}">Review</a>
+                    <a href="{% url print-order order.id %}">Print</a>
+					{% if request.user.is_staff %}
     	       		<a href="{% url complete-order order.id %}">Complete</a>
 					{% endif %}
 				</td> 
