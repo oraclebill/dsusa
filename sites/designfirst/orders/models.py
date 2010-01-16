@@ -108,6 +108,8 @@ class BaseOrder(models.Model):
     project_name = models.CharField(_('Project Name'), max_length=150)
     project_type = models.CharField(_('Project Type'), max_length=1, choices=Const.PROJECT_TYPE_CHOICES, default=Const.KITCHEN_DESIGN)
     created = models.DateTimeField(_('Created On'), auto_now_add=True, editable=False)
+    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
+    completed = models.DateTimeField(_('Completed On'), null=True, blank=True, editable=False)
     
     #Submit options
     rush = models.BooleanField(_('Rush Processing'), default=False)  ## TODO: processing_options = 'NONE', 'RUSH'
@@ -121,8 +123,6 @@ class BaseOrder(models.Model):
     client_notes = models.TextField('Notes for the Designer', null=True, blank=True)
     finished_steps = models.CharField(max_length=250, editable=False, default='')
     updated = models.DateTimeField(_('Last Updated'), auto_now=True, editable=False)
-    submitted = models.DateTimeField(_('Submitted On'), null=True, blank=True, editable=False)
-    completed = models.DateTimeField(_('Completed On'), null=True, blank=True, editable=False)
 
     objects = BaseOrderManager()
 
@@ -143,16 +143,16 @@ class BaseOrder(models.Model):
             if commit:
                 self.save()
 
-    @property
-    def expected(self):
-        "Expected completion time"
-        if self.submitted:
-            if self.rush:
-                delta = timedelta(days=1)
-            else:
-                delta = timedelta(days=2)
-            return self.submitted + delta
-        return None
+#    @property
+#    def expected(self):
+#        "Expected completion time"
+#        if self.submitted:
+#            if self.rush:
+#                delta = timedelta(days=1)
+#            else:
+#                delta = timedelta(days=2)
+#            return self.submitted + delta
+#        return None
             
     @property
     def flags(self):
@@ -174,7 +174,13 @@ class BaseOrder(models.Model):
 #        if not (self.status and self.status in [first for (first,second) in self.Const.STATUS_CHOICES]):
 #            raise ValueError('All orders must have a valid status')
         changed, old_status = self._check_status_change()
-        
+
+        if changed:
+            if self.status == BaseOrder.Const.SUBMITTED:
+                self.submitted = datetime.now()
+            elif self.status == BaseOrder.Const.COMPLETED:
+                self.completed = datetime.now()
+                
         if self.status == self.Const.DEALER_EDIT or changed: 
             super(BaseOrder,self).save(force_insert, force_update)
             if None == old_status: # new order
@@ -320,8 +326,23 @@ class WorkingOrder(BaseOrder):
     def is_complete(self):
         return self.attachments.filter(type=Attachment.Const.FLOORPLAN)
     
-    
-class Moulding(models.Model):
+
+class OrderDependentModel(models.Model):
+    """
+    Encapsulates some behaviour common to entities that are attributes of an order.
+    """
+    class Meta:
+        abstract = True
+        
+    def save(self, force_insert=False, force_update=False):
+        if self.order and self.order.status == BaseOrder.Const.DEALER_EDIT:
+            super(OrderDependentModel,self).save(force_insert, force_update)
+        elif not self.order:
+            super(OrderDependentModel,self).save(force_insert, force_update)
+        else:
+            raise ValueError('Cannot modify order in %s status.' % self.order.status)
+        
+class Moulding(OrderDependentModel):
     TOP, BOTTOM, BASE, SCRIBE, OTHER = range(1,6)
     TYPE_CHOICES = (
         (TOP, _('Top of Wall Cabinet')),
@@ -331,7 +352,7 @@ class Moulding(models.Model):
         (OTHER, _('Other')),
     )
     order = models.ForeignKey(WorkingOrder, related_name='mouldings')
-    num = models.PositiveIntegerField(_('#'), )
+    num = models.PositiveIntegerField(_('#'),)
     type = models.PositiveSmallIntegerField(_('Type'), choices=TYPE_CHOICES)
     name = models.CharField(_('Moulding Style/Model'), max_length=255)
     
@@ -339,12 +360,12 @@ class Moulding(models.Model):
         ordering = ['order', 'type', 'num']
     
     def __unicode__(self):
-        return '#%d %s %s' % (self.num, self.get_type_display(), self.name)
+        return '#%s %s %s' % (self.num, self.get_type_display(), self.name)
     
     def save(self, *args, **kwargs):
         if self.num is None:
             self.num = self._next_num()
-        super(Moulding, self).save()
+        super(Moulding, self).save(*args, **kwargs)
     
     def delete(self):
         order, type = self.order, self.type
@@ -382,7 +403,7 @@ class Moulding(models.Model):
             i += 1
                 
 
-class RequestNotation(models.Model):
+class RequestNotation(OrderDependentModel):
     """
     A notation provided by the requestor, specifying or clarifying something in a way that is not 
     otherwise possible in the interface.
@@ -418,8 +439,13 @@ class RequestNotation(models.Model):
     class Meta:
         unique_together = ('order', 'area_reference', 'field_reference', )
         
+    def save(self, *args, **kwargs):
+        if not self.order.status == BaseOrder.Const.DEALER_EDIT:
+            raise ValueError('Cannot modify notes associated with order in %s status' % self.order.status ) 
+        super(RequestNotation, self).save(*args, **kwargs)
 
-class Attachment(models.Model):
+
+class Attachment(OrderDependentModel):
     class Const:
         FLOORPLAN, PHOTO, OTHER = range(1,4)
         TYPE_CHOICES = (
@@ -502,7 +528,7 @@ class AttachmentPage(models.Model):
         return '%s#%d' % (self.attachment, self.page)
     
 
-class Appliance(models.Model):
+class Appliance(OrderDependentModel):
     TYPES = ['Bar Sink',
              'Coffee Maker',
              'Cooktop',

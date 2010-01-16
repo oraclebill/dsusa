@@ -42,8 +42,9 @@ $(function(){
 	{% include "wizard/moulding_items.html" %}
 </div>
 
+{% ifequal wizard.order.status 1 %} 
 <table>{{form}}</table>
 <input type="submit" id="add_moulding" name="add_moulding" value="Add">
-
+{% endifequal %}
 
 {% endblock %}

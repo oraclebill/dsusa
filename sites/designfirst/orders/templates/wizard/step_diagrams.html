@@ -38,16 +38,10 @@
 
 {% block wizard-content %}
 <div id="tablecontent"></div>
-
+{% ifequal wizard.order.status 1 %}
 <div id="uploadify" class="multi-file-upload">
 	<input id="fileInput" name="fileInput" type="file" />
 </div>
-<!--
-<fieldset>
-	<legend>Upload File</legend>
-	<table>{form}</table>
-</fieldset>
--->
-
+{% endifequal %}
 
 {% endblock %}

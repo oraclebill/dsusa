@@ -1,23 +1,5 @@
 {% extends "wizard/base.html" %}
 
-
-{% block ajax-validation %}{% endblock %}
-
-{% block extra-head %}
-{{block.super}}
-<script type="text/javascript">
-	$(function() {
-		$('a.dellink').click(function(){
-			if (!confirm('Delete this attachment?')) return false;
-		})
-{% if confirm_attach %}
-		$.facebox({ ajax: '{% url ajax-attachment-details confirm_attach %}' })
-{% endif %}
-	})
-</script>
-
-{% endblock %}
-
 {% block wizard-content %}
 
 <table>
@@ -41,11 +23,14 @@
 {% endfor %}
 </table>
 
+{% ifequal wizard.order.status 1 %}
 <fieldset>
 	<legend>Add Appliance</legend>
+	<div>
 	<table>{{form}}</table>
 	<input type="submit" name="add_appliance" value="Add">
+	</div>
 </fieldset>
-
+{% endifequal %}
 
 {% endblock %}

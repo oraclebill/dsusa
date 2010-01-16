@@ -17,12 +17,15 @@ $(function(){
 {% for name, mouldings in items.items %}
 <strong>{{name}}</strong>
 <table class="mouldings_table" id="mtype_{{mouldings.0.type}}">
+	<thead>
+		<tr><th style="width: 5em; margin: 1px;">#</th><th>Moulding Name</th><th  style="width: 10em;"></th></tr>
+	</thead>
 <tbody>
 	{% for mld in mouldings %}
 	<tr id="{{mld.id}}">
 		<td>{{mld.num}}</td>
 		<td>{{mld.name}}</td>
-		<td style="width: 200px;"><a href="#" rel="{{mld.id}}" class="dellink">remove</a></td>
+		<td>{% ifequal wizard.order.status 1 %}<a href="#" rel="{{mld.id}}" class="dellink">remove</a>{% endifequal %}</td>        
 	</tr>
 	{% endfor %}
 </tbody>

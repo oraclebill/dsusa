@@ -208,9 +208,9 @@ class Wizard(WizardBase):
 
     def step_moulding(self, request):
         page_note = self.get_page_note()        
-        if not self.order.status == WorkingOrder.Const.DEALER_EDIT:
+        if  request.method == 'POST' and self.order.status != WorkingOrder.Const.DEALER_EDIT:
             if 'add_moulding' in request.POST or 'delete' in request.POST or 'order' in request.POST:
-                pass # pretend its a GET
+                return HttpResponseForbidden('Order is not editable.')
             else: 
                 return self.dispatch_next_step()             
         elif request.method == 'POST': # Ajax submit of new moulding
@@ -272,8 +272,12 @@ class Wizard(WizardBase):
     def step_appliances(self, request):
         # short circuit all mutators if not in edit mode...
         if self.order.status != WorkingOrder.Const.DEALER_EDIT:
-            if (request.method == 'POST' and 'add_appliance' in request.POST) or 'delete' in request.GET:
-                return HttpResponseRedirect('./')
+            if request.method == 'POST' and 'add_appliance' in request.POST:
+                return HttpResponseForbidden('Order is locked.')
+            elif request.method == 'GET' and 'delete' in request.GET:
+                return HttpResponseForbidden('Order is locked.')
+            elif request.method == 'POST':
+                return self.dispatch_next_step()                                
              
         page_note = self.get_page_note()
         if request.method == 'POST':
