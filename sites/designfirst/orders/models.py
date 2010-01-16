@@ -171,15 +171,19 @@ class BaseOrder(models.Model):
 #            raise exceptions.ValidationError('All orders must contain a project name')
 #        if not self.account_code:
 #            raise exceptions.ValidationError('All orders must contain an account code')
-        if not (self.status and self.status in [first for (first,second) in self.Const.STATUS_CHOICES]):
-            raise exceptions.ValidationError('All orders must have a valid status')
+#        if not (self.status and self.status in [first for (first,second) in self.Const.STATUS_CHOICES]):
+#            raise ValueError('All orders must have a valid status')
         changed, old_status = self._check_status_change()
-        super(BaseOrder,self).save(force_insert, force_update)
-        if None == old_status: # new order
-            self._init_tracking_fields()
-        if changed:
-            status_changed.send(self, old=old_status, new=self.status)
-
+        
+        if self.status == self.Const.DEALER_EDIT or changed: 
+            super(BaseOrder,self).save(force_insert, force_update)
+            if None == old_status: # new order
+                self._init_tracking_fields()
+            if changed:
+                status_changed.send(self, old=old_status, new=self.status)
+        else:
+            raise ValueError('Cannot modify order in %s status.' % self.status)
+         
     def _check_status_change(self):
         if not self.id:
             return True, None        
