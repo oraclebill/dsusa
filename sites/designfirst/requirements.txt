@@ -1,0 +1,14 @@
+ipython==0.10
+lxml==2.2.4
+numpy==1.2.1
+pdfminer==20091024
+psycopg2==2.0.11
+pyOpenSSL==0.7
+pyPdf==1.12
+pylibtiff==0.1-svn
+pylint==0.18.1
+python-dateutil==1.2
+wsgiref==0.1.2
+xattr==0.5
+yolk==0.4.1
+zope.interface==3.5.1

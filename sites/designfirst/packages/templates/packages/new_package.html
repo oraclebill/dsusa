@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %} 
+
+<form action="." method="post" enctype="multipart/form-data">
+
+<div id="order_info" class="grid_16">
+	<p><label>Order ID</label>{{ package.order_id }}</p>
+	<p><label>Order Type</label>{{ package.design_type }}</p>	
+</div>
+
+	<div id="data_entry_area" class="grid_8">
+		<div id="design_notes">
+			<label>Designers' Notes</label><textarea>{{package.designers_notes}}</textarea>		
+		</div>
+		<table>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th> </th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in package.attachments %}
+				<tr class="row{% cycle "1" "2"%}">
+					<td><a href="{{ item.file.url }}" id="attach{{item.name}}" rel="facebox">{{ item }}</a></td>
+					<td>{{ item.get_description }}</td>
+					<td><a href="{% url delete_uploaded_file item.id %}" class="dexlink"><img src="{{MEDIA_URL}}images/icons/delete.png"></a></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>		
+		<input type="button" name="Upload Files" value="Upload Files">	
+	</div>
+	<div id="preview_area" class="grid_8">
+		<img src="{{MEDIA_URL}}images/icons/delete.png" width="400" height="515">
+	</div>
+
+<div id="form_control" class="grid_16">
+	<a href="#">Continue Later</a>
+	<input type="submit" name="Send Completed Design Materials">	
+</div>
+
+
+</form>
+
+{% endblock %}

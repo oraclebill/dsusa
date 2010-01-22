@@ -4,6 +4,8 @@ Created on Jan 15, 2010
 @author: bjones
 '''
 
+import pymongo
+
 
 class Message(object):
     
@@ -38,37 +40,37 @@ class DesignPackage(object):
         '''
         Constructor
         '''
-        self.status = Const.OPEN
-        self.related_to_id, self.related_to_type, self.sequence_num = None, None, 0
-        self.creator, self.created_on, self.files = None, None, []
+        self.status = self.Const.OPEN
+        self.order_id, self.related_package_id, self.sequence_num = None, None, 0
+        self.creator, self.created_on = None, None
+        self.designer = None
         self.comments = []
+        self.files = []
         
     def add_file(self, file, type):
         pass
     
     def mark_complete(self):
-        self.status = Const.CLOSED
+        self.status = self.Const.CLOSED
         
+    @staticmethod
+    def get_package_by_id(package_id):
+        pass
     
+    @staticmethod
+    def get_packages_for_order(order_id):
+        pass
     
+    @staticmethod
+    def get_latest_delivered_package_for_order(order_id):
+        pass
     
-
-def create_package():
-    pass
-
-def get_package_by_id(package_id):
-    pass
-
-def get_packages_for_order(order_id):
-    pass
-
-def get_latest_delivered_package_for_order(order_id):
-    pass
-
-def get_current_working_package_for_order(order_id):
-    pass
-
-def get_open_packages(filter=None):
-    pass
+    @staticmethod
+    def get_current_working_package_for_order(order_id):
+        pass
+    
+    @staticmethod
+    def get_open_packages(filter=None):
+        pass
     
         

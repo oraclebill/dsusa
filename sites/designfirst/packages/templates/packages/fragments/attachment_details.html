@@ -1,0 +1,48 @@
+<style>
+img#preview {
+	max-width: 600px;
+	max-height: 600px;
+}
+
+a.diagram { 
+    display: block; 
+    float: left; 
+    width: 5em; 
+    margin-left: auto; 
+    margin-right: auto;
+    padding: 5px; 
+    border: 1px solid #252525; 
+    background: #C7CBC2; 
+}
+img#preview {
+    width=600;
+}
+</style>
+<script>
+$(function(){
+	$('a.imgpage').click(function(){
+		$('#preview').attr('src', this.href);
+		return false;
+	})
+	$('#preview').attr('src', $('a.imgpage').get(0).href);
+})
+</script>
+
+
+<table>
+<tr>
+	<td valign="top">
+		File: <strong>{{attachment}}</strong><br>
+		Size: <strong>{{attachment.file.size|filesizeformat}}</strong><br>
+		Pages: <strong>{{attachment.page_count}}</strong><br>
+		Type: <strong>{{attachment.get_type_display}}</strong><br>
+	</td>
+	<td>
+		{% for page in attachment.attachmentpage_set.all %}
+		<a href="{{page.file.url}}" class="imgpage">[Page {{page.page}}]</a>
+		{% endfor %}
+		<br>
+		<img src="" id="preview" alt="{{attachment}}">
+	</td>
+</tr>
+</table>
