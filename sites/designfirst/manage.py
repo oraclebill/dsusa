@@ -2,14 +2,10 @@
 import sys; 
 import os.path;
 
-_root,_project=os.path.split(os.path.abspath(__file__))
-local_path=[]
+_project=os.path.dirname(os.path.abspath(__file__))
+_root=os.path.join(_project, '..', '..')
 
-_root=os.path.dirname(_root)
-
-_root=os.path.dirname(_root)
-local_path.append(os.path.join(_root,'lib'))
-local_path.append(os.path.join(_root,'apps'))
+local_path=[ os.path.join(_root,'lib'),  ]
 
 sys.path = local_path + sys.path
 
