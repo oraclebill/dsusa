@@ -1,14 +1,21 @@
+BeautifulSoup==3.1.0.1
+Django==1.1.1
+PIL==1.1.7
+South==0.6.2
+Werkzeug==0.5.1
+django-debug-toolbar==0.8.1
+django-extensions==0.4.1
+django-notification==0.1.5
+django-paypal==0.1.2
+django-piston==0.2.2
+-e hg+http://bitbucket.org/ubernostrum/django-registration/@073835a4269f13fc97cbe377677cf5fd4f52e930#egg=django_registration-tip
+django-uni-form==0.7.0
+## FIXME: could not find svn URL in dependency_links for this package:
+flup==1.0.3.dev-20091027
+huBarcode==0.56p4
 ipython==0.10
-lxml==2.2.4
-numpy==1.2.1
-pdfminer==20091024
-psycopg2==2.0.11
-pyOpenSSL==0.7
+psycopg2==2.0.13
 pyPdf==1.12
-pylibtiff==0.1-svn
-pylint==0.18.1
-python-dateutil==1.2
+pymongo==1.3
 wsgiref==0.1.2
-xattr==0.5
-yolk==0.4.1
-zope.interface==3.5.1
+Using already activated environment /Users/bjones/.virtualenvs/designfirst
