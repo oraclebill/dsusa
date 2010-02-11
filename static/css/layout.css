@@ -272,7 +272,7 @@ tbody th,
 tbody td {
 	border-top:1px solid #bbb;
 	border-bottom:1px solid #bbb;
-	background:#eee;
+	xbackground:#eee;
 }
 tbody tr.odd th,
 tbody tr.odd td {
@@ -281,7 +281,7 @@ tbody tr.odd td {
 tfoot th,
 tfoot td {
 	border-top:2px solid #666;
-	background:#eee;
+	xbackground:#eee;
 }
 tfoot tr.total th,
 tfoot tr.total td {
