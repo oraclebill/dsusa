@@ -1,34 +1,66 @@
 {% extends "wizard/base.html" %}
 
+{% block extra-head %}
+	{{ block.super }}
+	<style type="text/css">
+		tr.appl {
+			border-top: dotted 1px #grey; 
+			background: #eee; 
+		}
+		
+		tr.appl th {
+			border-right: dotted 1px #gray;
+			vertical-align: middle;	
+		}
+		tr.appl td {
+			border-left: dotted 1px #gray;
+			vertical-align: middle;	
+		}
+		tr.appl th + td {
+			font-style: italic;
+		}
+	</style>
+{% endblock %}
+
+{% block ajax-validation %}{% endblock %}
+
 {% block wizard-content %}
 
-<table>
-<tr>
-	<th>Type</th>
-	<th>Description</th>
-	<th>Width</th>
-	<th>Height</th>
-	<th>Depth</th>
-	<th> </th>
-</tr>
-{% for item in appliances %}
-<tr class="row{% cycle "1" "2"%}">
-	<td>{{item.type}}</td>
-	<td>{{item.model|default:"N/A"}}</td>
-	<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
-	<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
-	<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
-	<td><a href="./?delete={{item.id}}" class="dellink">Delete</a></td>
-</tr>
-{% endfor %}
+<table style="border: none;">
+	<thead>
+		<tr>
+			<th>Type</th>
+			<th>Model</th>
+			<th>Width</th>
+			<th>Height</th>
+			<th>Depth</th>
+			<th>Options</th>
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for item in appliances %}
+		<tr class="appl">
+			<th>{{item.type}}</th>
+			<td>{{item.model|default:"N/A"}}</td>
+			<td>{% if item.width %}{{item.width}}&#148;{% endif %}</td>
+			<td>{% if item.height %}{{item.height}}&#148;{% endif %}</td>
+			<td>{% if item.depth %}{{item.depth}}&#148;{% endif %}</td>
+			<td>{% if item.options %}{{item.options}}{% endif %}</td>
+			<td><a href="./?delete={{item.id}}" class="dellink"><img src="{{MEDIA_URL}}/images/icons/delete.png"></a></td>
+		</tr>
+		{% endfor %}
+	</tbody>
 </table>
 
 {% ifequal wizard.order.status 1 %}
 <fieldset>
 	<legend>Add Appliance</legend>
 	<div>
-	<table>{{form}}</table>
-	<input type="submit" name="add_appliance" value="Add">
+		<table style="border: none;">
+		{{form}}
+		</table>
+		<input type="submit" name="add_appliance" value="Add">
 	</div>
 </fieldset>
 {% endifequal %}
