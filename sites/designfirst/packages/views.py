@@ -1,41 +1,45 @@
 from datetime import datetime
 
-from django.http import HttpRequest
-from forms import NewPackageForm
+from django.http import HttpRequest, HttpResponse
+from forms import NewPackageForm, PackageFilesForm
 from models import WorkingOrder
 from design_pack import DesignPackage
 
 from utils.views import render_to
 
-def _create_package(related_order, related_package, created_by, created_on, notes, version):
-    pass
-    
 
-@render_to('packages/new_package.html')
-def create_package(request, orderid=None, extra_context={}):
-#    user = request.user
-#    if orderid:
-#        order = WorkingOrder.objects.get(pk=orderid)
-#        orderpackages = DesignPackage.get_packages_for_order(orderid)
-#    else:
-#        order = None 
+        
+#class ViewClass(object):
+#    
+#    def __init__(self, *args, **kwargs):
+#        super(ViewClass, self).__init__()
 #        
-#    context = {'orderid': orderid, 'created_by': user.id, 'created_on': datetime.now(), 'orderpackages': orderpackages }
-#    if 'GET' == request.method: 
-#        form = NewPackageForm()
-#    if 'POST' == request.method:
-#        form = NewPackageForm(request.POST)
-#        if form.is_valid():
-#            related_order   = form['orderid']
-#            related_package = form['related_packageid']
-#            created_by      = form['created_by']
-#            created_on      = form['created_on']
-#            notes           = form['notes']
-#            version         = form['version']
-#            
-#            package = _create_package(related_order, related_package, created_by, created_on, notes, version)
+#    def __call__(self, request, *args, **kwargs):
+#        http_method = request.method.lower()
+#        method = getattr(self, 'process_%s' % http_method )
+#        return method(*args, **kwargs)
+#        
+#class PackageView(ViewClass):
+#    def __init__(self, *args, **kwargs):
+#        super(PackageView, self).__init__()
+#    
+#    def handle_post(self, ):
+#        pass
     
-    user = { 'order': None, 'package': None, 'attachments': None }
+@render_to('packages/update_package.html')
+def create_package(request, orderid=None, package_id=None, extra_context={}):
+    if not package_id:
+        package = DesignPackage.objects.create()
+    pkgdataform = NewPackageForm(orderid=orderid)
+    stdfilesform = PackageFilesForm()
     
-    context = { }    
+    user = { 'order': None, 'package': None, 'attachments': None }    
+    context = { 'packageform': pkgdataform, 'filesform': stdfilesform, 'user': user, 'package': { 'id': 1, 'attachments': [] }  }
+        
     return context
+
+def upload_files(request, package_id, file_type='presentation'):
+    print "uploading %s" % request        
+    if request.method == 'POST': 
+        print 'Uploading package_id=%s' % package_id
+    return HttpResponse("1", status=200)

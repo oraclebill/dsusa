@@ -4,7 +4,7 @@ Created on Jan 15, 2010
 @author: bjones
 '''
 
-import pymongo
+#import pymongo
 
 
 class Message(object):

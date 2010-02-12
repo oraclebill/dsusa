@@ -1,5 +1,5 @@
 from uuid import uuid1
-from datetime import datetime
+#from datetime import datetime
 from decimal import Decimal
 import logging
 
@@ -15,7 +15,7 @@ from django.core.mail import mail_managers
 
 from notification import models as notification
 
-from signals import new_dealer_approved
+#from signals import new_dealer_approved
 
 
 logger = logging.getLogger('customer.models')
