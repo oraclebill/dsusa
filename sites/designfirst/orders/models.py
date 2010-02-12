@@ -20,31 +20,32 @@ logger = logging.getLogger('orders.models')
 
 LETTERS_AND_DIGITS = string.letters + string.digits
 APPSTORAGE = AppStorage()        
+
+ACCOUNTS_DIR = 'account-data'
+ORDERS_DIR = 'order-data'
+ORDER_DIAGRAMS_DIR = 'diagrams'
+ORDER_DIAGRAM_PAGES_DIR = 'pages'
+DESIGN_PACKAGES_DIR = 'packages'
+    
     
 def attachment_upload_location(attachment_obj, filename):
-    return os.path.join( 'account-data',
-        str(attachment_obj.order.owner.get_profile().account.id), 
-        'order-data',
-        str(attachment_obj.order.id), 
-        'diagrams',
-        str(filename)
-    )    
+    return os.path.join( attachment_obj.order.get_file_root(), ORDER_DIAGRAMS_DIR, str(filename) )    
     
 def preview_upload_location(preview_obj, filename):
-    return os.path.join( 'account-data', 
+    return os.path.join( ACCOUNTS_DIR, 
         str(preview_obj.attachment.order.owner.get_profile().account.id), 
-        'order-data',
+        ORDERS_DIR,
         str(preview_obj.attachment.order.id), 
-        'pages',
+        ORDER_DIAGRAM_PAGES_DIR,
         str(filename)
     )
 
 def package_upload_location(package_or_file_obj, filename):
-    return os.path.join( 'account-data', 
+    return os.path.join( ACCOUNTS_DIR, 
         str(package_or_file_obj.attachment.order.owner.get_profile().account.id), 
-        'order-data',
+        ORDERS_DIR,
         str(package_or_file_obj.attachment.order.id), 
-        'designs',
+        DESIGN_PACKAGES_DIR,
         str(filename)
     )
 
@@ -132,9 +133,21 @@ class BaseOrder(models.Model):
         verbose_name_plural = 'orders'
 #        unique_together = (('owner', 'project_name'),)  # TODO: integrity *does* matter..        
 
+    def __account(self):
+        if self.owner:
+            return self.owner.get_profile().account
+        else: 
+            return None        
+    account = property(__account)
+
+    
     def is_step_finished(self, name):
         return name in self.finished_steps
-
+        
+    def get_file_root(self):
+        assert(self.account)
+        return os.path.join( ACCOUNTS_DIR, '%d', ORDERS_DIR, '%d' ) % (self.account.id, self.id)    
+        
     def finish_step(self, name, commit=True):
         if not name in self.finished_steps:
             if self.finished_steps:
