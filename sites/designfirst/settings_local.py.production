@@ -37,9 +37,9 @@ LOCAL = False
 
 PAYPAL_TEST             = False      # Testing mode on
 
-PAYPAL_WPP_USER         = "bill_api1.averline.com"
-PAYPAL_WPP_PASSWORD     = "N824EEGKKURSVYYH"
-PAYPAL_WPP_SIGNATURE    = "AkaG0gO7zIxGpEhU22r3WlGQPUtJATHDeobCaTswMY70VuEjBPnpifaX"
-PAYPAL_RECEIVER_EMAIL   = "bill@averline.com"
+PAYPAL_WPP_USER         = "bill_api1.designserviceusa.com"
+PAYPAL_WPP_PASSWORD     = "F33K82P3DSB4QMJU"
+PAYPAL_WPP_SIGNATURE    = "AFcWxV21C7fd0v3bYYYRCpSSRl31Amm6isQo6OngiYsqkSSx3N8lNvJO"
+PAYPAL_RECEIVER_EMAIL   = "bill@designserviceusa.com"
 
 APP_FILES_URL = '/files/'
