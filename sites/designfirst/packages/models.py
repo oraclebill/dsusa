@@ -16,11 +16,12 @@ def package_files_location(pkg_subdir=''):
         
     def order_package_files(instance, fname):
         # <order-store>/packages/<version>/<subdir>/file
-        order = instance.order        
-        order_root = order.get_file_root()
-        package_id = instance.tag
+        try:
+            package_id = instance.tag
+        except:
+            package_id = instance.design_package.tag
         assert( package_id )
-        return os.path.join(order_root, subdir[0], package_id, str(fname))
+        return os.path.join('design-packs', subdir[0], package_id, str(fname))
     return order_package_files
     
     
@@ -59,5 +60,5 @@ class DesignPackageFile(models.Model):
         )
     design_package = models.ForeignKey(DesignPackage, related_name='presentation_files')
     file_type = models.CharField(_('Type'), max_length=1, choices=Const.DP_ATTACHMENT_CHOICES)
-    design_file = models.FileField(_('File'), upload_to=package_files_location(file_type), storage=APPSTORAGE)
+    design_file = models.FileField(_('File'), upload_to=package_files_location('views'), storage=APPSTORAGE)
     

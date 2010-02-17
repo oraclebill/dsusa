@@ -16,13 +16,12 @@
 <script src="{{MEDIA_URL}}js/uploadify/swfobject.js"></script>
 <script src="{{MEDIA_URL}}js/uploadify/jquery.uploadify.js"></script>
 <script>
-{% url package-file-upload package_id as upload_url %}
 $(document).ready(function() {
 	// init uploadify widgets
 	$('#kitfile').uploadify({
 		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
 		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-		'script'    : '{{ upload_url }}',
+		'script'    : '{{ upload_files_url }}',
 		'folder'    : '{{ upload_path }}',
 		'scriptData': {'filetype': 'kitfile'}, 
 		'queueID'	: 'kitqueue',
@@ -34,7 +33,7 @@ $(document).ready(function() {
 	$('#quotefile').uploadify({
 		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
 		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-		'script'    : '{{ upload_url }}',
+		'script'    : '{{ upload_files_url }}',
 		'folder'    : '{{ upload_path }}',
 		'scriptData': {'filetype': 'quotefile'}, 
 		'buttonText': 'Update',
@@ -46,7 +45,7 @@ $(document).ready(function() {
 	$('#multifile').uploadify({
 		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
 		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-		'script'    : '{{ upload_url }}',
+		'script'    : '{{ upload_files_url }}',
 		'folder'    : '{{ upload_path }}',
 		'scriptData': {'filetype': 'presentation'}, 
 		'buttonText': 'Browse',
@@ -86,9 +85,8 @@ function refreshFileList(event, data) {
 	window.console.debug(" **** refreshFileList called ")
 	window.console.debug(" ********* event ", event)
 	window.console.debug(" ********* data ", data)
-	$.getJSON("{% url package-files-list package.id %}", function(data) {
+	$.getJSON("{{ list_files_url }}", function(data) {
 		window.console.debug(" **** callback called ")
-		window.console.debug(" ********* data ", data)
 		
 		
 		update_core_line('kitline', data.kit, '20/20 KIT');
@@ -97,7 +95,8 @@ function refreshFileList(event, data) {
 		// update view files list 		
 		flist = ''
 		if (data.files) {
-			for ( f in data.files ) {
+					window.console.debug(" ********* data files ", data.files)
+			for ( var f in data.files ) {
 				flist = flist + description_line(f, 'VIEW/PLAN/ELEV.', 'delete' );	
 			}			
 		}
@@ -152,6 +151,9 @@ function refreshFileList(event, data) {
 {% endblock %}
 
 {% block content %} 
+<!--
+ {{ pacakge }}
+ -->
 <div id="package_data" class="grid_6 ">
 	<h4>Order Info</h4>		
 	<div class="clearfix">
@@ -169,7 +171,7 @@ function refreshFileList(event, data) {
 	</div>
 	<h4>Package Info</h4>		
 	<div class="clearfix">
-		<form action="{% url update-package package.id %}" method="post".>
+		<form action="{{ update_url }}" method="post".>
 			<dl>
 			    {% for field in form %}
 	            <dt>{{ field.label_tag }}</dt><dd>{{ field }} {{ field.errors }}</dd>

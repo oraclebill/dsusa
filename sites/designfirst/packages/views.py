@@ -2,7 +2,7 @@ from datetime import datetime
 import time, os
 import json
 
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, HttpResponseServerError, HttpResponseForbidden, Http404, HttpResponseNotAllowed
 from django.utils.datastructures import MultiValueDictKeyError
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, get_object_or_404
@@ -10,7 +10,7 @@ from django.template.context import RequestContext
 
 from orders.models import BaseOrder, WorkingOrder
 
-from models import DesignPackage
+from models import DesignPackage, DesignPackageFile
 from forms import NewForm, UpdateForm
 
 from utils.views import render_to
@@ -36,7 +36,6 @@ from utils.views import render_to
     
 def create_package(request, orderid=None, template='packages/create_package.html', extra_context={}):
 
-    context = {}
     try:
         if not orderid:
             orderid = int(request.GET['oid'])   
@@ -64,9 +63,8 @@ def create_package(request, orderid=None, template='packages/create_package.html
     else:
         order.product_type = 'Pro Design'
         
-    context['order'] = order
-    context['form'] = form
-
+        
+    context = {'order': order, 'form': form }        
     context.update(extra_context)
                         
     return render_to_response(template, context, context_instance=RequestContext(request))
@@ -74,7 +72,6 @@ def create_package(request, orderid=None, template='packages/create_package.html
 
 def update_package(request, packageid, template='packages/update_package.html', extra_context={}):
     
-    context = {}
     
     package = get_object_or_404(DesignPackage, id=packageid)
     order = package.order
@@ -90,17 +87,24 @@ def update_package(request, packageid, template='packages/update_package.html', 
             package = form.save()
             return HttpResponseRedirect(reverse('update-package', kwargs={'packageid': package.id}))            
             
-    context['package'] = package
-    context['order'] = package.order    
-    context['form'] = form
-
+            
+    context = {'package':   package, 
+               'order':     order, 
+               'form':      form, 
+               'update_url':        reverse( 'update-package', args=[packageid, ] ),  
+               'list_files_url':    reverse( 'package-files-list', args=[packageid, ] ),  
+               'upload_files_url':  reverse( 'package-files-upload', args=[packageid, ] ),
+    }
     context.update(extra_context)
                         
     return render_to_response(template, context, context_instance=RequestContext(request))
 
+
+
+
 def list_package_files(request, packageid):
     def gen_file_info(file, name=None):
-        path, url, name = file.file.name, file.url, name or os.path.basename(file)
+        path, url, name = file.file.name, file.url, name or os.path.basename(file.path)
         mt = os.stat(path).st_mtime
         fmt = time.strftime("%M/%d/%Y %I:%M:%S %p",time.localtime(mt))
         return {'name': name,'url': url, 'mod_time': mt, 'formatted_time': fmt }
@@ -114,12 +118,27 @@ def list_package_files(request, packageid):
                 }
     return HttpResponse(json.dumps(package_obj), content_type='application/json')        
 
+
+
 def upload_package_files(request, package_id, file_type='presentation'):
-    print "uploading %s" % request        
-    if request.method == 'POST': 
-        print 'Uploading package_id=%s' % package_id
-        print request.POST
-    return HttpResponse("1", status=200)
+    print ' -- > uplaod called with  %s' % request.FILES     
+    package = get_object_or_404(DesignPackage, id=package_id)    
+    if request.method == 'POST':
+        print ' -- > method called with %s' % request.FILES['Filedata']     
+        if request.FILES:
+            new_file = DesignPackageFile(
+                            design_package = package,
+                            design_file = request.FILES['Filedata'],
+                            file_type = DesignPackageFile.Const.PERSPECTIVE
+            )
+#            import pdb; pdb.set_trace()
+            new_file.save()           
+            new_file.design_file.close()
+            return HttpResponse('1')
+        else:
+            return HttpResponseServerError('missing files')    
+    else:
+        return HttpResponseNotAllowed(request.method)
 
 def delete_file(request, packageid):
     raise NotImplemented()
