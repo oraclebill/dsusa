@@ -13,199 +13,146 @@
 
 {% block extra-head %}
 <link href="{{MEDIA_URL}}js/uploadify/uploadify.css" rel="stylesheet" type="text/css" media="screen" />
-<script type="text/javascript" src="{{MEDIA_URL}}js/uploadify/swfobject.js"></script>
-<script type="text/javascript" src="{{MEDIA_URL}}js/uploadify/jquery.uploadify.js"></script>
-<script type="text/javascript">// <![CDATA[
-	{% url package-file-upload package.id as upload_url %}
-	$(document).ready(function() {
-		// init uploadify widgets
-		$('#kitfile').uploadify({
-			'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
-			'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-			'script'    : '{% url package-file-upload package.id %}',
-			'folder'    : '{{ upload_path }}',
-			'scriptData': {'filetype': 'kitfile'}, 
-			'queueID'	: 'kitqueue',
-			'buttonText': 'KIT File',
-			'auto'      : true,
-			'multi'     : false,
-			'onComplete' : updateFileDisplay('#kitqueue', 0),			
-			'onAllComplete' : updateFileDisplay('#kitqueue', 1)			
-			});
-		$('#quotefile').uploadify({
-			'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
-			'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-			'script'    : '{{ upload_url }}',
-			'folder'    : '{{ upload_path }}',
-			'scriptData': {'filetype': 'quotefile'}, 
-			'buttonText': 'Price Report',
-			'queueID'	: 'quotequeue',
-			'auto'      : true,
-			'multi'     : false,
-			'onComplete' : updateFileDisplay('#quotequeue', 0),			
-			'onAllComplete' : updateFileDisplay('#quotequeue', 1)			
-			});
-		$('#multifile').uploadify({
-			'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
-			'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-			'script'    : '{{ upload_url }}',
-			'folder'    : '{{ upload_path }}',
-			'scriptData': {'filetype': 'presentation'}, 
-			'buttonText': 'Upload Views',
-			'auto'      : true,
-			'multi'     : true,
-			'onAllComplete' : refreshFileList,
-			'onInit': refreshFileList
+<script src="{{MEDIA_URL}}js/uploadify/swfobject.js"></script>
+<script src="{{MEDIA_URL}}js/uploadify/jquery.uploadify.js"></script>
+<script>
+{% url package-file-upload package_id as upload_url %}
+$(document).ready(function() {
+	// init uploadify widgets
+	$('#kitfile').uploadify({
+		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
+		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
+		'script'    : '{{ upload_url }}',
+		'folder'    : '{{ upload_path }}',
+		'scriptData': {'filetype': 'kitfile'}, 
+		'queueID'	: 'kitqueue',
+		'buttonText': 'Update',
+		'auto'      : true,
+		'multi'     : false,
+		'onComplete' : updateFileDisplay('#kitqueue', 0),			
+		'onAllComplete' : updateFileDisplay('#kitqueue', 1)			
 		});
-		// display initial attachment list
-		//(onInit) $('#tablecontent').load( '{ url package-files package.id }' )
+	$('#quotefile').uploadify({
+		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
+		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
+		'script'    : '{{ upload_url }}',
+		'folder'    : '{{ upload_path }}',
+		'scriptData': {'filetype': 'quotefile'}, 
+		'buttonText': 'Update',
+		'queueID'	: 'quotequeue',
+		'auto'      : true,
+		'multi'     : false,
+		'onComplete' : updateFileDisplay('#quotequeue', 0),			
+		'onAllComplete' : updateFileDisplay('#quotequeue', 1)			
+		});
+	$('#multifile').uploadify({
+		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
+		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
+		'script'    : '{{ upload_url }}',
+		'folder'    : '{{ upload_path }}',
+		'scriptData': {'filetype': 'presentation'}, 
+		'buttonText': 'Browse',
+		'auto'      : true,
+		'multi'     : true,
+		'onAllComplete' : refreshFileList,
+		'onInit': refreshFileList
 	});
+	// display initial attachment list
+	//(onInit) $('#tablecontent').load( '{ url package-files package_id }' )
+});
 
-	function refreshFileList(event, data) {
-		$('#tablecontent').load( '{{ upload_url }}' )
-		return true;
-	}
+function refreshFileList(event, data) {
+//	$('#tablecontent').load( '{{ upload_url }}' )
+	return true;
+}
 
-	function updateFileDisplay(id, phase) {
-		if (phase == 0) {
-			// uploadComplete
-			return function(event, queue, data){
-				$(id).data('file', data)
-				return true;
-			}			
-		}
-		else if (phase == 1) {
-			// uploadAllComplete
-			return function(event, data){
-				$(id).empty()
-					 .append( $(id).data('file').name );
-				return true;
-			}
-		}
+</script>
+<style type="text/css">
+	div#content h4 {
+		margin-top: .3em;
+		margin-bottom: .15em;
 	}
-	
-	function updateKitFile(event, data) {
-		$('#kitqueue').load( '{{ upload_url }}' )
-		return true;
+	div#content li span {
+		min-width: 10em;
+		margin-right: 10em;
+		display: inline-block;
+	}		
+	div#package_data hr {
+		margin: 20px 0 0 0;
 	}
-	
-// ]]></script>
-	<style type="text/css">
-		dl {
-			float: left;
-			border: solid 1px gray;
-			padding: 1.2em;
-		}
-		dl dt {
-			float: left;
-			clear: left;
-			font-weight: bolder;	
-			min-width: 8em;
-			margin: 0.3em;	
-			padding: 0.3em;
-		}
-		dl dd {
-			float: left;
-			margin: 0.3em;	
-			padding: 0.3em;
-		}
-	</style>
+	dl {
+		xfloat: left;
+		xborder: solid 1px gray;
+		xpadding: 1.2em;
+	}
+	dl dt {
+		float: left;
+		clear: left;
+		font-weight: bolder;	
+		min-width: 9em;
+		margin: 0.25em;	
+		padding: 0.1em 0.25em;
+	}
+	dl dd {
+		float: left;
+		margin: 0.25em;	
+		padding: 0.1em 0.25em;
+	}
+</style>
 {% endblock %}
 
 {% block content %} 
-
-<form action="." method="post" enctype="multipart/form-data">
-
-	<div id="order_1" class="grid_6 suffix_2">
-		<div>
-			<!-- 
-			<table>
-				<tr><th>{{ packageform.orderid.label_tag }}</th><td>{{ packageform.orderid }}</td></tr>
-				<tr><th>{{ packageform.package_type.label_tag }}</th><td>{{ packageform.package_type }}</td></tr>
-				<tr><th>{{ packageform.related_packageid.label_tag }}</th><td>{{ packageform.related_packageid }}</td></tr>
-			</table>
-			-->
+<div id="package_data" class="grid_6 ">
+	<h4>Order Info</h4>		
+	<div class="clearfix">
+		<dl>
+			<dt>Order ID</dt> <dd>{{ order.id }}</dd>
+			<dt>Submitted</dt> <dd>{{ order.submitted|date }}</dd>
+			<dt>Rush Processing?</dt> <dd>{{ order.rush }}</dd>
+		</dl>
+		<hr>
+		<dl>
+			<dt>Design Level</dt> <dd>{{ order.product_type }}</dd>
+			<dt>Project Name</dt> <dd>{{ order.project_name }}</dd>
+			<dt>Project Type</dt> <dd>{{ order.get_project_type_display }}</dd>
+		</dl>
+	</div>
+	<h4>Package Info</h4>		
+	<div class="clearfix">
+		<form action="{% url update-package package.id %}" method="post".>
 			<dl>
-				<dt>{{ packageform.orderid.label_tag }}</dt><dd>{{ packageform.orderid }}</dd>
-				<dt>{{ packageform.package_type.label_tag }}</dt><dd>{{ packageform.package_type }}</dd>
-				<dt>{{ packageform.related_packageid.label_tag }}</dt><dd>{{ packageform.related_packageid }}</dd>
+			    {% for field in form %}
+	            <dt>{{ field.label_tag }}</dt><dd>{{ field }} {{ field.errors }}</dd>
+			    {% endfor %}
 			</dl>
-			
-		</div>
+			<input type="submit" name="submit" value="Update Pacakge Info">
+		</form>
 	</div>
+</div>
 
-	<div id="order_2" class="grid_6 prefix_2">
-		<div>
-			<!--
-			<table>
-				<tr><th>Created By</th><td>{{ packageform.creator }}</td></tr>
-				<tr><th>Time Stamp</th><td>package.timestamp</td></tr>
-				<tr><th>Editable</th><td>{{ package.frozen }}</td></tr>
-			</table>
-			-->
-			<dl>
-				<dt>Created By</dt> <dd>{ packageform.creator }}</dd>
-				<dt>Time Stamp</d> 	<dd>{ package.timestamp }} </dd>
-				<dt>Editable</dt> 	<dd>{ package.frozen }}</dd>
-			</dl>
-		</div>
+<div id="package_files" class="grid_10 ">
+
+	<div id="corefiles">
+		<h4>Core Files</h4>		
+		<ul>
+			<li><span>20/20 KIT</span><input type="button" id="kitfile" value="Update"><span id="kitqueue"></span></li>
+			<li><span>Price Report</span><input type="button" id="quotefile" value="Update"><span id="quotequeue"></span></li>
+		</ul>
 	</div>
 	
-	<hr>
+	{% if order.color_views %}
+	<h4>Presentation Pack Files</h4>		
+	<div id="packfiles">
+		<ul>
+			{% for packfile in pacakge_files %}
+			<li><span><a href="{{ packfile.url }}">{{ packfile }}</span></li>
+			{% endfor %}
+		</ul>
+		<input type="button" id="multifile" value="browse">
+		<p id="multifilequeue"></p>
+	</div>	
+	{% endif %}
 	
-	<div id="data_entry_area" class="grid_9">
-		<h5>To complete this order, you must provide the following files - </h5>
-		<div style="margin-bottom: 1em;">
-			<table>				
-				<tr><td><input id="quotefile" type="button" value="Price Report"></td><td><p id="quotequeue">{{ package.quotefile.name }} </p></td></tr>
-				<tr><td><input id="kitfile" type="button" value="KIT File"></td><td><p id="kitqueue">{{ package.kitfile.name }} </p></td></tr>
-			</table>
-		</div>
-		<h5>Floorplans, Elevations and Perspectives (for presentation orders)</h5>
-		<div style="min-height: 20em; background-color: #eeeeee; border: 1px solid grey; margin-bottom: .5em;">
-			<table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Description</th>
-						<th> </th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for item in package.attachments %}
-					<tr class="row{% cycle "1" "2"%}">
-						<td><a href="{{ item.file.url }}" id="attach{{item.name}}" rel="facebox">{{ item }}</a></td>
-						<td>{{ item.get_description }}</td>
-						<td><a href="{% url package-file-delete item.id %}" class="dexlink"><img src="{{MEDIA_URL}}images/icons/delete.png"></a></td>
-					</tr>
-					{% endfor %}
-					
-				</tbody>
-			</table>
-		</div>		
-		<div style="text-align: center;"><input id="multifile" type="button" name="Upload Files" value="Upload Files"></div>
-		<h5>Designer Notes</h5>
-		<div class="collapse">
-			<table>
-				<tr><td>{{ packageform.designer.label_tag }}</td><td>{{ packageform.designer }}</td></tr>
-				<tr><td>{{ packageform.notes.label_tag }}</td><td>{{ packageform.notes }}</td></tr>
-			</table>
-		</div>
-
-	</div>
-	
-	<div id="preview_area" class="grid_7">
-		<div style="border: 1px solid gray; background-color: #eeeeee; margin-bottom: .8em;">
-			<img src="{{MEDIA_URL}}images/icons/delete.png" width="420" height="600">
-		</div>
-	</div>
-	<hr>
-	<div id="form_control" class="grid_16">
-		<a href="#">Continue Later</a>
-		<input type="submit" name="Attach Completed Design Materials">	
-	</div>
-
-
-</form>
+</div>
 
 {% endblock %}

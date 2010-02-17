@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{# 
+  Template Variables Referenced:
+    - MEDIA_URL
+	- package (package.id, package.attachments)
+	- packageform
+	- upload_path
+
+  URL definitions referenced:
+  	- package-file-upload
+	- package-file-delete
+#} 
+
+{% block extra-head %}
+	<style type="text/css">
+		dl {
+			float: left;
+			border: solid 1px gray;
+			padding: 1.2em;
+		}
+		dl dt {
+			float: left;
+			clear: left;
+			font-weight: bolder;	
+			min-width: 9em;
+			xmargin: 0.3em;	
+			padding: 0.3em;
+		}
+		dl dd {
+			float: left;
+			min-width: 6em;
+			xmargin: 0.3em;	
+			padding: 0.3em;
+		}
+	</style>
+{% endblock %}
+
+{% block content %} 
+<div id="order_header" class="grid_4 prefix_4">
+	<dl>
+		<dt>Order ID</dt> <dd>{{ order.id }}</dd>
+		<dt>Submitted</dt> <dd>{{ order.submitted|date }}</dd>
+		<dt>Rush Processing?</dt> <dd>{{ order.rush }}</dd>
+	</dl>
+</div>
+<div id="order_header" class="grid_4 suffix_4">
+	<dl>
+		<dt>Design Level</dt> <dd>{{ order.product_type }}</dd>
+		<dt>Project Name</dt> <dd>{{ order.project_name }}</dd>
+		<dt>Project Type</dt> <dd>{{ order.get_project_type_display }}</dd>
+	</dl>
+</div>
+
+<div id="order_form" class="grid_8 prefix_4 suffix_4">
+	<div>
+		<form action="{% url create-package %}?oid={{order.id}}" method="post" enctype="multipart/form-data".>
+			<dl>
+			    {% for field in form %}
+	            <dt>{{ field.label_tag }}</dt><dd>{{ field }} {{ field.errors }}</dd>
+			    {% endfor %}
+			</dl>
+			<input type="submit" name="submit" value="Create Package">
+		</form>
+	</div>
+</div>
+{% endblock %}

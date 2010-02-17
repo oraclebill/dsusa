@@ -1,11 +1,12 @@
 from django.conf.urls.defaults import *
 
-from views import create_package, upload_files
+from views import *
 
 package_files= upload_files
 
 urlpatterns = patterns('',
     url(r'^new/$',                  create_package,     name='create-package'),
+    url(r'^(?P<packageid>\d+)/$',    update_package,     name='update-package'),
     url(r'^(\d+)/files/$',          package_files,      name='package-files'),
     url(r'^(\d+)/files/new/$',      upload_files,       name='package-file-upload'),
     url(r'^(\d+)/files/(\d+)/$',    create_package,     name='package-file'),
