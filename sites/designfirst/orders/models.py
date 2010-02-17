@@ -82,12 +82,13 @@ class BaseOrder(models.Model):
     """
     class Const:
         #Basic stuff
-        DEALER_EDIT, SUBMITTED, ASSIGNED, COMPLETED = range(1,5) #TODO: change from number to code
+        DEALER_EDIT, SUBMITTED, ASSIGNED, COMPLETED, ARCHIVED = range(1,6) #TODO: change from number to code
         STATUS_CHOICES = (
             (DEALER_EDIT, 'Dealer Editing'),
-            (SUBMITTED, 'Submitted'),
-            (ASSIGNED, 'Assigned'),
-            (COMPLETED, 'Completed'),
+            (SUBMITTED, 'Submitted For Design'),
+            (ASSIGNED, 'Assigned To Designer'),
+            (COMPLETED, 'Design Completed'),
+            (ARCHIVED, 'Archived'),
         )
         
         KITCHEN_DESIGN, BATH_DESIGN, CLOSET_DESIGN, GENERAL_DESIGN = ('K', 'B', 'C', '*')  #TODO: change from number to code
