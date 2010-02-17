@@ -29,8 +29,7 @@ $(document).ready(function() {
 		'buttonText': 'Update',
 		'auto'      : true,
 		'multi'     : false,
-		'onComplete' : updateFileDisplay('#kitqueue', 0),			
-		'onAllComplete' : updateFileDisplay('#kitqueue', 1)			
+		'onAllComplete' : refreshFileList			
 		});
 	$('#quotefile').uploadify({
 		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
@@ -42,8 +41,7 @@ $(document).ready(function() {
 		'queueID'	: 'quotequeue',
 		'auto'      : true,
 		'multi'     : false,
-		'onComplete' : updateFileDisplay('#quotequeue', 0),			
-		'onAllComplete' : updateFileDisplay('#quotequeue', 1)			
+		'onAllComplete' : refreshFileList			
 		});
 	$('#multifile').uploadify({
 		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
@@ -61,8 +59,50 @@ $(document).ready(function() {
 	//(onInit) $('#tablecontent').load( '{ url package-files package_id }' )
 });
 
+
+function description_line(fileobj, filetype, buttonclass) {
+	return fileobj.name ? '<li><span class="filetype">' + filetype + '</span> \
+						<span class="filename"><a href="' + fileobj.url  + '">' + fileobj.name + '</a></span> \
+						<span class="filedate">' + fileobj.formatted_time + '</span> \
+						<input type="button" class="' + buttonclass + '" value="'+buttonclass+'"></li>\n'
+				   : '';
+}
+
+function update_core_line(id, file, name) {
+		// update kit display and data
+		id = '#' + id
+		prevtime = $(id).data('mtime') || -1;				
+		newtime = file ? file.mtime : 0;
+		
+		$(id).data('mtime', newtime);
+		$(id).html( description_line( file, name, 'update') );
+
+		if ( newtime > prevtime ) {
+			$(id).addClass('updated');
+		}		
+}
+
 function refreshFileList(event, data) {
-//	$('#tablecontent').load( '{{ upload_url }}' )
+	window.console.debug(" **** refreshFileList called ")
+	window.console.debug(" ********* event ", event)
+	window.console.debug(" ********* data ", data)
+	$.getJSON("{% url package-files-list package.id %}", function(data) {
+		window.console.debug(" **** callback called ")
+		window.console.debug(" ********* data ", data)
+		
+		
+		update_core_line('kitline', data.kit, '20/20 KIT');
+		update_core_line('quoteline', data.quote, 'Price Report');		 
+
+		// update view files list 		
+		flist = ''
+		if (data.files) {
+			for ( f in data.files ) {
+				flist = flist + description_line(f, 'VIEW/PLAN/ELEV.', 'delete' );	
+			}			
+		}
+		$('#packfiles').html(flist);
+	});
 	return true;
 }
 
@@ -72,9 +112,19 @@ function refreshFileList(event, data) {
 		margin-top: .3em;
 		margin-bottom: .15em;
 	}
+	div#content ul {
+		font-size: larger;
+		list-style: none;
+	}
+		
+	div#content li {
+		margin-left: 0;
+	}
+		
 	div#content li span {
-		min-width: 10em;
-		margin-right: 10em;
+		min-width: 6em;
+		margin-right: 2em;
+		margin-left: 2em;
 		display: inline-block;
 	}		
 	div#package_data hr {
@@ -134,18 +184,29 @@ function refreshFileList(event, data) {
 
 	<div id="corefiles">
 		<h4>Core Files</h4>		
-		<ul>
-			<li><span>20/20 KIT</span><input type="button" id="kitfile" value="Update"><span id="kitqueue"></span></li>
-			<li><span>Price Report</span><input type="button" id="quotefile" value="Update"><span id="quotequeue"></span></li>
+		<ul id="kitline">
+			<li><span class="filetype">20/20 KIT</span>
+				<span class="filename">2020.kit</span>
+				<span class="filedate">packfile.date</span>
+				<input type="button" class="updater" value="update"></li>
+		</ul>
+		<ul id="quoteline">
+			<li><span class="filetype">Price Report</span>
+				<span class="filename"><a href="#">cabinet_quote.pdf</a></span>
+				<span class="filedate">4/17/2010 04:54:16 AM</span>
+				<input type="button" class="updater" value="update"></li>
 		</ul>
 	</div>
 	
 	{% if order.color_views %}
 	<h4>Presentation Pack Files</h4>		
-	<div id="packfiles">
-		<ul>
-			{% for packfile in pacakge_files %}
-			<li><span><a href="{{ packfile.url }}">{{ packfile }}</span></li>
+	<div>
+		<ul id="packfiles">
+			{% for packfile in package_presentation_files_all %}
+			<li><span class="filetype">VIEW</span>
+				<span class="filename">view_1.png</span>
+				<span class="filedate">54/17/2010 04:54:16 AM</span>
+				<input type="button" class="deleter" value="delete"></li>
 			{% endfor %}
 		</ul>
 		<input type="button" id="multifile" value="browse">

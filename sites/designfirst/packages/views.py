@@ -99,23 +99,22 @@ def update_package(request, packageid, template='packages/update_package.html', 
     return render_to_response(template, context, context_instance=RequestContext(request))
 
 def list_package_files(request, packageid):
-    package = get_object_or_404(DesignPackage, id=packageid)
-    def gen_file_info(file, type='View', name=None):
-        name = name or os.path.basename(file) 
-        mt = os.stat(file).st_mtime
+    def gen_file_info(file, name=None):
+        path, url, name = file.file.name, file.url, name or os.path.basename(file)
+        mt = os.stat(path).st_mtime
         fmt = time.strftime("%M/%d/%Y %I:%M:%S %p",time.localtime(mt))
-        return {'type': type,
-               'name': name,
-               'mod_time': fmt,
-               'raw_mod_time': mt }
-    files = [ gen_file_info(package.kitfile.file, "20/20 KIT", "2020.kit"), ]
-    if package.quotefile:
-        files.append( gen_file_info(package.quotefile.file, "Price Report", "price_list.pdf") )
-    for file in package.design_files.all():
-        files.append( gen_file_info(file.file) )
-    return json.dumps(files)        
+        return {'name': name,'url': url, 'mod_time': mt, 'formatted_time': fmt }
+    
+    package = get_object_or_404(DesignPackage, id=packageid)
+    package_obj = { 'kit':      gen_file_info(package.kitfile, "2020.kit"),
+                    'quote':    package.quotefile 
+                                    and gen_file_info(package.quotefile.file, "price_list.pdf") 
+                                    or  {},
+                    'files':    [ gen_file_info(file.design_file) for file in package.presentation_files.all() ] 
+                }
+    return HttpResponse(json.dumps(package_obj), content_type='application/json')        
 
-def upload_files(request, package_id, file_type='presentation'):
+def upload_package_files(request, package_id, file_type='presentation'):
     print "uploading %s" % request        
     if request.method == 'POST': 
         print 'Uploading package_id=%s' % package_id

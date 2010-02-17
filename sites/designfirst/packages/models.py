@@ -40,6 +40,7 @@ class DesignPackage(models.Model):
         help_text=_('The order this design package was generated for.'))
     designer = models.CharField(_('Designer'), max_length=30)
     kitfile = models.FileField(_('20/20 KIT File'), upload_to=package_files_location(), storage=APPSTORAGE)
+    quotefile = models.FileField(_('Price Report'), upload_to=package_files_location(), storage=APPSTORAGE, null=True)
     notes = models.TextField(_('Designers Notes'), null=True, blank=True)
 
     sealed = models.DateTimeField(_('Sealed'), null=True, blank=True,
@@ -56,7 +57,7 @@ class DesignPackageFile(models.Model):
                                  (ELEVATION, 'Elevation'),
                                  (OTHER, 'Other'),
         )
-    design_package = models.ForeignKey(DesignPackage)
+    design_package = models.ForeignKey(DesignPackage, related_name='presentation_files')
     file_type = models.CharField(_('Type'), max_length=1, choices=Const.DP_ATTACHMENT_CHOICES)
     design_file = models.FileField(_('File'), upload_to=package_files_location(file_type), storage=APPSTORAGE)
     
