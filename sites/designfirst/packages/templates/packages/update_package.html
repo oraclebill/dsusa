@@ -18,30 +18,6 @@
 <script>
 $(document).ready(function() {
 	// init uploadify widgets
-	$('#kitfile').uploadify({
-		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
-		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-		'script'    : '{{ upload_files_url }}',
-		'folder'    : '{{ upload_path }}',
-		'scriptData': {'filetype': 'kitfile'}, 
-		'queueID'	: 'kitqueue',
-		'buttonText': 'Update',
-		'auto'      : true,
-		'multi'     : false,
-		'onAllComplete' : refreshFileList			
-		});
-	$('#quotefile').uploadify({
-		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
-		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
-		'script'    : '{{ upload_files_url }}',
-		'folder'    : '{{ upload_path }}',
-		'scriptData': {'filetype': 'quotefile'}, 
-		'buttonText': 'Update',
-		'queueID'	: 'quotequeue',
-		'auto'      : true,
-		'multi'     : false,
-		'onAllComplete' : refreshFileList			
-		});
 	$('#multifile').uploadify({
 		'uploader'  : '{{MEDIA_URL}}js/uploadify/uploadify.swf',
 		'cancelImg' : '{{MEDIA_URL}}js/uploadify/cancel.png',
@@ -54,66 +30,75 @@ $(document).ready(function() {
 		'onAllComplete' : refreshFileList,
 		'onInit': refreshFileList
 	});
-	// display initial attachment list
-	//(onInit) $('#tablecontent').load( '{ url package-files package_id }' )
+	$(':button.delete').live('click', function (event) {
+		id = $(this).parent().attr('id').slice(3);
+	} );
 });
 
 
-function description_line(fileobj, filetype, buttonclass) {
-	return fileobj.name ? '<li><span class="filetype">' + filetype + '</span> \
-						<span class="filename"><a href="' + fileobj.url  + '">' + fileobj.name + '</a></span> \
-						<span class="filedate">' + fileobj.formatted_time + '</span> \
-						<input type="button" class="' + buttonclass + '" value="'+buttonclass+'"></li>\n'
-				   : '';
+function presentation_line(id, fileobj, filetype, buttonclass) {
+	return '<li id="pl_'+id+'">\
+				<span class="filetype">' + filetype + '</span> \
+				<span class="filename"><a href="' + fileobj.url  + '">' + fileobj.name + '</a></span> \
+				<span class="filedate">' + fileobj.formatted_time + '</span> \
+				<input type="button" class="' + buttonclass + '" value="'+buttonclass+'"></li>\n';
 }
 
-function update_core_line(id, file, name) {
-		// update kit display and data
-		id = '#' + id
-		prevtime = $(id).data('mtime') || -1;				
-		newtime = file ? file.mtime : 0;
+function core_line(id, fileobj, filetype, buttonclass) {
 		
-		$(id).data('mtime', newtime);
-		$(id).html( description_line( file, name, 'update') );
-
-		if ( newtime > prevtime ) {
-			$(id).addClass('updated');
-		}		
+	html = '<li ' + (id ? ' id="' + id + 'l">' : '>');
+	html += '<span class="filetype">' + (filetype || '') + '</span>';
+	html += fileobj ? '<span class="filename"><a href="' + fileobj.url  + '">' + fileobj.name + '</a></span>'
+					: '<span class="filename"><a href="#"></a></span>';
+	html += '<span class="filedate">' + (fileobj ? fileobj.formatted_time : '') + '</span>';
+	html += '<input id="' + id + 'b" type="button" class="' + buttonclass + '" value="'+buttonclass+'">';
+	html += '<img id="' + id + 'q">';
+	html += '</li>\n';
+	
+	return html;
 }
+
 
 function refreshFileList(event, data) {
-	window.console.debug(" **** refreshFileList called ")
-	window.console.debug(" ********* event ", event)
-	window.console.debug(" ********* data ", data)
+	
 	$.getJSON("{{ list_files_url }}", function(data) {
-		window.console.debug(" **** callback called ")
 		
+		$( '#corefiles' ).empty()
+						 .append( core_line( 'kit',   data.kit, 	'20/20 KIT', 'update' ) )
+						 .append( core_line( 'quote', data.quote,   'Price Report', 'update' ) );
+						 
+		$( '#corefiles input' ).uploadify({
+			uploader  	: '{{MEDIA_URL}}js/uploadify/uploadify.swf',
+			cancelImg 	: '{{MEDIA_URL}}js/uploadify/cancel.png',
+			script    	: '{{ upload_files_url }}',
+			folder    	: 'core',
+//			queueID		: qid,
+			auto      	: true,
+			buttonText	: 'Update',
+			multi     	: false,
+			onAllComplete : refreshFileList			
+		});
 		
-		update_core_line('kitline', data.kit, '20/20 KIT');
-		update_core_line('quoteline', data.quote, 'Price Report');		 
-
-		// update view files list 		
-		flist = ''
-		if (data.files) {
-					window.console.debug(" ********* data files ", data.files)
-			for ( var f in data.files ) {
-				flist = flist + description_line(f, 'VIEW/PLAN/ELEV.', 'delete' );	
-			}			
-		}
-		$('#packfiles').html(flist);
+		// update view files list 	
+		$('#packfiles').empty();
+		$.each(data.files, function( idx, item ) { 
+			$('#packfiles').append(presentation_line(item.id, item, 'View', 'delete' ));	
+		});		
 	});
 	return true;
 }
-
+ 
 </script>
 <style type="text/css">
 	div#content h4 {
 		margin-top: .3em;
 		margin-bottom: .15em;
 	}
+	
 	div#content ul {
-		font-size: larger;
+		xfont-size: larger;
 		list-style: none;
+		xmargin-left: .25em;
 	}
 		
 	div#content li {
@@ -121,19 +106,32 @@ function refreshFileList(event, data) {
 	}
 		
 	div#content li span {
+		font-size: larger;
 		min-width: 6em;
-		margin-right: 2em;
-		margin-left: 2em;
+		margin-right: .5em;
+		xmargin-left: .5em;
 		display: inline-block;
-	}		
+	}
+	
+	div#content li span.filetype {
+		font-weight: bolder;
+		background-color: #efefef;		
+	}
+	div#content li span.filename {
+		width: 240px;
+		overflow: hidden;
+	}
+	
 	div#package_data hr {
 		margin: 20px 0 0 0;
 	}
+	
 	dl {
 		xfloat: left;
 		xborder: solid 1px gray;
 		xpadding: 1.2em;
 	}
+	
 	dl dt {
 		float: left;
 		clear: left;
@@ -142,6 +140,7 @@ function refreshFileList(event, data) {
 		margin: 0.25em;	
 		padding: 0.1em 0.25em;
 	}
+	
 	dl dd {
 		float: left;
 		margin: 0.25em;	
@@ -184,19 +183,23 @@ function refreshFileList(event, data) {
 
 <div id="package_files" class="grid_10 ">
 
-	<div id="corefiles">
-		<h4>Core Files</h4>		
-		<ul id="kitline">
-			<li><span class="filetype">20/20 KIT</span>
+	<h4>Core Files</h4>	
+	<div>	
+		<ul id="corefiles">
+			<li id="kitl">
+				<span class="filetype">20/20 KIT</span>
 				<span class="filename">2020.kit</span>
 				<span class="filedate">packfile.date</span>
-				<input type="button" class="updater" value="update"></li>
-		</ul>
-		<ul id="quoteline">
-			<li><span class="filetype">Price Report</span>
+				<input id="kitbutton" type="button" class="updater" value="update">
+				<span id="kitqueue"></span>
+				</li>
+			<li  id="quotel">
+				<span class="filetype">Price Report</span>
 				<span class="filename"><a href="#">cabinet_quote.pdf</a></span>
 				<span class="filedate">4/17/2010 04:54:16 AM</span>
-				<input type="button" class="updater" value="update"></li>
+				<input id="quotebutton" type="button" class="updater" value="update">
+				<span id="quotequeue"></span>
+				</li>
 		</ul>
 	</div>
 	
@@ -217,5 +220,11 @@ function refreshFileList(event, data) {
 	{% endif %}
 	
 </div>
+
+<div id="package_files" class="grid_14 prefix_1 ">
+	<hr>
+	<a href="/dealer/">Back</a>
+</div>
+
 
 {% endblock %}

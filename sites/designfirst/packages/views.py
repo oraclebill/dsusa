@@ -34,6 +34,7 @@ from utils.views import render_to
 #    def handle_post(self, ):
 #        pass
     
+    
 def create_package(request, orderid=None, template='packages/create_package.html', extra_context={}):
 
     try:
@@ -72,7 +73,6 @@ def create_package(request, orderid=None, template='packages/create_package.html
 
 def update_package(request, packageid, template='packages/update_package.html', extra_context={}):
     
-    
     package = get_object_or_404(DesignPackage, id=packageid)
     order = package.order
     
@@ -103,42 +103,82 @@ def update_package(request, packageid, template='packages/update_package.html', 
 
 
 def list_package_files(request, packageid):
-    def gen_file_info(file, name=None):
+        
+    def gen_file_info(file, name=None, id=None):
+        print 'file >> %s' % file
         path, url, name = file.file.name, file.url, name or os.path.basename(file.path)
         mt = os.stat(path).st_mtime
-        fmt = time.strftime("%M/%d/%Y %I:%M:%S %p",time.localtime(mt))
-        return {'name': name,'url': url, 'mod_time': mt, 'formatted_time': fmt }
+        if datetime.fromtimestamp(mt) == datetime.today():
+            fmt = time.strftime("%I:%M %p",time.localtime(mt))
+        else:
+            fmt = time.strftime("%b %d, %Y",time.localtime(mt))
+        return  {'id': id, 'name': name,'url': url, 'mod_time': mt, 'formatted_time': fmt }
     
     package = get_object_or_404(DesignPackage, id=packageid)
     package_obj = { 'kit':      gen_file_info(package.kitfile, "2020.kit"),
                     'quote':    package.quotefile 
-                                    and gen_file_info(package.quotefile.file, "price_list.pdf") 
+                                    and gen_file_info(package.quotefile, "price_list.pdf") 
                                     or  {},
-                    'files':    [ gen_file_info(file.design_file) for file in package.presentation_files.all() ] 
+                    'files':    [ gen_file_info(file.design_file, id=file.id) for file in package.presentation_files.all() ] 
                 }
     return HttpResponse(json.dumps(package_obj), content_type='application/json')        
 
-
-
+    
+    
 def upload_package_files(request, package_id, file_type='presentation'):
-    print ' -- > uplaod called with  %s' % request.FILES     
+    
+    print ' -- > uplaod called with  %s\n%s' % (request.FILES, request.POST)
+         
     package = get_object_or_404(DesignPackage, id=package_id)    
     if request.method == 'POST':
-        print ' -- > method called with %s' % request.FILES['Filedata']     
         if request.FILES:
-            new_file = DesignPackageFile(
-                            design_package = package,
-                            design_file = request.FILES['Filedata'],
-                            file_type = DesignPackageFile.Const.PERSPECTIVE
-            )
-#            import pdb; pdb.set_trace()
-            new_file.save()           
-            new_file.design_file.close()
+            filedata = request.FILES['Filedata']
+            filename = request.POST['Filename']
+            folder = request.POST['folder']
+
+            print "(%s, %s, %s)" % ( folder, filename, len(filedata))
+            # update package for core files
+            if folder.endswith('core'):
+                print 'CORE'
+                if filename.lower().endswith('.kit'): 
+                    print 'KIT'
+                    package.kitfile = filedata
+                else:
+                    package.quotefile = filedata 
+                package.save()    
+            # add new 'designfile' for others                 
+            else:
+                new_file = DesignPackageFile(
+                                design_package = package,
+                                design_file = filedata,
+                                file_type = DesignPackageFile.Const.PERSPECTIVE
+                )
+                new_file.save()           
+                #new_file.design_file.close()
             return HttpResponse('1')
         else:
             return HttpResponseServerError('missing files')    
     else:
         return HttpResponseNotAllowed(request.method)
 
+
 def delete_file(request, packageid):
     raise NotImplemented()
+
+
+def serve_file(request, package_id, file_id):
+    package = get_object_or_404(DesignPackage, id=package_id)
+    package_file = get_object_or_404(DesignPackageFile, id=file_id)
+    
+    ## TODO: security
+    
+    if request.method == 'GET':
+        return HttpResponseRedirect(package_file.design_file.url)
+    elif request.method == 'POST' or request.method == 'PUT':
+        pass
+    elif request.method == 'DELETE':
+        pass
+    
+    return HttpResponse 
+
+    
