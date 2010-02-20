@@ -1,11 +1,14 @@
-{% url registration_activate_and_register activation_key=profile.activation_key as activation_url %}
+{% url registration_activate activation_key=activation_key as activation_url %}
 
 Hi,
 
 Welcome to {{ site.name }}. You can complete your registration and create your account profile at 
-<a href="http://{{ site.domain }}{{ activation_url }}">http://{{ site.domain }}{{ activation_url }}</a>.
+https://{{site.domain}}{{activation_url}}.
+
 Just click on the link or copy-paste it into your browsers address bar.
 
 Thanks,
 
 The {{ site.name }} Staff.
+
+{{activation_url}}

@@ -5,7 +5,7 @@
 {% block content %}
 	<div class="grid_6 prefix_5 suffix_5">
 		{% if account %}
-		<h1>Activation Succeeded</h1>
+		<h1>Activation Complete</h1>
 		<div class=box>
 			<h2> Account Summary</h2>
 			<div>
@@ -16,8 +16,11 @@
 		<div class=box>
 			<h2> Account Registration Failed</h2>
 			<div>
-				<p>You have {{ expiration_days }} remaining to complete your registration.</p>
-				<p>Please <a href='mailto:support@designserviceusa.com'>contact support</a> if you have further issues</p>
+			    <p>&nbsp;</p>
+				<p>For security reasons activation codes are only valid for a limited amount of time. </p>
+				<p>The most common reason for activation failure is an expired activation code. </p>
+				<p>You can <a href='mailto:support@designserviceusa.com'>contact support</a> to have a new activation code reissued for your account.</p>
+			    <p>&nbsp;</p>
 			</div>
 		</div>
 		
