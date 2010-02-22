@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import os.path, random, string, logging
 
+import django
+
 #from django.conf import settings
 from django.contrib.auth.models import User
 #from django.utils.text import get_valid_filename
@@ -602,4 +604,229 @@ class DesignPackageFile(models.Model):
     design_package = models.ForeignKey(DesignPackage)
     type = models.CharField(_('type'), max_length=1, choices=Const.DP_ATTACHMENT_CHOICES)
     file = models.FileField(_('file'), upload_to=package_upload_location, storage=APPSTORAGE)
+    
+    
+TYPE_MAP = {
+        'id'                           : 'Integer',
+        'owner'                        : 'Integer',
+        'status'                       : 'django.forms.fields.TypedChoiceField',    
+        'account_code'                 : 'django.forms.fields.CharField',
+        'tracking_code'                : 'django.forms.fields.CharField',
+        'project_name'                 : 'django.forms.fields.CharField',
+        'project_type'                 : 'django.forms.fields.TypedChoiceField',
+        'created'                      : 'django.forms.fields.DateTimeField',
+        'submitted'                    : 'django.forms.fields.DateTimeField',
+        'completed'                    : 'django.forms.fields.DateTimeField',
+        'rush'                         : 'django.forms.fields.BooleanField',
+        'color_views'                  : 'django.forms.fields.BooleanField',
+        'elevations'                   : 'django.forms.fields.BooleanField',
+        'quoted_cabinet_list'          : 'django.forms.fields.BooleanField',
+        'desired'                      : 'django.forms.fields.DateTimeField',
+        'cost'                         : 'django.forms.fields.DecimalField',
+        'client_notes'                 : 'django.forms.fields.CharField',
+        'finished_steps'               : 'django.forms.fields.CharField',
+        'updated'                      : 'django.forms.fields.DateTimeField',
+        'manufacturer'                 : 'django.forms.fields.CharField',
+        'product_line'                 : 'django.forms.fields.CharField',
+        'door_style'                   : 'django.forms.fields.CharField',
+        'drawer_front_style'           : 'django.forms.fields.CharField',
+        'cabinet_material'             : 'django.forms.fields.CharField',
+        'finish_type'                  : 'django.forms.fields.CharField',
+        'finish_color'                 : 'django.forms.fields.CharField',
+        'finish_options'               : 'django.forms.fields.CharField',
+        'door_handle_type'             : 'django.forms.fields.TypedChoiceField',
+        'door_handle_model'            : 'django.forms.fields.CharField',
+        'drawer_handle_type'           : 'django.forms.fields.TypedChoiceField',
+        'drawer_handle_model'          : 'django.forms.fields.CharField',
+        'has_soffits'                  : 'django.forms.fields.BooleanField',
+        'soffit_width'                 : 'utils.fields.DimensionFormField',
+        'soffit_height'                : 'utils.fields.DimensionFormField',
+        'soffit_depth'                 : 'utils.fields.DimensionFormField',
+        'dimension_style'              : 'django.forms.fields.TypedChoiceField',
+        'standard_sizes'               : 'django.forms.fields.BooleanField',
+        'wall_cabinet_height'          : 'utils.fields.DimensionFormField',
+        'wall_cabinet_depth'           : 'utils.fields.DimensionFormField',
+        'base_cabinet_height'          : 'utils.fields.DimensionFormField',
+        'base_cabinet_depth'           : 'utils.fields.DimensionFormField',
+        'vanity_cabinet_height'        : 'utils.fields.DimensionFormField',
+        'vanity_cabinet_depth'         : 'utils.fields.DimensionFormField',
+        'diagonal_corner_wall'         : 'django.forms.fields.TypedChoiceField',
+        'diagonal_corner_wall_shelv'   : 'django.forms.fields.TypedChoiceField',
+        'diagonal_corner_base'         : 'django.forms.fields.TypedChoiceField',
+        'diagonal_corner_base_shelv'   : 'django.forms.fields.TypedChoiceField',
+        'degree90_corner_wall'         : 'django.forms.fields.TypedChoiceField',
+        'degree90_corner_base'         : 'django.forms.fields.TypedChoiceField',
+        'degree90_corner_base_shelv'   : 'django.forms.fields.TypedChoiceField',
+        'slide_out_trays'              : 'django.forms.fields.CharField',
+        'waste_bin'                    : 'django.forms.fields.CharField',
+        'wine_rack'                    : 'django.forms.fields.CharField',
+        'plate_rack'                   : 'django.forms.fields.CharField',
+        'appliance_garage'             : 'django.forms.fields.CharField',
+        'corbels'                      : 'django.forms.fields.BooleanField',
+        'brackets'                     : 'django.forms.fields.BooleanField',
+        'valance'                      : 'django.forms.fields.BooleanField',
+        'legs_feet'                    : 'django.forms.fields.BooleanField',
+        'glass_doors'                  : 'django.forms.fields.BooleanField',
+        'range_hood'                   : 'django.forms.fields.BooleanField',
+        'posts'                        : 'django.forms.fields.BooleanField',
+}
+
+R_TYPE_MAP = {
+    'Integer': ['id'],
+    'django.forms.fields.BooleanField':     ['rush', 'color_views', 'elevations', 'quoted_cabinet_list', 'has_soffits', 'standard_sizes', 'corbels', 'brackets', 'valance', 'legs_feet', 'glass_doors', 'range_hood', 'posts'],
+    'django.forms.fields.CharField':        ['account_code', 'tracking_code', 'project_name', 'client_notes', 'finished_steps', 'manufacturer', 'product_line', 'door_style', 'drawer_front_style', 'cabinet_material', 'finish_type', 'finish_color', 'finish_options', 'door_handle_model', 'drawer_handle_model', 'slide_out_trays', 'waste_bin', 'wine_rack', 'plate_rack', 'appliance_garage'],
+    'django.forms.fields.DateTimeField':    ['created', 'submitted', 'completed', 'desired', 'updated'],
+    'django.forms.fields.DecimalField':     ['cost'],
+    'django.forms.fields.TypedChoiceField': ['status', 'project_type', 'door_handle_type', 'drawer_handle_type', 'dimension_style', 'diagonal_corner_wall', 'diagonal_corner_wall_shelv', 'diagonal_corner_base', 'diagonal_corner_base_shelv', 'degree90_corner_wall', 'degree90_corner_base', 'degree90_corner_base_shelv'],
+    'django.forms.models.ModelChoiceField': ['owner'],
+    'utils.fields.DimensionFormField':      ['soffit_width', 'soffit_height', 'soffit_depth', 'wall_cabinet_height', 'wall_cabinet_depth', 'base_cabinet_height', 'base_cabinet_depth', 'vanity_cabinet_height', 'vanity_cabinet_depth']
+}
+
+FIELD_SPECS = {
+    'django.forms.fields.BooleanField':     { 'ptype': bool, },
+    'django.forms.fields.CharField':        { 'ptype': unicode, },
+    'django.forms.fields.DateTimeField':    { 'ptype': datetime, },
+    'django.forms.fields.DecimalField':     { 'ptype': datetime, },
+    'django.forms.fields.TypedChoiceField': { 'ptype': list },
+    'django.forms.models.ModelChoiceField': { 'ptype': int },
+    'utils.fields.DimensionFormField':      { 'ptype': tuple },
+               }
+
+FIELD_MAP = {
+    'id'                           : ['order', 'id', 'id', ],
+    'owner'                        : ['order', 'owner', 'owner', ],
+    'status'                       : ['order', 'status', 'status', ],
+    'account_code'                 : ['order', 'account_code', 'account_code', ],
+    'tracking_code'                : ['order', 'tracking_code', 'tracking_code', ],
+    'project_name'                 : ['order', 'project_name', 'project_name', ],
+    'project_type'                 : ['design', 'project_type', 'project_type', ],
+    'created'                      : ['order', 'created', 'created', ],
+    'submitted'                    : ['order', 'submitted', 'submitted', ],
+    'completed'                    : ['order', 'completed', 'completed', ],
+    'rush'                         : ['order', 'rush', 'rush', ],
+    'color_views'                  : ['design', 'color_views', 'color_views', ],
+    'elevations'                   : ['design', 'elevations', 'elevations', ],
+    'quoted_cabinet_list'          : ['design', 'quoted_cabinet_list', 'quoted_cabinet_list', ],
+    'desired'                      : ['order', 'desired', 'desired', ],
+    'cost'                         : ['order', 'cost', 'cost', ],
+    'client_notes'                 : ['design', 'client_notes', 'client_notes', ],
+    'finished_steps'               : ['hidden', 'finished_steps', 'finished_steps', ],
+    'updated'                      : ['hidden', 'updated', 'updated', ],
+    'manufacturer'                 : ['catalog', 'manufacturer', 'manufacturer', ],
+    'product_line'                 : ['catalog', 'product_line', 'product_line', ],
+    'door_style'                   : ['cabinet style', 'door_style', 'door_style', ],
+    'drawer_front_style'           : ['cabinet style', 'drawer_front_style', 'drawer_front_style', ],
+    'cabinet_material'             : ['cabinet style', 'cabinet_material', 'cabinet_material', ],
+    'finish_type'                  : ['cabinet style', 'finish', 'finish_type', ],
+    'finish_color'                 : ['cabinet style', 'finish', 'finish_color', ],
+    'finish_options'               : ['cabinet style', 'finish', 'finish_options', ],
+    'door_handle_type'             : ['cabinet style', 'door handles', 'door_handle_type', ],
+    'door_handle_model'            : ['cabinet style', 'door handles', 'door_handle_model', ],
+    'drawer_handle_type'           : ['cabinet style', 'drawer handles', 'drawer_handle_type', ],
+    'drawer_handle_model'          : ['cabinet style', 'drawer handles', 'drawer_handle_model', ],
+    'has_soffits'                  : ['room dimensions', 'has_soffits', 'has_soffits', ],
+    'soffit_width'                 : ['room dimensions', 'soffit', 'soffit_width', ],
+    'soffit_height'                : ['room dimensions', 'soffit', 'soffit_height', ],
+    'soffit_depth'                 : ['room dimensions', 'soffit', 'soffit_depth', ],
+    'dimension_style'              : ['cabinet arrangements', 'dimension_style', 'dimension_style', ],
+    'standard_sizes'               : ['cabinet dimensions', 'standard_sizes', 'standard_sizes', ],
+    'wall_cabinet_height'          : ['cabinet dimensions', 'wall_cabinet_size', 'wall_cabinet_height', ],
+    'wall_cabinet_depth'           : ['cabinet dimensions', 'wall_cabinet_size', 'wall_cabinet_depth', ],
+    'base_cabinet_height'          : ['cabinet dimensions', 'base_cabinet_size', 'base_cabinet_height', ],
+    'base_cabinet_depth'           : ['cabinet dimensions', 'base_cabinet_size', 'base_cabinet_depth', ],
+    'vanity_cabinet_height'        : ['cabinet dimensions', 'vanity_cabinet_size', 'vanity_cabinet_height', ],
+    'vanity_cabinet_depth'         : ['cabinet dimensions', 'vanity_cabinet_size', 'vanity_cabinet_depth', ],
+    'diagonal_corner_wall'         : ['cabinet options', 'diag_corner_wall', 'diagonal_corner_wall', ],
+    'diagonal_corner_wall_shelv'   : ['cabinet options', 'diag_corner_wall', 'diagonal_corner_wall_shelv', ],
+    'diagonal_corner_base'         : ['cabinet options', 'diag_corner_base', 'diagonal_corner_base', ],
+    'diagonal_corner_base_shelv'   : ['cabinet options', 'diag_corner_base', 'diagonal_corner_base_shelv', ],
+    'degree90_corner_wall'         : ['cabinet options', 'd90_corner_wall', 'degree90_corner_wall', ],
+    'degree90_corner_base'         : ['cabinet options', 'd90_corner_base', 'degree90_corner_base', ],
+    'degree90_corner_base_shelv'   : ['cabinet options', 'd90_corner_base', 'degree90_corner_base_shelv', ],
+    'slide_out_trays'              : ['interior options', 'slide_out_trays', 'slide_out_trays', ],
+    'waste_bin'                    : ['interior options', 'waste_bin', 'waste_bin', ],
+    'wine_rack'                    : ['interior options', 'wine_rack', 'wine_rack', ],
+    'plate_rack'                   : ['interior options', 'plate_rack', 'plate_rack', ],
+    'appliance_garage'             : ['interior options', 'appliance_garage', 'appliance_garage', ],
+    'corbels'                      : ['decorative options', 'corbels', 'corbels', ],
+    'brackets'                     : ['decorative options', 'brackets', 'brackets', ],
+    'valance'                      : ['decorative options', 'valance', 'valance', ],
+    'legs_feet'                    : ['decorative options', 'legs_feet', 'legs_feet', ],
+    'glass_doors'                  : ['decorative options', 'glass_doors', 'glass_doors', ],
+    'range_hood'                   : ['decorative options', 'range_hood', 'range_hood', ],
+    'posts'                        : ['decorative options', 'posts', 'posts', ],
+}
+
+def design_spec_from_working_order(workingorder):
+    """
+    Convert a working order into a design spec document
+    
+    Design spec's primary structure is ('section', 'item', 'element').
+    
+    """
+    class Spec(object):
+        _spec = {}
+        
+        def add_section_element(self, section_name, item_name, element_name, value):
+            def _get_or_create(map, name, default):
+                value = map.get(name)
+                if not value: value = map[name] = default
+                return value 
+            section = _get_or_create(self._spec, section_name, {})            
+            item = _get_or_create(section, item_name, {})   
+            assert (element_name not in item)         
+            item[element_name] = value
+        
+        def add_section_item(self, section_name, item_name, value):
+            def _get_or_create(map, name, default):
+                value = map.get(name)
+                if not value: value = map[name] = default
+                return value 
+            section = _get_or_create(self._spec, section_name, {}) 
+            assert(item_name not in section)
+            section[item_name] = dict(value)           
+                    
+        def as_dict(self): 
+            return self._spec
+        
+    def describe_appliance(appl):
+        return dict(type=appl.type, model=appl.model, 
+                    width=appl.width, height=appl.height, depth=appl.depth, options=appl.options)
+        
+    sp = Spec()
+    for k,v in FIELD_MAP.items():
+        val = getattr(workingorder, k, None)
+        if val:
+            args = v + [val]
+            sp.add_section_element(*args)
+    # 
+    # add related items - mouldings
+    for m in workingorder.mouldings.all():
+        sp.add_section_element( 'mouldings', m.type, m.num, m.name )        
+    
+    # add related items - appliances
+    for a in workingorder.appliances.all():
+        sp.add_section_element( 'appliances', a.type, a.type, describe_appliance(a) )
+     
+    # add related items - attachments
+    count = 0
+    for att in workingorder.attachments.all():
+        att_item = dict( type=att.get_type_display(), 
+                         name=att.file.name, 
+                         file=att.file.file, 
+                         source=att.source, 
+                         timestamp=att.timestamp )
+        sp.add_section_item( 'attachments', att_item['type'] + str(count), att_item )
+    
+    # add related items - page and field notes
+    count = 0
+    for note in workingorder.notes.all():
+        note_item = dict( author=note.author, text=note.note_text, created=note.created,
+                          area=note.area_reference, field=note.field_reference)
+        item_name = note_item.field and note_item.field+'note' or 'note'+count
+        sp.add_section_item(note_item.area, item_name, note_item )    
+    
+    return sp.as_dict()
+    
+    
     

@@ -1,12 +1,16 @@
 from datetime import datetime
+
+
 import os
 import uuid
 import tempfile
+
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from orders.models import WorkingOrder, APPSTORAGE
+
 
 def package_files_location(pkg_subdir=''):
     if pkg_subdir:
@@ -46,6 +50,7 @@ class DesignPackage(models.Model):
 
     sealed = models.DateTimeField(_('Sealed'), null=True, blank=True,
         default=datetime.now, help_text=_('The timestamp of when this package was sent to the customer, or null if still unsent.'))
+        
         
 class DesignPackageFile(models.Model):
     '''
