@@ -165,17 +165,21 @@ APPLICATION_FILES_ROOT = rel('..','..','var','application-data')
 APPLICATION_FILES_URL  = rel('..','..','var','application-data')
 
 ##
+## PayPal Configuration
+## IMPORTANT: Do not commit PayPal API credentials to version control.
+## Load credentials from environment variables or secure configuration management.
+##
 PAYPAL_TEST                 = True      # Testing mode on
 if PAYPAL_TEST:
-    PAYPAL_WPP_USER         = "cosell_1252871123_biz_api1.averline.com"     # Get from PayPal
-    PAYPAL_WPP_PASSWORD     = "1252871133"
-    PAYPAL_WPP_SIGNATURE    = "AK62IJSoShoKOn0SppTVKGQxFbWQA6zEuyvKae7yXFouidPif83wSYxC"
-    PAYPAL_RECEIVER_EMAIL   = "cosell_1252871123_biz@averline.com"
+    PAYPAL_WPP_USER         = os.environ.get('PAYPAL_WPP_USER', '')
+    PAYPAL_WPP_PASSWORD     = os.environ.get('PAYPAL_WPP_PASSWORD', '')
+    PAYPAL_WPP_SIGNATURE    = os.environ.get('PAYPAL_WPP_SIGNATURE', '')
+    PAYPAL_RECEIVER_EMAIL   = os.environ.get('PAYPAL_RECEIVER_EMAIL', '')
 else:
-    PAYPAL_WPP_USER         = ""     # Get from PayPal
-    PAYPAL_WPP_PASSWORD     = ""
-    PAYPAL_WPP_SIGNATURE    = ""
-    PAYPAL_RECEIVER_EMAIL   = ""
+    PAYPAL_WPP_USER         = os.environ.get('PAYPAL_WPP_USER', '')
+    PAYPAL_WPP_PASSWORD     = os.environ.get('PAYPAL_WPP_PASSWORD', '')
+    PAYPAL_WPP_SIGNATURE    = os.environ.get('PAYPAL_WPP_SIGNATURE', '')
+    PAYPAL_RECEIVER_EMAIL   = os.environ.get('PAYPAL_RECEIVER_EMAIL', '')
 
 # system mail parameters
 MAIL_SYSTEM_REPLYTO_ADDRESS = 'system@designserviceusa.com'
