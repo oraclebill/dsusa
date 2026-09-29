@@ -1,13 +1,15 @@
+import os
+
 DEBUG = False
 SECURE = True
 
 APPL_FILE_ROOT='/var/www/com_designserviceusa_secure/var/application-data'
 
-EMAIL_HOST='m0.designserviceusa.com'   		# bull
+EMAIL_HOST='m0.designserviceusa.com'
 
-DEFAULT_FROM_EMAIL='support@designserviceusa.com'   # Default e-mail address from site manager (webmaster) 
-SERVER_EMAIL='system@designserviceusa.com'          # Default e-mail address error messages come from (root)
-EMAIL_SUBJECT_PREFIX='Design Service USA - '                    # (default: [Django])
+DEFAULT_FROM_EMAIL='support@designserviceusa.com'
+SERVER_EMAIL='system@designserviceusa.com'
+EMAIL_SUBJECT_PREFIX='Design Service USA - '
 
 ADMINS = (
     ('Bill Jones', 	'bill@averline.com'),
@@ -21,13 +23,12 @@ MANAGERS = (
 )
 
 DATABASE_ENGINE = 'postgresql_psycopg2'
-DATABASE_NAME 	= 'designfirst-prod'
-DATABASE_USER 	= 'designfirst-prod'
-DATABASE_PASSWORD = 'congo'
-DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_NAME = 'designfirst-prod'
+DATABASE_USER = os.environ.get('DATABASE_USER', '')
+DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD', '')
+DATABASE_HOST = 'localhost'
+DATABASE_PORT = ''
 
-# postgres needs 'New_York'
 TIME_ZONE = 'America/New_York'
 
 MEDIA_URL = '/'
@@ -35,11 +36,10 @@ ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 LOCAL = False
 
-PAYPAL_TEST             = False      # Testing mode on
-
-PAYPAL_WPP_USER         = "bill_api1.averline.com"
-PAYPAL_WPP_PASSWORD     = "N824EEGKKURSVYYH"
-PAYPAL_WPP_SIGNATURE    = "AkaG0gO7zIxGpEhU22r3WlGQPUtJATHDeobCaTswMY70VuEjBPnpifaX"
-PAYPAL_RECEIVER_EMAIL   = "bill@averline.com"
+PAYPAL_TEST = os.environ.get('PAYPAL_TEST', 'false').lower() == 'true'
+PAYPAL_WPP_USER = os.environ.get('PAYPAL_WPP_USER', '')
+PAYPAL_WPP_PASSWORD = os.environ.get('PAYPAL_WPP_PASSWORD', '')
+PAYPAL_WPP_SIGNATURE = os.environ.get('PAYPAL_WPP_SIGNATURE', '')
+PAYPAL_RECEIVER_EMAIL = os.environ.get('PAYPAL_RECEIVER_EMAIL', '')
 
 APP_FILES_URL = '/files/'
